@@ -175,6 +175,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
       for (int k=0;k<(int)regions.size();++k){
           for( auto it = vars.cbegin() ; it != vars.cend() ; ++it ){
               Hists[j][k][it->second.at(0)] ->Write("",TObject::kOverwrite);
+              delete Hists[j][k][it->second.at(0)];
           }
       }
   }
