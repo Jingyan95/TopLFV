@@ -58,7 +58,7 @@ submit += 'arguments = "$(argument)"\n'
 submit += 'output = submit01.out\n'
 submit += 'error = submit01.err\n'
 submit += 'log = submit01.log\n'
-submit += '+JobFlavour = "longlunch"\n' ##finish writing .sh file
+submit += '+JobFlavour = "microcentury"\n' ##finish writing .sh file
 submit += 'queue\n'
 submitName = 'submit01.sub'
 sub1 = open('Jobs/'+submitName,'wt')

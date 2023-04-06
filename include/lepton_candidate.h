@@ -13,15 +13,17 @@ using namespace std;
 class lepton_candidate {
   
 public:
-  lepton_candidate(float, float, float, int, int, int);
+  lepton_candidate(float, float, float, int, float, float, float, int, int);
   ~lepton_candidate();
   float pt_;
   float eta_;
   float phi_;
-  int pdgid_;
   int charge_;
-  int mother_idx_;
-  int mother_pdgid_;
+  float mva1_;
+  float mva2_;
+  float mva3_;
+  int index_;
+  int flavor_;
   TLorentzVector p4_;
 
 private:

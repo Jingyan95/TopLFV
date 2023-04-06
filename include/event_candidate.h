@@ -7,7 +7,7 @@
 #include<vector>
 #include<complex>
 #include <TLorentzVector.h>
-#include "quark_candidate.h"
+#include "jet_candidate.h"
 #include "lepton_candidate.h"
 
 using namespace std;
@@ -16,16 +16,18 @@ class event_candidate {
   
 public:
   event_candidate(std::vector<lepton_candidate*>* Leptons,
-                  std::vector<quark_candidate*>* Quarks,
+                  std::vector<jet_candidate*>* Jets,
                   bool verbose);
   ~event_candidate();
     
+  int c(){return c_;}
   int ch(){return ch_;}
+  float eleMVA(){return eleMVA_;}
+  float muMVA(){return muMVA_;}
+  float tauMVA(){return tauMVA_;}
   TLorentzVector LFVe(){return LFVe_;}
   TLorentzVector LFVmu(){return LFVmu_;}
   TLorentzVector LFVtau(){return LFVtau_;}
-  float llM(){return llM_;}
-  float llDr(){return llDr_;}
         
   Double_t deltaPhi(Double_t phi1, Double_t phi2) {
       Double_t dPhi = phi1 - phi2;
@@ -43,12 +45,14 @@ public:
       
 private:
   
-  int ch_;
+  int c_;//Charges
+  int ch_;//Channel
   std::vector<lepton_candidate*>* Leptons_;
-  std::vector<quark_candidate*>* Quarks_;
-  float llDr_;
-  float llM_;
+  std::vector<jet_candidate*>* Jets_;
   bool verbose_;
+  float eleMVA_;
+  float muMVA_;
+  float tauMVA_;
   TLorentzVector LFVe_;
   TLorentzVector LFVmu_;
   TLorentzVector LFVtau_;

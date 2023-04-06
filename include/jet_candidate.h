@@ -10,11 +10,11 @@
 
 using namespace std;
 //using namespace math;
-class quark_candidate {
+class jet_candidate {
   
 public:
-  quark_candidate(float, float, float, float, int, int, int);
-  ~quark_candidate();
+  jet_candidate(float, float, float, float, int, int, int);
+  ~jet_candidate();
   float pt_;
   float eta_;
   float phi_;
