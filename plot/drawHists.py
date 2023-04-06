@@ -130,8 +130,8 @@ year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
 regions=["ll","llFakeTau","llHadTau","llOther"]
-vars=["eleMVA","muMVA","tauMVA"]
-varsName=["Electron MVA","Muon MVA","Tau MVA"]
+vars=["eleMVA","muMVA","tauMVA","llM","llDr","lep1Pt","lep2Pt"]
+varsName=["Electron MVA","Muon MVA","Tau MVA","m(ll) [GeV]","#DeltaR(ll)","Leading lepton p_{T} [GeV]","Trailing lepton p_{T} [GeV]"]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()

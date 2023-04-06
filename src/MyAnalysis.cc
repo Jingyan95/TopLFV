@@ -34,14 +34,18 @@ int vInd(std::map<TString, std::vector<float>> V, TString name){
 
 void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent)
 {
-  std::vector<TString> charges{"SS", "OS"};//Same-Sign, Opposite-Sign
+  std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{"ll","llFakeTau","llHadTau","llOther"};
   const std::map<TString, std::vector<float>> vars =
      {
        {"eleMVA",       {0,    20,    0,    1}},
        {"muMVA",        {1,    20,    0,    1}},
-       {"tauMVA",       {2,    20,    0,    1}}
+       {"tauMVA",       {2,    20,    0,    1}},
+       {"llM",          {3,    20,    0,    180}},
+       {"llDr",         {4,    20,    0,    4.5}},
+       {"lep1Pt",       {5,    20,    20,   220}},
+       {"lep2Pt",       {6,    20,    20,   220}}
   };
     
   Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(regions.size(),Dim1(vars.size())))));
@@ -131,12 +135,13 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     int isHadTau = 2;//tau MC truth 1->hadronic tau 0->fake tau(jet) 2->other
     for (UInt_t l=0;l<nTau;l++){
         if (l>=16) continue;//Restrict the loop size
-        if(Tau_pt[l]<20 || Tau_eta[l]>2.4) continue;
+        if(Tau_pt[l]<20 || Tau_eta[l]>2.4) continue;//Overlap removal
+        if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
+            event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
         Leptons->push_back(new lepton_candidate(Tau_pt[l],Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
                                                 Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3));
         if ((int)Tau_genPartFlav[l]==5) isHadTau = 1;
         if ((int)Tau_genPartFlav[l]==0) isHadTau = 0;
-        break;
     }
                            
     if (Leptons->size()!=3) {
@@ -168,6 +173,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"eleMVA"), Event->eleMVA(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVA"), Event->muMVA(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"tauMVA"), Event->tauMVA(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llM"), Event->llM(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llDr"), Event->llDr(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1().Pt(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep2Pt"), Event->lep2().Pt(), wgt);
     
     for (int l=0;l<(int)Leptons->size();l++){
       delete (*Leptons)[l];
