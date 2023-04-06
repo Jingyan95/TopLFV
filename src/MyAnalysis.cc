@@ -142,6 +142,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
                                                 Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3));
         if ((int)Tau_genPartFlav[l]==5) isHadTau = 1;
         if ((int)Tau_genPartFlav[l]==0) isHadTau = 0;
+        break;//Only look at the leading tau
     }
                            
     if (Leptons->size()!=3) {
