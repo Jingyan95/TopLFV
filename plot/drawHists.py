@@ -19,25 +19,27 @@ import copy
 import argparse
 TGaxis.SetMaxDigits(2)
     
-def compareSignals(hists, year='2016', ch = "emu", reg = "ll", var = "pt", varname="v", SamplesName=[]):
-    folder='CompareSignals'
+def compareBackgrounds(hists, year='2016', c = "OS", ch = "emu", reg = "ll", var = "mva1", varname="v", SamplesName=[]):
+    folder='compareBackgrounds'
     if not os.path.exists(folder):
        os.makedirs(folder)
     if not os.path.exists(folder + '/' + year):
        os.makedirs(folder  + '/' + year)
-    if not os.path.exists(folder + '/' + year + '/' + ch):
-       os.makedirs(folder + '/' + year + '/' + ch)
-    if not os.path.exists(folder + '/' + year + '/' + ch +'/'+reg):
-       os.makedirs(folder + '/' + year + '/' + ch +'/'+reg)
+    if not os.path.exists(folder + '/' + year + '/' + c):
+       os.makedirs(folder + '/' + year + '/' + c)
+    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch):
+       os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
+    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch +'/'+reg):
+       os.makedirs(folder + '/' + year + '/' + c + '/' + ch +'/'+reg)
 
     canvas = ROOT.TCanvas(year+ch+reg+var,year+ch+reg+var,50,50,865,780)
     canvas.SetGrid();
     canvas.cd()
 
-    legend = ROOT.TLegend(0.01,0.3,1,0.8)
+    legend = ROOT.TLegend(0.1,0.3,1,0.8)
     legend.SetBorderSize(0)
     legend.SetTextFont(42)
-    legend.SetTextSize(0.18)
+    legend.SetTextSize(0.3)
 
     pad1=ROOT.TPad("pad1", "pad1", 0, 0., 0.1, 0.99 , 0)#used for the legend
     pad2=ROOT.TPad("pad2", "pad2", 0.1, 0.0, 1, 1 , 0)#used for the hists
@@ -55,7 +57,7 @@ def compareSignals(hists, year='2016', ch = "emu", reg = "ll", var = "pt", varna
     pad1.SetLogx(ROOT.kFALSE)
     pad2.SetLogx(ROOT.kFALSE)
     pad1.SetLogy(ROOT.kFALSE)
-    pad2.SetLogy(ROOT.kFALSE)
+    pad2.SetLogy(ROOT.kTRUE)
 
     pad2.cd()
     maxi=0
@@ -63,6 +65,7 @@ def compareSignals(hists, year='2016', ch = "emu", reg = "ll", var = "pt", varna
         if hists[n].GetMaximum()>maxi:
            maxi = hists[n].GetMaximum()
         hists[n].SetFillColor(0)
+        hists[n].SetMinimum(0.001)
         legend.AddEntry(hists[n],SamplesName[n],'LP')
     hists[0].SetTitle( '' )
     hists[0].GetYaxis().SetTitle( 'Events' )
@@ -71,12 +74,12 @@ def compareSignals(hists, year='2016', ch = "emu", reg = "ll", var = "pt", varna
     hists[0].GetYaxis().SetLabelSize(0.03)
     hists[0].GetXaxis().SetTitleSize(0.03)
     hists[0].GetYaxis().SetTitleSize(0.03)
-    hists[0].GetYaxis().SetNoExponent()
+#    hists[0].GetYaxis().SetNoExponent()
     hists[0].GetXaxis().SetTitleOffset(1.1)
     hists[0].GetYaxis().SetTitleOffset(1.5)
     hists[0].GetYaxis().SetNdivisions(804)
     hists[0].GetXaxis().SetNdivisions(808)
-    hists[0].GetYaxis().SetRangeUser(0,1.6*maxi)
+    hists[0].GetYaxis().SetRangeUser(0.01,100*maxi)
     hists[0].GetXaxis().SetNoExponent()
     hists[0].Draw('HIST')
     for n,G in enumerate(hists):
@@ -110,7 +113,7 @@ def compareSignals(hists, year='2016', ch = "emu", reg = "ll", var = "pt", varna
     Label_lumi.SetNDC()
     Label_lumi.SetTextFont(42)
     Label_lumi.Draw("same")
-    reg_plot = year +" / "+ch+" / "+reg
+    reg_plot = year + " / " + c + " / " + ch + " / " + reg
     Label_channel = ROOT.TLatex(0.2,0.85,reg_plot)
     Label_channel.SetNDC()
     Label_channel.SetTextSize(0.035)
@@ -118,16 +121,17 @@ def compareSignals(hists, year='2016', ch = "emu", reg = "ll", var = "pt", varna
     Label_channel.Draw("same")
     pad1.cd()
     legend.Draw("same")
-    canvas.Print(folder + '/' + year + '/' + ch + '/' + reg + '/' +var + ".pdf")
+    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' +var + ".pdf")
     del canvas
     gc.collect()
 
 year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
-channels=["emu","etau","mutau","All"];
-regions=["ll","llMl150","llMg150"]
-vars=["LFVePt","LFVmuPt","LFVtauPt","llM","llDr"]
-varsName=["LFV electron p_{T} (GeV)", "LFV muon p_{T} (GeV)", "LFV tau p_{T} (GeV)", "m(ll') (GeV)", "#DeltaR(l,l')"]
+charges=["OS","SS"];
+channels=["ee","emu","mumu"];
+regions=["ll","llFakeTau","llHadTau","llOther"]
+vars=["eleMVA","muMVA","tauMVA"]
+varsName=["Electron MVA","Muon MVA","Tau MVA"]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()
@@ -142,13 +146,14 @@ name = ARGS.NAMETAG
 
 loc = os.path.dirname(sys.path[0])+'/'
 HistAddress = loc + 'hists/'
+#HistAddress = '/afs/cern.ch/work/j/jingyan/Analysis/CMSSW_10_6_4/src/TopLFV/hists/'
 
 for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
        year.append(year_RunII[numyear])
        
-Samples = ['LFVStScalarU.root', 'LFVStScalarC.root', 'LFVStTensorU.root', 'LFVTtScalarU.root']
-SamplesName = ["C_{scalar}^{ll'tu} ST", "C_{scalar}^{ll'tc} ST", "C_{tensor}^{ll'tu} ST", "C_{scalar}^{ll'tu} TT"]
+Samples = ['TTTo2L2Nu.root', 'DYM50.root', 'TTW.root', 'TTH.root']
+SamplesName = ["t#bar{t}", "DY", "t#bar{t}W", "t#bar{t}H"]
 
 colors =  [ROOT.kBlack,ROOT.kRed,ROOT.kGreen,ROOT.kBlue]
 markerStyle =  [20,25,26,27]
@@ -161,19 +166,22 @@ for numyear, nameyear in enumerate(year):
         l1=[]
         Files.append(ROOT.TFile.Open(HistAddress + nameyear+ '_' + Samples[f]))
         print HistAddress + nameyear+ '_' + Samples[f]
-        for numch, namech in enumerate(channels):
+        for numc, namec in enumerate(charges):
             l2=[]
-            for numreg, namereg in enumerate(regions):
+            for numch, namech in enumerate(channels):
                 l3=[]
-                for numvar, namevar in enumerate(vars):
-                    h = Files[f].Get(namech + '_' + namereg + '_' + namevar)
-                    h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
-                    h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
-                    h.SetLineColor(colors[f])
-                    h.SetLineWidth(2)
-                    h.SetMarkerColor(colors[f])
-                    h.SetMarkerStyle(markerStyle[f])
-                    l3.append(h)
+                for numreg, namereg in enumerate(regions):
+                    l4=[]
+                    for numvar, namevar in enumerate(vars):
+                        h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
+                        h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
+                        h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
+                        h.SetLineColor(colors[f])
+                        h.SetLineWidth(2)
+                        h.SetMarkerColor(colors[f])
+                        h.SetMarkerStyle(markerStyle[f])
+                        l4.append(h)
+                    l3.append(l4)
                 l2.append(l3)
             l1.append(l2)
         l0.append(l1)
@@ -181,13 +189,14 @@ for numyear, nameyear in enumerate(year):
                        
 #Compare different signals
 for numyear, nameyear in enumerate(year):
-    for numch, namech in enumerate(channels):
-        for numreg, namereg in enumerate(regions):
-            for numvar, namevar in enumerate(vars):
-                HH = []
-                for f in range(len(Samples)):
-                    HH.append(Hists[numyear][f][numch][numreg][numvar])
-                compareSignals(HH, nameyear, namech, namereg, namevar, varsName[numvar], SamplesName)
+    for numc, namec in enumerate(charges):
+        for numch, namech in enumerate(channels):
+            for numreg, namereg in enumerate(regions):
+                for numvar, namevar in enumerate(vars):
+                    HH = []
+                    for f in range(len(Samples)):
+                        HH.append(Hists[numyear][f][numc][numch][numreg][numvar])
+                    compareBackgrounds(HH, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
 
 
