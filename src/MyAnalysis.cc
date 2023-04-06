@@ -104,14 +104,16 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     for (UInt_t l=0;l<nElectron;l++){
         if (l>=16) continue;//Restrict the loop size
         eleEta = Electron_eta[l] + Electron_deltaEtaSC[l];
-        if(Electron_pt[l]<20 || eleEta > 2.4 || (eleEta>1.4442 && eleEta<1.566)) continue;
+        if (Electron_pt[l]<20 || eleEta > 2.4 || (eleEta>1.4442 && eleEta<1.566)) continue;
+        if (Electron_sip3d[l]>15) continue;
         Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],
                            Electron_phi[l],Electron_charge[l],0,0,0,l,1));
     }
                            
     for (UInt_t l=0;l<nMuon;l++){
         if (l>=16) continue;//Restrict the loop size
-        if(Muon_pt[l]<20 || Muon_eta[l]>2.4) continue;
+        if (Muon_pt[l]<20 || Muon_eta[l]>2.4) continue;
+        if (Muon_sip3d[l]>15 || (!Muon_mediumId[l])) continue;
         Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],
                            Muon_phi[l],Muon_charge[l],0,0,0,l,2));
     }
@@ -135,14 +137,18 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     int isHadTau = 2;//tau MC truth 1->hadronic tau 0->fake tau(jet) 2->other
     for (UInt_t l=0;l<nTau;l++){
         if (l>=16) continue;//Restrict the loop size
-        if(Tau_pt[l]<20 || Tau_eta[l]>2.4) continue;//Overlap removal
+        if (Tau_pt[l]<20 || Tau_eta[l]>2.3) continue;
+        if (Tau_decayMode[l]==5 || Tau_decayMode[l]==6) continue;
+        //The Loosest possible Deep-Tau Working Point
+        if (Tau_idDeepTau2017v2p1VSe[l]<1 || Tau_idDeepTau2017v2p1VSmu[l]<1 || Tau_idDeepTau2017v2p1VSjet[l]<1) continue;
+        //Overlap removal
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
         Leptons->push_back(new lepton_candidate(Tau_pt[l],Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
                                                 Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3));
         if ((int)Tau_genPartFlav[l]==5) isHadTau = 1;
         if ((int)Tau_genPartFlav[l]==0) isHadTau = 0;
-        break;//Only look at the leading tau
+        //break;//Only look at the leading tau
     }
                            
     if (Leptons->size()!=3) {

@@ -61,6 +61,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Float_t         Muon_dz[16];
    Float_t         Muon_segmentComp[16];
    Int_t           Muon_jetIdx[16];
+   Bool_t          Muon_mediumId[16];
     
    UInt_t          nTau;
    Int_t           Tau_charge[16];
@@ -69,9 +70,13 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Float_t         Tau_phi[16];
    Float_t         Tau_mass[16];
    UChar_t         Tau_genPartFlav[16];
+   Int_t           Tau_decayMode[16];
    Float_t         Tau_rawDeepTau2017v2p1VSe[16];
    Float_t         Tau_rawDeepTau2017v2p1VSmu[16];
    Float_t         Tau_rawDeepTau2017v2p1VSjet[16];
+   Int_t           Tau_idDeepTau2017v2p1VSe[16];
+   Int_t           Tau_idDeepTau2017v2p1VSmu[16];
+   Int_t           Tau_idDeepTau2017v2p1VSjet[16];
     
    UInt_t          nJet;
    Float_t         Jet_btagDeepFlavB[16];
@@ -116,6 +121,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Muon_dz;
    TBranch         *b_Muon_segmentComp;
    TBranch         *b_Muon_jetIdx;
+   TBranch         *b_Muon_mediumId;
     
    TBranch         *b_nTau;
    TBranch         *b_Tau_charge;
@@ -124,9 +130,13 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Tau_phi;
    TBranch         *b_Tau_mass;
    TBranch         *b_Tau_genPartFlav;
+   TBranch         *b_Tau_decayMode;
    TBranch         *b_Tau_rawDeepTau2017v2p1VSe;
    TBranch         *b_Tau_rawDeepTau2017v2p1VSmu;
    TBranch         *b_Tau_rawDeepTau2017v2p1VSjet;
+   TBranch         *b_Tau_idDeepTau2017v2p1VSe;
+   TBranch         *b_Tau_idDeepTau2017v2p1VSmu;
+   TBranch         *b_Tau_idDeepTau2017v2p1VSjet;
     
    TBranch         *b_nJet;
    TBranch         *b_Jet_btagDeepFlavB;
@@ -249,6 +259,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Muon_dz", &Muon_dz, &b_Muon_dz);
    fChain->SetBranchAddress("Muon_segmentComp", &Muon_segmentComp, &b_Muon_segmentComp);
    fChain->SetBranchAddress("Muon_jetIdx", &Muon_jetIdx, &b_Muon_jetIdx);
+   fChain->SetBranchAddress("Muon_mediumId", &Muon_mediumId, &b_Muon_mediumId);
     
    fChain->SetBranchAddress("Tau_charge", &Tau_charge, &b_Tau_charge);
    fChain->SetBranchAddress("Tau_pt", &Tau_pt, &b_Tau_pt);
@@ -256,9 +267,13 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Tau_phi", &Tau_phi, &b_Tau_phi);
    fChain->SetBranchAddress("Tau_mass", &Tau_mass, &b_Tau_mass);
    fChain->SetBranchAddress("Tau_genPartFlav", &Tau_genPartFlav, &b_Tau_genPartFlav);
+   fChain->SetBranchAddress("Tau_decayMode", &Tau_decayMode, &b_Tau_decayMode);
    fChain->SetBranchAddress("Tau_rawDeepTau2017v2p1VSe", &Tau_rawDeepTau2017v2p1VSe, &b_Tau_rawDeepTau2017v2p1VSe);
    fChain->SetBranchAddress("Tau_rawDeepTau2017v2p1VSmu", &Tau_rawDeepTau2017v2p1VSmu, &b_Tau_rawDeepTau2017v2p1VSmu);
    fChain->SetBranchAddress("Tau_rawDeepTau2017v2p1VSjet", &Tau_rawDeepTau2017v2p1VSjet, &b_Tau_rawDeepTau2017v2p1VSjet);
+   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", &Tau_idDeepTau2017v2p1VSe, &b_Tau_idDeepTau2017v2p1VSe);
+   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", &Tau_idDeepTau2017v2p1VSmu, &b_Tau_idDeepTau2017v2p1VSmu);
+   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
     
    fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
    fChain->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB, &b_Jet_btagDeepFlavB);

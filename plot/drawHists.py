@@ -145,8 +145,8 @@ verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
 
 loc = os.path.dirname(sys.path[0])+'/'
-HistAddress = loc + 'hists/'
-#HistAddress = '/afs/cern.ch/work/j/jingyan/Analysis/CMSSW_10_6_4/src/TopLFV/hists/'
+#HistAddress = loc + 'hists/'
+HistAddress = '/afs/cern.ch/work/j/jingyan/Analysis/CMSSW_10_6_4/src/TopLFV/hists/'
 
 for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
