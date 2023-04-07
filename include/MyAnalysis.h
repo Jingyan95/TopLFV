@@ -74,9 +74,9 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Float_t         Tau_rawDeepTau2017v2p1VSe[16];
    Float_t         Tau_rawDeepTau2017v2p1VSmu[16];
    Float_t         Tau_rawDeepTau2017v2p1VSjet[16];
-   Int_t           Tau_idDeepTau2017v2p1VSe[16];
-   Int_t           Tau_idDeepTau2017v2p1VSmu[16];
-   Int_t           Tau_idDeepTau2017v2p1VSjet[16];
+   UChar_t         Tau_idDeepTau2017v2p1VSe[16];
+   UChar_t         Tau_idDeepTau2017v2p1VSmu[16];
+   UChar_t         Tau_idDeepTau2017v2p1VSjet[16];
     
    UInt_t          nJet;
    Float_t         Jet_btagDeepFlavB[16];
@@ -261,6 +261,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Muon_jetIdx", &Muon_jetIdx, &b_Muon_jetIdx);
    fChain->SetBranchAddress("Muon_mediumId", &Muon_mediumId, &b_Muon_mediumId);
     
+   fChain->SetBranchAddress("nTau", &nTau, &b_nTau);
    fChain->SetBranchAddress("Tau_charge", &Tau_charge, &b_Tau_charge);
    fChain->SetBranchAddress("Tau_pt", &Tau_pt, &b_Tau_pt);
    fChain->SetBranchAddress("Tau_eta", &Tau_eta, &b_Tau_eta);
