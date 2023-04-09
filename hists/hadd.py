@@ -33,7 +33,7 @@ if name == 'All' or name == '2018':
 
 for key, value in SAMPLES.items():
     year = value[3]
-    os.system('rm '+ key + '.root')
+    os.system('rm -f '+ key + '.root')
     nf = value[8]
     hadd='hadd ' + key + '.root '
     for idx, S in enumerate(value[0]):
