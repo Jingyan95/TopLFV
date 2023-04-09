@@ -64,11 +64,33 @@ for key, value in SAMPLES.items():
     if name  not in key:
        continue
     nf = value[8]
+    if not os.path.exists('Jobs/'+key):
+       os.makedirs('Jobs/'+key)
     for idx, S in enumerate(value[0]):
+        SHNAME = key +'_' + str(idx) +'.sh'
+        SHNAME1 = key +'_' + str(idx) +'_$1.C'
+        SHFILE="#!/bin/bash\n" +\
+        "cd "+ cms + "\n"+\
+        "eval `scramv1 runtime -sh`\n"+\
+        "cd "+ dire + "\n"+\
+        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./../include   '+ rootlib11 +' -ldl  -o ' + SHNAME1.split('.')[0] + ' Jobs/' + key + '/' + SHNAME1+ ' ../lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n"+\
+        "./" + SHNAME1.split('.')[0] + "\n"+\
+        'FILE='+ dire_h + value[3] + '/' + key +'_' + str(idx) +'_$1.root'+ "\n"+\
+        'if [ -f "$FILE" ]; then'+ "\n"+\
+        '    rm  ' + SHNAME1.split('.')[0] + "\n"+\
+        'fi'
+        #os.system("writing .sh file")
+        open('Jobs/'+key+'/'+SHNAME, 'wt').write(SHFILE)
+        print "----------------------------------"
+        print 'Writing Jobs/'+key+'/'+SHNAME
+        os.system("chmod +x "+'Jobs/'+key+'/'+SHNAME)
+        print "chmod +x "+'Jobs/'+key+'/'+SHNAME
+        #delete log files
+        os.system("rm -rf "+ S +'log')
         for subdir, dirs, files in os.walk(S):
             sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
-            print value[0]
-            print sequance
+            #print value[0]
+            #print sequance
             for num,  seq in enumerate(sequance):
                 text = ''
                 text += '    TChain* ch    = new TChain("Events") ;\n'
@@ -82,29 +104,9 @@ for key, value in SAMPLES.items():
                 text +\
                 'return 0;' +\
                 '}'
-                open('Jobs/'+SHNAME1, 'wt').write(SHFILE1)
-#                os.system('g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./../include   '+ rootlib11 +' -ldl  -o ' + SHNAME1.split('.')[0] + ' ' + SHNAME1+ ' ../lib/main.so ' + rootlib22 + '  -lMinuit -lMinuit2 -lTreePlayer -lGenVector')
-
-                SHNAME = key +'_' + str(idx) +'_' + str(num) +'.sh'
-                SHFILE="#!/bin/bash\n" +\
-                "cd "+ cms + "\n"+\
-                "eval `scramv1 runtime -sh`\n"+\
-                "cd "+ dire + "\n"+\
-                'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./../include   '+ rootlib11 +' -ldl  -o ' + SHNAME1.split('.')[0] + ' Jobs/' + SHNAME1+ ' ../lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n"+\
-                "./" + SHNAME1.split('.')[0]+ " > Jobs/" + SHNAME1.split('.')[0] + ".log" + "\n"+\
-                'FILE='+ dire_h + value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '.root'+ "\n"+\
-                'if [ -f "$FILE" ]; then'+ "\n"+\
-                '    rm  ' + SHNAME1.split('.')[0] + "\n"+\
-                'fi'
-                #os.system(" mkdir Jobs")
-                open('Jobs/'+SHNAME, 'wt').write(SHFILE)
-                print "wrote file :"
-                print 'Jobs/'+SHNAME
-                os.system("chmod +x "+'Jobs/'+SHNAME)
-                print "chmod +x "+'Jobs/'+SHNAME
-#                os.system("qsub -q localgrid  -o STDOUT/" + SHNAME1.split('.')[0] + ".stdout -e STDERR/" + SHNAME1.split('.')[0] + ".stderr " + SHNAME)
-            break
+                open('Jobs/'+key+'/'+SHNAME1, 'wt').write(SHFILE1)
     if verbose : 
         print key + ' jobs are made'
    
+
 

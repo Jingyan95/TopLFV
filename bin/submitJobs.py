@@ -53,18 +53,6 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-submit = 'universe = vanilla\n' ##writing .sub file
-submit += 'arguments = "$(argument)"\n'
-submit += 'output = submit01.out\n'
-submit += 'error = submit01.err\n'
-submit += 'log = submit01.log\n'
-submit += '+JobFlavour = "espresso"\n' ##finish writing .sh file
-submit += 'queue\n'
-submitName = 'submit01.sub'
-sub1 = open('Jobs/'+submitName,'wt')
-sub1.write(submit+'\n')
-sub1.close()
-
 for key, value in SAMPLES.items():
     if name  not in key:
        continue
@@ -73,10 +61,20 @@ for key, value in SAMPLES.items():
     for idx, S in enumerate(value[0]):
         for subdir, dirs, files in os.walk(S):
             sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
-            for num,  seq in enumerate(sequance):
-                f = key +'_' + str(idx) +'_' + str(num)
-                subprocess.call('rm '+ dire + year + '/' + f + '.root', shell=True)
-                qsub = "condor_submit Jobs/"+ submitName +" executable=Jobs/"+ f + '.sh'
-                subprocess.call(qsub, shell=True)
-            break
+            submit = 'universe = vanilla\n' ##writing .sub file
+            submit += 'executable = Jobs/' + key + '/' + key + '_' + str(idx) + '.sh' + '\n'
+            submit += 'arguments = $(Process)\n'
+            submit += 'output = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).out' + '\n'
+            submit += 'error = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).err' + '\n'
+            submit += 'log = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).log' + '\n'
+            submit += '+JobFlavour = "espresso"\n' ##finish writing .sh file
+            submit += 'queue '+str(len(sequance)) +'\n'
+            submitName = key + '_' + str(idx) + '.sub'
+            sub1 = open('Jobs/'+key+'/'+submitName,'wt')
+            sub1.write(submit+'\n')
+            sub1.close()
+            subprocess.call('rm '+ dire + year + '/' + key +'_' + str(idx) + '_*.root', shell=True)
+            qsub = "condor_submit Jobs/" + key + '/' + submitName 
+            print qsub
+            subprocess.call(qsub, shell=True)
 
