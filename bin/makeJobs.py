@@ -81,7 +81,7 @@ for key, value in SAMPLES.items():
         'fi'
         #os.system("writing .sh file")
         open('Jobs/'+key+'/'+SHNAME, 'wt').write(SHFILE)
-        print "----------------------------------"
+        print "-----------------------------------"
         print 'Writing Jobs/'+key+'/'+SHNAME
         os.system("chmod +x "+'Jobs/'+key+'/'+SHNAME)
         print "chmod +x "+'Jobs/'+key+'/'+SHNAME

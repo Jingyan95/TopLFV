@@ -3,12 +3,14 @@
 #include "lepton_candidate.h"
 #include "jet_candidate.h"
 #include "event_candidate.h"
+#include "fastforest.h"
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <TRandom3.h>
 #include <TLorentzVector.h>
 #include <time.h>
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <vector>
 
@@ -36,17 +38,41 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llFakeTau","llHadTau","llOther"};
+  std::vector<TString> regions{"ll","llOnZ","llOffZ"};
   const std::map<TString, std::vector<float>> vars =
      {
-       {"eleMVA",       {0,    20,    0,    1}},
-       {"muMVA",        {1,    20,    0,    1}},
-       {"tauMVA",       {2,    20,    0,    1}},
-       {"llM",          {3,    20,    0,    180}},
-       {"llDr",         {4,    20,    0,    4.5}},
-       {"lep1Pt",       {5,    20,    20,   220}},
-       {"lep2Pt",       {6,    20,    20,   220}}
-  };
+       {"llM",              {0,    20,    0,    180}},
+       {"llDr",             {1,    20,    0,    4.5}},
+       {"lep1Pt",           {2,    20,    20,   220}},
+       {"lep2Pt",           {3,    20,    20,   220}},
+       {"elMVAv1Prompt",    {4,    50,    0,    1}},
+       {"elMVAv1HF",        {5,    50,    0,    1}},
+       {"elMVAv1Other",     {6,    50,    0,    1}},
+       {"elMVAv2Prompt",    {7,    50,    0,    1}},
+       {"elMVAv2HF",        {8,    50,    0,    1}},
+       {"elMVAv2Other",     {9,    50,    0,    1}},
+       {"elMVAv3Prompt",    {10,   50,    0,    1}},
+       {"elMVAv3HF",        {11,   50,    0,    1}},
+       {"elMVAv3Other",     {12,   50,    0,    1}},
+       {"muMVAv1Prompt",    {13,   50,    0,    1}},
+       {"muMVAv1HF",        {14,   50,    0,    1}},
+       {"muMVAv1Other",     {15,   50,    0,    1}},
+       {"muMVAv2Prompt",    {16,   50,    0,    1}},
+       {"muMVAv2HF",        {17,   50,    0,    1}},
+       {"muMVAv2Other",     {18,   50,    0,    1}},
+       {"muMVAv3Prompt",    {19,   50,    0,    1}},
+       {"muMVAv3HF",        {20,   50,    0,    1}},
+       {"muMVAv3Other",     {21,   50,    0,    1}},
+       {"taMVAv1Had",       {22,   50,    0,    1}},
+       {"taMVAv1Fake",      {23,   50,    0,    1}},
+       {"taMVAv1Other",     {24,   50,    0,    1}},
+       {"taMVAv2Had",       {25,   50,    0,    1}},
+       {"taMVAv2Fake",      {26,   50,    0,    1}},
+       {"taMVAv2Other",     {27,   50,    0,    1}},
+       {"taMVAv3Had",       {28,   50,    0,    1}},
+       {"taMVAv3Fake",      {29,   50,    0,    1}},
+       {"taMVAv3Other",     {30,   50,    0,    1}}
+    };
     
   Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(regions.size(),Dim1(vars.size())))));
   std::stringstream name;
@@ -66,9 +92,20 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
           }
       }
   }
+
+  std::vector<std::string> features_el_v1{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
+      "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso"};
+  std::vector<std::string> features_el_v2{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
+      "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso", "lostHits"};
+  std::vector<std::string> features_mu{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
+      "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "segmentComp"};
+
+  const auto fastForest_el_v1 = fastforest::load_txt("input/el_TOPUL16_XGB.weights.txt",features_el_v1);
+  const auto fastForest_el_v2 = fastforest::load_txt("input/el_TOPv2UL16_XGB.weights.txt",features_el_v2);
+  const auto fastForest_mu_v1 = fastforest::load_txt("input/mu_TOPUL16_XGB.weights.txt",features_mu);
+  const auto fastForest_mu_v2 = fastforest::load_txt("input/mu_TOPv2UL16_XGB.weights.txt",features_mu);
     
   TFile file_out (fname,"RECREATE");
-  TTree tree_out("analysis","main analysis") ;
     
   std::vector<lepton_candidate*> *Leptons;
   std::vector<jet_candidate*> *Jets;
@@ -106,16 +143,40 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         eleEta = Electron_eta[l] + Electron_deltaEtaSC[l];
         if (Electron_pt[l]<20 || eleEta > 2.4 || (eleEta>1.4442 && eleEta<1.566)) continue;
         if (Electron_sip3d[l]>15) continue;
+        bool electron_jet = (Electron_jetIdx[l]>=0 && Electron_jetIdx[l]<(int)nJet)?true:false;
+        float ptRatio = electron_jet?std::min(1. / (Electron_jetRelIso[l] + 1.), 1.5):1. / (Electron_jetRelIso[l] + 1.);
+        float btag = (electron_jet && Jet_btagDeepFlavB[Electron_jetIdx[l]]>=0)?Jet_btagDeepFlavB[Electron_jetIdx[l]]:0;
+        float dxy = abs(Electron_dxy[l])>0?log(abs(Electron_dxy[l])):0;
+        float dz = abs(Electron_dz[l])>0?log(abs(Electron_dz[l])):0;
+        std::vector<float> input_el_v1{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],
+                                      Electron_miniPFRelIso_chg[l],Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],
+                                      Electron_jetPtRelv2[l],ptRatio,btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l]};
+        std::vector<float> input_el_v2{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],
+                                      Electron_miniPFRelIso_chg[l],Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],
+                                      Electron_jetPtRelv2[l],ptRatio,btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l],(float)Electron_lostHits[l]};
+        float mva1 = 1./(1. + std::exp(-fastForest_el_v1(input_el_v1.data())));
+        float mva2 = 1./(1. + std::exp(-fastForest_el_v2(input_el_v2.data())));
         Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],
-                           Electron_phi[l],Electron_charge[l],0,0,0,l,1));
+           Electron_phi[l],Electron_charge[l],mva1,mva2,0,l,1,(int)Electron_genPartFlav[l]));
+            
     }
                            
     for (UInt_t l=0;l<nMuon;l++){
         if (l>=16) break;//Restrict the loop size
         if (Muon_pt[l]<20 || Muon_eta[l]>2.4) continue;
         if (Muon_sip3d[l]>15 || (!Muon_mediumId[l])) continue;
+        bool muon_jet = (Muon_jetIdx[l]>=0 && Muon_jetIdx[l]<(int)nJet)?true:false;
+        float ptRatio = muon_jet?std::min(1. / (Muon_jetRelIso[l] + 1.), 1.5):1. / (Muon_jetRelIso[l] + 1.);
+        float btag = (muon_jet && Jet_btagDeepFlavB[Muon_jetIdx[l]]>=0)?Jet_btagDeepFlavB[Muon_jetIdx[l]]:0;
+        float dxy = abs(Muon_dxy[l])>0?log(abs(Muon_dxy[l])):0;
+        float dz = abs(Muon_dz[l])>0?log(abs(Muon_dz[l])):0;
+        std::vector<float> input_mu{Muon_pt[l],abs(Muon_eta[l]),(float)Muon_jetNDauCharged[l],
+                                    Muon_miniPFRelIso_chg[l],Muon_miniPFRelIso_all[l]-Muon_miniPFRelIso_chg[l],
+                                    Muon_jetPtRelv2[l],ptRatio,btag,Muon_sip3d[l],dxy,dz,Muon_segmentComp[l]};
+        float mva1 = 1./(1. + std::exp(-fastForest_mu_v1(input_mu.data())));
+        float mva2 = 1./(1. + std::exp(-fastForest_mu_v2(input_mu.data())));
         Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],
-                           Muon_phi[l],Muon_charge[l],0,0,0,l,2));
+            Muon_phi[l],Muon_charge[l],mva1,mva2,0,l,2,(int)Muon_genPartFlav[l]));
     }
                            
     if (Leptons->size()!=2) {
@@ -134,7 +195,6 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
        continue;
     }
 
-    int isHadTau = 2;//tau MC truth 1->hadronic tau 0->fake tau(jet) 2->other
     for (UInt_t l=0;l<nTau;l++){
         if (l>=16) break;//Restrict the loop size
         if (Tau_pt[l]<20 || Tau_eta[l]>2.3) continue;
@@ -145,9 +205,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
         Leptons->push_back(new lepton_candidate(Tau_pt[l],Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
-                                                Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3));
-        if ((int)Tau_genPartFlav[l]==5) isHadTau = 1;
-        if ((int)Tau_genPartFlav[l]==0) isHadTau = 0;
+            Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,(int)Tau_genPartFlav[l]));
         //break;//Only look at the leading tau
     }
                            
@@ -173,17 +231,28 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
       
     reg.push_back(0);
     wgt.push_back(weight_Lumi);
-    reg.push_back(isHadTau+1);
-    wgt.push_back(weight_Lumi);
+    if (Event->OnZ()){
+       reg.push_back(1);
+       wgt.push_back(weight_Lumi);
+    }else{
+       reg.push_back(2);
+       wgt.push_back(weight_Lumi);
+    }
 
     //Start filling histograms
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"eleMVA"), Event->eleMVA(), wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVA"), Event->muMVA(), wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"tauMVA"), Event->tauMVA(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llM"), Event->llM(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llDr"), Event->llDr(), wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1().Pt(), wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep2Pt"), Event->lep2().Pt(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1()->pt_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep2Pt"), Event->lep2()->pt_, wgt);
+    if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv1Prompt")+Event->el1()->truth_, Event->el1()->mva1_, wgt);
+    if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv2Prompt")+Event->el1()->truth_, Event->el1()->mva2_, wgt);
+    if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv3Prompt")+Event->el1()->truth_, Event->el1()->mva3_, wgt);
+    if (Event->ch()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVAv1Prompt")+Event->mu1()->truth_, Event->mu1()->mva1_, wgt);
+    if (Event->ch()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVAv2Prompt")+Event->mu1()->truth_, Event->mu1()->mva2_, wgt);
+    if (Event->ch()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVAv3Prompt")+Event->mu1()->truth_, Event->mu1()->mva3_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv1Had")+Event->ta1()->truth_, Event->ta1()->mva1_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv2Had")+Event->ta1()->truth_, Event->ta1()->mva2_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv3Had")+Event->ta1()->truth_, Event->ta1()->mva3_, wgt);
     
     for (int l=0;l<(int)Leptons->size();l++){
       delete (*Leptons)[l];

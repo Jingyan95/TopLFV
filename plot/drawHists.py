@@ -19,8 +19,8 @@ import copy
 import argparse
 TGaxis.SetMaxDigits(2)
     
-def compareBackgrounds(hists, year='2016', c = "OS", ch = "emu", reg = "ll", var = "mva1", varname="v", SamplesName=[]):
-    folder='compareBackgrounds'
+def CompareBackgrounds(hists, year='2016', c = "OS", ch = "emu", reg = "ll", var = "mva1", varname="v", SamplesName=[]):
+    folder='CompareBackgrounds'
     if not os.path.exists(folder):
        os.makedirs(folder)
     if not os.path.exists(folder + '/' + year):
@@ -129,9 +129,22 @@ year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
-regions=["ll","llFakeTau","llHadTau","llOther"]
-vars=["eleMVA","muMVA","tauMVA","llM","llDr","lep1Pt","lep2Pt"]
-varsName=["Electron MVA","Muon MVA","Tau MVA","m(ll) [GeV]","#DeltaR(ll)","Leading lepton p_{T} [GeV]","Trailing lepton p_{T} [GeV]"]
+regions=["ll","llOnZ","llOffZ"]
+vars=["llM","llDr","lep1Pt","lep2Pt",
+      "elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
+      "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
+      "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other"]
+
+varsName=["m(ll) [GeV]","#DeltaR(ll)","Leading lepton p_{T} [GeV]","Trailing lepton p_{T} [GeV]",
+          "Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
+          "Prompt electron MVA v2","HF electron MVA v2","Other electron MVA v2",
+          "Prompt electron MVA v3","HF electron MVA v3","Other electron MVA v3",
+          "Prompt muon MVA v1","HF muon MVA v1","Other muon MVA v1",
+          "Prompt muon MVA v2","HF muon MVA v2","Other muon MVA v2",
+          "Prompt muon MVA v3","HF muon MVA v3","Other muon MVA v3",
+          "Hadronic tau MVA v1","Fake tau MVA v1","Other tau MVA v1",
+          "Hadronic tau MVA v2","Fake tau MVA v2","Other tau MVA v2",
+          "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3"]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()
@@ -145,8 +158,7 @@ verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
 
 loc = os.path.dirname(sys.path[0])+'/'
-#HistAddress = loc + 'hists/'
-HistAddress = '/afs/cern.ch/work/j/jingyan/Analysis/CMSSW_10_6_4/src/TopLFV/hists/'
+HistAddress = loc + 'hists/'
 
 for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
@@ -164,8 +176,8 @@ for numyear, nameyear in enumerate(year):
     Files = []
     for f in range(len(Samples)):
         l1=[]
-        Files.append(ROOT.TFile.Open(HistAddress + nameyear+ '_' + Samples[f]))
         print HistAddress + nameyear+ '_' + Samples[f]
+        Files.append(ROOT.TFile.Open(HistAddress + nameyear+ '_' + Samples[f]))
         for numc, namec in enumerate(charges):
             l2=[]
             for numch, namech in enumerate(channels):
@@ -196,7 +208,7 @@ for numyear, nameyear in enumerate(year):
                     HH = []
                     for f in range(len(Samples)):
                         HH.append(Hists[numyear][f][numc][numch][numreg][numvar])
-                    compareBackgrounds(HH, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
+                    CompareBackgrounds(HH, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
 
 

@@ -22,16 +22,14 @@ public:
     
   int c(){return c_;}
   int ch(){return ch_;}
-  float eleMVA(){return eleMVA_;}
-  float muMVA(){return muMVA_;}
-  float tauMVA(){return tauMVA_;}
   float llM(){return llM_;}
   float llDr(){return llDr_;}
-  TLorentzVector LFVe(){return LFVe_;}
-  TLorentzVector LFVmu(){return LFVmu_;}
-  TLorentzVector LFVtau(){return LFVtau_;}
-  TLorentzVector lep1(){return lep1_;}
-  TLorentzVector lep2(){return lep2_;}
+  bool OnZ(){return OnZ_;}
+  lepton_candidate* lep1(){return (*Leptons_)[0];}
+  lepton_candidate* lep2(){return (*Leptons_)[1];}
+  lepton_candidate* el1(){return ch_<2?(*Leptons_)[0]:nullptr;}
+  lepton_candidate* mu1(){return ch_>1?(*Leptons_)[0]:ch_>0?(*Leptons_)[1]:nullptr;}
+  lepton_candidate* ta1(){return (*Leptons_)[2];}
         
   static Double_t deltaPhi(Double_t phi1, Double_t phi2) {
       Double_t dPhi = phi1 - phi2;
@@ -54,16 +52,9 @@ private:
   std::vector<jet_candidate*>* Jets_;
   int c_;//Charges
   int ch_;//Channel
-  float eleMVA_;
-  float muMVA_;
-  float tauMVA_;
   float llM_;
   float llDr_;
-  TLorentzVector LFVe_;
-  TLorentzVector LFVmu_;
-  TLorentzVector LFVtau_;
-  TLorentzVector lep1_;
-  TLorentzVector lep2_;
+  bool OnZ_;
       
   float mT_ = 172.5;
   float mZ_ = 91.2;

@@ -36,6 +36,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    UChar_t         Electron_jetNDauCharged[16];
    Float_t         Electron_miniPFRelIso_chg[16];
    Float_t         Electron_miniPFRelIso_all[16];
+   Float_t         Electron_jetRelIso[16];
    Float_t         Electron_jetPtRelv2[16];
    Float_t         Electron_pfRelIso03_all[16];
    Float_t         Electron_sip3d[16];
@@ -44,6 +45,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Float_t         Electron_mvaFall17V2noIso[16];
    UChar_t         Electron_lostHits[16];
    Int_t           Electron_jetIdx[16];
+   UChar_t         Electron_genPartFlav[16];
        
    UInt_t          nMuon;
    Int_t           Muon_charge[16];
@@ -54,6 +56,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    UChar_t         Muon_jetNDauCharged[16];
    Float_t         Muon_miniPFRelIso_chg[16];
    Float_t         Muon_miniPFRelIso_all[16];
+   Float_t         Muon_jetRelIso[16];
    Float_t         Muon_jetPtRelv2[16];
    Float_t         Muon_pfRelIso03_all[16];
    Float_t         Muon_sip3d[16];
@@ -62,6 +65,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Float_t         Muon_segmentComp[16];
    Int_t           Muon_jetIdx[16];
    Bool_t          Muon_mediumId[16];
+   UChar_t         Muon_genPartFlav[16];
     
    UInt_t          nTau;
    Int_t           Tau_charge[16];
@@ -96,6 +100,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Electron_jetNDauCharged;
    TBranch         *b_Electron_miniPFRelIso_chg;
    TBranch         *b_Electron_miniPFRelIso_all;
+   TBranch         *b_Electron_jetRelIso;
    TBranch         *b_Electron_jetPtRelv2;
    TBranch         *b_Electron_pfRelIso03_all;
    TBranch         *b_Electron_sip3d;
@@ -104,6 +109,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Electron_mvaFall17V2noIso;
    TBranch         *b_Electron_lostHits;
    TBranch         *b_Electron_jetIdx;
+   TBranch         *b_Electron_genPartFlav;
         
    TBranch         *b_nMuon;
    TBranch         *b_Muon_charge;
@@ -114,6 +120,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Muon_jetNDauCharged;
    TBranch         *b_Muon_miniPFRelIso_chg;
    TBranch         *b_Muon_miniPFRelIso_all;
+   TBranch         *b_Muon_jetRelIso;
    TBranch         *b_Muon_jetPtRelv2;
    TBranch         *b_Muon_pfRelIso03_all;
    TBranch         *b_Muon_sip3d;
@@ -122,6 +129,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Muon_segmentComp;
    TBranch         *b_Muon_jetIdx;
    TBranch         *b_Muon_mediumId;
+   TBranch         *b_Muon_genPartFlav;
     
    TBranch         *b_nTau;
    TBranch         *b_Tau_charge;
@@ -234,6 +242,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Electron_jetNDauCharged", &Electron_jetNDauCharged, &b_Electron_jetNDauCharged);
    fChain->SetBranchAddress("Electron_miniPFRelIso_chg", &Electron_miniPFRelIso_chg, &b_Electron_miniPFRelIso_chg);
    fChain->SetBranchAddress("Electron_miniPFRelIso_all", &Electron_miniPFRelIso_all, &b_Electron_miniPFRelIso_all);
+   fChain->SetBranchAddress("Electron_jetRelIso", &Electron_jetRelIso, &b_Electron_jetRelIso);
    fChain->SetBranchAddress("Electron_jetPtRelv2", &Electron_jetPtRelv2, &b_Electron_jetPtRelv2);
    fChain->SetBranchAddress("Electron_pfRelIso03_all", &Electron_pfRelIso03_all, &b_Electron_pfRelIso03_all);
    fChain->SetBranchAddress("Electron_sip3d", &Electron_sip3d, &b_Electron_sip3d);
@@ -242,6 +251,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Electron_mvaFall17V2noIso", &Electron_mvaFall17V2noIso, &b_Electron_mvaFall17V2noIso);
    fChain->SetBranchAddress("Electron_lostHits", &Electron_lostHits, &b_Electron_lostHits);
    fChain->SetBranchAddress("Electron_jetIdx", &Electron_jetIdx, &b_Electron_jetIdx);
+   fChain->SetBranchAddress("Electron_genPartFlav", &Electron_genPartFlav, &b_Electron_genPartFlav);
     
    fChain->SetBranchAddress("nMuon", &nMuon, &b_nMuon);
    fChain->SetBranchAddress("Muon_charge", &Muon_charge, &b_Muon_charge);
@@ -252,6 +262,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Muon_jetNDauCharged", &Muon_jetNDauCharged, &b_Muon_jetNDauCharged);
    fChain->SetBranchAddress("Muon_miniPFRelIso_chg", &Muon_miniPFRelIso_chg, &b_Muon_miniPFRelIso_chg);
    fChain->SetBranchAddress("Muon_miniPFRelIso_all", &Muon_miniPFRelIso_all, &b_Muon_miniPFRelIso_all);
+   fChain->SetBranchAddress("Muon_jetRelIso", &Muon_jetRelIso, &b_Muon_jetRelIso);
    fChain->SetBranchAddress("Muon_jetPtRelv2", &Muon_jetPtRelv2, &b_Muon_jetPtRelv2);
    fChain->SetBranchAddress("Muon_pfRelIso03_all", &Muon_pfRelIso03_all, &b_Muon_pfRelIso03_all);
    fChain->SetBranchAddress("Muon_sip3d", &Muon_sip3d, &b_Muon_sip3d);
@@ -260,6 +271,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Muon_segmentComp", &Muon_segmentComp, &b_Muon_segmentComp);
    fChain->SetBranchAddress("Muon_jetIdx", &Muon_jetIdx, &b_Muon_jetIdx);
    fChain->SetBranchAddress("Muon_mediumId", &Muon_mediumId, &b_Muon_mediumId);
+   fChain->SetBranchAddress("Muon_genPartFlav", &Muon_genPartFlav, &b_Muon_genPartFlav);
     
    fChain->SetBranchAddress("nTau", &nTau, &b_nTau);
    fChain->SetBranchAddress("Tau_charge", &Tau_charge, &b_Tau_charge);
