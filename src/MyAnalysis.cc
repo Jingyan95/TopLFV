@@ -92,18 +92,19 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
           }
       }
   }
-
+  //Feature list
   std::vector<std::string> features_el_v1{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso"};
   std::vector<std::string> features_el_v2{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso", "lostHits"};
   std::vector<std::string> features_mu{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "segmentComp"};
-
-  const auto fastForest_el_v1 = fastforest::load_txt("input/el_TOPUL16_XGB.weights.txt",features_el_v1);
-  const auto fastForest_el_v2 = fastforest::load_txt("input/el_TOPv2UL16_XGB.weights.txt",features_el_v2);
-  const auto fastForest_mu_v1 = fastforest::load_txt("input/mu_TOPUL16_XGB.weights.txt",features_mu);
-  const auto fastForest_mu_v2 = fastforest::load_txt("input/mu_TOPv2UL16_XGB.weights.txt",features_mu);
+  //Load xgboost model
+  std::string string_year(year.Data());
+  const auto fastForest_el_v1 = fastforest::load_txt("input/el_TOPUL"+string_year+"_XGB.weights.txt",features_el_v1);
+  const auto fastForest_el_v2 = fastforest::load_txt("input/el_TOPv2UL"+string_year+"_XGB.weights.txt",features_el_v2);
+  const auto fastForest_mu_v1 = fastforest::load_txt("input/mu_TOPUL"+string_year+"_XGB.weights.txt",features_mu);
+  const auto fastForest_mu_v2 = fastforest::load_txt("input/mu_TOPv2UL"+string_year+"_XGB.weights.txt",features_mu);
     
   TFile file_out (fname,"RECREATE");
     
@@ -157,8 +158,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         float mva1 = 1./(1. + std::exp(-fastForest_el_v1(input_el_v1.data())));
         float mva2 = 1./(1. + std::exp(-fastForest_el_v2(input_el_v2.data())));
         Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],
-           Electron_phi[l],Electron_charge[l],mva1,mva2,0,l,1,(int)Electron_genPartFlav[l]));
-            
+            Electron_phi[l],Electron_charge[l],mva1,mva2,0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:0));          
     }
                            
     for (UInt_t l=0;l<nMuon;l++){
@@ -176,7 +176,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         float mva1 = 1./(1. + std::exp(-fastForest_mu_v1(input_mu.data())));
         float mva2 = 1./(1. + std::exp(-fastForest_mu_v2(input_mu.data())));
         Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],
-            Muon_phi[l],Muon_charge[l],mva1,mva2,0,l,2,(int)Muon_genPartFlav[l]));
+            Muon_phi[l],Muon_charge[l],mva1,mva2,0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:0));
     }
                            
     if (Leptons->size()!=2) {
@@ -205,7 +205,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
         Leptons->push_back(new lepton_candidate(Tau_pt[l],Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
-            Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,(int)Tau_genPartFlav[l]));
+            Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,data=="mc"?(int)Tau_genPartFlav[l]:0));
         //break;//Only look at the leading tau
     }
                            
