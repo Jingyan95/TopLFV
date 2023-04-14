@@ -38,40 +38,44 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llOnZ","llOffZ"};
+  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1"};
   const std::map<TString, std::vector<float>> vars =
-     {
-       {"llM",              {0,    20,    0,    180}},
-       {"llDr",             {1,    20,    0,    4.5}},
-       {"lep1Pt",           {2,    20,    20,   220}},
-       {"lep2Pt",           {3,    20,    20,   220}},
-       {"elMVAv1Prompt",    {4,    50,    0,    1}},
-       {"elMVAv1HF",        {5,    50,    0,    1}},
-       {"elMVAv1Other",     {6,    50,    0,    1}},
-       {"elMVAv2Prompt",    {7,    50,    0,    1}},
-       {"elMVAv2HF",        {8,    50,    0,    1}},
-       {"elMVAv2Other",     {9,    50,    0,    1}},
-       {"elMVAv3Prompt",    {10,   50,    0,    1}},
-       {"elMVAv3HF",        {11,   50,    0,    1}},
-       {"elMVAv3Other",     {12,   50,    0,    1}},
-       {"muMVAv1Prompt",    {13,   50,    0,    1}},
-       {"muMVAv1HF",        {14,   50,    0,    1}},
-       {"muMVAv1Other",     {15,   50,    0,    1}},
-       {"muMVAv2Prompt",    {16,   50,    0,    1}},
-       {"muMVAv2HF",        {17,   50,    0,    1}},
-       {"muMVAv2Other",     {18,   50,    0,    1}},
-       {"muMVAv3Prompt",    {19,   50,    0,    1}},
-       {"muMVAv3HF",        {20,   50,    0,    1}},
-       {"muMVAv3Other",     {21,   50,    0,    1}},
-       {"taMVAv1Had",       {22,   50,    0,    1}},
-       {"taMVAv1Fake",      {23,   50,    0,    1}},
-       {"taMVAv1Other",     {24,   50,    0,    1}},
-       {"taMVAv2Had",       {25,   50,    0,    1}},
-       {"taMVAv2Fake",      {26,   50,    0,    1}},
-       {"taMVAv2Other",     {27,   50,    0,    1}},
-       {"taMVAv3Had",       {28,   50,    0,    1}},
-       {"taMVAv3Fake",      {29,   50,    0,    1}},
-       {"taMVAv3Other",     {30,   50,    0,    1}}
+    {
+        {"elMVAv1Prompt",    {0,    50,    0,    1}},
+        {"elMVAv1HF",        {1,    50,    0,    1}},
+        {"elMVAv1Other",     {2,    50,    0,    1}},
+        {"elMVAv2Prompt",    {3,    50,    0,    1}},
+        {"elMVAv2HF",        {4,    50,    0,    1}},
+        {"elMVAv2Other",     {5,    50,    0,    1}},
+        {"elMVAv3Prompt",    {6,    50,    0,    1}},
+        {"elMVAv3HF",        {7,    50,    0,    1}},
+        {"elMVAv3Other",     {8,    50,    0,    1}},
+        {"muMVAv1Prompt",    {9,    50,    0,    1}},
+        {"muMVAv1HF",        {10,   50,    0,    1}},
+        {"muMVAv1Other",     {11,   50,    0,    1}},
+        {"muMVAv2Prompt",    {12,   50,    0,    1}},
+        {"muMVAv2HF",        {13,   50,    0,    1}},
+        {"muMVAv2Other",     {14,   50,    0,    1}},
+        {"muMVAv3Prompt",    {15,   50,    0,    1}},
+        {"muMVAv3HF",        {16,   50,    0,    1}},
+        {"muMVAv3Other",     {17,   50,    0,    1}},
+        {"taMVAv1Had",       {18,   50,    0,    1}},
+        {"taMVAv1Fake",      {19,   50,    0,    1}},
+        {"taMVAv1Other",     {20,   50,    0,    1}},
+        {"taMVAv2Had",       {21,   50,    0,    1}},
+        {"taMVAv2Fake",      {22,   50,    0,    1}},
+        {"taMVAv2Other",     {23,   50,    0,    1}},
+        {"taMVAv3Had",       {24,   50,    0,    1}},
+        {"taMVAv3Fake",      {25,   50,    0,    1}},
+        {"taMVAv3Other",     {26,   50,    0,    1}},
+        {"llM",              {27,   20,    0,    180}},
+        {"llDr",             {28,   20,    0,    4.5}},
+        {"lep1Pt",           {29,   20,    20,   220}},
+        {"lep2Pt",           {30,   20,    20,   220}},
+        {"lep3Pt",           {31,   20,    20,   320}},
+        {"jet1Pt",           {32,   20,    30,   330}},
+        {"njet",             {33,   6,     0,    6}},
+        {"nbjet",            {34,   4,     0,    4}}
     };
     
   Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(regions.size(),Dim1(vars.size())))));
@@ -115,6 +119,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   std::vector<float> wgt;
   float eleEta;
   float weight_Lumi;
+  int nbjet;
   int nAccept=0;
     
   if (fChain == 0) return;
@@ -138,63 +143,60 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
       
     //Lepton selection
     Leptons = new std::vector<lepton_candidate*>();
-    Jets =  new std::vector<jet_candidate*>();
     for (UInt_t l=0;l<nElectron;l++){
         if (l>=16) break;//Restrict the loop size
-        eleEta = Electron_eta[l] + Electron_deltaEtaSC[l];
+        eleEta = abs(Electron_eta[l] + Electron_deltaEtaSC[l]);
         if (Electron_pt[l]<20 || eleEta > 2.4 || (eleEta>1.4442 && eleEta<1.566)) continue;
         if (Electron_sip3d[l]>15) continue;
+        if (Electron_sip3d[l]>8 || abs(Electron_dxy[l])>0.05 || abs(Electron_dz[l])>0.1) continue;
+        if (Electron_miniPFRelIso_all[l]>0.4 || (int)Electron_lostHits[l]>1) continue;
         bool electron_jet = (Electron_jetIdx[l]>=0 && Electron_jetIdx[l]<(int)nJet)?true:false;
         float ptRatio = electron_jet?std::min(1. / (Electron_jetRelIso[l] + 1.), 1.5):1. / (Electron_jetRelIso[l] + 1.);
         float btag = (electron_jet && Jet_btagDeepFlavB[Electron_jetIdx[l]]>=0)?Jet_btagDeepFlavB[Electron_jetIdx[l]]:0;
         float dxy = abs(Electron_dxy[l])>0?log(abs(Electron_dxy[l])):0;
         float dz = abs(Electron_dz[l])>0?log(abs(Electron_dz[l])):0;
-        std::vector<float> input_el_v1{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],
-                                      Electron_miniPFRelIso_chg[l],Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],
-                                      Electron_jetPtRelv2[l],ptRatio,btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l]};
-        std::vector<float> input_el_v2{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],
-                                      Electron_miniPFRelIso_chg[l],Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],
-                                      Electron_jetPtRelv2[l],ptRatio,btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l],(float)Electron_lostHits[l]};
+        std::vector<float> input_el_v1{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],Electron_miniPFRelIso_chg[l],
+                                       Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],Electron_jetPtRelv2[l],ptRatio,
+                                       Electron_pfRelIso03_all[l],btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l]};
+        std::vector<float> input_el_v2{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],Electron_miniPFRelIso_chg[l],
+                                       Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],Electron_jetPtRelv2[l],ptRatio,
+                                       Electron_pfRelIso03_all[l],btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l],(float)Electron_lostHits[l]};
         float mva1 = 1./(1. + std::exp(-fastForest_el_v1(input_el_v1.data())));
         float mva2 = 1./(1. + std::exp(-fastForest_el_v2(input_el_v2.data())));
         Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],
-            Electron_phi[l],Electron_charge[l],mva1,mva2,0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:0));          
+            Electron_phi[l],Electron_charge[l],mva1,mva2,0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:1));         
     }
                            
     for (UInt_t l=0;l<nMuon;l++){
         if (l>=16) break;//Restrict the loop size
-        if (Muon_pt[l]<20 || Muon_eta[l]>2.4) continue;
+        if (Muon_pt[l]<20 || abs(Muon_eta[l])>2.4) continue;
         if (Muon_sip3d[l]>15 || (!Muon_mediumId[l])) continue;
+        if (Muon_sip3d[l]>8 || abs(Muon_dxy[l])>0.05 || abs(Muon_dz[l])>0.1) continue;
+        if (Muon_miniPFRelIso_all[l]>0.4) continue;
         bool muon_jet = (Muon_jetIdx[l]>=0 && Muon_jetIdx[l]<(int)nJet)?true:false;
         float ptRatio = muon_jet?std::min(1. / (Muon_jetRelIso[l] + 1.), 1.5):1. / (Muon_jetRelIso[l] + 1.);
         float btag = (muon_jet && Jet_btagDeepFlavB[Muon_jetIdx[l]]>=0)?Jet_btagDeepFlavB[Muon_jetIdx[l]]:0;
         float dxy = abs(Muon_dxy[l])>0?log(abs(Muon_dxy[l])):0;
         float dz = abs(Muon_dz[l])>0?log(abs(Muon_dz[l])):0;
-        std::vector<float> input_mu{Muon_pt[l],abs(Muon_eta[l]),(float)Muon_jetNDauCharged[l],
-                                    Muon_miniPFRelIso_chg[l],Muon_miniPFRelIso_all[l]-Muon_miniPFRelIso_chg[l],
-                                    Muon_jetPtRelv2[l],ptRatio,btag,Muon_sip3d[l],dxy,dz,Muon_segmentComp[l]};
+        std::vector<float> input_mu{Muon_pt[l],abs(Muon_eta[l]),(float)Muon_jetNDauCharged[l],Muon_miniPFRelIso_chg[l],
+                                    Muon_miniPFRelIso_all[l]-Muon_miniPFRelIso_chg[l],Muon_jetPtRelv2[l],ptRatio,
+                                    Muon_pfRelIso03_all[l],btag,Muon_sip3d[l],dxy,dz,Muon_segmentComp[l]};
         float mva1 = 1./(1. + std::exp(-fastForest_mu_v1(input_mu.data())));
         float mva2 = 1./(1. + std::exp(-fastForest_mu_v2(input_mu.data())));
         Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],
-            Muon_phi[l],Muon_charge[l],mva1,mva2,0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:0));
+            Muon_phi[l],Muon_charge[l],mva1,mva2,0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
     }
                            
     if (Leptons->size()!=2) {
-       for (int l=0;l<(int)Leptons->size();l++){
-           delete (*Leptons)[l];
-       }
-       for (int l=0;l<(int)Jets->size();l++){
-           delete (*Jets)[l];
-       }
-       Leptons->clear();
-       Leptons->shrink_to_fit();
-       delete Leptons;
-       Jets->clear();
-       Jets->shrink_to_fit();
-       delete Jets;
-       continue;
+        for (int l=0;l<(int)Leptons->size();l++){
+            delete (*Leptons)[l];
+        }
+        Leptons->clear();
+        Leptons->shrink_to_fit();
+        delete Leptons;
+        continue;
     }
-
+    //Tau selection
     for (UInt_t l=0;l<nTau;l++){
         if (l>=16) break;//Restrict the loop size
         if (Tau_pt[l]<20 || Tau_eta[l]>2.3) continue;
@@ -205,26 +207,39 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
         Leptons->push_back(new lepton_candidate(Tau_pt[l],Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
-            Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,data=="mc"?(int)Tau_genPartFlav[l]:0));
+            Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,data=="mc"?(int)Tau_genPartFlav[l]:5));
         //break;//Only look at the leading tau
     }
                            
     if (Leptons->size()!=3) {
-       for (int l=0;l<(int)Leptons->size();l++){
-           delete (*Leptons)[l];
-       }
-       for (int l=0;l<(int)Jets->size();l++){
-           delete (*Jets)[l];
-       }
-       Leptons->clear();
-       Leptons->shrink_to_fit();
-       delete Leptons;
-       Jets->clear();
-       Jets->shrink_to_fit();
-       delete Jets;
-       continue;
+        for (int l=0;l<(int)Leptons->size();l++){
+            delete (*Leptons)[l];
+        }
+        Leptons->clear();
+        Leptons->shrink_to_fit();
+        delete Leptons;
+        continue;
     }
-                           
+
+    nbjet = 0;
+    Jets =  new std::vector<jet_candidate*>();
+    for (UInt_t l=0;l<nJet;l++){
+        if (l>=16) break;//Restrict the loop size
+        if (Jet_pt[l]<30 || Jet_eta[l]>2.4) continue;
+        if (((int)Jet_puId[l]<=0 && Jet_pt[l]<50)|| (int)Jet_jetId[l]<=0) continue;
+        //Overlap removal
+        if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Jet_eta[l],Jet_phi[l])<0.4 ||
+            event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Jet_eta[l],Jet_phi[l])<0.4 ||
+            event_candidate::deltaR((*Leptons)[2]->eta_,(*Leptons)[2]->phi_,Jet_eta[l],Jet_phi[l])<0.4) continue;
+        float JetEnergy;
+        TLorentzVector* jet_temp = new TLorentzVector() ;
+        jet_temp->SetPtEtaPhiM(Jet_pt[l],Jet_eta[l],Jet_phi[l],Jet_mass[l]);
+        JetEnergy = jet_temp->Energy() ;
+        Jets->push_back(new jet_candidate(Jet_pt[l],Jet_eta[l],Jet_phi[l],JetEnergy,Jet_btagDeepFlavB[l],year,0));
+        if ((*Jets)[Jets->size()-1]->btag_) nbjet++;
+        //break;//Only look at the leading tau
+    }
+
     Event = new event_candidate(Leptons,Jets,verbose_);//Reconstruction of heavy particles
     //lumi xs weights
     if (data == "mc") weight_Lumi = (1000*xs*lumi)/Nevent;
@@ -232,18 +247,22 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     reg.push_back(0);
     wgt.push_back(weight_Lumi);
     if (Event->OnZ()){
-       reg.push_back(1);
-       wgt.push_back(weight_Lumi);
+        reg.push_back(1);
+        wgt.push_back(weight_Lumi);
     }else{
-       reg.push_back(2);
-       wgt.push_back(weight_Lumi);
+        reg.push_back(2);
+        wgt.push_back(weight_Lumi);
+        if (Event->njet()>0){
+            reg.push_back(3);
+            wgt.push_back(weight_Lumi);
+            if (Event->nbjet()<2){
+                reg.push_back(4);
+                wgt.push_back(weight_Lumi);
+            }
+        }
     }
 
     //Start filling histograms
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llM"), Event->llM(), wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llDr"), Event->llDr(), wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1()->pt_, wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep2Pt"), Event->lep2()->pt_, wgt);
     if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv1Prompt")+Event->el1()->truth_, Event->el1()->mva1_, wgt);
     if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv2Prompt")+Event->el1()->truth_, Event->el1()->mva2_, wgt);
     if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv3Prompt")+Event->el1()->truth_, Event->el1()->mva3_, wgt);
@@ -253,6 +272,14 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv1Had")+Event->ta1()->truth_, Event->ta1()->mva1_, wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv2Had")+Event->ta1()->truth_, Event->ta1()->mva2_, wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv3Had")+Event->ta1()->truth_, Event->ta1()->mva3_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llM"), Event->llM(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llDr"), Event->llDr(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1()->pt_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep2Pt"), Event->lep2()->pt_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep3Pt"), Event->lep3()->pt_, wgt);
+    if (Event->njet()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"jet1Pt"), Event->jet1()->pt_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"njet"), Event->njet(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"nbjet"), Event->nbjet(), wgt);
     
     for (int l=0;l<(int)Leptons->size();l++){
       delete (*Leptons)[l];
@@ -288,7 +315,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 }
 
 void MyAnalysis::FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight){
-  for (int i = 0; i < v2.size(); ++i) {
-    H4[v0][v1][v2[i]][v3]->Fill(value, weight[i]);
-  }
+    for (int i = 0; i < v2.size(); ++i) {
+        H4[v0][v1][v2[i]][v3]->Fill(value, weight[i]);
+    }
 }

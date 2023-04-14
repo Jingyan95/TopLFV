@@ -13,16 +13,21 @@ using namespace std;
 class jet_candidate {
   
 public:
-  jet_candidate(float, float, float, float, int, int, int);
+  jet_candidate(float, float, float, float, float, TString, int );
   ~jet_candidate();
   float pt_;
   float eta_;
   float phi_;
-  float mass_;
-  int pdgid_;
-  int mother_idx_;
-  int mother_pdgid_;
+  int flavor_;
+  int btag_;
+  float bt_; //b-tagging score
+  int isb(float, TString);
+  int isbajet; // jet coming from standard top 
+  void setbajet(){
+       isbajet=1;
+  }
   TLorentzVector p4_;
+
 
 private:
   

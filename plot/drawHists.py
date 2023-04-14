@@ -129,14 +129,13 @@ year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
-regions=["ll","llOnZ","llOffZ"]
-vars=["llM","llDr","lep1Pt","lep2Pt",
-      "elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
+regions=["ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1"]
+vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
       "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
-      "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other"]
+      "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
+      "llM","llDr","lep1Pt","lep2Pt","lep3Pt","jet1Pt","njet","nbjet"]
 
-varsName=["m(ll) [GeV]","#DeltaR(ll)","Leading lepton p_{T} [GeV]","Trailing lepton p_{T} [GeV]",
-          "Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
+varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
           "Prompt electron MVA v2","HF electron MVA v2","Other electron MVA v2",
           "Prompt electron MVA v3","HF electron MVA v3","Other electron MVA v3",
           "Prompt muon MVA v1","HF muon MVA v1","Other muon MVA v1",
@@ -144,7 +143,10 @@ varsName=["m(ll) [GeV]","#DeltaR(ll)","Leading lepton p_{T} [GeV]","Trailing lep
           "Prompt muon MVA v3","HF muon MVA v3","Other muon MVA v3",
           "Hadronic tau MVA v1","Fake tau MVA v1","Other tau MVA v1",
           "Hadronic tau MVA v2","Fake tau MVA v2","Other tau MVA v2",
-          "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3"]
+          "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3",
+          "m(ll) [GeV]","#DeltaR(ll)","1st lepton p_{T} [GeV]",
+          "2nd lepton p_{T} [GeV]","Tau p_{T} [GeV]",
+          "Leading jet p_{T} [GeV]", "njet", "nbjet"]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()

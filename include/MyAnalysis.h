@@ -83,6 +83,12 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    UChar_t         Tau_idDeepTau2017v2p1VSjet[16];
     
    UInt_t          nJet;
+   Float_t         Jet_pt[16];
+   Float_t         Jet_eta[16];
+   Float_t         Jet_phi[16];
+   Float_t         Jet_mass[16];
+   Int_t           Jet_puId[16];
+   Int_t           Jet_jetId[16];
    Float_t         Jet_btagDeepFlavB[16];
     
    // List of branches
@@ -147,6 +153,12 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Tau_idDeepTau2017v2p1VSjet;
     
    TBranch         *b_nJet;
+   TBranch         *b_Jet_pt;
+   TBranch         *b_Jet_eta;
+   TBranch         *b_Jet_phi;
+   TBranch         *b_Jet_mass;
+   TBranch         *b_Jet_puId;
+   TBranch         *b_Jet_jetId;
    TBranch         *b_Jet_btagDeepFlavB;
     
    MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", bool verbose_=false);
@@ -289,6 +301,12 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
     
    fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
+   fChain->SetBranchAddress("Jet_pt", &Jet_pt, &b_Jet_pt);
+   fChain->SetBranchAddress("Jet_eta", &Jet_eta, &b_Jet_eta);
+   fChain->SetBranchAddress("Jet_phi", &Jet_phi, &b_Jet_phi);
+   fChain->SetBranchAddress("Jet_mass", &Jet_mass, &b_Jet_mass);
+   fChain->SetBranchAddress("Jet_puId", &Jet_puId, &b_Jet_puId);
+   fChain->SetBranchAddress("Jet_jetId", &Jet_jetId, &b_Jet_jetId);
    fChain->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB, &b_Jet_btagDeepFlavB);
     
    Notify();
