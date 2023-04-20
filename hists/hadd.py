@@ -31,11 +31,21 @@ if name == 'All' or name == '2018':
     SAMPLES.update(nano_files_2018.mc2018_samples)
     SAMPLES.update(nano_files_2018.data2018_samples)
 
+addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []}
+addedFilesVV = {"2016APV": [], "2016": [], "2017": [], "2018": []}
+
 for key, value in SAMPLES.items():
     year = value[3]
-    os.system('rm -f '+ key + '.root')
+    os.system('rm -f '+ year + '/' +key + '.root ')
     nf = value[8]
-    hadd='hadd ' + key + '.root '
+    hadd='hadd ' + year + '/' + key + '.root '
+    if ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
+        addedFilesTX[year].append( year + '/' + key + '.root ')
+    elif ('WW' in key) or ('WZ' in key) or ('ZZ' in key):
+        addedFilesVV[year].append( year + '/' + key + '.root ')
+    else:
+        os.system('rm -f ' + key + '.root')
+        hadd='hadd ' + key + '.root '
     for idx, S in enumerate(value[0]):
         for subdir, dirs, files in os.walk(S):
             sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
@@ -43,6 +53,14 @@ for key, value in SAMPLES.items():
                 hadd +=  year + '/' + key +'_' + str(idx) +'_' + str(num) + '.root '
             break
     os.system(hadd)
+
+if (name == '2016'):
+    haddTX_2016 ='hadd 2016_TX' + '.root ' + ' '.join(addedFilesTX['2016'])
+    haddVV_2016 ='hadd 2016_VV' + '.root ' + ' '.join(addedFilesVV['2016'])
+    os.system('rm -f 2016_TX.root')
+    os.system('rm -f 2016_VV.root')
+    os.system(haddTX_2016)
+    os.system(haddVV_2016)
     
 
     

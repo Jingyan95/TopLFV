@@ -82,8 +82,8 @@ This framework depends on ROOT libraries
     <td>Object class for events</td>
  </tr>
  <tr>
-    <td>src/quark_candidate.cc</td>
-    <td>Object class for quarks</td>
+    <td>src/jet_candidate.cc</td>
+    <td>Object class for jets</td>
  </tr>
  <tr>
     <td>src/lepton_candidate.cc</td>

@@ -97,18 +97,18 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
       }
   }
   //Feature list
-  std::vector<std::string> features_el_v1{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
-      "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso"};
-  std::vector<std::string> features_el_v2{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
-      "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso", "lostHits"};
-  std::vector<std::string> features_mu{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
-      "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "segmentComp"};
+//   std::vector<std::string> features_el_v1{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
+//       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso"};
+//   std::vector<std::string> features_el_v2{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
+//       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso", "lostHits"};
+//   std::vector<std::string> features_mu{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
+//       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "segmentComp"};
   //Load xgboost model
-  std::string string_year(year.Data());
-  const auto fastForest_el_v1 = fastforest::load_txt("input/el_TOPUL"+string_year+"_XGB.weights.txt",features_el_v1);
-  const auto fastForest_el_v2 = fastforest::load_txt("input/el_TOPv2UL"+string_year+"_XGB.weights.txt",features_el_v2);
-  const auto fastForest_mu_v1 = fastforest::load_txt("input/mu_TOPUL"+string_year+"_XGB.weights.txt",features_mu);
-  const auto fastForest_mu_v2 = fastforest::load_txt("input/mu_TOPv2UL"+string_year+"_XGB.weights.txt",features_mu);
+//   std::string string_year(year.Data());
+//   const auto fastForest_el_v1 = fastforest::load_txt("input/el_TOPUL"+string_year+"_XGB.weights.txt",features_el_v1);
+//   const auto fastForest_el_v2 = fastforest::load_txt("input/el_TOPv2UL"+string_year+"_XGB.weights.txt",features_el_v2);
+//   const auto fastForest_mu_v1 = fastforest::load_txt("input/mu_TOPUL"+string_year+"_XGB.weights.txt",features_mu);
+//   const auto fastForest_mu_v2 = fastforest::load_txt("input/mu_TOPv2UL"+string_year+"_XGB.weights.txt",features_mu);
     
   TFile file_out (fname,"RECREATE");
     
@@ -119,13 +119,12 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   std::vector<float> wgt;
   float eleEta;
   float weight_Lumi;
-  int nbjet;
   int nAccept=0;
     
   if (fChain == 0) return;
   Long64_t nentries = fChain->GetEntriesFast();
   Long64_t nbytes = 0, nb = 0;
-  Long64_t ntr = fChain->GetEntries ();
+  Long64_t ntr = fChain->GetEntries();
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
@@ -150,21 +149,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (Electron_sip3d[l]>15) continue;
         if (Electron_sip3d[l]>8 || abs(Electron_dxy[l])>0.05 || abs(Electron_dz[l])>0.1) continue;
         if (Electron_miniPFRelIso_all[l]>0.4 || (int)Electron_lostHits[l]>1) continue;
-        bool electron_jet = (Electron_jetIdx[l]>=0 && Electron_jetIdx[l]<(int)nJet)?true:false;
-        float ptRatio = electron_jet?std::min(1. / (Electron_jetRelIso[l] + 1.), 1.5):1. / (Electron_jetRelIso[l] + 1.);
-        float btag = (electron_jet && Jet_btagDeepFlavB[Electron_jetIdx[l]]>=0)?Jet_btagDeepFlavB[Electron_jetIdx[l]]:0;
-        float dxy = abs(Electron_dxy[l])>0?log(abs(Electron_dxy[l])):0;
-        float dz = abs(Electron_dz[l])>0?log(abs(Electron_dz[l])):0;
-        std::vector<float> input_el_v1{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],Electron_miniPFRelIso_chg[l],
-                                       Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],Electron_jetPtRelv2[l],ptRatio,
-                                       Electron_pfRelIso03_all[l],btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l]};
-        std::vector<float> input_el_v2{Electron_pt[l],abs(Electron_eta[l]),(float)Electron_jetNDauCharged[l],Electron_miniPFRelIso_chg[l],
-                                       Electron_miniPFRelIso_all[l]-Electron_miniPFRelIso_chg[l],Electron_jetPtRelv2[l],ptRatio,
-                                       Electron_pfRelIso03_all[l],btag,Electron_sip3d[l],dxy,dz,Electron_mvaFall17V2noIso[l],(float)Electron_lostHits[l]};
-        float mva1 = 1./(1. + std::exp(-fastForest_el_v1(input_el_v1.data())));
-        float mva2 = 1./(1. + std::exp(-fastForest_el_v2(input_el_v2.data())));
-        Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],
-            Electron_phi[l],Electron_charge[l],mva1,mva2,0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:1));         
+        if (Electron_topLeptonMVA_v1[l]<0.64) continue;
+        Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],Electron_phi[l],
+            Electron_charge[l],Electron_topLeptonMVA_v1[l],Electron_topLeptonMVA_v2[l],0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:1));         
     }
                            
     for (UInt_t l=0;l<nMuon;l++){
@@ -173,18 +160,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (Muon_sip3d[l]>15 || (!Muon_mediumId[l])) continue;
         if (Muon_sip3d[l]>8 || abs(Muon_dxy[l])>0.05 || abs(Muon_dz[l])>0.1) continue;
         if (Muon_miniPFRelIso_all[l]>0.4) continue;
-        bool muon_jet = (Muon_jetIdx[l]>=0 && Muon_jetIdx[l]<(int)nJet)?true:false;
-        float ptRatio = muon_jet?std::min(1. / (Muon_jetRelIso[l] + 1.), 1.5):1. / (Muon_jetRelIso[l] + 1.);
-        float btag = (muon_jet && Jet_btagDeepFlavB[Muon_jetIdx[l]]>=0)?Jet_btagDeepFlavB[Muon_jetIdx[l]]:0;
-        float dxy = abs(Muon_dxy[l])>0?log(abs(Muon_dxy[l])):0;
-        float dz = abs(Muon_dz[l])>0?log(abs(Muon_dz[l])):0;
-        std::vector<float> input_mu{Muon_pt[l],abs(Muon_eta[l]),(float)Muon_jetNDauCharged[l],Muon_miniPFRelIso_chg[l],
-                                    Muon_miniPFRelIso_all[l]-Muon_miniPFRelIso_chg[l],Muon_jetPtRelv2[l],ptRatio,
-                                    Muon_pfRelIso03_all[l],btag,Muon_sip3d[l],dxy,dz,Muon_segmentComp[l]};
-        float mva1 = 1./(1. + std::exp(-fastForest_mu_v1(input_mu.data())));
-        float mva2 = 1./(1. + std::exp(-fastForest_mu_v2(input_mu.data())));
-        Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],
-            Muon_phi[l],Muon_charge[l],mva1,mva2,0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
+        if (Muon_topLeptonMVA_v1[l]<0.64) continue;
+        Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],Muon_phi[l],
+            Muon_charge[l],Muon_topLeptonMVA_v1[l],Muon_topLeptonMVA_v2[l],0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
     }
                            
     if (Leptons->size()!=2) {
@@ -199,10 +177,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     //Tau selection
     for (UInt_t l=0;l<nTau;l++){
         if (l>=16) break;//Restrict the loop size
-        if (Tau_pt[l]<20 || Tau_eta[l]>2.3) continue;
+        if (Tau_pt[l]<20 || abs(Tau_eta[l])>2.3) continue;
         if (Tau_decayMode[l]==5 || Tau_decayMode[l]==6) continue;
         //The Loosest possible Deep-Tau Working Point
-        if ((int)Tau_idDeepTau2017v2p1VSe[l]<1 || (int)Tau_idDeepTau2017v2p1VSmu[l]<1 || (int)Tau_idDeepTau2017v2p1VSjet[l]<1) continue;
+        if ((int)Tau_idDeepTau2017v2p1VSe[l]<1 || (int)Tau_idDeepTau2017v2p1VSmu[l]<1 || (int)Tau_idDeepTau2017v2p1VSjet[l]<16) continue;
         //Overlap removal
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
@@ -221,12 +199,11 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         continue;
     }
 
-    nbjet = 0;
     Jets =  new std::vector<jet_candidate*>();
     for (UInt_t l=0;l<nJet;l++){
         if (l>=16) break;//Restrict the loop size
-        if (Jet_pt[l]<30 || Jet_eta[l]>2.4) continue;
-        if (((int)Jet_puId[l]<=0 && Jet_pt[l]<50)|| (int)Jet_jetId[l]<=0) continue;
+        if (Jet_pt[l]<30 || abs(Jet_eta[l])>2.4) continue;
+        if ((!((int)Jet_puId[l]&(1<<1)) && Jet_pt[l]<50) || !((int)Jet_jetId[l]&(1<<2))) continue;
         //Overlap removal
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Jet_eta[l],Jet_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Jet_eta[l],Jet_phi[l])<0.4 ||
@@ -236,7 +213,6 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         jet_temp->SetPtEtaPhiM(Jet_pt[l],Jet_eta[l],Jet_phi[l],Jet_mass[l]);
         JetEnergy = jet_temp->Energy() ;
         Jets->push_back(new jet_candidate(Jet_pt[l],Jet_eta[l],Jet_phi[l],JetEnergy,Jet_btagDeepFlavB[l],year,0));
-        if ((*Jets)[Jets->size()-1]->btag_) nbjet++;
         //break;//Only look at the leading tau
     }
 

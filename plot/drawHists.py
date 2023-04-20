@@ -166,8 +166,8 @@ for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
        year.append(year_RunII[numyear])
        
-Samples = ['TTTo2L2Nu.root', 'DYM50.root', 'TTW.root', 'TTH.root']
-SamplesName = ["t#bar{t}", "DY", "t#bar{t}W", "t#bar{t}H"]
+Samples = ['TTTo2L2Nu.root', 'DYM50.root', 'TX.root', 'VV.root']
+SamplesName = ["t#bar{t}", "DY", "t#bar{t}X", "VV"]
 
 colors =  [ROOT.kBlack,ROOT.kRed,ROOT.kGreen,ROOT.kBlue]
 markerStyle =  [20,25,26,27]
