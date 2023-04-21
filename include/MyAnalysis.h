@@ -48,6 +48,8 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    UChar_t         Electron_genPartFlav[16];
    Float_t         Electron_topLeptonMVA_v1[16];
    Float_t         Electron_topLeptonMVA_v2[16];
+   Bool_t          Electron_convVeto[16];
+   Int_t           Electron_tightCharge[16];
        
    UInt_t          nMuon;
    Int_t           Muon_charge[16];
@@ -122,6 +124,8 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Electron_genPartFlav;
    TBranch         *b_Electron_topLeptonMVA_v1;
    TBranch         *b_Electron_topLeptonMVA_v2;
+   TBranch         *b_Electron_convVeto;
+   TBranch         *b_Electron_tightCharge;
         
    TBranch         *b_nMuon;
    TBranch         *b_Muon_charge;
@@ -274,6 +278,8 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Electron_genPartFlav", &Electron_genPartFlav, &b_Electron_genPartFlav);
    fChain->SetBranchAddress("Electron_topLeptonMVA_v1", &Electron_topLeptonMVA_v1, &b_Electron_topLeptonMVA_v1);
    fChain->SetBranchAddress("Electron_topLeptonMVA_v2", &Electron_topLeptonMVA_v2, &b_Electron_topLeptonMVA_v2);
+   fChain->SetBranchAddress("Electron_convVeto", &Electron_convVeto, &b_Electron_convVeto);
+   fChain->SetBranchAddress("Electron_tightCharge", &Electron_tightCharge, &b_Electron_tightCharge);
     
    fChain->SetBranchAddress("nMuon", &nMuon, &b_nMuon);
    fChain->SetBranchAddress("Muon_charge", &Muon_charge, &b_Muon_charge);

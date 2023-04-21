@@ -149,6 +149,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (Electron_sip3d[l]>15) continue;
         if (Electron_sip3d[l]>8 || abs(Electron_dxy[l])>0.05 || abs(Electron_dz[l])>0.1) continue;
         if (Electron_miniPFRelIso_all[l]>0.4 || (int)Electron_lostHits[l]>1) continue;
+        if (!Electron_convVeto[l] || (int)Electron_tightCharge[l]==0) continue;
         if (Electron_topLeptonMVA_v1[l]<0.64) continue;
         Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],Electron_phi[l],
             Electron_charge[l],Electron_topLeptonMVA_v1[l],Electron_topLeptonMVA_v2[l],0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:1));         
@@ -180,7 +181,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (Tau_pt[l]<20 || abs(Tau_eta[l])>2.3) continue;
         if (Tau_decayMode[l]==5 || Tau_decayMode[l]==6) continue;
         //The Loosest possible Deep-Tau Working Point
-        if ((int)Tau_idDeepTau2017v2p1VSe[l]<1 || (int)Tau_idDeepTau2017v2p1VSmu[l]<1 || (int)Tau_idDeepTau2017v2p1VSjet[l]<16) continue;
+        if ((int)Tau_idDeepTau2017v2p1VSe[l]<1 || (int)Tau_idDeepTau2017v2p1VSmu[l]<1 || (int)Tau_idDeepTau2017v2p1VSjet[l]<32) continue;
         //Overlap removal
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
