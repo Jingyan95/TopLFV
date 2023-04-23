@@ -129,7 +129,7 @@ year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
-regions=["ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1"]
+regions=["ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1","llOffZJetgeq1Bgeq1"]
 vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
       "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
       "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
@@ -166,11 +166,11 @@ for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
        year.append(year_RunII[numyear])
        
-Samples = ['TTTo2L2Nu.root', 'DYM50.root', 'TX.root', 'VV.root']
-SamplesName = ["t#bar{t}", "DY", "t#bar{t}X", "VV"]
+Samples = ['TTTo2L2Nu.root', 'DYM50.root', 'TX.root', 'VV.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
+SamplesName = ["t#bar{t}", "DY", "t#bar{t}X", "VV", "C_{ll`tq}^{ST}", "C_{ll`tq}^{TT}"]
 
-colors =  [ROOT.kBlack,ROOT.kRed,ROOT.kGreen,ROOT.kBlue]
-markerStyle =  [20,25,26,27]
+colors =  [ROOT.kBlack,ROOT.kRed,ROOT.kGreen,ROOT.kBlue,ROOT.kYellow,ROOT.kGray]
+markerStyle =  [20,25,26,27,28,29]
 
 Hists = []
 for numyear, nameyear in enumerate(year):
@@ -211,8 +211,3 @@ for numyear, nameyear in enumerate(year):
                     for f in range(len(Samples)):
                         HH.append(Hists[numyear][f][numc][numch][numreg][numvar])
                     CompareBackgrounds(HH, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
-
-
-
-
-

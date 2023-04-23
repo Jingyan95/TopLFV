@@ -14,6 +14,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       llDr_(deltaR((*Leptons_)[0]->eta_,(*Leptons_)[0]->phi_,(*Leptons_)[1]->eta_,(*Leptons_)[1]->phi_)),
                                       OnZ_(false){
     if (c_==0 && ch_!=1 && abs(llM_-mZ_)<15) OnZ_ = true;
+    if (c_==1 && ch_==0 && abs(llM_-mZ_)<15) OnZ_ = true;
     sort(Jets->begin(), Jets->end(), ComparePtJet);
     for (int l=0;l<(int)Jets->size();l++){
         if((*Jets)[l]->btag_) nbjet_++;
@@ -21,7 +22,3 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
 }
   
 event_candidate::~event_candidate(){}
-
-
-
-

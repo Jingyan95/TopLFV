@@ -38,7 +38,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1"};
+  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1","llOffZJetgeq1Bgeq1"};
   const std::map<TString, std::vector<float>> vars =
     {
         {"elMVAv1Prompt",    {0,    50,    0,    1}},
@@ -234,6 +234,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             wgt.push_back(weight_Lumi);
             if (Event->nbjet()<2){
                 reg.push_back(4);
+                wgt.push_back(weight_Lumi);
+            }
+            if (Event->nbjet()>0){
+                reg.push_back(5);
                 wgt.push_back(weight_Lumi);
             }
         }

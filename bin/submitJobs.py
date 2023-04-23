@@ -53,6 +53,8 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
+jobruntime = 900 #15min
+
 for key, value in SAMPLES.items():
     if name  not in key:
        continue
@@ -67,7 +69,11 @@ for key, value in SAMPLES.items():
             submit += 'output = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).out' + '\n'
             submit += 'error = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).err' + '\n'
             submit += 'log = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).log' + '\n'
-            submit += '+JobFlavour = "espresso"\n' ##finish writing .sh file
+            submit += '+MaxRuntime = ' + str(jobruntime) +'\n' 
+            submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.8*jobruntime)) + '\n'
+            submit += 'periodic_hold_reason = "Job is getting close to be terminated due to run time"\n'
+            submit += 'periodic_hold_subcode = 42\n'
+            submit += 'periodic_release = (HoldReasonSubCode == 42)\n'
             submit += 'queue '+str(len(sequance)) +'\n'
             submitName = key + '_' + str(idx) + '.sub'
             sub1 = open('Jobs/'+key+'/'+submitName,'wt')

@@ -43,5 +43,3 @@ lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, int 
 }
 
 lepton_candidate::~lepton_candidate(){}
-
-

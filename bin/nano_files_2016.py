@@ -11,13 +11,9 @@ mc2016_samples = {}
 ## vector interaction
 #mc2016_samples['2016_LFVStVecU'] = [[''], 'mc','LFVStVecU','2016', '','1.902','16.81','1000',1]
 
-## tensor interaction
-mc2016_samples['2016_LFVStTensorU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr19/2016_LFVStTensorU_UL/CRAB_UserFiles/crab_Trilepton_Inclusive_Apr19_2016_LFVStTensorU_UL/230419_120540/0000/'], 'mc','LFVStTensorU','2016', '','8.724' ,'16.81','1000',1]
-
 ## scalar interaction
-mc2016_samples['2016_LFVStScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr19/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Trilepton_Inclusive_Apr19_2016_LFVStScalarU_UL/230419_121019/0000/'], 'mc','LFVStScalarU','2016', '','0.417' ,'16.81','1000',1]
-mc2016_samples['2016_LFVStScalarC'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr19/2016_LFVStScalarC_UL/CRAB_UserFiles/crab_Trilepton_Inclusive_Apr19_2016_LFVStScalarC_UL/230419_120909/0000/'], 'mc','LFVStScalarC','2016', '','0.0363' ,'16.81','1000',1]
-mc2016_samples['2016_LFVTtScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr19/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Trilepton_Inclusive_Apr19_2016_LFVTtScalarU_UL/230419_121128/0000/'], 'mc','LFVTtScalarU','2016', '','0.012','16.81','1000',1]
+mc2016_samples['2016_LFVStScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr19/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_Apr21_2016_LFVStScalarU_UL/230421_214648/0000/'], 'mc','LFVStScalarU','2016', '','0.417' ,'16.81','100000',100]
+mc2016_samples['2016_LFVTtScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr19/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_Apr21_2016_LFVTtScalarU_UL/230421_214750/0000/'], 'mc','LFVTtScalarU','2016', '','0.012','16.81','100000',100]
 
 ##Fake background samples
 mc2016_samples['2016_TTTo2L2Nu'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr19/2016_TTTo2L2Nu_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Trilepton_Inclusive_Apr19_2016_TTTo2L2Nu_UL/230419_121459/0000/'], 'mc','TTTo2L2Nu','2016', '','88.4' ,'16.81','43546000',1]
