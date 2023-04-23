@@ -72,7 +72,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"llDr",             {28,   20,    0,    4.5}},
         {"lep1Pt",           {29,   20,    20,   220}},
         {"lep2Pt",           {30,   20,    20,   220}},
-        {"lep3Pt",           {31,   20,    20,   320}},
+        {"taPt",             {31,   20,    20,   320}},
         {"jet1Pt",           {32,   20,    30,   330}},
         {"njet",             {33,   6,     0,    6}},
         {"nbjet",            {34,   4,     0,    4}}
@@ -117,6 +117,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   event_candidate *Event;
   std::vector<int> reg;
   std::vector<float> wgt;
+  bool metFilterPass;
+  float lep1PtCut = 25;
   float eleEta;
   float weight_Lumi;
   int nAccept=0;
@@ -130,7 +132,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
     displayProgress(jentry, ntr) ;
-
+    InitTrigger();
+    metFilterPass = false;
     reg.clear();
     wgt.clear();
     weight_Lumi = 1;
@@ -139,13 +142,17 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     cout << ".............................................................................................." << endl;
     cout << "event " << jentry << endl;
     }
-      
+    //MET filters
+    if (year == "2017" || year == "2018"){
+        if (Flag_goodVertices  &&  Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&  Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter && Flag_BadPFMuonDzFilter) metFilterPass = true;
+    } else if (Flag_goodVertices  &&  Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&  Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_eeBadScFilter && Flag_BadPFMuonDzFilter) metFilterPass = true;
+    if (!metFilterPass || !myTrig->triggerLogic(dataset));//Applying general trigger requirement 
     //Lepton selection
     Leptons = new std::vector<lepton_candidate*>();
     for (UInt_t l=0;l<nElectron;l++){
         if (l>=16) break;//Restrict the loop size
         eleEta = abs(Electron_eta[l] + Electron_deltaEtaSC[l]);
-        if (Electron_pt[l]<20 || eleEta > 2.4 || (eleEta>1.4442 && eleEta<1.566)) continue;
+        if (Electron_pt[l]<20 || abs(Electron_eta[l]) > 2.4 || (eleEta>1.4442 && eleEta<1.566)) continue;
         if (Electron_sip3d[l]>15) continue;
         if (Electron_sip3d[l]>8 || abs(Electron_dxy[l])>0.05 || abs(Electron_dz[l])>0.1) continue;
         if (Electron_miniPFRelIso_all[l]>0.4 || (int)Electron_lostHits[l]>1) continue;
@@ -166,7 +173,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             Muon_charge[l],Muon_topLeptonMVA_v1[l],Muon_topLeptonMVA_v2[l],0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
     }
                            
-    if (Leptons->size()!=2) {
+    if (Leptons->size()!=2 || ((*Leptons)[0]->pt_<lep1PtCut && (*Leptons)[0]->pt_<lep1PtCut) ||
+        !myTrig->triggerPass((*Leptons)[0]->flavor_+(*Leptons)[1]->flavor_-2)) {//Applying flavor-dependent trigger requirement 
         for (int l=0;l<(int)Leptons->size();l++){
             delete (*Leptons)[l];
         }
@@ -242,7 +250,6 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             }
         }
     }
-
     //Start filling histograms
     if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv1Prompt")+Event->el1()->truth_, Event->el1()->mva1_, wgt);
     if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv2Prompt")+Event->el1()->truth_, Event->el1()->mva2_, wgt);
@@ -257,7 +264,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llDr"), Event->llDr(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1()->pt_, wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep2Pt"), Event->lep2()->pt_, wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep3Pt"), Event->lep3()->pt_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taPt"), Event->ta1()->pt_, wgt);
     if (Event->njet()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"jet1Pt"), Event->jet1()->pt_, wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"njet"), Event->njet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"nbjet"), Event->nbjet(), wgt);

@@ -133,7 +133,7 @@ regions=["ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1","llOffZJetge
 vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
       "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
       "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
-      "llM","llDr","lep1Pt","lep2Pt","lep3Pt","jet1Pt","njet","nbjet"]
+      "llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet"]
 
 varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
           "Prompt electron MVA v2","HF electron MVA v2","Other electron MVA v2",
@@ -144,8 +144,8 @@ varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
           "Hadronic tau MVA v1","Fake tau MVA v1","Other tau MVA v1",
           "Hadronic tau MVA v2","Fake tau MVA v2","Other tau MVA v2",
           "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3",
-          "m(ll) [GeV]","#DeltaR(ll)","1st lepton p_{T} [GeV]",
-          "2nd lepton p_{T} [GeV]","Tau p_{T} [GeV]",
+          "m(ll) [GeV]","#DeltaR(ll)","Leading lepton p_{T} [GeV]",
+          "Sub-leading lepton p_{T} [GeV]","Tau p_{T} [GeV]",
           "Leading jet p_{T} [GeV]", "njet", "nbjet"]
 
 # set up an argument parser
@@ -167,7 +167,7 @@ for numyear, nameyear in enumerate(year_RunII):
        year.append(year_RunII[numyear])
        
 Samples = ['TTTo2L2Nu.root', 'DYM50.root', 'TX.root', 'VV.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ["t#bar{t}", "DY", "t#bar{t}X", "VV", "C_{ll`tq}^{ST}", "C_{ll`tq}^{TT}"]
+SamplesName = ["t#bar{t}", "DY", "t#bar{t}X", "VV", "C_{ll`tu}^{ST}", "C_{ll`tu}^{TT}"]
 
 colors =  [ROOT.kBlack,ROOT.kRed,ROOT.kGreen,ROOT.kBlue,ROOT.kYellow,ROOT.kGray]
 markerStyle =  [20,25,26,27,28,29]
