@@ -146,7 +146,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     if (year == "2017" || year == "2018"){
         if (Flag_goodVertices  &&  Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&  Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter && Flag_BadPFMuonDzFilter) metFilterPass = true;
     } else if (Flag_goodVertices  &&  Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&  Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_eeBadScFilter && Flag_BadPFMuonDzFilter) metFilterPass = true;
-    if (!metFilterPass || !myTrig->triggerLogic(dataset));//Applying general trigger requirement 
+    if (!metFilterPass || !myTrig->triggerLogic(dataset)) continue;//Applying general trigger requirement 
     //Lepton selection
     Leptons = new std::vector<lepton_candidate*>();
     for (UInt_t l=0;l<nElectron;l++){
