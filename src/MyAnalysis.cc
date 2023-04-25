@@ -90,7 +90,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
           for (int k=0;k<(int)regions.size();++k){
               for( auto it = vars.cbegin() ; it != vars.cend() ; ++it ){
                   name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first;
-                  if (it->first.Contains("llM")){
+                  if (it->first.Contains("llM") && i==0 && j!=1){
                   h_test = new TH1F((name.str()).c_str(),(name.str()).c_str(),18,llMBin);
                   }else{
                   h_test = new TH1F((name.str()).c_str(),(name.str()).c_str(),it->second.at(1), it->second.at(2), it->second.at(3));
