@@ -84,7 +84,7 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     pad1.cd()
     pad1.SetLogx(ROOT.kFALSE)
     pad2.SetLogx(ROOT.kFALSE)
-    pad1.SetLogy(ROOT.kFALSE)
+    pad1.SetLogy(ROOT.kTRUE)
     
     for H in range(len(SignalHists)):
         if H>0:
@@ -92,23 +92,23 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
         else:
            SignalHists[H].Scale(0.5)
 
-    y_max=1.9*hists[0].GetMaximum()
-    if y_max<1.9*hs.GetStack().Last().GetMaximum():
-        y_max=1.9*hs.GetStack().Last().GetMaximum()
+    y_max=2000*hists[0].GetMaximum()
+    if y_max<2000*hs.GetStack().Last().GetMaximum():
+        y_max=2000*hs.GetStack().Last().GetMaximum()
     dummy.SetMarkerStyle(20)
     dummy.SetMarkerSize(1.2)
     dummy.SetLineWidth(2)
     x_min=hists[0].GetXaxis().GetBinLowEdge(1)
     x_max=hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins())+hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
 
-    frame = pad1.DrawFrame(x_min,0,x_max,y_max)
+    frame = pad1.DrawFrame(x_min,0.2,x_max,y_max)
     frame.SetTitle("")
     frame.GetYaxis().SetTitle('Events')
     frame.GetXaxis().SetLabelSize(0)
     frame.GetYaxis().SetTitleOffset(0.87)
     frame.GetYaxis().SetTitleSize(0.07)
     frame.GetYaxis().SetLabelSize(0.05)
-    frame.GetYaxis().SetNoExponent()
+    #frame.GetYaxis().SetNoExponent()
     pad1.Update()
     dummy.Draw("P")
     hs.Draw("histSAME")
@@ -198,17 +198,17 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
             ch_plot='#mu#mu#tau_{h}'
         else:
             ch_plot='#mu#bar{#mu}#tau_{h}'
-    Label_channel = ROOT.TLatex(0.2,0.8,ch_plot)
+    Label_channel = ROOT.TLatex(0.18,0.8,ch_plot)
     Label_channel.SetNDC()
     Label_channel.SetTextFont(42)
     Label_channel.SetTextSize(0.063)
     Label_channel.Draw("same")
-    Label_region = ROOT.TLatex(0.2,0.72,regName[0])
+    Label_region = ROOT.TLatex(0.18,0.72,regName[0])
     Label_region.SetNDC()
     Label_region.SetTextFont(42)
     Label_region.SetTextSize(0.063)
     Label_region.Draw("same")
-    Label_region2 = ROOT.TLatex(0.2,0.64,regName[1])
+    Label_region2 = ROOT.TLatex(0.18,0.64,regName[1])
     Label_region2.SetNDC()
     Label_region2.SetTextFont(42)
     Label_region2.SetTextSize(0.063)
@@ -410,7 +410,7 @@ varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
           "Hadronic tau MVA v1","Fake tau MVA v1","Other tau MVA v1",
           "Hadronic tau MVA v2","Fake tau MVA v2","Other tau MVA v2",
           "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3",
-          "m(ll) [GeV]","#DeltaR(ll)","Leading lepton p_{T} [GeV]",
+          "m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "Sub-leading lepton p_{T} [GeV]","Tau p_{T} [GeV]",
           "Leading jet p_{T} [GeV]", "njet", "nbjet","MET [GeV]"]
 

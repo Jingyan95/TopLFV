@@ -42,44 +42,45 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   std::vector<int>     unBlind{0,1,0,0,0,0};
   const std::map<TString, std::vector<float>> vars =
     {
-        {"elMVAv1Prompt",    {0,    50,    0,    1}},
-        {"elMVAv1HF",        {1,    50,    0,    1}},
-        {"elMVAv1Other",     {2,    50,    0,    1}},
-        {"elMVAv2Prompt",    {3,    50,    0,    1}},
-        {"elMVAv2HF",        {4,    50,    0,    1}},
-        {"elMVAv2Other",     {5,    50,    0,    1}},
-        {"elMVAv3Prompt",    {6,    50,    0,    1}},
-        {"elMVAv3HF",        {7,    50,    0,    1}},
-        {"elMVAv3Other",     {8,    50,    0,    1}},
-        {"muMVAv1Prompt",    {9,    50,    0,    1}},
-        {"muMVAv1HF",        {10,   50,    0,    1}},
-        {"muMVAv1Other",     {11,   50,    0,    1}},
-        {"muMVAv2Prompt",    {12,   50,    0,    1}},
-        {"muMVAv2HF",        {13,   50,    0,    1}},
-        {"muMVAv2Other",     {14,   50,    0,    1}},
-        {"muMVAv3Prompt",    {15,   50,    0,    1}},
-        {"muMVAv3HF",        {16,   50,    0,    1}},
-        {"muMVAv3Other",     {17,   50,    0,    1}},
-        {"taMVAv1Had",       {18,   50,    0,    1}},
-        {"taMVAv1Fake",      {19,   50,    0,    1}},
-        {"taMVAv1Other",     {20,   50,    0,    1}},
-        {"taMVAv2Had",       {21,   50,    0,    1}},
-        {"taMVAv2Fake",      {22,   50,    0,    1}},
-        {"taMVAv2Other",     {23,   50,    0,    1}},
-        {"taMVAv3Had",       {24,   50,    0,    1}},
-        {"taMVAv3Fake",      {25,   50,    0,    1}},
-        {"taMVAv3Other",     {26,   50,    0,    1}},
-        {"llM",              {27,   20,    0,    180}},
-        {"llDr",             {28,   20,    0,    4.5}},
-        {"lep1Pt",           {29,   20,    25,   225}},
-        {"lep2Pt",           {30,   20,    20,   220}},
-        {"taPt",             {31,   20,    20,   320}},
-        {"jet1Pt",           {32,   20,    30,   330}},
+        {"elMVAv1Prompt",    {0,    10,    0,    1}},
+        {"elMVAv1HF",        {1,    10,    0,    1}},
+        {"elMVAv1Other",     {2,    10,    0,    1}},
+        {"elMVAv2Prompt",    {3,    10,    0,    1}},
+        {"elMVAv2HF",        {4,    10,    0,    1}},
+        {"elMVAv2Other",     {5,    10,    0,    1}},
+        {"elMVAv3Prompt",    {6,    10,    0,    1}},
+        {"elMVAv3HF",        {7,    10,    0,    1}},
+        {"elMVAv3Other",     {8,    10,    0,    1}},
+        {"muMVAv1Prompt",    {9,    10,    0,    1}},
+        {"muMVAv1HF",        {10,   10,    0,    1}},
+        {"muMVAv1Other",     {11,   10,    0,    1}},
+        {"muMVAv2Prompt",    {12,   10,    0,    1}},
+        {"muMVAv2HF",        {13,   10,    0,    1}},
+        {"muMVAv2Other",     {14,   10,    0,    1}},
+        {"muMVAv3Prompt",    {15,   10,    0,    1}},
+        {"muMVAv3HF",        {16,   10,    0,    1}},
+        {"muMVAv3Other",     {17,   10,    0,    1}},
+        {"taMVAv1Had",       {18,   10,    0,    1}},
+        {"taMVAv1Fake",      {19,   10,    0,    1}},
+        {"taMVAv1Other",     {20,   10,    0,    1}},
+        {"taMVAv2Had",       {21,   10,    0,    1}},
+        {"taMVAv2Fake",      {22,   10,    0,    1}},
+        {"taMVAv2Other",     {23,   10,    0,    1}},
+        {"taMVAv3Had",       {24,   10,    0,    1}},
+        {"taMVAv3Fake",      {25,   10,    0,    1}},
+        {"taMVAv3Other",     {26,   10,    0,    1}},
+        {"llM",              {27,   10,    0,    180}},
+        {"llDr",             {28,   10,    0,    4.5}},
+        {"lep1Pt",           {29,   10,    25,   225}},
+        {"lep2Pt",           {30,   10,    20,   220}},
+        {"taPt",             {31,   10,    20,   320}},
+        {"jet1Pt",           {32,   10,    30,   330}},
         {"njet",             {33,   6,     0,    6}},
         {"nbjet",            {34,   4,     0,    4}},
-        {"MET",              {35,   20,    0,    200}}
+        {"MET",              {35,   10,    0,    200}}
     };
     
+  Double_t llMBin[19] = {0, 20, 40, 60, 76.2, 79.2, 82.2, 85.2, 88.2, 91.2, 94.2, 97.2, 100.2, 103.2, 106.2, 120, 140, 160, 180};
   Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(regions.size(),Dim1(vars.size())))));
   std::stringstream name;
   TH1F *h_test;
@@ -89,7 +90,11 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
           for (int k=0;k<(int)regions.size();++k){
               for( auto it = vars.cbegin() ; it != vars.cend() ; ++it ){
                   name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first;
+                  if (it->first.Contains("llM")){
+                  h_test = new TH1F((name.str()).c_str(),(name.str()).c_str(),18,llMBin);
+                  }else{
                   h_test = new TH1F((name.str()).c_str(),(name.str()).c_str(),it->second.at(1), it->second.at(2), it->second.at(3));
+                  }
                   h_test->StatOverflows(kTRUE);
                   h_test->Sumw2(kTRUE);
                   Hists[i][j][k][it->second.at(0)] = h_test;
