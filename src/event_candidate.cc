@@ -2,10 +2,13 @@
 
 event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                  std::vector<jet_candidate*>* Jets,
+                                 float MET_pt,
+                                 float MET_phi,
                                  bool verbose)
                                     : verbose_(verbose),
                                       Leptons_(Leptons),
                                       Jets_(Jets),
+                                      MET_(new TLorentzVector(MET_pt*cos(MET_phi),MET_pt*sin(MET_phi),0,MET_pt)),
                                       c_(abs((*Leptons_)[0]->charge_+(*Leptons_)[1]->charge_)/2),
                                       ch_((*Leptons_)[0]->flavor_+(*Leptons_)[1]->flavor_-2),
                                       njet_(Jets->size()),
@@ -21,4 +24,4 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
     }
 }
   
-event_candidate::~event_candidate(){}
+event_candidate::~event_candidate(){delete MET_;}

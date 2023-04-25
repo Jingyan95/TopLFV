@@ -99,6 +99,9 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Int_t           Jet_jetId[16];
    Float_t         Jet_btagDeepFlavB[16];
 
+   Float_t         MET_pt;
+   Float_t         MET_phi;
+
    Bool_t          Flag_goodVertices; 
    Bool_t          Flag_globalSuperTightHalo2016Filter;
    Bool_t          Flag_HBHENoiseFilter;
@@ -208,6 +211,9 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Jet_puId;
    TBranch         *b_Jet_jetId;
    TBranch         *b_Jet_btagDeepFlavB;
+
+   TBranch         *b_MET_pt;
+   TBranch         *b_MET_phi;
 
    TBranch         *b_Flag_goodVertices; 
    TBranch         *b_Flag_globalSuperTightHalo2016Filter;
@@ -397,6 +403,9 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Jet_puId", &Jet_puId, &b_Jet_puId);
    fChain->SetBranchAddress("Jet_jetId", &Jet_jetId, &b_Jet_jetId);
    fChain->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB, &b_Jet_btagDeepFlavB);
+
+   fChain->SetBranchAddress("MET_pt", &MET_pt, &b_MET_pt);
+   fChain->SetBranchAddress("MET_phi", &MET_phi, &b_MET_phi);
 
    fChain->SetBranchAddress("Flag_goodVertices", &Flag_goodVertices, &b_Flag_goodVertices);
    fChain->SetBranchAddress("Flag_globalSuperTightHalo2016Filter", &Flag_globalSuperTightHalo2016Filter, &b_Flag_globalSuperTightHalo2016Filter);

@@ -31,6 +31,7 @@ if name == 'All' or name == '2018':
     SAMPLES.update(nano_files_2018.mc2018_samples)
     SAMPLES.update(nano_files_2018.data2018_samples)
 
+addedFilesData = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesVV = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 
@@ -39,7 +40,9 @@ for key, value in SAMPLES.items():
     os.system('rm -f '+ year + '/' +key + '.root ')
     nf = value[8]
     hadd='hadd ' + year + '/' + key + '.root '
-    if ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
+    if value[1]=='data':
+        addedFilesData[year].append( year + '/' + key + '.root ')
+    elif ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
         addedFilesTX[year].append( year + '/' + key + '.root ')
     elif ('WW' in key) or ('WZ' in key) or ('ZZ' in key):
         addedFilesVV[year].append( year + '/' + key + '.root ')
@@ -55,10 +58,13 @@ for key, value in SAMPLES.items():
     os.system(hadd)
 
 if (name == '2016'):
+    haddData_2016 ='hadd 2016_Data' + '.root ' + ' '.join(addedFilesData['2016'])
     haddTX_2016 ='hadd 2016_TX' + '.root ' + ' '.join(addedFilesTX['2016'])
     haddVV_2016 ='hadd 2016_VV' + '.root ' + ' '.join(addedFilesVV['2016'])
+    os.system('rm -f 2016_Data.root')
     os.system('rm -f 2016_TX.root')
     os.system('rm -f 2016_VV.root')
+    os.system(haddData_2016)
     os.system(haddTX_2016)
     os.system(haddVV_2016)
     

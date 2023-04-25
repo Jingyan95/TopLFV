@@ -38,7 +38,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZJetgeq1","llOffZJetgeq1Bleq1","llOffZJetgeq1Bgeq1"};
+  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Jetgeq1Bleq1","llOffZMetg20Jetgeq1Bgeq1"};
+  std::vector<int>     unBlind{0,1,0,0,0,0};
   const std::map<TString, std::vector<float>> vars =
     {
         {"elMVAv1Prompt",    {0,    50,    0,    1}},
@@ -70,12 +71,13 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"taMVAv3Other",     {26,   50,    0,    1}},
         {"llM",              {27,   20,    0,    180}},
         {"llDr",             {28,   20,    0,    4.5}},
-        {"lep1Pt",           {29,   20,    20,   220}},
+        {"lep1Pt",           {29,   20,    25,   225}},
         {"lep2Pt",           {30,   20,    20,   220}},
         {"taPt",             {31,   20,    20,   320}},
         {"jet1Pt",           {32,   20,    30,   330}},
         {"njet",             {33,   6,     0,    6}},
-        {"nbjet",            {34,   4,     0,    4}}
+        {"nbjet",            {34,   4,     0,    4}},
+        {"MET",              {35,   20,    0,    200}}
     };
     
   Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(regions.size(),Dim1(vars.size())))));
@@ -173,7 +175,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             Muon_charge[l],Muon_topLeptonMVA_v1[l],Muon_topLeptonMVA_v2[l],0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
     }
                            
-    if (Leptons->size()!=2 || ((*Leptons)[0]->pt_<lep1PtCut && (*Leptons)[0]->pt_<lep1PtCut) ||
+    if (Leptons->size()!=2 || ((*Leptons)[0]->pt_<lep1PtCut && (*Leptons)[0]->pt_<lep1PtCut)||
         !myTrig->triggerPass((*Leptons)[0]->flavor_+(*Leptons)[1]->flavor_-2)) {//Applying flavor-dependent trigger requirement 
         for (int l=0;l<(int)Leptons->size();l++){
             delete (*Leptons)[l];
@@ -225,28 +227,28 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         //break;//Only look at the leading tau
     }
 
-    Event = new event_candidate(Leptons,Jets,verbose_);//Reconstruction of heavy particles
+    Event = new event_candidate(Leptons,Jets,MET_pt,MET_phi,verbose_);//Reconstruction of heavy particles
     //lumi xs weights
     if (data == "mc") weight_Lumi = (1000*xs*lumi)/Nevent;
       
     reg.push_back(0);
-    wgt.push_back(weight_Lumi);
+    wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[0]);
     if (Event->OnZ()){
         reg.push_back(1);
-        wgt.push_back(weight_Lumi);
+        wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[1]);
     }else{
         reg.push_back(2);
-        wgt.push_back(weight_Lumi);
-        if (Event->njet()>0){
+        wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[2]);
+        if (Event->njet()>0&&Event->MET()->Pt()>20){
             reg.push_back(3);
-            wgt.push_back(weight_Lumi);
+            wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[3]);
             if (Event->nbjet()<2){
                 reg.push_back(4);
-                wgt.push_back(weight_Lumi);
+                wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[4]);
             }
             if (Event->nbjet()>0){
                 reg.push_back(5);
-                wgt.push_back(weight_Lumi);
+                wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[5]);
             }
         }
     }
@@ -268,6 +270,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     if (Event->njet()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"jet1Pt"), Event->jet1()->pt_, wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"njet"), Event->njet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"nbjet"), Event->nbjet(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"MET"), Event->MET()->Pt(), wgt);
     
     for (int l=0;l<(int)Leptons->size();l++){
       delete (*Leptons)[l];

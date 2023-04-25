@@ -18,9 +18,11 @@ class event_candidate {
 public:
   event_candidate(std::vector<lepton_candidate*>* Leptons,
                   std::vector<jet_candidate*>* Jets,
+                  float MET_pt,
+                  float MET_phi,
                   bool verbose);
   ~event_candidate();
-    
+
   int c(){return c_;}
   int ch(){return ch_;}
   int njet(){return njet_;}
@@ -28,6 +30,7 @@ public:
   float llM(){return llM_;}
   float llDr(){return llDr_;}
   bool OnZ(){return OnZ_;}
+  TLorentzVector* MET(){return MET_;}
   static bool ComparePtJet(jet_candidate *a, jet_candidate *b) { return a->pt_ > b->pt_; }
   lepton_candidate* lep1(){return (*Leptons_)[0]->pt_>(*Leptons_)[1]->pt_?(*Leptons_)[0]:(*Leptons_)[1];}//Leading lepton in pT
   lepton_candidate* lep2(){return (*Leptons_)[0]->pt_>(*Leptons_)[1]->pt_?(*Leptons_)[1]:(*Leptons_)[0];}//Trailing lepton in pT
@@ -55,6 +58,7 @@ private:
   bool verbose_;
   std::vector<lepton_candidate*>* Leptons_;
   std::vector<jet_candidate*>* Jets_;
+  TLorentzVector* MET_;
   int c_;//Charges
   int ch_;//Channel
   int njet_;

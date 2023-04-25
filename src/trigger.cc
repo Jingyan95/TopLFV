@@ -109,7 +109,7 @@ Bool_t trigger::triggerLogic(TString dataset){
             if (dataset_=="DoubleEG"){
                 if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || DoubleEle33_CaloIdL_MW_ || DoubleEle33_CaloIdL_GsfTrkIdVL_) triggerPassEE_ = true;
             }
-            if (dataset_=="DoubleMu"){
+            if (dataset_=="DoubleMuon"){
                 if (Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_ || Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_) triggerPassMuMu_ = true;
             }
         }
@@ -128,7 +128,7 @@ Bool_t trigger::triggerLogic(TString dataset){
             if (dataset_=="DoubleEG"){
                 if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || DoubleEle33_CaloIdL_MW_ || DoubleEle33_CaloIdL_GsfTrkIdVL_) triggerPassEE_ = true;
             }
-            if (dataset_=="DoubleMu"){
+            if (dataset_=="DoubleMuon"){
                 if (Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_ || Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_) triggerPassMuMu_ = true;
             }
         }
@@ -147,7 +147,7 @@ Bool_t trigger::triggerLogic(TString dataset){
             if (dataset_=="DoubleEG"){
                 if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_ || DoubleEle33_CaloIdL_MW_) triggerPassEE_ = true;
             }
-            if (dataset_=="DoubleMu"){
+            if (dataset_=="DoubleMuon"){
                 if (Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_) triggerPassMuMu_ = true;
             }
         }
@@ -163,7 +163,7 @@ Bool_t trigger::triggerLogic(TString dataset){
                 if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_ || DoubleEle33_CaloIdL_MW_ || Ele32_WPTight_Gsf_) triggerPassEE_ = true;
                 if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_) && Ele32_WPTight_Gsf_) triggerPassEMu_ = true;
             }
-            if (dataset_=="DoubleMu"){
+            if (dataset_=="DoubleMuon"){
                 if (Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_) triggerPassMuMu_ = true;
             }
         }
