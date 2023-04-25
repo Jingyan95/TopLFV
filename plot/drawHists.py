@@ -19,7 +19,7 @@ import copy
 import argparse
 TGaxis.SetMaxDigits(2)
 
-def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "region", year='2016', var="sample", varname="v"):
+def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "region", regName = ["region",""], year='2016', var="sample", varname="v"):
     folder='StackHist'
     hs = ROOT.THStack("hs","")
     for num in range(1,len(hists)):
@@ -42,7 +42,7 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
        dummy = ROOT.TGraphAsymmErrors(len(bincenter),bincenter,yvalue,binwidth,binwidth,yerrdown,yerrup)
     else:
        dummy = ROOT.TGraphAsymmErrors() 
-        
+
     canvas = ROOT.TCanvas(year+c+ch+reg+var,year+c+ch+reg+var,50,50,865,780)
     canvas.SetGrid()
     canvas.SetBottomMargin(0.17)
@@ -88,7 +88,7 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     
     for H in range(len(SignalHists)):
         if H>0:
-           SignalHists[H].Scale(1000)
+           SignalHists[H].Scale(100)
         else:
            SignalHists[H].Scale(0.5)
 
@@ -203,11 +203,16 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     Label_channel.SetTextFont(42)
     Label_channel.SetTextSize(0.063)
     Label_channel.Draw("same")
-    Label_region = ROOT.TLatex(0.2,0.72,reg)
+    Label_region = ROOT.TLatex(0.2,0.72,regName[0])
     Label_region.SetNDC()
     Label_region.SetTextFont(42)
     Label_region.SetTextSize(0.063)
     Label_region.Draw("same")
+    Label_region2 = ROOT.TLatex(0.2,0.64,regName[1])
+    Label_region2.SetNDC()
+    Label_region2.SetTextFont(42)
+    Label_region2.SetTextSize(0.063)
+    Label_region2.Draw("same")
 
     legend.AddEntry(dummy,Fnames[0],'ep')
     for num in range(1,len(hists)):
@@ -221,7 +226,7 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
         if H==0:
             legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{vector}} = 0.5)",'L')
         else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{vector}} = 1000)",'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{vector}} = 100)",'L')
     legend.Draw("same")
     legend2.Draw("same")
     legend3.Draw("same")
@@ -274,8 +279,8 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch):
        os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
     if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch +'/'+reg):
-       os.makedirs(folder + '/' + year + '/' + c + '/' + ch +'/'+reg)
-    canvas.Print(folder + '/' + year + '/' + c + '/' + ch +'/'+reg +'/'+var + ".pdf")
+       os.makedirs(folder + '/' + year + '/' + c + '/' + ch +'/'+ reg)
+    canvas.Print(folder + '/' + year + '/' + c + '/' + ch +'/'+ reg +'/'+var + ".pdf")
     del canvas
     gc.collect()
     
@@ -390,6 +395,7 @@ year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
 regions=["ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Jetgeq1Bleq1","llOffZMetg20Jetgeq1Bgeq1"]
+regionsName=[["No cuts",""],["OnZ",""],["OffZ",""],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","njet#geq1, nbjet#leq1"],["OffZ, p_{T}^{miss}>20","njet#geq1, nbjet#geq1"]]
 vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
       "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
       "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
@@ -430,7 +436,7 @@ Samples = ['Data.root', 'TTTo2L2Nu.root', 'DYM50.root', 'TX.root', 'VV.root', 'L
 SamplesName = ["Data", "t#bar{t}", "DY", "t#bar{t}X", "VV", "C_{ll`tu}^{ST}", "C_{ll`tu}^{TT}"]
 SamplesNameStack = ["Data", "t#bar{t}", "DY", "t#bar{t}X", "VV(V)", "CLFV top production", "CLFV top decay"]
 
-colors =  [ROOT.kBlack,ROOT.kRed-4,ROOT.kOrange-3,ROOT.kYellow,ROOT.kGreen,ROOT.kViolet+1,ROOT.kRed]
+colors =  [ROOT.kBlack,ROOT.kRed-4,ROOT.kOrange-3,ROOT.kYellow,ROOT.kGreen,ROOT.kViolet+1,ROOT.kGray]
 markerStyle =  [20,25,26,27,28,29,30]
 
 Hists = []
@@ -484,5 +490,5 @@ for numyear, nameyear in enumerate(year):
                         h2.SetMarkerColor(colors[f])
                         h2.SetMarkerStyle(markerStyle[f])
                         H2.append(h2)
-                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, nameyear, namevar,varsName[numvar])
+                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
                     CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
