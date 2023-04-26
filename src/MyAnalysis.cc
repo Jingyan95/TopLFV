@@ -71,24 +71,25 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"taMVAv3Other",     {26,   50,    0,    1}},
         {"llM",              {27,   10,    0,    180}},
         {"llDr",             {28,   10,    0,    4.5}},
-        {"lep1Pt",           {29,   10,    25,   225}},
-        {"lep2Pt",           {30,   10,    20,   180}},
-        {"taPt",             {31,   10,    20,   220}},
-        {"jet1Pt",           {32,   10,    30,   230}},
-        {"njet",             {33,   6,     0,    6}},
-        {"nbjet",            {34,   4,     0,    4}},
+        {"lep1Pt",           {29,   10,   25,    225}},
+        {"lep2Pt",           {30,   10,   20,    180}},
+        {"taPt",             {31,   10,   20,    220}},
+        {"jet1Pt",           {32,   10,   30,    230}},
+        {"njet",             {33,    6,    0,    6}},
+        {"nbjet",            {34,    4,    0,    4}},
         {"MET",              {35,   10,    0,    200}},
-        {"LFVemuM",          {36,   10,    0,    300}},
-        {"LFVetaM",          {37,   10,    0,    300}},
-        {"LFVmutaM",         {38,   10,    0,    300}},
-        {"LFVemuDr",         {39,   10,    0,    4.5}},
-        {"LFVetaDr",         {40,   10,    0,    4.5}},
-        {"LFVmutaDr",        {41,   10,    0,    4.5}},
-        {"LFVePt",           {42,   10,    20,   300}},
-        {"LFVmuPt",          {43,   10,    20,   300}},
-        {"LFVtaPt",          {44,   10,    20,   300}},
-        {"BalepPt",          {45,   10,    20,   180}},
-        {"Topmass",          {46,   10,    0,    300}}
+        {"subSR",            {36,    6,    0,    6}},
+        {"LFVemuM",          {37,   10,    0,    300}},
+        {"LFVetaM",          {38,   10,    0,    300}},
+        {"LFVmutaM",         {39,   10,    0,    300}},
+        {"LFVemuDr",         {40,   10,    0,    4.5}},
+        {"LFVetaDr",         {41,   10,    0,    4.5}},
+        {"LFVmutaDr",        {42,   10,    0,    4.5}},
+        {"LFVePt",           {43,   10,   20,    300}},
+        {"LFVmuPt",          {44,   10,   20,    300}},
+        {"LFVtaPt",          {45,   10,   20,    300}},
+        {"BalepPt",          {46,   10,   20,    180}},
+        {"Topmass",          {47,   10,    0,    300}}
     };
     
   Double_t llMBin[19] = {0, 20, 40, 60, 76.2, 79.2, 82.2, 85.2, 88.2, 91.2, 94.2, 97.2, 100.2, 103.2, 106.2, 120, 140, 160, 180};
@@ -288,6 +289,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"njet"), Event->njet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"nbjet"), Event->nbjet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"MET"), Event->MET()->Pt(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"subSR"), Event->LFVllM()>150?1+2*Event->lfvch():2*Event->lfvch(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuM")+Event->lfvch(), Event->LFVllM(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuDr")+Event->lfvch(), Event->LFVllDr(), wgt);
     if (Event->lfvch()!=2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVePt"), Event->LFVe()->pt_, wgt);

@@ -50,12 +50,12 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     
     ROOT.gStyle.SetErrorX(0)
 
-    legend = ROOT.TLegend(0.42,0.69,0.57,0.88)
+    legend = ROOT.TLegend(0.62,0.69,0.77,0.88)
     legend.SetBorderSize(0)
     legend.SetFillStyle(0)
     legend.SetTextFont(42)
     legend.SetTextSize(0.05)
-    legend2 = ROOT.TLegend(0.57,0.69,0.72,0.88)
+    legend2 = ROOT.TLegend(0.77,0.69,0.92,0.88)
     legend2.SetBorderSize(0)
     legend2.SetFillStyle(0)
     legend2.SetTextFont(42)
@@ -198,20 +198,20 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
             ch_plot='#mu#mu#tau_{h}'
         else:
             ch_plot='#mu#bar{#mu}#tau_{h}'
-    Label_channel = ROOT.TLatex(0.18,0.8,ch_plot)
+    Label_channel = ROOT.TLatex(0.17,0.78,ch_plot+regName[2])
     Label_channel.SetNDC()
     Label_channel.SetTextFont(42)
-    Label_channel.SetTextSize(0.063)
+    Label_channel.SetTextSize(0.058)
     Label_channel.Draw("same")
-    Label_region = ROOT.TLatex(0.18,0.72,regName[0])
+    Label_region = ROOT.TLatex(0.17,0.7,regName[0])
     Label_region.SetNDC()
     Label_region.SetTextFont(42)
-    Label_region.SetTextSize(0.063)
+    Label_region.SetTextSize(0.058)
     Label_region.Draw("same")
-    Label_region2 = ROOT.TLatex(0.18,0.64,regName[1])
+    Label_region2 = ROOT.TLatex(0.17,0.62,regName[1])
     Label_region2.SetNDC()
     Label_region2.SetTextFont(42)
-    Label_region2.SetTextSize(0.063)
+    Label_region2.SetTextSize(0.058)
     Label_region2.Draw("same")
 
     legend.AddEntry(dummy,Fnames[0],'ep')
@@ -263,6 +263,14 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
        dummy_ratio.GetXaxis().SetNdivisions(-006)
     if ('nbjet' in var):
        dummy_ratio.GetXaxis().SetNdivisions(-004)
+    if ('subSR' in var):
+       dummy_ratio.GetXaxis().SetNdivisions(-006)
+       dummy_ratio.GetXaxis().SetBinLabel(1,"m(e#bar{#mu})<150GeV")
+       dummy_ratio.GetXaxis().SetBinLabel(2,"m(e#bar{#mu})>150GeV")
+       dummy_ratio.GetXaxis().SetBinLabel(3,"m(e#bar{#tau})<150GeV")
+       dummy_ratio.GetXaxis().SetBinLabel(4,"m(e#bar{#tau})>150GeV")
+       dummy_ratio.GetXaxis().SetBinLabel(5,"m(#mu#bar{#tau})<150GeV")
+       dummy_ratio.GetXaxis().SetBinLabel(6,"m(#mu#bar{#tau})>150GeV")
     dummy_ratio.Divide(SumofMC)
     dummy_ratio.SetStats(ROOT.kFALSE)
     dummy_ratio.GetYaxis().SetTitle('#frac{Data}{Pred.}')
@@ -302,7 +310,7 @@ def CompareBackgrounds(hists, year='2016', c = "OS", ch = "emu", reg = "ll", var
        os.makedirs(folder + '/' + year + '/' + c + '/' + ch +'/'+reg)
 
     canvas = ROOT.TCanvas(year+ch+reg+var,year+ch+reg+var,50,50,865,780)
-    canvas.SetGrid();
+    canvas.SetGrid()
     canvas.cd()
 
     legend = ROOT.TLegend(0.1,0.3,1,0.8)
@@ -374,7 +382,7 @@ def CompareBackgrounds(hists, year='2016', c = "OS", ch = "emu", reg = "ll", var
     label_cms1="Work in Progress"
     Label_cms1 = ROOT.TLatex(0.2,0.92,label_cms1)
     Label_cms1.SetNDC()
-    Label_cms1.SetTextSize(0.028);
+    Label_cms1.SetTextSize(0.028)
     Label_cms1.SetTextFont(52)
     Label_cms1.Draw()
     Label_lumi = ROOT.TLatex(0.63,0.92,Lumi+" fb^{-1} (13 TeV)")
@@ -399,11 +407,11 @@ year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
 regions=["ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Bgeq1","llOffZMetg20B2"]
-regionsName=[["No cuts",""],["OnZ",""],["OffZ",""],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","nbjet#geq1"],["OffZ, p_{T}^{miss}>20","nbjet=2"]]
+regionsName=[["No cuts","",""],["OnZ","",", Z+jets CR"],["OffZ","",""],["OffZ, p_{T}^{miss}>20GeV","njet#geq1",", SR(Loose)"],["OffZ, p_{T}^{miss}>20GeV","nbjet#geq1",", SR(Tight)"],["OffZ, p_{T}^{miss}>20GeV","nbjet=2",", t#bar{t}+jets CR"]]
 vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
       "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
       "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
-      "llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","LFVemuM","LFVetaM","LFVmutaM",
+      "llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","subSR","LFVemuM","LFVetaM","LFVmutaM",
       "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass"]
 
 varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
@@ -417,7 +425,7 @@ varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
           "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3",
           "m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "Sub-leading lepton p_{T} [GeV]","Tau p_{T} [GeV]",
-          "Leading jet p_{T} [GeV]", "njet", "nbjet (Loose WP)","MET [GeV]",
+          "Leading jet p_{T} [GeV]", "njet", "nbjet (Loose WP)","MET [GeV]","SR subdiveded",
           "m(e#bar{#mu}) [GeV]", "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]",
           "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]", "#DeltaR(#mu,#bar{#tau}) [GeV]",
           "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
@@ -448,7 +456,7 @@ SamplesNameStack = ["Data", "t#bar{t}X", "VV(V)", "DY", "t#bar{t}", "CLFV top pr
 colors =  [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray]
 markerStyle =  [20,25,26,27,28,29,30]
 
-SaveMVA = True
+SaveMVA = False
 
 Hists = []
 for numyear, nameyear in enumerate(year):
@@ -465,8 +473,6 @@ for numyear, nameyear in enumerate(year):
                 for numreg, namereg in enumerate(regions):
                     l4=[]
                     for numvar, namevar in enumerate(vars):
-                        if ('MVA' in namevar) and (not SaveMVA):
-                            continue
                         h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
                         h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
                         h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
