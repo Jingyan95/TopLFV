@@ -44,36 +44,33 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         if (ch_==1){
             float topmass0 = 0;
             float topmass1 = 0;
-            float topmass2 = 0;
-            float obs0 = (*Leptons_)[0]->pt_;
-            float obs1 = (*Leptons_)[1]->pt_;
-            float obs2 = (*Leptons_)[2]->pt_;
+            float obs0 = (*Leptons_)[2]->pt_;
+            int ba = abs((*Leptons_)[1]->charge_+(*Leptons_)[2]->charge_)/2;
+            float obs1 = (*Leptons_)[ba]->pt_;
             if (Jets_->size()){
-                topmass0 = (solveNeutrinoPz((*Leptons_)[0],MET_)+(*Leptons_)[0]->p4_+bjet_->p4_).M();
-                topmass1 = (solveNeutrinoPz((*Leptons_)[1],MET_)+(*Leptons_)[1]->p4_+bjet_->p4_).M();
-                topmass2 = (solveNeutrinoPz((*Leptons_)[2],MET_)+(*Leptons_)[2]->p4_+bjet_->p4_).M();
+                topmass0 = (solveNeutrinoPz((*Leptons_)[2],MET_)+(*Leptons_)[2]->p4_+bjet_->p4_).M();
+                topmass1 = (solveNeutrinoPz((*Leptons_)[ba],MET_)+(*Leptons_)[ba]->p4_+bjet_->p4_).M();
                 obs0 = abs(topmass0-mT_);
                 obs1 = abs(topmass1-mT_);
-                obs2 = abs(topmass1-mT_);
             }
-            if (obs0<obs1&&obs0<obs2){
+            if (obs0<obs1){
                 Topmass_ = topmass0;
-                lfvch_ = 2;
-                Balep_ = (*Leptons_)[0];
+                lfvch_ = 0;
+                Balep_ = (*Leptons_)[2];
+                LFVe_ = (*Leptons_)[0];
                 LFVmu_ = (*Leptons_)[1];
-                LFVta_ = (*Leptons_)[2];
-            }else if (obs1<obs0&&obs1<obs2){
+            }else if (ba){
                 Topmass_ = topmass1;
                 lfvch_ = 1;
                 Balep_ = (*Leptons_)[1];
                 LFVe_ = (*Leptons_)[0];
                 LFVta_ = (*Leptons_)[2];
             }else{
-                Topmass_ = topmass2;
-                lfvch_ = 0;
-                Balep_ = (*Leptons_)[2];
-                LFVe_ = (*Leptons_)[0];
+                Topmass_ = topmass1;
+                lfvch_ = 2;
+                Balep_ = (*Leptons_)[0];
                 LFVmu_ = (*Leptons_)[1];
+                LFVta_ = (*Leptons_)[2];
             }
         }
         if (ch_==2){

@@ -399,7 +399,7 @@ year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
 regions=["ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Bgeq1","llOffZMetg20B2"]
-regionsName=[["No cuts",""],["OnZ",""],["OffZ",""],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","nbjet=2"]]
+regionsName=[["No cuts",""],["OnZ",""],["OffZ",""],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","nbjet#geq1"],["OffZ, p_{T}^{miss}>20","nbjet=2"]]
 vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
       "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
       "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
