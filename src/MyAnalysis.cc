@@ -38,46 +38,57 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Jetgeq1Bleq1","llOffZMetg20Jetgeq1Bgeq1"};
-  std::vector<int>     unBlind{0,1,0,0,0,0};
+  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Bgeq1","llOffZMetg20B2"};
+  std::vector<int>     unBlind{0,1,0,0,0,1};
   const std::map<TString, std::vector<float>> vars =
     {
-        {"elMVAv1Prompt",    {0,    10,    0,    1}},
-        {"elMVAv1HF",        {1,    10,    0,    1}},
-        {"elMVAv1Other",     {2,    10,    0,    1}},
-        {"elMVAv2Prompt",    {3,    10,    0,    1}},
-        {"elMVAv2HF",        {4,    10,    0,    1}},
-        {"elMVAv2Other",     {5,    10,    0,    1}},
-        {"elMVAv3Prompt",    {6,    10,    0,    1}},
-        {"elMVAv3HF",        {7,    10,    0,    1}},
-        {"elMVAv3Other",     {8,    10,    0,    1}},
-        {"muMVAv1Prompt",    {9,    10,    0,    1}},
-        {"muMVAv1HF",        {10,   10,    0,    1}},
-        {"muMVAv1Other",     {11,   10,    0,    1}},
-        {"muMVAv2Prompt",    {12,   10,    0,    1}},
-        {"muMVAv2HF",        {13,   10,    0,    1}},
-        {"muMVAv2Other",     {14,   10,    0,    1}},
-        {"muMVAv3Prompt",    {15,   10,    0,    1}},
-        {"muMVAv3HF",        {16,   10,    0,    1}},
-        {"muMVAv3Other",     {17,   10,    0,    1}},
-        {"taMVAv1Had",       {18,   10,    0,    1}},
-        {"taMVAv1Fake",      {19,   10,    0,    1}},
-        {"taMVAv1Other",     {20,   10,    0,    1}},
-        {"taMVAv2Had",       {21,   10,    0,    1}},
-        {"taMVAv2Fake",      {22,   10,    0,    1}},
-        {"taMVAv2Other",     {23,   10,    0,    1}},
-        {"taMVAv3Had",       {24,   10,    0,    1}},
-        {"taMVAv3Fake",      {25,   10,    0,    1}},
-        {"taMVAv3Other",     {26,   10,    0,    1}},
+        {"elMVAv1Prompt",    {0,    50,    0,    1}},
+        {"elMVAv1HF",        {1,    50,    0,    1}},
+        {"elMVAv1Other",     {2,    50,    0,    1}},
+        {"elMVAv2Prompt",    {3,    50,    0,    1}},
+        {"elMVAv2HF",        {4,    50,    0,    1}},
+        {"elMVAv2Other",     {5,    50,    0,    1}},
+        {"elMVAv3Prompt",    {6,    50,    0,    1}},
+        {"elMVAv3HF",        {7,    50,    0,    1}},
+        {"elMVAv3Other",     {8,    50,    0,    1}},
+        {"muMVAv1Prompt",    {9,    50,    0,    1}},
+        {"muMVAv1HF",        {10,   50,    0,    1}},
+        {"muMVAv1Other",     {11,   50,    0,    1}},
+        {"muMVAv2Prompt",    {12,   50,    0,    1}},
+        {"muMVAv2HF",        {13,   50,    0,    1}},
+        {"muMVAv2Other",     {14,   50,    0,    1}},
+        {"muMVAv3Prompt",    {15,   50,    0,    1}},
+        {"muMVAv3HF",        {16,   50,    0,    1}},
+        {"muMVAv3Other",     {17,   50,    0,    1}},
+        {"taMVAv1Had",       {18,   50,    0,    1}},
+        {"taMVAv1Fake",      {19,   50,    0,    1}},
+        {"taMVAv1Other",     {20,   50,    0,    1}},
+        {"taMVAv2Had",       {21,   50,    0,    1}},
+        {"taMVAv2Fake",      {22,   50,    0,    1}},
+        {"taMVAv2Other",     {23,   50,    0,    1}},
+        {"taMVAv3Had",       {24,   50,    0,    1}},
+        {"taMVAv3Fake",      {25,   50,    0,    1}},
+        {"taMVAv3Other",     {26,   50,    0,    1}},
         {"llM",              {27,   10,    0,    180}},
         {"llDr",             {28,   10,    0,    4.5}},
         {"lep1Pt",           {29,   10,    25,   225}},
-        {"lep2Pt",           {30,   10,    20,   220}},
-        {"taPt",             {31,   10,    20,   320}},
-        {"jet1Pt",           {32,   10,    30,   330}},
+        {"lep2Pt",           {30,   10,    20,   180}},
+        {"taPt",             {31,   10,    20,   220}},
+        {"jet1Pt",           {32,   10,    30,   230}},
         {"njet",             {33,   6,     0,    6}},
         {"nbjet",            {34,   4,     0,    4}},
-        {"MET",              {35,   10,    0,    200}}
+        {"MET",              {35,   10,    0,    200}},
+        {"LFVemuM",          {36,   10,    0,    300}},
+        {"LFVetaM",          {37,   10,    0,    300}},
+        {"LFVmutaM",         {38,   10,    0,    300}},
+        {"LFVemuDr",         {39,   10,    0,    4.5}},
+        {"LFVetaDr",         {40,   10,    0,    4.5}},
+        {"LFVmutaDr",        {41,   10,    0,    4.5}},
+        {"LFVePt",           {42,   10,    20,   300}},
+        {"LFVmuPt",          {43,   10,    20,   300}},
+        {"LFVtaPt",          {44,   10,    20,   300}},
+        {"BalepPt",          {45,   10,    20,   180}},
+        {"Topmass",          {46,   10,    0,    300}}
     };
     
   Double_t llMBin[19] = {0, 20, 40, 60, 76.2, 79.2, 82.2, 85.2, 88.2, 91.2, 94.2, 97.2, 100.2, 103.2, 106.2, 120, 140, 160, 180};
@@ -205,7 +216,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         //break;//Only look at the leading tau
     }
                            
-    if (Leptons->size()!=3) {
+    if (Leptons->size()!=3 || 
+        abs((*Leptons)[0]->charge_+(*Leptons)[1]->charge_+(*Leptons)[2]->charge_)>1) {
         for (int l=0;l<(int)Leptons->size();l++){
             delete (*Leptons)[l];
         }
@@ -247,11 +259,11 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (Event->njet()>0&&Event->MET()->Pt()>20){
             reg.push_back(3);
             wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[3]);
-            if (Event->nbjet()<2){
+            if (Event->nbjet()>0){
                 reg.push_back(4);
                 wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[4]);
             }
-            if (Event->nbjet()>0){
+            if (Event->nbjet()==2){
                 reg.push_back(5);
                 wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[5]);
             }
@@ -276,6 +288,13 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"njet"), Event->njet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"nbjet"), Event->nbjet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"MET"), Event->MET()->Pt(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuM")+Event->lfvch(), Event->LFVllM(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuDr")+Event->lfvch(), Event->LFVllDr(), wgt);
+    if (Event->lfvch()!=2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVePt"), Event->LFVe()->pt_, wgt);
+    if (Event->lfvch()!=1) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVmuPt"), Event->LFVmu()->pt_, wgt);
+    if (Event->lfvch()!=0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVtaPt"), Event->LFVta()->pt_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"BalepPt"), Event->Balep()->pt_, wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Topmass"), Event->Topmass(), wgt);
     
     for (int l=0;l<(int)Leptons->size();l++){
       delete (*Leptons)[l];

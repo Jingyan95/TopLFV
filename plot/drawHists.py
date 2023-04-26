@@ -88,7 +88,7 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     
     for H in range(len(SignalHists)):
         if H>0:
-           SignalHists[H].Scale(100)
+           SignalHists[H].Scale(20)
         else:
            SignalHists[H].Scale(0.5)
 
@@ -224,9 +224,9 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     legend2.AddEntry(error,'Stat. only','F')
     for H in range(len(SignalHists)):
         if H==0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{vector}} = 0.5)",'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 0.5)",'L')
         else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{vector}} = 100)",'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 20)",'L')
     legend.Draw("same")
     legend2.Draw("same")
     legend3.Draw("same")
@@ -398,12 +398,13 @@ year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
-regions=["ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Jetgeq1Bleq1","llOffZMetg20Jetgeq1Bgeq1"]
-regionsName=[["No cuts",""],["OnZ",""],["OffZ",""],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","njet#geq1, nbjet#leq1"],["OffZ, p_{T}^{miss}>20","njet#geq1, nbjet#geq1"]]
+regions=["ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20Bgeq1","llOffZMetg20B2"]
+regionsName=[["No cuts",""],["OnZ",""],["OffZ",""],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","njet#geq1"],["OffZ, p_{T}^{miss}>20","nbjet=2"]]
 vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
       "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
       "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
-      "llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET"]
+      "llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","LFVemuM","LFVetaM","LFVmutaM",
+      "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass"]
 
 varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
           "Prompt electron MVA v2","HF electron MVA v2","Other electron MVA v2",
@@ -416,7 +417,11 @@ varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
           "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3",
           "m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "Sub-leading lepton p_{T} [GeV]","Tau p_{T} [GeV]",
-          "Leading jet p_{T} [GeV]", "njet", "nbjet","MET [GeV]"]
+          "Leading jet p_{T} [GeV]", "njet", "nbjet (Loose WP)","MET [GeV]",
+          "m(e#bar{#mu}) [GeV]", "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]",
+          "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]", "#DeltaR(#mu,#bar{#tau}) [GeV]",
+          "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
+          "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]"]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()
@@ -436,12 +441,14 @@ for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
        year.append(year_RunII[numyear])
        
-Samples = ['Data.root', 'TTTo2L2Nu.root', 'DYM50.root', 'TX.root', 'VV.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ["Data", "t#bar{t}", "DY", "t#bar{t}X", "VV", "C_{ll`tu}^{ST}", "C_{ll`tu}^{TT}"]
-SamplesNameStack = ["Data", "t#bar{t}", "DY", "t#bar{t}X", "VV(V)", "CLFV top production", "CLFV top decay"]
+Samples = ['Data.root', 'TX.root', 'VV.root', 'DYM50.root', 'TTTo2L2Nu.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
+SamplesName = ["Data", "t#bar{t}X", "VV", "DY", "t#bar{t}", "C_{ll`tu}^{ST}", "C_{ll`tu}^{TT}"]
+SamplesNameStack = ["Data", "t#bar{t}X", "VV(V)", "DY", "t#bar{t}", "CLFV top production", "CLFV top decay"]
 
-colors =  [ROOT.kBlack,ROOT.kRed-4,ROOT.kOrange-3,ROOT.kYellow,ROOT.kGreen,ROOT.kViolet+1,ROOT.kGray]
+colors =  [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray]
 markerStyle =  [20,25,26,27,28,29,30]
+
+SaveMVA = True
 
 Hists = []
 for numyear, nameyear in enumerate(year):
@@ -458,6 +465,8 @@ for numyear, nameyear in enumerate(year):
                 for numreg, namereg in enumerate(regions):
                     l4=[]
                     for numvar, namevar in enumerate(vars):
+                        if ('MVA' in namevar) and (not SaveMVA):
+                            continue
                         h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
                         h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
                         h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
@@ -474,6 +483,8 @@ for numyear, nameyear in enumerate(year):
         for numch, namech in enumerate(channels):
             for numreg, namereg in enumerate(regions):
                 for numvar, namevar in enumerate(vars):
+                    if ('MVA' in namevar) and (not SaveMVA):
+                        continue
                     H1 = []
                     H1Signal = []
                     H2 = []
