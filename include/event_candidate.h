@@ -38,7 +38,7 @@ public:
   static bool ComparePtJet(jet_candidate *a, jet_candidate *b) { return a->pt_ > b->pt_; }
   static bool CompareBtagJet(jet_candidate *a, jet_candidate *b) { return a->bt_ > b->bt_; }
   lepton_candidate* lep1(){return (*Leptons_)[0]->pt_>(*Leptons_)[1]->pt_?(*Leptons_)[0]:(*Leptons_)[1];}//Leading lepton in pT
-  lepton_candidate* lep2(){return (*Leptons_)[0]->pt_>(*Leptons_)[1]->pt_?(*Leptons_)[1]:(*Leptons_)[0];}//Trailing lepton in pT
+  lepton_candidate* lep2(){return (*Leptons_)[0]->pt_>(*Leptons_)[1]->pt_?(*Leptons_)[1]:(*Leptons_)[0];}//Sub-leading lepton in pT
   jet_candidate* jet1(){return njet_>0?(*Jets_)[0]:nullptr;}//Leading jet in pT
   lepton_candidate* el1(){return ch_<2?(*Leptons_)[0]:nullptr;}
   lepton_candidate* mu1(){return ch_>1?(*Leptons_)[0]:ch_>0?(*Leptons_)[1]:nullptr;}
@@ -113,7 +113,7 @@ private:
   float llDr_;
   float LFVllM_;//Mass of the LFV lepton pair
   float LFVllDr_;
-  bool OnZ_;
+  bool OnZ_;//Events close to Z peak (incl. Same-Sign ee due to charge flip)
       
   float mT_ = 172.5;
   float mZ_ = 91.2;
