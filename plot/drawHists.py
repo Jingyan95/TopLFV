@@ -60,7 +60,7 @@ def StackHist(hists, SignalHists, Fnames, c="charge", ch = "channel", reg = "reg
     legend2.SetFillStyle(0)
     legend2.SetTextFont(42)
     legend2.SetTextSize(0.05)
-    legend3 = ROOT.TLegend(0.412,0.56,0.75,0.683)
+    legend3 = ROOT.TLegend(0.442,0.56,0.78,0.683)
     legend3.SetBorderSize(0)
     legend3.SetFillStyle(0)
     legend3.SetTextFont(42)
@@ -449,7 +449,7 @@ for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
        year.append(year_RunII[numyear])
        
-Samples = ['Data.root', 'TX.root', 'VV.root', 'DYM50.root', 'TTTo2L2Nu.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
+Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
 SamplesName = ["Data", "t#bar{t}X", "VV", "DY", "t#bar{t}", "C_{ll`tu}^{ST}", "C_{ll`tu}^{TT}"]
 SamplesNameStack = ["Data", "t#bar{t}X", "VV(V)", "DY", "t#bar{t}", "CLFV top production", "CLFV top decay"]
 

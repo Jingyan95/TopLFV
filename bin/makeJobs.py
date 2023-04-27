@@ -80,6 +80,7 @@ for key, value in SAMPLES.items():
         '    rm  ' + SHNAME1.split('.')[0] + "\n"+\
         'fi'
         #os.system("writing .sh file")
+        subprocess.call('rm -f Jobs/'+key+'/*', shell=True)
         open('Jobs/'+key+'/'+SHNAME, 'wt').write(SHFILE)
         print "-----------------------------------"
         print 'Writing Jobs/'+key+'/'+SHNAME
