@@ -92,7 +92,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"Topmass",          {47,   10,    0,    300}}
     };
     
-  Double_t llMBin[19] = {0, 20, 40, 60, 76.2, 79.2, 82.2, 85.2, 88.2, 91.2, 94.2, 97.2, 100.2, 103.2, 106.2, 120, 140, 160, 180};
+  Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
   Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(regions.size(),Dim1(vars.size())))));
   std::stringstream name;
   TH1F *h_test;
