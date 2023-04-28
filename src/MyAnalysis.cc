@@ -12,6 +12,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <vector>
 
 void displayProgress(long current, long max){
@@ -19,14 +20,14 @@ void displayProgress(long current, long max){
   if (max<500) return;
   if (current%(max/500)!=0 && current<max-1) return;
 
-  int width = 52; // Hope the terminal is at least that wide.
+  int width = 45; // Hope the terminal is at least that wide.
   int barWidth = width - 2;
   cerr << "\x1B[2K"; // Clear line
   cerr << "\x1B[2000D"; // Cursor left
   cerr << '[';
   for(int i=0 ; i<barWidth ; ++i){ if(i<barWidth*current/max){ cerr << '=' ; }else{ cerr << ' ' ; } }
   cerr << ']';
-  cerr << " " << Form("%8d/%8d (%5.2f%%)", (int)current, (int)max, 100.0*current/max) ;
+  cerr << " " << Form("%8d/%8d (%5.2f%%)", (int)current, (int)max, 100.0*current/max);
   cerr.flush();
 }
 
