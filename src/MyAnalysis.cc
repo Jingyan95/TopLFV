@@ -79,7 +79,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"njet",             {33,    6,    0,    6}},
         {"nbjet",            {34,    4,    0,    4}},
         {"MET",              {35,   10,    0,    200}},
-        {"subSR",            {36,    6,    0,    6}},
+        {"subSR",            {36,   18,    0,    18}},
         {"LFVemuM",          {37,   10,    0,    300}},
         {"LFVetaM",          {38,   10,    0,    300}},
         {"LFVmutaM",         {39,   10,    0,    300}},
@@ -290,7 +290,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"njet"), Event->njet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"nbjet"), Event->nbjet(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"MET"), Event->MET()->Pt(), wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"subSR"), Event->LFVllM()>150?1+2*Event->lfvch():2*Event->lfvch(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"subSR"), Event->SRindex(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuM")+Event->lfvch(), Event->LFVllM(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuDr")+Event->lfvch(), Event->LFVllDr(), wgt);
     if (Event->lfvch()!=2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVePt"), Event->LFVe()->pt_, wgt);

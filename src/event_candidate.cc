@@ -12,6 +12,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       c_(abs((*Leptons_)[0]->charge_+(*Leptons_)[1]->charge_)/2),
                                       ch_((*Leptons_)[0]->flavor_+(*Leptons_)[1]->flavor_-2),
                                       lfvch_(-1),
+                                      SRindex_(-1),
                                       njet_(Jets->size()),
                                       nbjet_(0),
                                       Topmass_(0),
@@ -33,11 +34,13 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
             if ((*Leptons_)[0]->charge_+(*Leptons_)[2]->charge_==0){
                 LFVe_ = (*Leptons_)[0];
                 Balep_ = (*Leptons_)[1];
+                SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?0:1;
                 if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[1],MET_)+(*Leptons_)[1]->p4_+bjet_->p4_).M();
             }
             else{
                 LFVe_ = (*Leptons_)[1];
                 Balep_ = (*Leptons_)[0];
+                SRindex_ = ((*Leptons_)[1]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?0:1;
                 if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[0],MET_)+(*Leptons_)[0]->p4_+bjet_->p4_).M();
             }
         }
@@ -59,18 +62,21 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 Balep_ = (*Leptons_)[2];
                 LFVe_ = (*Leptons_)[0];
                 LFVmu_ = (*Leptons_)[1];
+                SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[1]->p4_).M()<lfvmCut_?2:3;
             }else if (ba){
                 Topmass_ = topmass1;
                 lfvch_ = 1;
                 Balep_ = (*Leptons_)[1];
                 LFVe_ = (*Leptons_)[0];
                 LFVta_ = (*Leptons_)[2];
+                SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?4:5;
             }else{
                 Topmass_ = topmass1;
                 lfvch_ = 2;
                 Balep_ = (*Leptons_)[0];
                 LFVmu_ = (*Leptons_)[1];
                 LFVta_ = (*Leptons_)[2];
+                SRindex_ = ((*Leptons_)[1]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?6:7;
             }
         }
         if (ch_==2){
@@ -79,11 +85,13 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
             if ((*Leptons_)[0]->charge_+(*Leptons_)[2]->charge_==0){
                 LFVmu_ = (*Leptons_)[0];
                 Balep_ = (*Leptons_)[1];
+                SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?8:9;
                 if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[1],MET_)+(*Leptons_)[1]->p4_+bjet_->p4_).M();
             }
             else{
                 LFVmu_ = (*Leptons_)[1];
                 Balep_ = (*Leptons_)[0];
+                SRindex_ = ((*Leptons_)[1]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?8:9;
                 if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[0],MET_)+(*Leptons_)[0]->p4_+bjet_->p4_).M();
             }
         }
@@ -105,10 +113,12 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 Topmass_ = topmass0;
                 Balep_ = (*Leptons_)[0];
                 LFVe_ = (*Leptons_)[1];
+                SRindex_ = ((*Leptons_)[1]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?10:11;
             }else{
                 Topmass_ = topmass1;
                 Balep_ = (*Leptons_)[1];
                 LFVe_ = (*Leptons_)[0];
+                SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?10:11;
             }
         }
         if (ch_==1){
@@ -117,11 +127,13 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 Topmass_ = topmass0;
                 Balep_ = (*Leptons_)[0];
                 LFVmu_ = (*Leptons_)[1];
+                SRindex_ = ((*Leptons_)[1]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?14:15;
             }else{
                 lfvch_ = 1;
                 Topmass_ = topmass1;
                 Balep_ = (*Leptons_)[1];
                 LFVe_ = (*Leptons_)[0];
+                SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?12:13;
             }
         }
         if (ch_==2){
@@ -130,10 +142,12 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 Topmass_ = topmass0;
                 Balep_ = (*Leptons_)[0];
                 LFVmu_ = (*Leptons_)[1];
+                SRindex_ = ((*Leptons_)[1]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?16:17;
             }else{
                 Topmass_ = topmass1;
                 Balep_ = (*Leptons_)[1];
                 LFVmu_ = (*Leptons_)[0];
+                SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?16:17;
             }
         }
     }

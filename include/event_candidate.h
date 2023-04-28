@@ -26,6 +26,7 @@ public:
   int c(){return c_;}
   int ch(){return ch_;}
   int lfvch(){return lfvch_;}
+  int SRindex(){return SRindex_;}
   int njet(){return njet_;}
   int nbjet(){return nbjet_;}
   float Topmass(){return Topmass_;}
@@ -106,6 +107,7 @@ private:
   int c_;//Charges: 0->Opposite-Sign, 1->Same-Sign
   int ch_;//Channel: 0->ee+tau, 1->emu+ta, 2->mumu+ta
   int lfvch_;//LFV channel: 0->LFV-emu, 1->LFV-eta, 2->LFV-muta
+  int SRindex_;
   int njet_;
   int nbjet_;
   float Topmass_;//SM top mass
@@ -118,6 +120,7 @@ private:
   float mT_ = 172.5;
   float mZ_ = 91.2;
   float mW_ = 80.2;
+  float lfvmCut_ = 150;//mass cut to separate top production and decay signals
 };
 
 #endif
