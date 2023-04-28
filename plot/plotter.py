@@ -607,9 +607,9 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     Label_cms1.SetTextFont(52)
     Label_cms1.Draw()
     if (year == 'All'):
-       Label_lumi = ROOT.TLatex(0.833,0.92,Lumi+" fb^{-1} (13 TeV)")
+       Label_lumi = ROOT.TLatex(0.832,0.92,Lumi+" fb^{-1} (13 TeV)")
     else:
-       Label_lumi = ROOT.TLatex(0.833,0.92,Lumi+" fb^{-1} (13 TeV)")
+       Label_lumi = ROOT.TLatex(0.832,0.92,Lumi+" fb^{-1} (13 TeV)")
     Label_lumi.SetNDC()
     Label_lumi.SetTextFont(42)
     Label_lumi.SetTextSize(0.063)

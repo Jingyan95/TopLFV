@@ -27,11 +27,11 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
     for (int l=0;l<(int)Jets->size();l++){
         if((*Jets)[l]->btag_) nbjet_++;
     }
-    if (c_==0){
-        if (ch_==0){
+    if (c_==0){//Looking at Opposite-Sign first
+        if (ch_==0){//ee
             lfvch_ = 1;
             LFVta_ = (*Leptons_)[2];
-            if ((*Leptons_)[0]->charge_+(*Leptons_)[2]->charge_==0){
+            if ((*Leptons_)[0]->charge_+(*Leptons_)[2]->charge_==0){//Electron and tau must have opposite sign to form LFV pair 
                 LFVe_ = (*Leptons_)[0];
                 Balep_ = (*Leptons_)[1];
                 SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?0:1;
@@ -44,13 +44,13 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[0],MET_)+(*Leptons_)[0]->p4_+bjet_->p4_).M();
             }
         }
-        if (ch_==1){
+        if (ch_==1){//emu
             float topmass0 = 0;
             float topmass1 = 0;
             float obs0 = (*Leptons_)[2]->pt_;
             int ba = abs((*Leptons_)[1]->charge_+(*Leptons_)[2]->charge_)/2;
             float obs1 = (*Leptons_)[ba]->pt_;
-            if (Jets_->size()){
+            if (Jets_->size()){//Top quark can only be reconstructed when there is at least one jet
                 topmass0 = (solveNeutrinoPz((*Leptons_)[2],MET_)+(*Leptons_)[2]->p4_+bjet_->p4_).M();
                 topmass1 = (solveNeutrinoPz((*Leptons_)[ba],MET_)+(*Leptons_)[ba]->p4_+bjet_->p4_).M();
                 obs0 = abs(topmass0-mT_);
@@ -79,7 +79,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 SRindex_ = ((*Leptons_)[1]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?6:7;
             }
         }
-        if (ch_==2){
+        if (ch_==2){//mumu
             lfvch_ = 2;
             LFVta_ = (*Leptons_)[2];
             if ((*Leptons_)[0]->charge_+(*Leptons_)[2]->charge_==0){
@@ -95,7 +95,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[0],MET_)+(*Leptons_)[0]->p4_+bjet_->p4_).M();
             }
         }
-    }else{
+    }else{//Same-Sign
         LFVta_ = (*Leptons_)[2];
         float topmass0 = 0;
         float topmass1 = 0;
@@ -107,7 +107,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         obs0 = abs(topmass0-mT_);
         obs1 = abs(topmass1-mT_);
         }
-        if (ch_==0){
+        if (ch_==0){//ee
             lfvch_ = 1;
             if (obs0<obs1){
                 Topmass_ = topmass0;
@@ -121,7 +121,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?10:11;
             }
         }
-        if (ch_==1){
+        if (ch_==1){//emu
             if (obs0<obs1){
                 lfvch_ = 2;
                 Topmass_ = topmass0;
@@ -136,7 +136,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                 SRindex_ = ((*Leptons_)[0]->p4_+(*Leptons_)[2]->p4_).M()<lfvmCut_?12:13;
             }
         }
-        if (ch_==2){
+        if (ch_==2){//mumu
             lfvch_ = 2;
             if (obs0<obs1){
                 Topmass_ = topmass0;

@@ -94,6 +94,8 @@ for numyear, nameyear in enumerate(year):
                         h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
                         h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
                         h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
+                        if ('B2' in namereg) and ('SS' in namec):
+                           h.Reset("ICE")
                         l4.append(h)
                     l3.append(l4)
                 l2.append(l3)
@@ -150,6 +152,4 @@ for numyear, nameyear in enumerate(year):
                 h.SetLineColor(colors[f])
                 HSignal.append(h)
         SummaryPlot(H, HSignal, SamplesNameStack, namereg, regionsName[numreg], nameyear)
-            
-
         

@@ -193,7 +193,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             Muon_charge[l],Muon_topLeptonMVA_v1[l],Muon_topLeptonMVA_v2[l],0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
     }
                            
-    if (Leptons->size()!=2 || ((*Leptons)[0]->pt_<lep1PtCut && (*Leptons)[0]->pt_<lep1PtCut)||
+    if (Leptons->size()!=2 || ((*Leptons)[0]->pt_<lep1PtCut && (*Leptons)[1]->pt_<lep1PtCut)||
         !myTrig->triggerPass((*Leptons)[0]->flavor_+(*Leptons)[1]->flavor_-2)) {//Applying flavor-dependent trigger requirement 
         for (int l=0;l<(int)Leptons->size();l++){
             delete (*Leptons)[l];
