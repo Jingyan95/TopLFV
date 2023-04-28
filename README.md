@@ -90,6 +90,10 @@ This framework depends on ROOT libraries
     <td>Object class for leptons</td>
  </tr>
  <tr>
+    <td>src/trigger.cc</td>
+    <td>HLT trigger logic</td>
+ </tr>
+ <tr>
     <td>src/main.cc</td>
     <td>Testing file</td>
  </tr>

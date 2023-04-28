@@ -56,7 +56,6 @@ rootlib2 = subprocess.check_output("root-config --libs", shell=True)
 rootlib22="".join([s for s in rootlib2.strip().splitlines(True) if s.strip()])
 
 cms = '/afs/cern.ch/work/j/jingyan/public/CMSSW_10_6_4/src/'
-dire = loc+'bin'
 dire_h = loc+'hists/'
 
 for key, value in SAMPLES.items():
@@ -64,16 +63,16 @@ for key, value in SAMPLES.items():
     if name  not in key:
        continue
     nf = value[8]
-    if not os.path.exists('Jobs/'+key):
-       os.makedirs('Jobs/'+key)
+    if not os.path.exists('bin/Jobs/'+key):
+       os.makedirs('bin/Jobs/'+key)
     for idx, S in enumerate(value[0]):
         SHNAME = key +'_' + str(idx) +'.sh'
         SHNAME1 = key +'_' + str(idx) +'_$1.C'
         SHFILE="#!/bin/bash\n" +\
         "cd "+ cms + "\n"+\
         "eval `scramv1 runtime -sh`\n"+\
-        "cd "+ dire + "\n"+\
-        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./../include   '+ rootlib11 +' -ldl  -o ' + SHNAME1.split('.')[0] + ' Jobs/' + key + '/' + SHNAME1+ ' ../lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n"+\
+        "cd "+ loc + "\n"+\
+        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./include   '+ rootlib11 +' -ldl  -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + key + '/' + SHNAME1+ ' lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n"+\
         "./" + SHNAME1.split('.')[0] + "\n"+\
         'FILE='+ dire_h + value[3] + '/' + key +'_' + str(idx) +'_$1.root'+ "\n"+\
         'if [ -f "$FILE" ]; then'+ "\n"+\
