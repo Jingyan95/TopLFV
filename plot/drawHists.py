@@ -69,7 +69,7 @@ for numyear, nameyear in enumerate(year_RunII):
        
 Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
 SamplesName = ["Data", "t#bar{t}X", "VV", "DY", "t#bar{t}", "C_{ll`tu}^{ST}", "C_{ll`tu}^{TT}"]
-SamplesNameStack = ["Data", "t#bar{t}X", "VV(V)", "DY", "t#bar{t}", "CLFV top production", "CLFV top decay"]
+SamplesNameStack = ["Data", "t#bar{t}+X", "VV(V)", "DY", "t#bar{t}", "CLFV top production", "CLFV top decay"]
 
 colors =  [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray]
 markerStyle =  [20,25,26,27,28,29,30]
@@ -94,7 +94,7 @@ for numyear, nameyear in enumerate(year):
                         h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
                         h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
                         h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
-                        if ('B2' in namereg) and ('SS' in namec):
+                        if ('SS' in namec) and ('B2' in namereg or 'OnZ' in namereg):
                            h.Reset("ICE")
                         l4.append(h)
                     l3.append(l4)
@@ -131,7 +131,7 @@ for numyear, nameyear in enumerate(year):
                         h2.SetMarkerColor(colors[f])
                         h2.SetMarkerStyle(markerStyle[f])
                         H2.append(h2)
-                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
+                    #StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
                     #CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
 for numyear, nameyear in enumerate(year):
