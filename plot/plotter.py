@@ -395,10 +395,11 @@ def CompareBackgrounds(hists, year='2016', c = "OS", ch = "emu", reg = "ll", var
 
 def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region","",""], year='2016'):
     folder='StackHist'
+    ROOT.gStyle.SetErrorX(0)#No horizontal error bar
     hs = ROOT.THStack("hs","")
     for num in range(1,len(hists)):
         hs.Add(hists[num])
-
+    
     binwidth= array( 'd' )
     bincenter= array( 'd' )
     yvalue= array( 'd' )
@@ -421,8 +422,21 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     canvas.SetGrid()
     canvas.SetBottomMargin(0.17)
     canvas.cd()
-
-    ROOT.gStyle.SetErrorX(0)
+    #Calculating S/sqrt(B)
+    Label_sig = ROOT.TLatex(0.051,0.29,'#frac{S}{#sqrt{B}}')
+    Label_sig.SetNDC()
+    Label_sig.SetTextFont(42)
+    Label_sig.SetTextSize(0.03)
+    Label_sig.Draw("")
+    sig = []
+    for b in range(SignalHists[0].GetNbinsX()):
+        if hs.GetStack().Last().GetBinContent(b+1)>0:
+             Sig = ROOT.TLatex(0.085+b*0.0495,0.29,str(round((SignalHists[0]+SignalHists[1]).GetBinContent(b+1)/math.sqrt(hs.GetStack().Last().GetBinContent(b+1)),2)))
+             Sig.SetNDC()
+             Sig.SetTextFont(42)
+             Sig.SetTextSize(0.03)
+             Sig.Draw("")
+             sig.append(Sig)
 
     legend = ROOT.TLegend(0.56,0.68,0.63,0.87)
     legend.SetBorderSize(0)
@@ -497,7 +511,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     frame.Draw("AXISSAMEY+")
     frame.Draw("AXISSAMEX+")
     pad1.Update()
-
+    ## Sub-SR boundries and legends
     line = ROOT.TLine(2,0,2,y_max*10)
     line.SetLineColor(ROOT.kBlack)
     line.SetLineWidth(1)

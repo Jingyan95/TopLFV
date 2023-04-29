@@ -131,7 +131,7 @@ for numyear, nameyear in enumerate(year):
                         h2.SetMarkerColor(colors[f])
                         h2.SetMarkerStyle(markerStyle[f])
                         H2.append(h2)
-                    #StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
+                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
                     #CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
 for numyear, nameyear in enumerate(year):
