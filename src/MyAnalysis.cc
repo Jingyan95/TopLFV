@@ -141,6 +141,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   float lep1PtCut = 25;
   float eleEta;
   float weight_Lumi;
+  float weight_Event;
   int nAccept=0;
     
   if (fChain == 0) return;
@@ -157,6 +158,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     reg.clear();
     wgt.clear();
     weight_Lumi = 1;
+    weight_Event = 1;
       
     if (verbose_) {
     cout << ".............................................................................................." << endl;
@@ -232,42 +234,43 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     Jets =  new std::vector<jet_candidate*>();
     for (UInt_t l=0;l<nJet;l++){
         if (l>=16) break;//Restrict the loop size
-        if (Jet_pt[l]<30 || abs(Jet_eta[l])>2.4) continue;
-        if ((!((int)Jet_puId[l]&(1<<1)) && Jet_pt[l]<50) || !((int)Jet_jetId[l]&(1<<2))) continue;
+        if (Jet_pt_nom[l]<30 || abs(Jet_eta[l])>2.4) continue;
+        if ((!((int)Jet_puId[l]&(1<<1)) && Jet_pt_nom[l]<50) || !((int)Jet_jetId[l]&(1<<2))) continue;
         //Overlap removal
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Jet_eta[l],Jet_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Jet_eta[l],Jet_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[2]->eta_,(*Leptons)[2]->phi_,Jet_eta[l],Jet_phi[l])<0.4) continue;
         float JetEnergy;
         TLorentzVector* jet_temp = new TLorentzVector() ;
-        jet_temp->SetPtEtaPhiM(Jet_pt[l],Jet_eta[l],Jet_phi[l],Jet_mass[l]);
+        jet_temp->SetPtEtaPhiM(Jet_pt_nom[l],Jet_eta[l],Jet_phi[l],Jet_mass_nom[l]);
         JetEnergy = jet_temp->Energy() ;
-        Jets->push_back(new jet_candidate(Jet_pt[l],Jet_eta[l],Jet_phi[l],JetEnergy,Jet_btagDeepFlavB[l],year,0));
+        Jets->push_back(new jet_candidate(Jet_pt_nom[l],Jet_eta[l],Jet_phi[l],JetEnergy,Jet_btagDeepFlavB[l],year,0));
         //break;//Only look at the leading tau
     }
 
-    Event = new event_candidate(Leptons,Jets,MET_pt,MET_phi,verbose_);//Reconstruction of heavy particles
+    Event = new event_candidate(Leptons,Jets,data=="mc"?MET_T1Smear_pt:MET_T1_pt,MET_phi,verbose_);//Reconstruction of heavy particles
     //lumi xs weights
-    if (data == "mc") weight_Lumi = (1000*xs*lumi)/Nevent;
+    if (data == "mc") weight_Lumi = (1000*xs*lumi*getSign(Generator_weight))/Nevent;
+    weight_Event = weight_Lumi;
       
     reg.push_back(0);
-    wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[0]);
+    wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
     if (Event->OnZ()){
         reg.push_back(1);
-        wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[1]);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[1]);
     }else{
         reg.push_back(2);
-        wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[2]);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[2]);
         if (Event->njet()>0&&Event->MET()->Pt()>20){
             reg.push_back(3);
-            wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[3]);
+            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[3]);
             if (Event->nbjet()==1){
                 reg.push_back(4);
-                wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[4]);
+                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[4]);
             }
             if (Event->nbjet()==2){
                 reg.push_back(5);
-                wgt.push_back(data == "mc"?weight_Lumi:weight_Lumi*unBlind[5]);
+                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[5]);
             }
         }
     }
@@ -330,10 +333,4 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     
   file_out.Close() ;
   Hists.clear();
-}
-
-void MyAnalysis::FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight){
-    for (int i = 0; i < v2.size(); ++i) {
-        H4[v0][v1][v2[i]][v3]->Fill(value, weight[i]);
-    }
 }

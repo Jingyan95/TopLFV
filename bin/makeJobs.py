@@ -63,8 +63,8 @@ for key, value in SAMPLES.items():
     if name  not in key:
        continue
     nf = value[8]
-    if not os.path.exists('bin/Jobs/'+key):
-       os.makedirs('bin/Jobs/'+key)
+    if not os.path.exists('Jobs/'+key):
+       os.makedirs('Jobs/'+key)
     for idx, S in enumerate(value[0]):
         SHNAME = key +'_' + str(idx) +'.sh'
         SHNAME1 = key +'_' + str(idx) +'_$1.C'

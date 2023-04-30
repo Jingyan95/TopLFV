@@ -74,7 +74,7 @@ SamplesNameStack = ["Data", "t#bar{t}+X", "VV(V)", "DY", "t#bar{t}", "CLFV top p
 colors =  [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray]
 markerStyle =  [20,25,26,27,28,29,30]
 
-SaveMVA = True
+SaveMVA = False
 
 Hists = []
 for numyear, nameyear in enumerate(year):

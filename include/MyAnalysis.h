@@ -91,15 +91,16 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    UChar_t         Tau_idDeepTau2017v2p1VSjet[16];
     
    UInt_t          nJet;
-   Float_t         Jet_pt[16];
+   Float_t         Jet_pt_nom[16];
    Float_t         Jet_eta[16];
    Float_t         Jet_phi[16];
-   Float_t         Jet_mass[16];
+   Float_t         Jet_mass_nom[16];
    Int_t           Jet_puId[16];
    Int_t           Jet_jetId[16];
    Float_t         Jet_btagDeepFlavB[16];
 
-   Float_t         MET_pt;
+   Float_t         MET_T1_pt;
+   Float_t         MET_T1Smear_pt;
    Float_t         MET_phi;
 
    Bool_t          Flag_goodVertices; 
@@ -135,6 +136,8 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Bool_t          HLT_IsoMu24;//2016 APV, 2016, 2018
    Bool_t          HLT_IsoTkMu24;//2016 APV, 2016
    Bool_t          HLT_IsoMu27;//2017
+
+   Float_t         Generator_weight;//MC generator weight
 
    // List of branches
    TBranch         *b_event;
@@ -204,15 +207,16 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Tau_idDeepTau2017v2p1VSjet;
     
    TBranch         *b_nJet;
-   TBranch         *b_Jet_pt;
+   TBranch         *b_Jet_pt_nom;
    TBranch         *b_Jet_eta;
    TBranch         *b_Jet_phi;
-   TBranch         *b_Jet_mass;
+   TBranch         *b_Jet_mass_nom;
    TBranch         *b_Jet_puId;
    TBranch         *b_Jet_jetId;
    TBranch         *b_Jet_btagDeepFlavB;
 
-   TBranch         *b_MET_pt;
+   TBranch         *b_MET_T1_pt;
+   TBranch         *b_MET_T1Smear_pt;
    TBranch         *b_MET_phi;
 
    TBranch         *b_Flag_goodVertices; 
@@ -248,6 +252,8 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_HLT_IsoMu24;//2016 APV, 2016, 2018
    TBranch         *b_HLT_IsoTkMu24;//2016 APV, 2016
    TBranch         *b_HLT_IsoMu27;//2017
+
+   TBranch         *b_Generator_weight;
     
    MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", bool verbose_=false);
    virtual ~MyAnalysis();
@@ -266,6 +272,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    typedef vector<Dim3> Dim4;
     
    void FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight);
+   int getSign(double x);
 };
 
 #endif
@@ -396,15 +403,16 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
     
    fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
-   fChain->SetBranchAddress("Jet_pt", &Jet_pt, &b_Jet_pt);
+   fChain->SetBranchAddress("Jet_pt_nom", &Jet_pt_nom, &b_Jet_pt_nom);
    fChain->SetBranchAddress("Jet_eta", &Jet_eta, &b_Jet_eta);
    fChain->SetBranchAddress("Jet_phi", &Jet_phi, &b_Jet_phi);
-   fChain->SetBranchAddress("Jet_mass", &Jet_mass, &b_Jet_mass);
+   fChain->SetBranchAddress("Jet_mass_nom", &Jet_mass_nom, &b_Jet_mass_nom);
    fChain->SetBranchAddress("Jet_puId", &Jet_puId, &b_Jet_puId);
    fChain->SetBranchAddress("Jet_jetId", &Jet_jetId, &b_Jet_jetId);
    fChain->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB, &b_Jet_btagDeepFlavB);
 
-   fChain->SetBranchAddress("MET_pt", &MET_pt, &b_MET_pt);
+   fChain->SetBranchAddress("MET_T1_pt", &MET_T1_pt, &b_MET_T1_pt);
+   if (data_ == "mc") fChain->SetBranchAddress("MET_T1Smear_pt", &MET_T1Smear_pt, &b_MET_T1Smear_pt);
    fChain->SetBranchAddress("MET_phi", &MET_phi, &b_MET_phi);
 
    fChain->SetBranchAddress("Flag_goodVertices", &Flag_goodVertices, &b_Flag_goodVertices);
@@ -440,6 +448,8 @@ void MyAnalysis::Init(TTree *tree)
    if (year_ != "2017") fChain->SetBranchAddress("HLT_IsoMu24", &HLT_IsoMu24, &b_HLT_IsoMu24);
    if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_IsoTkMu24", &HLT_IsoTkMu24, &b_HLT_IsoTkMu24);
    if (year_ == "2017") fChain->SetBranchAddress("HLT_IsoMu27", &HLT_IsoMu27, &b_HLT_IsoMu27);
+
+   if (data_ == "mc") fChain->SetBranchAddress("Generator_weight", &Generator_weight, &b_Generator_weight);
     
    Notify();
 }
@@ -449,6 +459,18 @@ void MyAnalysis::InitTrigger(){
                   HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,HLT_DoubleEle33_CaloIdL_MW,HLT_DoubleEle33_CaloIdL_GsfTrkIdVL,
                   HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,
                   HLT_Ele27_WPTight_Gsf,HLT_Ele32_WPTight_Gsf,HLT_Ele35_WPTight_Gsf,HLT_IsoMu24,HLT_IsoTkMu24,HLT_IsoMu27);
+}
+
+void MyAnalysis::FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight){
+    for (int i = 0; i < v2.size(); ++i) {
+        H4[v0][v1][v2[i]][v3]->Fill(value, weight[i]);
+    }
+}
+
+int MyAnalysis::getSign(double x){
+   if (x>0) return 1;
+   if (x<0) return -1;
+   return 0;
 }
 
 Bool_t MyAnalysis::Notify()
