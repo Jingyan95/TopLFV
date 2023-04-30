@@ -42,4 +42,12 @@ else {
 	else {std::cout<<"Error pu string!"<<std::endl; return 1.0;}
 }
 }
+
+double PU::getPUweight(TString year, int NumTrueInteraction, TString type_str){
+       if (year == "2016APV") return PU_2016preVFP(NumTrueInteraction,type_str);
+       if (year == "2016") return PU_2016postVFP(NumTrueInteraction,type_str);
+       if (year == "2017") return PU_2017(NumTrueInteraction,type_str);
+       if (year == "2018") return PU_2018(NumTrueInteraction,type_str);
+       assert(0);
+}
 				

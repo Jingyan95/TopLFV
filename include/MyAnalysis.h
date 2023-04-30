@@ -5,6 +5,7 @@
 #include <TChain.h>
 #include <TFile.h>
 #include <TH1F.h>
+#include <TH2F.h>
 
 // Header file for the classes stored in the TTree if any.
 #include "vector"
@@ -279,6 +280,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
     
    void FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight);
    int getSign(double x);
+   float scale_factor(TH2F* h, float X, float Y, TString uncert);
 };
 
 #endif
@@ -480,6 +482,27 @@ int MyAnalysis::getSign(double x){
    if (x>0) return 1;
    if (x<0) return -1;
    return 0;
+}
+
+float MyAnalysis::scale_factor(TH2F* h, float X, float Y, TString uncert){
+  int NbinsX=h->GetXaxis()->GetNbins();
+  int NbinsY=h->GetYaxis()->GetNbins();
+  float x_min=h->GetXaxis()->GetBinLowEdge(1);
+  float x_max=h->GetXaxis()->GetBinLowEdge(NbinsX)+h->GetXaxis()->GetBinWidth(NbinsX);
+  float y_min=h->GetYaxis()->GetBinLowEdge(1);
+  float y_max=h->GetYaxis()->GetBinLowEdge(NbinsY)+h->GetYaxis()->GetBinWidth(NbinsY);
+  TAxis *Xaxis = h->GetXaxis();
+  TAxis *Yaxis = h->GetYaxis();
+  Int_t binx=1;
+  Int_t biny=1;
+  if(x_min < X && X < x_max) binx = Xaxis->FindBin(X);
+  else binx= (X<=x_min) ? 1 : NbinsX ;
+  if(y_min < Y && Y < y_max) biny = Yaxis->FindBin(Y);
+  else biny= (Y<=y_min) ? 1 : NbinsY ;
+  if(Y > y_max && h->GetBinContent(binx, NbinsY+1)>0) biny = NbinsY + 1;
+  if(uncert=="up") return (h->GetBinContent(binx, biny)+h->GetBinError(binx, biny));
+  else if(uncert=="down") return (h->GetBinContent(binx, biny)-h->GetBinError(binx, biny));
+  else return  h->GetBinContent(binx, biny);
 }
 
 Bool_t MyAnalysis::Notify()

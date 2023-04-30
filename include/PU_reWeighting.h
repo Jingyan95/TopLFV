@@ -2,6 +2,7 @@
 #define MY_PU
 #include <iostream>
 #include <TString.h>
+#include <cassert>
 //Taken from Reza: https://github.com/rgoldouz/ExcitedTopAnalysis/tree/main/NanoAnalysis
 class PU {
 
@@ -12,6 +13,7 @@ class PU {
   double PU_2016postVFP(int, TString);
   double PU_2017(int, TString);
   double PU_2018(int, TString);
+  double getPUweight(TString, int, TString);
 
   private:
 

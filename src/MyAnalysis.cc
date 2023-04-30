@@ -117,19 +117,26 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
           }
       }
   }
-  //Feature list
-//   std::vector<std::string> features_el_v1{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
-//       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso"};
-//   std::vector<std::string> features_el_v2{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
-//       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "mvaFall17V2noIso", "lostHits"};
-//   std::vector<std::string> features_mu{"pt", "eta", "jetNDauChargedMVASel", "miniRelIsoCharged", "miniRelIsoNeutral",
-//       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "segmentComp"};
-  //Load xgboost model
-//   std::string string_year(year.Data());
-//   const auto fastForest_el_v1 = fastforest::load_txt("data/EGM/el_TOPUL"+string_year+"_XGB.weights.txt",features_el_v1);
-//   const auto fastForest_el_v2 = fastforest::load_txt("data/EGM/el_TOPv2UL"+string_year+"_XGB.weights.txt",features_el_v2);
-//   const auto fastForest_mu_v1 = fastforest::load_txt("data/MUO/mu_TOPUL"+string_year+"_XGB.weights.txt",features_mu);
-//   const auto fastForest_mu_v2 = fastforest::load_txt("data/MUO/mu_TOPv2UL"+string_year+"_XGB.weights.txt",features_mu);
+
+  std::string string_year(year.Data());
+  TH2F  sf_El_RECO;
+  TH2F  sf_El_ID;
+  TH2F  sf_Mu_RECO;
+  TH2F  sf_Mu_ID;
+  if (data == "mc"){
+     TFile *f_El_RECO = new TFile("data/EGM/RECO/"+year+"egammaEffi_ptAbove20.txt_EGM2D.root");
+     TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/"+year+"egammaEffi.txt_EGM2D.root");
+     TFile *f_Mu_RECO = new TFile("data/MUO/RECO/"+year+"Efficiency_muon_generalTracks_trackerMuon.root");
+     TFile *f_Mu_ID = new TFile("data/MUO/TOPMVASF/v1/Medium/"+year+"NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt.root");
+     sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
+     sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
+     sf_Mu_RECO = *(TH2F*)f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
+     sf_Mu_ID = *(TH2F*)f_Mu_ID->Get("NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt");
+     f_El_RECO->Close();
+     f_El_ID->Close();
+     f_Mu_RECO->Close();
+     f_Mu_ID->Close();
+  }
     
   TFile file_out (fname,"RECREATE");
     
@@ -145,6 +152,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   float weight_PU;
   float weight_L1ECALPreFiring;
   float weight_L1MuonPreFiring;
+  float weight_El_RECO;
+  float weight_El_ID;
+  float weight_Mu_RECO;
+  float weight_Mu_ID;
   float weight_Event;
   int nAccept=0;
   PU wPU;
@@ -166,6 +177,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     weight_PU = 1;
     weight_L1ECALPreFiring = 1;
     weight_L1MuonPreFiring = 1;
+    weight_El_RECO = 1;
+    weight_El_ID = 1;
+    weight_Mu_RECO = 1;
+    weight_Mu_ID = 1;
     weight_Event = 1;
       
     if (verbose_) {
@@ -188,6 +203,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (Electron_miniPFRelIso_all[l]>0.4 || (int)Electron_lostHits[l]>1) continue;
         if (!Electron_convVeto[l] || (int)Electron_tightCharge[l]==0) continue;
         if (Electron_topLeptonMVA_v1[l]<0.64) continue;
+        if (data == "mc") {
+            weight_El_RECO = weight_El_RECO * scale_factor(&sf_El_RECO, eleEta, Electron_pt[l],"");
+            weight_El_ID = weight_El_ID * scale_factor(&sf_El_ID, eleEta, Electron_pt[l],"");
+        }
         Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],Electron_phi[l],
             Electron_charge[l],Electron_topLeptonMVA_v1[l],Electron_topLeptonMVA_v2[l],0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:1));         
     }
@@ -199,6 +218,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (Muon_sip3d[l]>8 || abs(Muon_dxy[l])>0.05 || abs(Muon_dz[l])>0.1) continue;
         if (Muon_miniPFRelIso_all[l]>0.4) continue;
         if (Muon_topLeptonMVA_v1[l]<0.64) continue;
+        if (data == "mc") {
+            weight_Mu_RECO = weight_Mu_RECO * scale_factor(&sf_Mu_RECO, abs(Muon_eta[l]), Muon_pt[l],"");
+            weight_Mu_ID = weight_Mu_ID * scale_factor(&sf_Mu_ID, abs(Muon_eta[l]), Muon_pt[l],"");
+        }
         Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],Muon_phi[l],
             Muon_charge[l],Muon_topLeptonMVA_v1[l],Muon_topLeptonMVA_v2[l],0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
     }
@@ -258,10 +281,14 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 
     Event = new event_candidate(Leptons,Jets,data=="mc"?MET_T1Smear_pt:MET_T1_pt,MET_phi,verbose_);//Reconstruction of heavy particles
     //lumi xs weights
-    if (data == "mc") weight_Lumi = (1000*xs*lumi*getSign(Generator_weight))/Nevent;
-    if (data == "mc" && year == "2016") weight_PU = wPU.PU_2016postVFP(int(Pileup_nTrueInt),"nominal");
-    weight_Event = weight_Lumi * weight_PU * L1PreFiringWeight_ECAL_Nom * L1PreFiringWeight_Muon_Nom;
-      
+    if (data == "mc") {
+    weight_Lumi = (1000*xs*lumi*getSign(Generator_weight))/Nevent;
+    weight_PU = wPU.getPUweight(year,int(Pileup_nTrueInt),"nominal");
+    weight_L1ECALPreFiring = L1PreFiringWeight_ECAL_Nom;
+    weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
+    }
+    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID;
+
     reg.push_back(0);
     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
     if (Event->OnZ()){
