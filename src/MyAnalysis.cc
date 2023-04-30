@@ -1,5 +1,6 @@
 #define MyAnalysis_cxx
 #include "MyAnalysis.h"
+#include "PU_reWeighting.h"
 #include "lepton_candidate.h"
 #include "jet_candidate.h"
 #include "event_candidate.h"
@@ -125,10 +126,10 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 //       "jetPtRelv2", "jetPtRatio", "pfRelIso03_all", "jetBTag", "sip3d", "dxy", "dz", "segmentComp"};
   //Load xgboost model
 //   std::string string_year(year.Data());
-//   const auto fastForest_el_v1 = fastforest::load_txt("input/el_TOPUL"+string_year+"_XGB.weights.txt",features_el_v1);
-//   const auto fastForest_el_v2 = fastforest::load_txt("input/el_TOPv2UL"+string_year+"_XGB.weights.txt",features_el_v2);
-//   const auto fastForest_mu_v1 = fastforest::load_txt("input/mu_TOPUL"+string_year+"_XGB.weights.txt",features_mu);
-//   const auto fastForest_mu_v2 = fastforest::load_txt("input/mu_TOPv2UL"+string_year+"_XGB.weights.txt",features_mu);
+//   const auto fastForest_el_v1 = fastforest::load_txt("data/EGM/el_TOPUL"+string_year+"_XGB.weights.txt",features_el_v1);
+//   const auto fastForest_el_v2 = fastforest::load_txt("data/EGM/el_TOPv2UL"+string_year+"_XGB.weights.txt",features_el_v2);
+//   const auto fastForest_mu_v1 = fastforest::load_txt("data/MUO/mu_TOPUL"+string_year+"_XGB.weights.txt",features_mu);
+//   const auto fastForest_mu_v2 = fastforest::load_txt("data/MUO/mu_TOPv2UL"+string_year+"_XGB.weights.txt",features_mu);
     
   TFile file_out (fname,"RECREATE");
     
@@ -141,8 +142,12 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   float lep1PtCut = 25;
   float eleEta;
   float weight_Lumi;
+  float weight_PU;
+  float weight_L1ECALPreFiring;
+  float weight_L1MuonPreFiring;
   float weight_Event;
   int nAccept=0;
+  PU wPU;
     
   if (fChain == 0) return;
   Long64_t nentries = fChain->GetEntriesFast();
@@ -158,6 +163,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     reg.clear();
     wgt.clear();
     weight_Lumi = 1;
+    weight_PU = 1;
+    weight_L1ECALPreFiring = 1;
+    weight_L1MuonPreFiring = 1;
     weight_Event = 1;
       
     if (verbose_) {
@@ -251,7 +259,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     Event = new event_candidate(Leptons,Jets,data=="mc"?MET_T1Smear_pt:MET_T1_pt,MET_phi,verbose_);//Reconstruction of heavy particles
     //lumi xs weights
     if (data == "mc") weight_Lumi = (1000*xs*lumi*getSign(Generator_weight))/Nevent;
-    weight_Event = weight_Lumi;
+    if (data == "mc" && year == "2016") weight_PU = wPU.PU_2016postVFP(int(Pileup_nTrueInt),"nominal");
+    weight_Event = weight_Lumi * weight_PU * L1PreFiringWeight_ECAL_Nom * L1PreFiringWeight_Muon_Nom;
       
     reg.push_back(0);
     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);

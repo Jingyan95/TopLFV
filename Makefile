@@ -16,7 +16,7 @@ LIBS           = $(ROOTLIBS)
 
 GLIBS         = $(ROOTGLIBS) -lMinuit -lTreePlayer  
 
-SRCS = src/common_details.cc src/fastforest_functions.cc src/fastforest.cc src/lepton_candidate.cc src/jet_candidate.cc src/event_candidate.cc src/trigger.cc src/MyAnalysis.cc 
+SRCS = src/common_details.cc src/fastforest_functions.cc src/fastforest.cc src/lepton_candidate.cc src/jet_candidate.cc src/event_candidate.cc src/trigger.cc src/PU_reWeighting.cc src/MyAnalysis.cc 
 OBJS =  $(patsubst %.C,%.o,$(SRCS:.cc=.o))
 
 LIB=lib/main.so

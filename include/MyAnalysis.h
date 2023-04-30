@@ -138,6 +138,9 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Bool_t          HLT_IsoMu27;//2017
 
    Float_t         Generator_weight;//MC generator weight
+   Float_t         Pileup_nTrueInt;
+   Float_t         L1PreFiringWeight_ECAL_Nom;
+   Float_t         L1PreFiringWeight_Muon_Nom;
 
    // List of branches
    TBranch         *b_event;
@@ -254,6 +257,9 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_HLT_IsoMu27;//2017
 
    TBranch         *b_Generator_weight;
+   TBranch         *b_Pileup_nTrueInt;
+   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
+   TBranch         *b_L1PreFiringWeight_Muon_Nom;
     
    MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", bool verbose_=false);
    virtual ~MyAnalysis();
@@ -450,6 +456,9 @@ void MyAnalysis::Init(TTree *tree)
    if (year_ == "2017") fChain->SetBranchAddress("HLT_IsoMu27", &HLT_IsoMu27, &b_HLT_IsoMu27);
 
    if (data_ == "mc") fChain->SetBranchAddress("Generator_weight", &Generator_weight, &b_Generator_weight);
+   if (data_ == "mc") fChain->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt, &b_Pileup_nTrueInt);
+   fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
+   fChain->SetBranchAddress("L1PreFiringWeight_Muon_Nom", &L1PreFiringWeight_Muon_Nom, &b_L1PreFiringWeight_Muon_Nom);
     
    Notify();
 }

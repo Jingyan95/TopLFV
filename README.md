@@ -94,12 +94,16 @@ This framework depends on ROOT libraries
     <td>HLT trigger logic</td>
  </tr>
  <tr>
+    <td>src/trigger.cc</td>
+    <td>HLT trigger logic</td>
+ </tr>
+ <tr>
     <td>src/main.cc</td>
     <td>Testing file</td>
  </tr>
  <tr>
-    <td>Makefile</td>
-    <td>Tool for compiling</td>
+    <td>src/PU_reWeighting.cc</td>
+    <td>Reweight MC pile up distribution</td>
  </tr>
 </table>
 
