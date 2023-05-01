@@ -15,6 +15,9 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       SRindex_(-1),
                                       njet_(Jets->size()),
                                       nbjet_(0),
+                                      btagSF_(1),
+                                      Ht_(0),
+                                      St_(0),
                                       Topmass_(0),
                                       llM_(((*Leptons_)[0]->p4_+(*Leptons_)[1]->p4_).M()),
                                       llDr_(deltaR((*Leptons_)[0]->eta_,(*Leptons_)[0]->phi_,(*Leptons_)[1]->eta_,(*Leptons_)[1]->phi_)),
@@ -25,8 +28,11 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
     if (Jets->size()) bjet_ = (*Jets_)[0];
     sort(Jets->begin(), Jets->end(), ComparePtJet);
     for (int l=0;l<(int)Jets->size();l++){
+        btagSF_ = btagSF_ * (*Jets)[l]->btSF_;
+        Ht_+=(*Jets)[l]->pt_;
         if((*Jets)[l]->btag_) nbjet_++;
     }
+    St_=Ht_+(*Leptons_)[0]->pt_+(*Leptons_)[1]->pt_+(*Leptons_)[2]->pt_+MET_->Pt();
     if (c_==0){//Looking at Opposite-Sign first
         if (ch_==0){//ee
             lfvch_ = 1;

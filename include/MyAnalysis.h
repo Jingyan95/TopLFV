@@ -99,6 +99,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Int_t           Jet_puId[16];
    Int_t           Jet_jetId[16];
    Float_t         Jet_btagDeepFlavB[16];
+   Float_t         Jet_btagSF_deepjet_shape[16];
 
    Float_t         MET_T1_pt;
    Float_t         MET_T1Smear_pt;
@@ -218,6 +219,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Jet_puId;
    TBranch         *b_Jet_jetId;
    TBranch         *b_Jet_btagDeepFlavB;
+   TBranch         *b_Jet_btagSF_deepjet_shape;
 
    TBranch         *b_MET_T1_pt;
    TBranch         *b_MET_T1Smear_pt;
@@ -418,6 +420,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Jet_puId", &Jet_puId, &b_Jet_puId);
    fChain->SetBranchAddress("Jet_jetId", &Jet_jetId, &b_Jet_jetId);
    fChain->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB, &b_Jet_btagDeepFlavB);
+   if (data_ == "mc") fChain->SetBranchAddress("Jet_btagSF_deepjet_shape", &Jet_btagSF_deepjet_shape, &b_Jet_btagSF_deepjet_shape);
 
    fChain->SetBranchAddress("MET_T1_pt", &MET_T1_pt, &b_MET_T1_pt);
    if (data_ == "mc") fChain->SetBranchAddress("MET_T1Smear_pt", &MET_T1Smear_pt, &b_MET_T1Smear_pt);
@@ -499,7 +502,6 @@ float MyAnalysis::scale_factor(TH2F* h, float X, float Y, TString uncert){
   else binx= (X<=x_min) ? 1 : NbinsX ;
   if(y_min < Y && Y < y_max) biny = Yaxis->FindBin(Y);
   else biny= (Y<=y_min) ? 1 : NbinsY ;
-  if(Y > y_max && h->GetBinContent(binx, NbinsY+1)>0) biny = NbinsY + 1;
   if(uncert=="up") return (h->GetBinContent(binx, biny)+h->GetBinError(binx, biny));
   else if(uncert=="down") return (h->GetBinContent(binx, biny)-h->GetBinError(binx, biny));
   else return  h->GetBinContent(binx, biny);

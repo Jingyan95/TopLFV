@@ -13,13 +13,14 @@ using namespace std;
 class jet_candidate {
   
 public:
-  jet_candidate(float, float, float, float, float, TString, int );
+  jet_candidate(float, float, float, float, float, float, TString, int );
   ~jet_candidate();
   float pt_;
   float eta_;
   float phi_;
   int flavor_;
   int btag_;
+  float btSF_;
   float bt_; //b-tagging score
   int isb(float, TString);
   int isbajet; // jet coming from standard top 

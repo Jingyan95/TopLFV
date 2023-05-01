@@ -29,6 +29,9 @@ public:
   int SRindex(){return SRindex_;}
   int njet(){return njet_;}
   int nbjet(){return nbjet_;}
+  float btagSF(){return btagSF_;}
+  float Ht(){return Ht_;}
+  float St(){return St_;}
   float Topmass(){return Topmass_;}
   float llM(){return llM_;}
   float llDr(){return llDr_;}
@@ -110,6 +113,9 @@ private:
   int SRindex_;
   int njet_;
   int nbjet_;
+  float btagSF_;
+  float Ht_;
+  float St_;
   float Topmass_;//SM top mass
   float llM_;//Mass of the two leptons (e or mu)
   float llDr_;

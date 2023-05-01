@@ -1,6 +1,6 @@
 #include "jet_candidate.h"
 
-jet_candidate::jet_candidate(float pt_in, float eta_in, float phi_in, float E_in, float btag_in, TString year, int ind_in){
+jet_candidate::jet_candidate(float pt_in, float eta_in, float phi_in, float E_in, float btag_in, float btagSF_in, TString year, int ind_in){
   pt_ = pt_in;
   eta_ = eta_in;
   phi_ = phi_in;
@@ -8,6 +8,7 @@ jet_candidate::jet_candidate(float pt_in, float eta_in, float phi_in, float E_in
   p4_.SetPtEtaPhiE(pt_, eta_, phi_, E_in) ;
   flavor_ = ind_in;
   bt_=btag_in;
+  btSF_=btagSF_in;
   isbajet = 0;
 }
 

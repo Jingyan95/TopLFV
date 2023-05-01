@@ -27,7 +27,7 @@ channels=["ee","emu","mumu"];
 regions=["ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2"]
 regionsName=[["No cuts","",""],["p_{T}^{miss}>20GeV, njet#geq1","",""],["p_{T}^{miss}>20GeV, njet#geq1","OnZ",", Z+jets CR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ",", SR(Loose)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=1",", SR(Tight)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=2",", t#bar{t}+jets CR"]]
 vars=["llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","subSR","LFVemuM","LFVetaM","LFVmutaM",
-      "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass"]
+      "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass","Ht","St"]
 
 varsName=["m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "Sub-leading lepton p_{T} [GeV]","Tau p_{T} [GeV]",
@@ -35,7 +35,7 @@ varsName=["m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "m(e#bar{#mu}) [GeV]", "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]",
           "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]", "#DeltaR(#mu,#bar{#tau}) [GeV]",
           "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
-          "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]"]
+          "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]","H_{T} [GeV]", "S_{T} [GeV]"]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()

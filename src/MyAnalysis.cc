@@ -64,7 +64,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"LFVmuPt",          {17,  10,    20,   300}},
         {"LFVtaPt",          {18,  10,    20,   300}},
         {"BalepPt",          {19,  10,    20,   180}},
-        {"Topmass",          {20,  10,    0,    300}}
+        {"Topmass",          {20,  10,    0,    300}},
+        {"Ht",               {21,  10,    0,    300}},
+        {"St",               {22,  10,    65,   400}}
     };
     
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -91,24 +93,35 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
       }
   }
 
+//   TH2F *h_2D_wBtagSF;
+//   TH2F *h_2D_woBtagSF;
+//   Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
+//   Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
+//   h_2D_wBtagSF = new TH2F("2D_wBtagSF","2D_wBtagSF",5,njetBin,5,HtBin);
+//   h_2D_woBtagSF = new TH2F("2D_woBtagSF","2D_woBtagSF",5,njetBin,5,HtBin);
+
   std::string string_year(year.Data());
   TH2F  sf_El_RECO;
   TH2F  sf_El_ID;
   TH2F  sf_Mu_RECO;
   TH2F  sf_Mu_ID;
+  TH2F  sf_Btag_corr;
   if (data == "mc"){
      TFile *f_El_RECO = new TFile("data/EGM/RECO/"+year+"egammaEffi_ptAbove20.txt_EGM2D.root");
      TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/"+year+"egammaEffi.txt_EGM2D.root");
      TFile *f_Mu_RECO = new TFile("data/MUO/RECO/"+year+"Efficiency_muon_generalTracks_trackerMuon.root");
      TFile *f_Mu_ID = new TFile("data/MUO/TOPMVASF/v1/Medium/"+year+"NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt.root");
+     TFile *f_Btag_corr = new TFile("data/BTV/"+year+"BtagCorr.root");
      sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
      sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
      sf_Mu_RECO = *(TH2F*)f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
      sf_Mu_ID = *(TH2F*)f_Mu_ID->Get("NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt");
+     sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection");
      f_El_RECO->Close();
      f_El_ID->Close();
      f_Mu_RECO->Close();
      f_Mu_ID->Close();
+     f_Btag_corr->Close();
   }
     
   TFile file_out (fname,"RECREATE");
@@ -129,6 +142,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   float weight_El_ID;
   float weight_Mu_RECO;
   float weight_Mu_ID;
+  float weight_Btag_corr;//correction for btag shape to preserve normalization 
   float weight_Event;
   int nAccept=0;
   PU wPU;
@@ -154,6 +168,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     weight_El_ID = 1;
     weight_Mu_RECO = 1;
     weight_Mu_ID = 1;
+    weight_Btag_corr = 1;
     weight_Event = 1;
       
     if (verbose_) {
@@ -248,7 +263,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         TLorentzVector* jet_temp = new TLorentzVector() ;
         jet_temp->SetPtEtaPhiM(Jet_pt_nom[l],Jet_eta[l],Jet_phi[l],Jet_mass_nom[l]);
         JetEnergy = jet_temp->Energy() ;
-        Jets->push_back(new jet_candidate(Jet_pt_nom[l],Jet_eta[l],Jet_phi[l],JetEnergy,Jet_btagDeepFlavB[l],year,0));
+        Jets->push_back(new jet_candidate(Jet_pt_nom[l],Jet_eta[l],Jet_phi[l],JetEnergy,Jet_btagDeepFlavB[l],data=="mc"?Jet_btagSF_deepjet_shape[l]:1,year,0));
         //break;//Only look at the leading tau
     }
 
@@ -259,8 +274,11 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     weight_PU = wPU.getPUweight(year,int(Pileup_nTrueInt),"nominal");
     weight_L1ECALPreFiring = L1PreFiringWeight_ECAL_Nom;
     weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
+    weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(),"");
     }
-    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID;
+    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * Event->btagSF() * weight_Btag_corr;
+    // h_2D_woBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event);
+    // h_2D_wBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event*Event->btagSF());
 
     reg.push_back(0);
     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
@@ -301,7 +319,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     if (Event->lfvch()!=1) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVmuPt"), Event->LFVmu()->pt_, wgt);
     if (Event->lfvch()!=0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVtaPt"), Event->LFVta()->pt_, wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"BalepPt"), Event->Balep()->pt_, wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Topmass"), Event->Topmass(), wgt);
+    if (Event->njet()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Topmass"), Event->Topmass(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Ht"), Event->Ht(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"St"), Event->St(), wgt);
     
     for (int l=0;l<(int)Leptons->size();l++){
       delete (*Leptons)[l];
@@ -331,6 +351,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
           }
       }
   }
+
+//   h_2D_woBtagSF->Write("",TObject::kOverwrite);
+//   h_2D_wBtagSF->Write("",TObject::kOverwrite);
     
   file_out.Close() ;
   Hists.clear();
