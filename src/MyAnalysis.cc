@@ -40,58 +40,31 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2"};
-  std::vector<int>     unBlind{0,1,0,0,0,1};
+  std::vector<TString> regions{"ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2"};
+  std::vector<int>     unBlind{0,0,1,0,0,1};
   const std::map<TString, std::vector<float>> vars =
     {
-        {"elMVAv1Prompt",    {0,    50,    0,    1}},
-        {"elMVAv1HF",        {1,    50,    0,    1}},
-        {"elMVAv1Other",     {2,    50,    0,    1}},
-        {"elMVAv2Prompt",    {3,    50,    0,    1}},
-        {"elMVAv2HF",        {4,    50,    0,    1}},
-        {"elMVAv2Other",     {5,    50,    0,    1}},
-        {"elMVAv3Prompt",    {6,    50,    0,    1}},
-        {"elMVAv3HF",        {7,    50,    0,    1}},
-        {"elMVAv3Other",     {8,    50,    0,    1}},
-        {"muMVAv1Prompt",    {9,    50,    0,    1}},
-        {"muMVAv1HF",        {10,   50,    0,    1}},
-        {"muMVAv1Other",     {11,   50,    0,    1}},
-        {"muMVAv2Prompt",    {12,   50,    0,    1}},
-        {"muMVAv2HF",        {13,   50,    0,    1}},
-        {"muMVAv2Other",     {14,   50,    0,    1}},
-        {"muMVAv3Prompt",    {15,   50,    0,    1}},
-        {"muMVAv3HF",        {16,   50,    0,    1}},
-        {"muMVAv3Other",     {17,   50,    0,    1}},
-        {"taMVAv1Had",       {18,   50,    0,    1}},
-        {"taMVAv1Fake",      {19,   50,    0,    1}},
-        {"taMVAv1Other",     {20,   50,    0,    1}},
-        {"taMVAv2Had",       {21,   50,    0,    1}},
-        {"taMVAv2Fake",      {22,   50,    0,    1}},
-        {"taMVAv2Other",     {23,   50,    0,    1}},
-        {"taMVAv3Had",       {24,   50,    0,    1}},
-        {"taMVAv3Fake",      {25,   50,    0,    1}},
-        {"taMVAv3Other",     {26,   50,    0,    1}},
-        {"llM",              {27,   10,    0,    180}},
-        {"llDr",             {28,   10,    0,    4.5}},
-        {"lep1Pt",           {29,   10,   25,    225}},
-        {"lep2Pt",           {30,   10,   20,    180}},
-        {"taPt",             {31,   10,   20,    220}},
-        {"jet1Pt",           {32,   10,   30,    230}},
-        {"njet",             {33,    6,    0,    6}},
-        {"nbjet",            {34,    4,    0,    4}},
-        {"MET",              {35,   10,    0,    200}},
-        {"subSR",            {36,   18,    0,    18}},
-        {"LFVemuM",          {37,   10,    0,    300}},
-        {"LFVetaM",          {38,   10,    0,    300}},
-        {"LFVmutaM",         {39,   10,    0,    300}},
-        {"LFVemuDr",         {40,   10,    0,    4.5}},
-        {"LFVetaDr",         {41,   10,    0,    4.5}},
-        {"LFVmutaDr",        {42,   10,    0,    4.5}},
-        {"LFVePt",           {43,   10,   20,    300}},
-        {"LFVmuPt",          {44,   10,   20,    300}},
-        {"LFVtaPt",          {45,   10,   20,    300}},
-        {"BalepPt",          {46,   10,   20,    180}},
-        {"Topmass",          {47,   10,    0,    300}}
+        {"llM",              {0,   10,    0,    180}},
+        {"llDr",             {1,   10,    0,    4.5}},
+        {"lep1Pt",           {2,   10,    25,   225}},
+        {"lep2Pt",           {3,   10,    20,   180}},
+        {"taPt",             {4,   10,    20,   220}},
+        {"jet1Pt",           {5,   10,    30,   230}},
+        {"njet",             {6,   6,     0,    6}},
+        {"nbjet",            {7,   4,     0,    4}},
+        {"MET",              {8,   10,    0,    200}},
+        {"subSR",            {9,   18,    0,    18}},
+        {"LFVemuM",          {10,  10,    0,    300}},
+        {"LFVetaM",          {11,  10,    0,    300}},
+        {"LFVmutaM",         {12,  10,    0,    300}},
+        {"LFVemuDr",         {13,  10,    0,    4.5}},
+        {"LFVetaDr",         {14,  10,    0,    4.5}},
+        {"LFVmutaDr",        {15,  10,    0,    4.5}},
+        {"LFVePt",           {16,  10,    20,   300}},
+        {"LFVmuPt",          {17,  10,    20,   300}},
+        {"LFVtaPt",          {18,  10,    20,   300}},
+        {"BalepPt",          {19,  10,    20,   180}},
+        {"Topmass",          {20,  10,    0,    300}}
     };
     
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -291,13 +264,14 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 
     reg.push_back(0);
     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
-    if (Event->OnZ()){
+    if (Event->MET()->Pt()>20&&Event->njet()>0){
         reg.push_back(1);
         wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[1]);
-    }else{
+        if (Event->OnZ()){
         reg.push_back(2);
         wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[2]);
-        if (Event->njet()>0&&Event->MET()->Pt()>20){
+        }
+        else{
             reg.push_back(3);
             wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[3]);
             if (Event->nbjet()==1){
@@ -311,15 +285,6 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         }
     }
     //Start filling histograms
-    if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv1Prompt")+Event->el1()->truth_, Event->el1()->mva1_, wgt);
-    if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv2Prompt")+Event->el1()->truth_, Event->el1()->mva2_, wgt);
-    if (Event->ch()<2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"elMVAv3Prompt")+Event->el1()->truth_, Event->el1()->mva3_, wgt);
-    if (Event->ch()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVAv1Prompt")+Event->mu1()->truth_, Event->mu1()->mva1_, wgt);
-    if (Event->ch()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVAv2Prompt")+Event->mu1()->truth_, Event->mu1()->mva2_, wgt);
-    if (Event->ch()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"muMVAv3Prompt")+Event->mu1()->truth_, Event->mu1()->mva3_, wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv1Had")+Event->ta1()->truth_, Event->ta1()->mva1_, wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv2Had")+Event->ta1()->truth_, Event->ta1()->mva2_, wgt);
-    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taMVAv3Had")+Event->ta1()->truth_, Event->ta1()->mva3_, wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llM"), Event->llM(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llDr"), Event->llDr(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1()->pt_, wgt);

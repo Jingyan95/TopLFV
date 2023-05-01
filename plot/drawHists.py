@@ -24,24 +24,12 @@ year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
 charges=["OS","SS"];
 channels=["ee","emu","mumu"];
-regions=["ll","llOnZ","llOffZ","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2"]
-regionsName=[["No cuts","",""],["OnZ","",", Z+jets CR"],["OffZ","",""],["OffZ, p_{T}^{miss}>20GeV","njet#geq1",", SR(Loose)"],["OffZ, p_{T}^{miss}>20GeV","nbjet=1",", SR(Tight)"],["OffZ, p_{T}^{miss}>20GeV","nbjet=2",", t#bar{t}+jets CR"]]
-vars=["elMVAv1Prompt","elMVAv1HF","elMVAv1Other","elMVAv2Prompt","elMVAv2HF","elMVAv2Other","elMVAv3Prompt","elMVAv3HF","elMVAv3Other",
-      "muMVAv1Prompt","muMVAv1HF","muMVAv1Other","muMVAv2Prompt","muMVAv2HF","muMVAv2Other","muMVAv3Prompt","muMVAv3HF","muMVAv3Other",
-      "taMVAv1Had","taMVAv1Fake","taMVAv1Other","taMVAv2Had","taMVAv2Fake","taMVAv2Other","taMVAv3Had","taMVAv3Fake","taMVAv3Other",
-      "llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","subSR","LFVemuM","LFVetaM","LFVmutaM",
+regions=["ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2"]
+regionsName=[["No cuts","",""],["p_{T}^{miss}>20GeV, njet#geq1","",""],["p_{T}^{miss}>20GeV, njet#geq1","OnZ",", Z+jets CR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ",", SR(Loose)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=1",", SR(Tight)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=2",", t#bar{t}+jets CR"]]
+vars=["llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","subSR","LFVemuM","LFVetaM","LFVmutaM",
       "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass"]
 
-varsName=["Prompt electron MVA v1","HF electron MVA v1","Other electron MVA v1",
-          "Prompt electron MVA v2","HF electron MVA v2","Other electron MVA v2",
-          "Prompt electron MVA v3","HF electron MVA v3","Other electron MVA v3",
-          "Prompt muon MVA v1","HF muon MVA v1","Other muon MVA v1",
-          "Prompt muon MVA v2","HF muon MVA v2","Other muon MVA v2",
-          "Prompt muon MVA v3","HF muon MVA v3","Other muon MVA v3",
-          "Hadronic tau MVA v1","Fake tau MVA v1","Other tau MVA v1",
-          "Hadronic tau MVA v2","Fake tau MVA v2","Other tau MVA v2",
-          "Hadronic tau MVA v3","Fake tau MVA v3","Other tau MVA v3",
-          "m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
+varsName=["m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "Sub-leading lepton p_{T} [GeV]","Tau p_{T} [GeV]",
           "Leading jet p_{T} [GeV]", "njet", "nbjet (Loose WP)","MET [GeV]","SR subdivided",
           "m(e#bar{#mu}) [GeV]", "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]",
@@ -139,11 +127,11 @@ for numyear, nameyear in enumerate(year):
         H = []
         HSignal = []
         for f in range(len(Samples)):
-            h = Hists[numyear][f][0][0][numreg][36].Clone()
+            h = Hists[numyear][f][0][0][numreg][9].Clone()
             h.Reset("ICE")
             for numc, namec in enumerate(charges):
                 for numch, namech in enumerate(channels):
-                    h+=Hists[numyear][f][numc][numch][numreg][36]
+                    h+=Hists[numyear][f][numc][numch][numreg][9]
             h.SetFillColor(colors[f])
             if 'LFV' not in Samples[f]:
                 h.SetLineColor(colors[0])
