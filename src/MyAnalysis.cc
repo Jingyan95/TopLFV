@@ -40,8 +40,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2"};
-  std::vector<int>     unBlind{0,0,1,0,0,1};
+  std::vector<TString> regions{"ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZ"};
+  std::vector<int>     unBlind{0,0,1,0,0,1,1,1,0};
   const std::map<TString, std::vector<float>> vars =
     {
         {"llM",              {0,   10,    0,    180}},
@@ -93,12 +93,12 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
       }
   }
 
-//   TH2F *h_2D_wBtagSF;
-//   TH2F *h_2D_woBtagSF;
-//   Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
-//   Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
-//   h_2D_wBtagSF = new TH2F("2D_wBtagSF","2D_wBtagSF",5,njetBin,5,HtBin);
-//   h_2D_woBtagSF = new TH2F("2D_woBtagSF","2D_woBtagSF",5,njetBin,5,HtBin);
+  TH2F *h_2D_wBtagSF;
+  TH2F *h_2D_woBtagSF;
+  Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
+  Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
+  h_2D_wBtagSF = new TH2F("2D_wBtagSF","2D_wBtagSF",5,njetBin,5,HtBin);
+  h_2D_woBtagSF = new TH2F("2D_woBtagSF","2D_woBtagSF",5,njetBin,5,HtBin);
 
   std::string string_year(year.Data());
   TFile *f_El_RECO = new TFile("data/EGM/RECO/"+year+"egammaEffi_ptAbove20.txt_EGM2D.root");
@@ -137,7 +137,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   std::vector<int> reg;
   std::vector<float> wgt;
   bool metFilterPass;
-  float lep1PtCut = 25;
+  float lep1PtCut = 30;
   float eleEta;
   float tauPt;
   float weight_Lumi;
@@ -241,7 +241,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (l>=16) break;//Restrict the loop size
         tauPt = Tau_pt[l];
         if (data=="mc" && (int)Tau_genPartFlav[l]==5) tauPt = Tau_pt[l] * sf_Ta_ES_jet.GetBinContent(sf_Ta_ES_jet.GetXaxis()->FindBin(Tau_decayMode[l]));
-        if (tauPt<25 || abs(Tau_eta[l])>2.3 || abs(Tau_dz[l])>0.1) continue;
+        if (tauPt<20 || abs(Tau_eta[l])>2.3 || abs(Tau_dz[l])>0.1) continue;
         if (Tau_decayMode[l]==5 || Tau_decayMode[l]==6) continue;
         //The Loosest possible Deep-Tau Working Point
         if ((int)Tau_idDeepTau2017v2p1VSe[l]<2 || (int)Tau_idDeepTau2017v2p1VSmu[l]<8 || (int)Tau_idDeepTau2017v2p1VSjet[l]<32) continue;
@@ -272,7 +272,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     Jets =  new std::vector<jet_candidate*>();
     for (UInt_t l=0;l<nJet;l++){
         if (l>=16) break;//Restrict the loop size
-        if (Jet_pt_nom[l]<30 || abs(Jet_eta[l])>2.4) continue;
+        if (Jet_pt_nom[l]<25 || abs(Jet_eta[l])>2.4) continue;
         if ((!((int)Jet_puId[l]&(1<<1)) && Jet_pt_nom[l]<50) || !((int)Jet_jetId[l]&(1<<2))) continue;
         //Overlap removal
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Jet_eta[l],Jet_phi[l])<0.4 ||
@@ -296,8 +296,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(),"");
     }
     weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
-    // h_2D_woBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event);
-    // h_2D_wBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event*Event->btagSF());
+    h_2D_woBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event);
+    h_2D_wBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event*Event->btagSF());
 
     reg.push_back(0);
     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
@@ -320,6 +320,18 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
                 wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[5]);
             }
         }
+    }
+    if (Event->St()<300){
+        reg.push_back(6);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[6]);
+    }
+    if (Event->OnZ()){
+        reg.push_back(7);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[7]);
+    }
+    if (Event->St()>300&&!Event->OnZ()){
+        reg.push_back(8);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
     }
     //Start filling histograms
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llM"), Event->llM(), wgt);
@@ -371,8 +383,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
       }
   }
 
-//   h_2D_woBtagSF->Write("",TObject::kOverwrite);
-//   h_2D_wBtagSF->Write("",TObject::kOverwrite);
+  h_2D_woBtagSF->Write("",TObject::kOverwrite);
+  h_2D_wBtagSF->Write("",TObject::kOverwrite);
     
   file_out.Close() ;
   Hists.clear();

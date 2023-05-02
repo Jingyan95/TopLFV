@@ -22,10 +22,11 @@ TGaxis.SetMaxDigits(2)
     
 year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
-charges=["OS","SS"];
-channels=["ee","emu","mumu"];
-regions=["ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2"]
-regionsName=[["No cuts","",""],["p_{T}^{miss}>20GeV, njet#geq1","",""],["p_{T}^{miss}>20GeV, njet#geq1","OnZ",", Z+jets CR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ",", SR(Loose)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=1",", SR(Tight)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=2",", t#bar{t}+jets CR"]]
+charges=["OS","SS"]
+channels=["ee","emu","mumu"]
+regions=["ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZ"]
+regionsName=[["No cuts","",""],["p_{T}^{miss}>20GeV, njet#geq1","",""],["p_{T}^{miss}>20GeV, njet#geq1","OnZ",", Z+jets CR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ",", SR(Loose)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=1",", SR(Tight)"],
+["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=2",", t#bar{t}+jets CR"],["S_{T}<300GeV","",", CR"],["OnZ","",", Z+jets CR"],["S_{T}>300GeV, OffZ","",", SR(Alt)"]]
 vars=["llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","subSR","LFVemuM","LFVetaM","LFVmutaM",
       "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass","Ht","St"]
 
