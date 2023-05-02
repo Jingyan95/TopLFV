@@ -82,6 +82,8 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Float_t         Tau_pt[16];
    Float_t         Tau_eta[16];
    Float_t         Tau_phi[16];
+   Float_t         Tau_dxy[16];
+   Float_t         Tau_dz[16];
    Float_t         Tau_mass[16];
    UChar_t         Tau_genPartFlav[16];
    Int_t           Tau_decayMode[16];
@@ -202,6 +204,8 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_Tau_pt;
    TBranch         *b_Tau_eta;
    TBranch         *b_Tau_phi;
+   TBranch         *b_Tau_dxy;
+   TBranch         *b_Tau_dz;
    TBranch         *b_Tau_mass;
    TBranch         *b_Tau_genPartFlav;
    TBranch         *b_Tau_decayMode;
@@ -403,6 +407,8 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Tau_pt", &Tau_pt, &b_Tau_pt);
    fChain->SetBranchAddress("Tau_eta", &Tau_eta, &b_Tau_eta);
    fChain->SetBranchAddress("Tau_phi", &Tau_phi, &b_Tau_phi);
+   fChain->SetBranchAddress("Tau_dxy", &Tau_dxy, &b_Tau_dxy);
+   fChain->SetBranchAddress("Tau_dz", &Tau_dz, &b_Tau_dz);
    fChain->SetBranchAddress("Tau_mass", &Tau_mass, &b_Tau_mass);
    if (data_ == "mc") fChain->SetBranchAddress("Tau_genPartFlav", &Tau_genPartFlav, &b_Tau_genPartFlav);
    fChain->SetBranchAddress("Tau_decayMode", &Tau_decayMode, &b_Tau_decayMode);

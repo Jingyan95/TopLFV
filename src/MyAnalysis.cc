@@ -48,7 +48,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"llDr",             {1,   10,    0,    4.5}},
         {"lep1Pt",           {2,   10,    25,   225}},
         {"lep2Pt",           {3,   10,    20,   180}},
-        {"taPt",             {4,   10,    20,   220}},
+        {"taPt",             {4,   10,    25,   225}},
         {"jet1Pt",           {5,   10,    30,   230}},
         {"njet",             {6,   6,     0,    6}},
         {"nbjet",            {7,   4,     0,    4}},
@@ -207,7 +207,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             weight_El_RECO = weight_El_RECO * scale_factor(&sf_El_RECO, eleEta, Electron_pt[l],"");
             weight_El_ID = weight_El_ID * scale_factor(&sf_El_ID, eleEta, Electron_pt[l],"");
         }
-        Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],Electron_phi[l],
+        Leptons->push_back(new lepton_candidate(Electron_pt[l],Electron_eta[l],Electron_phi[l],Electron_dz[l],
             Electron_charge[l],Electron_topLeptonMVA_v1[l],Electron_topLeptonMVA_v2[l],0,l,1,data=="mc"?(int)Electron_genPartFlav[l]:1));         
     }
                            
@@ -222,7 +222,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             weight_Mu_RECO = weight_Mu_RECO * scale_factor(&sf_Mu_RECO, abs(Muon_eta[l]), Muon_pt[l],"");
             weight_Mu_ID = weight_Mu_ID * scale_factor(&sf_Mu_ID, abs(Muon_eta[l]), Muon_pt[l],"");
         }
-        Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],Muon_phi[l],
+        Leptons->push_back(new lepton_candidate(Muon_pt[l],Muon_eta[l],Muon_phi[l],Muon_dz[l],
             Muon_charge[l],Muon_topLeptonMVA_v1[l],Muon_topLeptonMVA_v2[l],0,l,2,data=="mc"?(int)Muon_genPartFlav[l]:1));
     }
                            
@@ -241,7 +241,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         if (l>=16) break;//Restrict the loop size
         tauPt = Tau_pt[l];
         if (data=="mc" && (int)Tau_genPartFlav[l]==5) tauPt = Tau_pt[l] * sf_Ta_ES_jet.GetBinContent(sf_Ta_ES_jet.GetXaxis()->FindBin(Tau_decayMode[l]));
-        if (tauPt<20 || abs(Tau_eta[l])>2.3) continue;
+        if (tauPt<25 || abs(Tau_eta[l])>2.3 || abs(Tau_dz[l])>0.1) continue;
         if (Tau_decayMode[l]==5 || Tau_decayMode[l]==6) continue;
         //The Loosest possible Deep-Tau Working Point
         if ((int)Tau_idDeepTau2017v2p1VSe[l]<2 || (int)Tau_idDeepTau2017v2p1VSmu[l]<8 || (int)Tau_idDeepTau2017v2p1VSjet[l]<32) continue;
@@ -253,7 +253,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
             if ((int)Tau_genPartFlav[l]==1||(int)Tau_genPartFlav[l]==3) weight_Ta_ID_e = weight_Ta_ID_e * sf_Ta_ID_e.GetBinContent(sf_Ta_ID_e.GetXaxis()->FindBin(abs(Tau_eta[l])));
             if ((int)Tau_genPartFlav[l]==2||(int)Tau_genPartFlav[l]==4) weight_Ta_ID_mu = weight_Ta_ID_mu * sf_Ta_ID_mu.GetBinContent(sf_Ta_ID_mu.GetXaxis()->FindBin(abs(Tau_eta[l])));
         }
-        Leptons->push_back(new lepton_candidate(tauPt,Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
+        Leptons->push_back(new lepton_candidate(tauPt,Tau_eta[l],Tau_phi[l],Tau_dz[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
             Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,data=="mc"?(int)Tau_genPartFlav[l]:5));
         //break;//Only look at the leading tau
     }
