@@ -101,28 +101,33 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 //   h_2D_woBtagSF = new TH2F("2D_woBtagSF","2D_woBtagSF",5,njetBin,5,HtBin);
 
   std::string string_year(year.Data());
-  TH2F  sf_El_RECO;
-  TH2F  sf_El_ID;
-  TH2F  sf_Mu_RECO;
-  TH2F  sf_Mu_ID;
-  TH2F  sf_Btag_corr;
-  if (data == "mc"){
-     TFile *f_El_RECO = new TFile("data/EGM/RECO/"+year+"egammaEffi_ptAbove20.txt_EGM2D.root");
-     TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/"+year+"egammaEffi.txt_EGM2D.root");
-     TFile *f_Mu_RECO = new TFile("data/MUO/RECO/"+year+"Efficiency_muon_generalTracks_trackerMuon.root");
-     TFile *f_Mu_ID = new TFile("data/MUO/TOPMVASF/v1/Medium/"+year+"NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt.root");
-     TFile *f_Btag_corr = new TFile("data/BTV/"+year+"BtagCorr.root");
-     sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
-     sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
-     sf_Mu_RECO = *(TH2F*)f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
-     sf_Mu_ID = *(TH2F*)f_Mu_ID->Get("NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt");
-     sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection");
-     f_El_RECO->Close();
-     f_El_ID->Close();
-     f_Mu_RECO->Close();
-     f_Mu_ID->Close();
-     f_Btag_corr->Close();
-  }
+  TFile *f_El_RECO = new TFile("data/EGM/RECO/"+year+"egammaEffi_ptAbove20.txt_EGM2D.root");
+  TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/"+year+"egammaEffi.txt_EGM2D.root");
+  TFile *f_Mu_RECO = new TFile("data/MUO/RECO/"+year+"Efficiency_muon_generalTracks_trackerMuon.root");
+  TFile *f_Mu_ID = new TFile("data/MUO/TOPMVASF/v1/Medium/"+year+"NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt.root");
+  TFile *f_Ta_ID_jet = new TFile("data/TAU/"+year+"TauID_SF_pt_DeepTau2017v2p1VSjet.root");//https://github.com/cms-tau-pog/TauIDSFs/tree/master/data
+  TFile *f_Ta_ID_e = new TFile("data/TAU/"+year+"TauID_SF_eta_DeepTau2017v2p1VSe.root");
+  TFile *f_Ta_ID_mu = new TFile("data/TAU/"+year+"TauID_SF_eta_DeepTau2017v2p1VSmu.root");
+  TFile *f_Ta_ES_jet = new TFile("data/TAU/"+year+"TauES_dm_DeepTau2017v2p1VSjet.root");//Tau energy scale
+  TFile *f_Btag_corr = new TFile("data/BTV/"+year+"BtagCorr.root");
+  auto sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
+  auto sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
+  auto sf_Mu_RECO = *(TH2F*)f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
+  auto sf_Mu_ID = *(TH2F*)f_Mu_ID->Get("NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt");
+  auto sf_Ta_ID_jet = *(TF1*)f_Ta_ID_jet->Get("Tight_cent");
+  auto sf_Ta_ID_e = *(TH1F*)f_Ta_ID_e->Get("VVLoose");
+  auto sf_Ta_ID_mu = *(TH1F*)f_Ta_ID_mu->Get("Tight");
+  auto sf_Ta_ES_jet = *(TH1F*)f_Ta_ES_jet->Get("tes");
+  auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection");
+  f_El_RECO->Close();
+  f_El_ID->Close();
+  f_Mu_RECO->Close();
+  f_Mu_ID->Close();
+  f_Ta_ID_jet->Close();
+  f_Ta_ID_e->Close();
+  f_Ta_ID_mu->Close();
+  f_Ta_ES_jet->Close();
+  f_Btag_corr->Close();
     
   TFile file_out (fname,"RECREATE");
     
@@ -134,6 +139,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   bool metFilterPass;
   float lep1PtCut = 25;
   float eleEta;
+  float tauPt;
   float weight_Lumi;
   float weight_PU;
   float weight_L1ECALPreFiring;
@@ -142,6 +148,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
   float weight_El_ID;
   float weight_Mu_RECO;
   float weight_Mu_ID;
+  float weight_Ta_ID_jet;
+  float weight_Ta_ID_e;
+  float weight_Ta_ID_mu;
   float weight_Btag_corr;//correction for btag shape to preserve normalization 
   float weight_Event;
   int nAccept=0;
@@ -168,6 +177,9 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     weight_El_ID = 1;
     weight_Mu_RECO = 1;
     weight_Mu_ID = 1;
+    weight_Ta_ID_jet = 1;
+    weight_Ta_ID_e = 1;
+    weight_Ta_ID_mu = 1;
     weight_Btag_corr = 1;
     weight_Event = 1;
       
@@ -227,14 +239,21 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     //Tau selection
     for (UInt_t l=0;l<nTau;l++){
         if (l>=16) break;//Restrict the loop size
-        if (Tau_pt[l]<20 || abs(Tau_eta[l])>2.3) continue;
+        tauPt = Tau_pt[l];
+        if (data=="mc" && (int)Tau_genPartFlav[l]==5) tauPt = Tau_pt[l] * sf_Ta_ES_jet.GetBinContent(sf_Ta_ES_jet.GetXaxis()->FindBin(Tau_decayMode[l]));
+        if (tauPt<20 || abs(Tau_eta[l])>2.3) continue;
         if (Tau_decayMode[l]==5 || Tau_decayMode[l]==6) continue;
         //The Loosest possible Deep-Tau Working Point
-        if ((int)Tau_idDeepTau2017v2p1VSe[l]<1 || (int)Tau_idDeepTau2017v2p1VSmu[l]<1 || (int)Tau_idDeepTau2017v2p1VSjet[l]<32) continue;
+        if ((int)Tau_idDeepTau2017v2p1VSe[l]<2 || (int)Tau_idDeepTau2017v2p1VSmu[l]<8 || (int)Tau_idDeepTau2017v2p1VSjet[l]<32) continue;
         //Overlap removal
         if (event_candidate::deltaR((*Leptons)[0]->eta_,(*Leptons)[0]->phi_,Tau_eta[l],Tau_phi[l])<0.4 ||
             event_candidate::deltaR((*Leptons)[1]->eta_,(*Leptons)[1]->phi_,Tau_eta[l],Tau_phi[l])<0.4) continue;
-        Leptons->push_back(new lepton_candidate(Tau_pt[l],Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
+        if (data=="mc") {
+            if ((int)Tau_genPartFlav[l]==5) weight_Ta_ID_jet = weight_Ta_ID_jet * sf_Ta_ID_jet.Eval(tauPt<140?tauPt:140);//SF measured up to 140GeV
+            if ((int)Tau_genPartFlav[l]==1||(int)Tau_genPartFlav[l]==3) weight_Ta_ID_e = weight_Ta_ID_e * sf_Ta_ID_e.GetBinContent(sf_Ta_ID_e.GetXaxis()->FindBin(abs(Tau_eta[l])));
+            if ((int)Tau_genPartFlav[l]==2||(int)Tau_genPartFlav[l]==4) weight_Ta_ID_mu = weight_Ta_ID_mu * sf_Ta_ID_mu.GetBinContent(sf_Ta_ID_mu.GetXaxis()->FindBin(abs(Tau_eta[l])));
+        }
+        Leptons->push_back(new lepton_candidate(tauPt,Tau_eta[l],Tau_phi[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
             Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,data=="mc"?(int)Tau_genPartFlav[l]:5));
         //break;//Only look at the leading tau
     }
@@ -276,7 +295,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
     weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(),"");
     }
-    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * Event->btagSF() * weight_Btag_corr;
+    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
     // h_2D_woBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event);
     // h_2D_wBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event*Event->btagSF());
 
