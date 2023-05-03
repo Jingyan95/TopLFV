@@ -40,7 +40,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"};
+  std::vector<TString> regions{"ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"};
   std::vector<int>     unBlind{0,1,0,1,1,1,1,0,0};
   const std::map<TString, std::vector<float>> vars =
     {
@@ -96,8 +96,14 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 
 //   TH2F *h_2D_wBtagSF;
 //   TH2F *h_2D_woBtagSF;
-//   Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
-//   Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
+  TH1F *h_1D_njet_woBtagSF;
+  TH1F *h_1D_njet_wBtagSFwoCorr;
+  TH1F *h_1D_njet_wBtagSFwCorr;
+  TH1F *h_1D_Ht_woBtagSF;
+  TH1F *h_1D_Ht_wBtagSFwoCorr;
+  TH1F *h_1D_Ht_wBtagSFwCorr;
+  Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
+  Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
 //   h_2D_wBtagSF = new TH2F("2D_wBtagSF","2D_wBtagSF",5,njetBin,5,HtBin);
 //   h_2D_woBtagSF = new TH2F("2D_woBtagSF","2D_woBtagSF",5,njetBin,5,HtBin);
 
@@ -297,8 +303,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(),"");
     }
     weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
-    // h_2D_woBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event);
-    // h_2D_wBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Event*Event->btagSF());
+    // h_2D_woBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
+    // h_2D_wBtagSF->Fill(Event->njet()>4?4:Event->njet(),Event->Ht()>250?249:Event->Ht(),weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF());
 
     reg.push_back(0);
     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
@@ -326,18 +332,16 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         reg.push_back(5);
         wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[5]);
     }
-    if (Event->St()>300&&!Event->OnZ()){
-        if (Event->btagSum()>1.3){
-            reg.push_back(6);
-            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[6]);
-        }
-        else{
-            reg.push_back(7);
-            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[7]);
-            if(Event->SRindex()%2==0?Event->njet()>0:Event->St()>350){
-                reg.push_back(8);
-                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
-            }
+    if (Event->btagSum()>1.3){
+        reg.push_back(6);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[6]);
+    }
+    if (Event->St()>300&&!Event->OnZ()&&Event->btagSum()<1.3){
+        reg.push_back(7);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[7]);
+        if(Event->SRindex()%2==0?Event->njet()>0:Event->St()>500){
+            reg.push_back(8);
+            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
         }
     }
     //Start filling histograms

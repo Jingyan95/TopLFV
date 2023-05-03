@@ -24,10 +24,11 @@ year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
 charges=["OS","SS"]
 channels=["ee","emu","mumu"]
-regions=["ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"]
+regions=["ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"]
+
 regionsName=[["No cuts","",""],["p_{T}^{miss}>20GeV, njet#geq1","OnZ",", Z+jets CR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=1",", SR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=2",", t#bar{t}+jets CR"]
-            ,["S_{T}<300GeV","",", CR"],["OnZ","",", Z+jets CR"],["S_{T}>300GeV, OffZ","btag>1.3",", t#bar{t}+jets CR"],["S_{T}>300GeV, OffZ","btag<1.3",", SR(Alt, Loose)"]
-            ,["S_{T}>300GeV, OffZ","btag<1.3, njet#geq1 or S_{T}>350GeV",", SR(Alt, Tight)"]]
+            ,["S_{T}<300GeV","",", CR"],["OnZ","",", Z+jets CR"],["btag>1.3","",", t#bar{t}+jets CR"],["S_{T}>300GeV, OffZ","btag<1.3",", SR(Alt, Loose)"],["S_{T}>300GeV, OffZ","btag<1.3, njet#geq1 or S_{T}>500GeV",", SR(Alt, Tight)"]]
+
 vars=["llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","subSR","LFVemuM","LFVetaM","LFVmutaM",
       "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass","Ht","St","btagSum"]
 
@@ -85,7 +86,7 @@ for numyear, nameyear in enumerate(year):
                         h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
                         h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
                         if ('SS' in namec) and ('B2' in namereg or 'OnZ' in namereg or 'Stl300' in namereg or 'btagg1p3' in namereg):
-                           h.Reset("ICE")
+                           h.Reset("ICE")##No CR in SS channels 
                         l4.append(h)
                     l3.append(l4)
                 l2.append(l3)
