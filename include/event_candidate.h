@@ -30,6 +30,7 @@ public:
   int njet(){return njet_;}
   int nbjet(){return nbjet_;}
   float btagSF(){return btagSF_;}
+  float btagSum(){return btagSum_;}
   float Ht(){return Ht_;}
   float St(){return St_;}
   float Topmass(){return Topmass_;}
@@ -114,6 +115,7 @@ private:
   int njet_;
   int nbjet_;
   float btagSF_;
+  float btagSum_;//Sum of btagging score
   float Ht_;
   float St_;
   float Topmass_;//SM top mass

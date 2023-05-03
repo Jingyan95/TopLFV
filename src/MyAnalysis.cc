@@ -40,8 +40,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
 {
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZ","llStg300OffZTight"};
-  std::vector<int>     unBlind{0,0,1,0,0,1,1,1,0,0};
+  std::vector<TString> regions{"ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"};
+  std::vector<int>     unBlind{0,1,0,1,1,1,1,0,0};
   const std::map<TString, std::vector<float>> vars =
     {
         {"llM",              {0,   10,    0,    180}},
@@ -66,7 +66,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         {"BalepPt",          {19,  10,    20,   180}},
         {"Topmass",          {20,  10,    0,    300}},
         {"Ht",               {21,  10,    0,    300}},
-        {"St",               {22,  10,    65,   400}}
+        {"St",               {22,  20,    70,   600}},
+        {"btagSum",          {23,  25,    0,    2.5}}
     };
     
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -302,39 +303,41 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     reg.push_back(0);
     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
     if (Event->MET()->Pt()>20&&Event->njet()>0){
+        if (Event->OnZ()){
         reg.push_back(1);
         wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[1]);
-        if (Event->OnZ()){
-        reg.push_back(2);
-        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[2]);
         }
         else{
-            reg.push_back(3);
-            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[3]);
             if (Event->nbjet()==1){
-                reg.push_back(4);
-                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[4]);
+                reg.push_back(2);
+                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[2]);
             }
             if (Event->nbjet()==2){
-                reg.push_back(5);
-                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[5]);
+                reg.push_back(3);
+                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[3]);
             }
         }
     }
     if (Event->St()<300){
-        reg.push_back(6);
-        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[6]);
+        reg.push_back(4);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[4]);
     }
     if (Event->OnZ()){
-        reg.push_back(7);
-        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[7]);
+        reg.push_back(5);
+        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[5]);
     }
     if (Event->St()>300&&!Event->OnZ()){
-        reg.push_back(8);
-        wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
-        if(Event->SRindex()%2==0?Event->njet()>0:Event->St()>350){
-            reg.push_back(9);
-            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
+        if (Event->btagSum()>1.3){
+            reg.push_back(6);
+            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[6]);
+        }
+        else{
+            reg.push_back(7);
+            wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[7]);
+            if(Event->SRindex()%2==0?Event->njet()>0:Event->St()>350){
+                reg.push_back(8);
+                wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
+            }
         }
     }
     //Start filling histograms
@@ -357,6 +360,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     if (Event->njet()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Topmass"), Event->Topmass(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Ht"), Event->Ht(), wgt);
     FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"St"), Event->St(), wgt);
+    FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"btagSum"), Event->btagSum(), wgt);
     
     for (int l=0;l<(int)Leptons->size();l++){
       delete (*Leptons)[l];

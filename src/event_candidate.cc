@@ -16,6 +16,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       njet_(Jets->size()),
                                       nbjet_(0),
                                       btagSF_(1),
+                                      btagSum_(0),
                                       Ht_(0),
                                       St_(0),
                                       Topmass_(0),
@@ -28,7 +29,8 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
     if (Jets->size()) bjet_ = (*Jets_)[0];
     sort(Jets->begin(), Jets->end(), ComparePtJet);
     for (int l=0;l<(int)Jets->size();l++){
-        btagSF_ = btagSF_ * (*Jets)[l]->btSF_;
+        btagSF_ *= (*Jets)[l]->btSF_;
+        btagSum_ += (*Jets)[l]->bt_;
         Ht_+=(*Jets)[l]->pt_;
         if((*Jets)[l]->btag_) nbjet_++;
     }

@@ -24,11 +24,12 @@ year_RunII=['2016APV','2016','2017','2018','All']
 year=[]
 charges=["OS","SS"]
 channels=["ee","emu","mumu"]
-regions=["ll","llMetg20Jetgeq1","llOnZMetg20Jetgeq1","llOffZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZ","llStg300OffZTight"]
-regionsName=[["No cuts","",""],["p_{T}^{miss}>20GeV, njet#geq1","",""],["p_{T}^{miss}>20GeV, njet#geq1","OnZ",", Z+jets CR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ",", SR(Loose)"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=1",", SR(Tight)"],
-["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=2",", t#bar{t}+jets CR"],["S_{T}<300GeV","",", CR"],["OnZ","",", Z+jets CR"],["S_{T}>300GeV, OffZ","",", SR(Alt)"],["S_{T}>300GeV, OffZ","njet#geq1 or S_{T}>350GeV",", SR(Alt, Tight)"]]
+regions=["ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llStg300OffZbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"]
+regionsName=[["No cuts","",""],["p_{T}^{miss}>20GeV, njet#geq1","OnZ",", Z+jets CR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=1",", SR"],["p_{T}^{miss}>20GeV, njet#geq1","OffZ, nbjet=2",", t#bar{t}+jets CR"]
+            ,["S_{T}<300GeV","",", CR"],["OnZ","",", Z+jets CR"],["S_{T}>300GeV, OffZ","btag>1.3",", t#bar{t}+jets CR"],["S_{T}>300GeV, OffZ","btag<1.3",", SR(Alt, Loose)"]
+            ,["S_{T}>300GeV, OffZ","btag<1.3, njet#geq1 or S_{T}>350GeV",", SR(Alt, Tight)"]]
 vars=["llM","llDr","lep1Pt","lep2Pt","taPt","jet1Pt","njet","nbjet","MET","subSR","LFVemuM","LFVetaM","LFVmutaM",
-      "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass","Ht","St"]
+      "LFVemuDr","LFVetaDr","LFVmutaDr","LFVePt","LFVmuPt","LFVtaPt","BalepPt","Topmass","Ht","St","btagSum"]
 
 varsName=["m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "Sub-leading lepton p_{T} [GeV]","Tau p_{T} [GeV]",
@@ -36,7 +37,7 @@ varsName=["m(l#bar{l}) [GeV]","#DeltaR(l#bar{l})","Leading lepton p_{T} [GeV]",
           "m(e#bar{#mu}) [GeV]", "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]",
           "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]", "#DeltaR(#mu,#bar{#tau}) [GeV]",
           "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
-          "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]","H_{T} [GeV]", "S_{T} [GeV]"]
+          "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]","H_{T} [GeV]", "S_{T} [GeV]", "Sum of btagging scores"]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()
@@ -83,7 +84,7 @@ for numyear, nameyear in enumerate(year):
                         h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
                         h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
                         h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
-                        if ('SS' in namec) and ('B2' in namereg or 'OnZ' in namereg):
+                        if ('SS' in namec) and ('B2' in namereg or 'OnZ' in namereg or 'Stl300' in namereg or 'btagg1p3' in namereg):
                            h.Reset("ICE")
                         l4.append(h)
                     l3.append(l4)
