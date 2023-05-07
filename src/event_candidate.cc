@@ -55,7 +55,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         if (ch_==1){//emu
             float topmass0 = 0;
             float topmass1 = 0;
-            float obs0 = (*Leptons_)[2]->pt_;
+            float obs0 = (*Leptons_)[2]->pt_;//Assuming lepton with lower pT is the SM lepton when top quark can not be reconstructed
             int ba = abs((*Leptons_)[1]->charge_+(*Leptons_)[2]->charge_)/2;
             float obs1 = (*Leptons_)[ba]->pt_;
             if (Jets_->size()){//Top quark can only be reconstructed when there is at least one jet

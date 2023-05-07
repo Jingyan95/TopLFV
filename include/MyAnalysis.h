@@ -7,9 +7,6 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TF1.h>
-
-// Header file for the classes stored in the TTree if any.
-#include "vector"
 #include "trigger.h"
 
 using namespace std;
@@ -284,10 +281,12 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    typedef vector<Dim1> Dim2;
    typedef vector<Dim2> Dim3;
    typedef vector<Dim3> Dim4;
-    
+   //Utility functions
+   int vInd(std::map<TString, std::vector<float>> V, TString name);
    void FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight);
    int getSign(double x);
    float scale_factor(TH2F* h, float X, float Y, TString uncert);
+   // void deleteContainters(vector<T>* v);
 };
 
 #endif
@@ -354,7 +353,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
-    
+   
    fChain->SetBranchAddress("nElectron", &nElectron, &b_nElectron);
    fChain->SetBranchAddress("Electron_charge", &Electron_charge, &b_Electron_charge);
    fChain->SetBranchAddress("Electron_deltaEtaSC", &Electron_deltaEtaSC, &b_Electron_deltaEtaSC);
@@ -379,7 +378,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Electron_topLeptonMVA_v2", &Electron_topLeptonMVA_v2, &b_Electron_topLeptonMVA_v2);
    fChain->SetBranchAddress("Electron_convVeto", &Electron_convVeto, &b_Electron_convVeto);
    fChain->SetBranchAddress("Electron_tightCharge", &Electron_tightCharge, &b_Electron_tightCharge);
-    
+   
    fChain->SetBranchAddress("nMuon", &nMuon, &b_nMuon);
    fChain->SetBranchAddress("Muon_charge", &Muon_charge, &b_Muon_charge);
    fChain->SetBranchAddress("Muon_mass", &Muon_mass, &b_Muon_mass);
@@ -401,7 +400,7 @@ void MyAnalysis::Init(TTree *tree)
    if (data_ == "mc") fChain->SetBranchAddress("Muon_genPartFlav", &Muon_genPartFlav, &b_Muon_genPartFlav);
    fChain->SetBranchAddress("Muon_topLeptonMVA_v1", &Muon_topLeptonMVA_v1, &b_Muon_topLeptonMVA_v1);
    fChain->SetBranchAddress("Muon_topLeptonMVA_v2", &Muon_topLeptonMVA_v2, &b_Muon_topLeptonMVA_v2);
-    
+   
    fChain->SetBranchAddress("nTau", &nTau, &b_nTau);
    fChain->SetBranchAddress("Tau_charge", &Tau_charge, &b_Tau_charge);
    fChain->SetBranchAddress("Tau_pt", &Tau_pt, &b_Tau_pt);
@@ -418,7 +417,7 @@ void MyAnalysis::Init(TTree *tree)
    fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", &Tau_idDeepTau2017v2p1VSe, &b_Tau_idDeepTau2017v2p1VSe);
    fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", &Tau_idDeepTau2017v2p1VSmu, &b_Tau_idDeepTau2017v2p1VSmu);
    fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
-    
+   
    fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
    fChain->SetBranchAddress("Jet_pt_nom", &Jet_pt_nom, &b_Jet_pt_nom);
    fChain->SetBranchAddress("Jet_eta", &Jet_eta, &b_Jet_eta);
@@ -471,21 +470,25 @@ void MyAnalysis::Init(TTree *tree)
    if (data_ == "mc") fChain->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt, &b_Pileup_nTrueInt);
    fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
    fChain->SetBranchAddress("L1PreFiringWeight_Muon_Nom", &L1PreFiringWeight_Muon_Nom, &b_L1PreFiringWeight_Muon_Nom);
-    
+   
    Notify();
 }
 
 void MyAnalysis::InitTrigger(){
-     myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,
+   myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,
                   HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,HLT_DoubleEle33_CaloIdL_MW,HLT_DoubleEle33_CaloIdL_GsfTrkIdVL,
                   HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,
                   HLT_Ele27_WPTight_Gsf,HLT_Ele32_WPTight_Gsf,HLT_Ele35_WPTight_Gsf,HLT_IsoMu24,HLT_IsoTkMu24,HLT_IsoMu27);
 }
 
+int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name){
+   return V.find(name)->second.at(0);
+}
+
 void MyAnalysis::FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight){
-    for (int i = 0; i < v2.size(); ++i) {
-        H4[v0][v1][v2[i]][v3]->Fill(value, weight[i]);
-    }
+   for (int i = 0; i < v2.size(); ++i) {
+      H4[v0][v1][v2[i]][v3]->Fill(value, weight[i]);
+   }
 }
 
 int MyAnalysis::getSign(double x){
@@ -494,24 +497,34 @@ int MyAnalysis::getSign(double x){
    return 0;
 }
 
+template <class T>
+void deleteContainter(vector<T>* v){
+   for (int l=0;l<(int)v->size();l++){
+      delete (*v)[l];
+   }
+   v->clear();
+   v->shrink_to_fit();
+   delete v;
+}
+
 float MyAnalysis::scale_factor(TH2F* h, float X, float Y, TString uncert){
-  int NbinsX=h->GetXaxis()->GetNbins();
-  int NbinsY=h->GetYaxis()->GetNbins();
-  float x_min=h->GetXaxis()->GetBinLowEdge(1);
-  float x_max=h->GetXaxis()->GetBinLowEdge(NbinsX)+h->GetXaxis()->GetBinWidth(NbinsX);
-  float y_min=h->GetYaxis()->GetBinLowEdge(1);
-  float y_max=h->GetYaxis()->GetBinLowEdge(NbinsY)+h->GetYaxis()->GetBinWidth(NbinsY);
-  TAxis *Xaxis = h->GetXaxis();
-  TAxis *Yaxis = h->GetYaxis();
-  Int_t binx=1;
-  Int_t biny=1;
-  if(x_min < X && X < x_max) binx = Xaxis->FindBin(X);
-  else binx= (X<=x_min) ? 1 : NbinsX ;
-  if(y_min < Y && Y < y_max) biny = Yaxis->FindBin(Y);
-  else biny= (Y<=y_min) ? 1 : NbinsY ;
-  if(uncert=="up") return (h->GetBinContent(binx, biny)+h->GetBinError(binx, biny));
-  else if(uncert=="down") return (h->GetBinContent(binx, biny)-h->GetBinError(binx, biny));
-  else return  h->GetBinContent(binx, biny);
+   int NbinsX=h->GetXaxis()->GetNbins();
+   int NbinsY=h->GetYaxis()->GetNbins();
+   float x_min=h->GetXaxis()->GetBinLowEdge(1);
+   float x_max=h->GetXaxis()->GetBinLowEdge(NbinsX)+h->GetXaxis()->GetBinWidth(NbinsX);
+   float y_min=h->GetYaxis()->GetBinLowEdge(1);
+   float y_max=h->GetYaxis()->GetBinLowEdge(NbinsY)+h->GetYaxis()->GetBinWidth(NbinsY);
+   TAxis *Xaxis = h->GetXaxis();
+   TAxis *Yaxis = h->GetYaxis();
+   Int_t binx=1;
+   Int_t biny=1;
+   if(x_min < X && X < x_max) binx = Xaxis->FindBin(X);
+   else binx= (X<=x_min) ? 1 : NbinsX ;
+   if(y_min < Y && Y < y_max) biny = Yaxis->FindBin(Y);
+   else biny= (Y<=y_min) ? 1 : NbinsY ;
+   if(uncert=="up") return (h->GetBinContent(binx, biny)+h->GetBinError(binx, biny));
+   else if(uncert=="down") return (h->GetBinContent(binx, biny)-h->GetBinError(binx, biny));
+   else return  h->GetBinContent(binx, biny);
 }
 
 Bool_t MyAnalysis::Notify()

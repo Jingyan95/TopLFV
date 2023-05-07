@@ -76,6 +76,9 @@ for key, value in SAMPLES.items():
             submit += 'periodic_release = (HoldReasonSubCode == 42)\n'
             submit += 'queue '+str(len(sequance)) +'\n'
             submitName = key + '_' + str(idx) + '.sub'
+            subprocess.call('rm -f Jobs/'+key+'/*.out', shell=True)
+            subprocess.call('rm -f Jobs/'+key+'/*.err', shell=True)
+            subprocess.call('rm -f Jobs/'+key+'/*.log', shell=True)
             sub1 = open('Jobs/'+key+'/'+submitName,'wt')
             sub1.write(submit+'\n')
             sub1.close()

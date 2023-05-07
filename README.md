@@ -41,22 +41,6 @@ This framework depends on ROOT libraries
     <td>helper/</td>
     <td>Directory where utility functions live</td>
  </tr>
-  <tr>
-    <td>hists/2016APV/</td>
-    <td>Directory to store output file for 2016-preVFP data/mc</td>
- </tr>
- <tr>
-    <td>hists/2016/</td>
-    <td>Directory to store output file for 2016-postVFP data/mc</td>
- </tr>
- <tr>
-    <td>hists/2017/</td>
-    <td>Directory to store output file for 2017 data/mc</td>
- </tr>
- <tr>
-    <td>hists/2018/</td>
-    <td>Directory to store output file for 2018 data/mc</td>
- </tr>
  <tr>
     <td>hists/hadd.py</td>
     <td>Utility function for merging root files</td>
@@ -94,16 +78,16 @@ This framework depends on ROOT libraries
     <td>HLT trigger logic</td>
  </tr>
  <tr>
-    <td>src/trigger.cc</td>
-    <td>HLT trigger logic</td>
- </tr>
- <tr>
     <td>src/main.cc</td>
     <td>Testing file</td>
  </tr>
  <tr>
     <td>src/PU_reWeighting.cc</td>
     <td>Reweight MC pile up distribution</td>
+ </tr>
+ <tr>
+    <td>src/common_details.cc,fastforest_functions,fastforest.cc</td>
+    <td>Standalone C++ interface of XGBoost</td>
  </tr>
 </table>
 
