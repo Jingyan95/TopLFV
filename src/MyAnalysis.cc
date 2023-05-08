@@ -4,6 +4,7 @@
 #include "lepton_candidate.h"
 #include "jet_candidate.h"
 #include "event_candidate.h"
+#include <chrono>
 
 void displayProgress(long current, long max){
     using std::cerr;
@@ -23,6 +24,7 @@ void displayProgress(long current, long max){
 
 void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent)
 {
+    auto begin = std::chrono::high_resolution_clock::now();
     std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
     std::vector<TString> channels{"ee", "emu", "mumu"};
     std::vector<TString> regions{"ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"};
@@ -341,7 +343,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         
         nAccept++;
     } //end of event loop
-    cout<<endl<<"from "<<ntr<<" events, "<<nAccept<<" events are accepted"<<endl;
+    cout<<endl<<"From "<<ntr<<" events, "<<nAccept<<" events are accepted"<<endl;
 
     for (int i=0;i<(int)charges.size();++i){
         for (int j=0;j<(int)channels.size();++j){
@@ -359,4 +361,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         
     file_out.Close() ;
     Hists.clear();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    printf("Time measured: %.3f seconds\n", elapsed.count() * 1e-9);
 }

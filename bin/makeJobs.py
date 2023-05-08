@@ -93,6 +93,7 @@ for key, value in SAMPLES.items():
             #print sequance
             for num,  seq in enumerate(sequance):
                 text = ''
+                text += '    ROOT::EnableImplicitMT(8);\n'
                 text += '    TChain* ch    = new TChain("Events") ;\n'
                 for filename in seq:
                     text += '    ch ->Add("' + S+ filename + '");\n'
