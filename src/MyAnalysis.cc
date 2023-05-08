@@ -146,13 +146,12 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     
     if (fChain == 0) return;
     Long64_t nentries = fChain->GetEntriesFast();
-    Long64_t nbytes = 0, nb = 0;
     Long64_t ntr = fChain->GetEntries();
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
-        nb = fChain->GetEntry(jentry);   nbytes += nb;
-        displayProgress(jentry, ntr) ;
+        fChain->GetEntry(jentry);  
+        displayProgress(jentry, ntr);
         InitTrigger();
         metFilterPass = false;
         reg.clear();

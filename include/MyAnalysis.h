@@ -23,10 +23,6 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
 
 // Branch information: https://swertz.web.cern.ch/swertz/TMG/TopNano/TopNanoV9/doc_topNanoV9-1-1_MC18UL.html#CaloMET
 // Declaration of leaf types
-   ULong64_t       event;
-   UInt_t          run;
-   UInt_t          luminosityBlock;
-    
    UInt_t          nElectron;
    Int_t           Electron_charge[16];
    Float_t         Electron_deltaEtaSC[16];
@@ -269,7 +265,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", bool verbose_=false);
    virtual ~MyAnalysis();
    virtual Int_t    Cut(Long64_t entry);
-   virtual Int_t    GetEntry(Long64_t entry);
+   virtual void     GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    virtual void     InitTrigger();
@@ -313,11 +309,9 @@ MyAnalysis::~MyAnalysis()
    delete myTrig;
 }
 
-Int_t MyAnalysis::GetEntry(Long64_t entry)
+void MyAnalysis::GetEntry(Long64_t entry)
 {
-// Read contents of entry.
-   if (!fChain) return 0;
-   return fChain->GetEntry(entry);
+  fChain->GetEntry(entry);
 }
 Long64_t MyAnalysis::LoadTree(Long64_t entry)
 {
@@ -349,10 +343,6 @@ void MyAnalysis::Init(TTree *tree)
    fChain = tree;
    fCurrent = -1;
    fChain->SetMakeClass(1);
-
-   fChain->SetBranchAddress("event", &event, &b_event);
-   fChain->SetBranchAddress("run", &run, &b_run);
-   fChain->SetBranchAddress("luminosityBlock", &luminosityBlock, &b_luminosityBlock);
    
    fChain->SetBranchAddress("nElectron", &nElectron, &b_nElectron);
    fChain->SetBranchAddress("Electron_charge", &Electron_charge, &b_Electron_charge);
