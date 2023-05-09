@@ -125,15 +125,13 @@ python submitJobs.py
 ## IV. To merge files & make plots
 
 ```sh
-cd ..
-cd hists/
+cd ../hists/
 python hadd.py
 ```
 Make sure all the necessary output files are there under TopLFV/hists/2016/, otherwise, this function might run into problems. 
 We use the function under TopLFV/plot/ to make plots:
 
 ```sh
-cd ..
-cd plot/
+cd ../plot/
 python drawHists.py 
 ```

@@ -145,18 +145,17 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     int nAccept=0;
     PU wPU;
     
-    // for (int i=0; i<workerID_; i++) cout<<endl;
     Long64_t nentries = fChain->GetEntriesFast();
     Long64_t ntr = fChain->GetEntries();
     Long64_t ntrperworker = 1+ntr/nThread_;
     Long64_t ntrmin = workerID_*ntrperworker;
-    Long64_t ntrmax = (workerID_+1)*ntrperworker;
+    Long64_t ntrmax = (workerID_+1)*ntrperworker;//Each worker looks at a subrange of the TChain
     Long64_t ntotal = 0;
     for (Long64_t jentry=ntrmin; jentry<ntrmax;jentry++) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         fChain->GetEntry(jentry);  
-        // displayProgress(jentry, ntrmin, ntr);
+        // displayProgress(jentry, ntrmin, ntr);//Currently not thread safe. Please don't use it.
         ntotal++;
         InitTrigger();
         metFilterPass = false;
