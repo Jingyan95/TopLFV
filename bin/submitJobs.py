@@ -60,6 +60,9 @@ for key, value in SAMPLES.items():
        continue
     year = value[3]
     nf = value[8]
+    nCPUS = ncpus
+    if ('LFV' in key) or ('DYM10' in key) or ('WWW' in key) or ('WWZ' in key) or ('WZZ' in key) or ('ZZZ' in key):
+        nCPUS = 1
     for idx, S in enumerate(value[0]):
         for subdir, dirs, files in os.walk(S):
             sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
@@ -69,9 +72,9 @@ for key, value in SAMPLES.items():
             submit += 'output = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).out' + '\n'
             submit += 'error = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).err' + '\n'
             submit += 'log = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).log' + '\n'
-            submit += 'request_cpus = ' + str(ncpus) + '\n'
+            submit += 'request_cpus = ' + str(nCPUS) + '\n'
             submit += '+MaxRuntime = ' + str(jobruntime) + '\n' 
-            submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.8*jobruntime)) + '\n'
+            submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.4*jobruntime)) + '\n'
             submit += 'periodic_hold_reason = "Job is getting close to be terminated due to run time"\n'
             submit += 'periodic_hold_subcode = 42\n'
             submit += 'periodic_release = (HoldReasonSubCode == 42)\n'

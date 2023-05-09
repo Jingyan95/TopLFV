@@ -67,22 +67,21 @@ for key, value in SAMPLES.items():
     nf = value[8]
     if not os.path.exists('Jobs/'+key):
        os.makedirs('Jobs/'+key)
+    nThread = nthread
+    if ('LFV' in key) or ('DYM10' in key) or ('WWW' in key) or ('WWZ' in key) or ('WZZ' in key) or ('ZZZ' in key):
+        nThread = 1##Samples with low stats
     for idx, S in enumerate(value[0]):
         SHNAME = key +'_' + str(idx) +'.sh'
         SHNAME1 = key +'_' + str(idx) +'_$1.C'
         SHFILE="#!/bin/bash\n" +\
         'FILE=' + dire_h + value[3] + '/' + key +'_' + str(idx) + '_$1.root' + "\n"+\
-        'rm -f ' + dire_h + value[3] + '/' + key +'_' + str(idx) + '_$1.root' + "\n"+\
-        'rm -f ' + dire_h + value[3] + '/' + key +'_' + str(idx) +'_$1_*.root' + "\n"+\
         "cd "+ cms + "\n"+\
         "eval `scramv1 runtime -sh`\n"+\
         "cd "+ loc + "\n"+\
         'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./include   '+ rootlib11 +' -ldl  -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + key + '/' + SHNAME1+ ' lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n"+\
         "./" + SHNAME1.split('.')[0] + "\n"+\
-        'hadd '+ dire_h + value[3] + '/' + key +'_' + str(idx) + '_$1.root ' + dire_h + value[3] + '/' + key +'_' + str(idx) +'_$1_*.root' + "\n"+\
         'if [ -f "$FILE" ]; then'+ "\n"+\
         '    rm -f ' + SHNAME1.split('.')[0] + "\n"+\
-        '    rm -f ' + dire_h + value[3] + '/' + key +'_' + str(idx) +'_$1_*.root' + "\n"+\
         'fi'
         subprocess.call('rm -f Jobs/'+key+'/*', shell=True)
         open('Jobs/'+key+'/'+SHNAME, 'wt').write(SHFILE)
@@ -98,8 +97,9 @@ for key, value in SAMPLES.items():
             #print sequance
             for num,  seq in enumerate(sequance):
                 text = ''
+                text += '    system("rm -f ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '*.root");\n'
                 text += '    ROOT::EnableThreadSafety();\n'
-                text += '    UInt_t nThread = '+str(nthread)+';\n'
+                text += '    UInt_t nThread = '+str(nThread)+';\n'
                 text += '    auto workerIDs = ROOT::TSeqI(nThread);\n'
                 text += '    auto workItem = [=](UInt_t workerID) {\n'
                 text += '        TChain* ch = new TChain("Events") ;\n'
@@ -113,6 +113,8 @@ for key, value in SAMPLES.items():
                 text += '        workers.emplace_back(workItem, workerID);\n'
                 text += '    }\n'
                 text += '    for (auto&& worker : workers) worker.join();\n'
+                text += '    system("hadd ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num) + '.root ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num) + '_*.root");\n'
+                text += '    system("rm -f ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '_*.root");\n'
                 SHNAME1 = key +'_' + str(idx) +'_' +str(num) + '.C'
                 SHFILE1='#include "MyAnalysis.h"\n' +\
                 '#include "ROOT/TSeq.hxx"\n' +\

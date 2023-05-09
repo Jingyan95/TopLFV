@@ -2,6 +2,7 @@
 #include "ROOT/TSeq.hxx"
 #include <thread>
 int main(){
+    system("rm -f test*.root");
     ROOT::EnableThreadSafety();
     UInt_t nThread = 6;
     auto workerIDs = ROOT::TSeqI(nThread);
@@ -19,5 +20,7 @@ int main(){
         workers.emplace_back(workItem, workerID);
     }
     for (auto&& worker : workers) worker.join();
+    system("hadd test.root test_*.root");
+    system("rm -f test_*.root");
     return 0;
 }
