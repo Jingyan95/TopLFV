@@ -5,19 +5,19 @@ import readline
 import string
 import csv, subprocess
 
-
-
 import argparse
 # set up an argument parser                                                                                                                                                                                        
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--v', dest='VERBOSE', default=True)
 parser.add_argument('--n', dest = 'NAMETAG', default= '2016' )
+parser.add_argument('--t', dest='NCPUS', default=6)##number of CPUs requested 
 
 ARGS = parser.parse_args()
 
 verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
+ncpus =  ARGS.NCPUS
 loc = os.path.dirname(sys.path[0])+'/'
 dire = loc + 'hists/'
 
@@ -69,7 +69,7 @@ for key, value in SAMPLES.items():
             submit += 'output = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).out' + '\n'
             submit += 'error = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).err' + '\n'
             submit += 'log = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).log' + '\n'
-            submit += 'request_cpus = 3' + '\n'
+            submit += 'request_cpus = ' + str(ncpus) + '\n'
             submit += '+MaxRuntime = ' + str(jobruntime) + '\n' 
             submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.8*jobruntime)) + '\n'
             submit += 'periodic_hold_reason = "Job is getting close to be terminated due to run time"\n'
