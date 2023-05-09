@@ -6,17 +6,17 @@
 #include "event_candidate.h"
 #include <chrono>
 
-void displayProgress(long current, long max){
+void displayProgress(long current, long min, long max){
     using std::cerr;
     if (max<500) return;
     if (current%(max/500)!=0 && current<max-1) return;
 
-    int width = 45; // Hope the terminal is at least that wide.
+    int width = 50; // Hope the terminal is at least that wide.
     int barWidth = width - 2;
     cerr << "\x1B[2K"; // Clear line
     cerr << "\x1B[2000D"; // Cursor left
-    cerr << '[';
-    for(int i=0 ; i<barWidth ; ++i){ if(i<barWidth*current/max){ cerr << '=' ; }else{ cerr << ' ' ; } }
+    cerr << "[";
+    for(int i=0 ; i<barWidth ; ++i){ if(i<barWidth*current/max&&i>barWidth*min/max){ cerr << '=' ; }else{ cerr << ' ' ; } }
     cerr << ']';
     cerr << " " << Form("%8d/%8d (%5.2f%%)", (int)current, (int)max, 100.0*current/max);
     cerr.flush();
@@ -24,6 +24,8 @@ void displayProgress(long current, long max){
 
 void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent)
 {
+    if (fChain == 0) return;
+    gROOT->Reset();
     auto begin = std::chrono::high_resolution_clock::now();
     std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
     std::vector<TString> channels{"ee", "emu", "mumu"};
@@ -66,11 +68,12 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         for (int j=0;j<(int)channels.size();++j){
             for (int k=0;k<(int)regions.size();++k){
                 for( auto it = vars.cbegin() ; it != vars.cend() ; ++it ){
-                    name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first;
+                    name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first<<"_"<<workerID_;
+                    // delete gROOT->FindObject((name.str()).c_str());
                     if (it->first.Contains("llM") && i==0 && j!=1){
-                    h_test = new TH1F((name.str()).c_str(),(name.str()).c_str(),18,llMBin);
+                    h_test = new TH1F((name.str()).c_str(),"",18,llMBin);
                     }else{
-                    h_test = new TH1F((name.str()).c_str(),(name.str()).c_str(),it->second.at(1), it->second.at(2), it->second.at(3));
+                    h_test = new TH1F((name.str()).c_str(),"",it->second.at(1), it->second.at(2), it->second.at(3));
                     }
                     h_test->StatOverflows(kTRUE);
                     h_test->Sumw2(kTRUE);
@@ -116,9 +119,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     f_Ta_ID_mu->Close();
     f_Ta_ES_jet->Close();
     f_Btag_corr->Close();
-        
-    TFile file_out (fname,"RECREATE");
-        
+           
     std::vector<lepton_candidate*> *Leptons;
     std::vector<jet_candidate*> *Jets;
     event_candidate *Event;
@@ -144,14 +145,19 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     int nAccept=0;
     PU wPU;
     
-    if (fChain == 0) return;
+    // for (int i=0; i<workerID_; i++) cout<<endl;
     Long64_t nentries = fChain->GetEntriesFast();
     Long64_t ntr = fChain->GetEntries();
-    for (Long64_t jentry=0; jentry<nentries;jentry++) {
+    Long64_t ntrperworker = 1+ntr/nThread_;
+    Long64_t ntrmin = workerID_*ntrperworker;
+    Long64_t ntrmax = (workerID_+1)*ntrperworker;
+    Long64_t ntotal = 0;
+    for (Long64_t jentry=ntrmin; jentry<ntrmax;jentry++) {
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         fChain->GetEntry(jentry);  
-        displayProgress(jentry, ntr);
+        // displayProgress(jentry, ntrmin, ntr);
+        ntotal++;
         InitTrigger();
         metFilterPass = false;
         reg.clear();
@@ -342,14 +348,17 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         
         nAccept++;
     } //end of event loop
-    cout<<endl<<"From "<<ntr<<" events, "<<nAccept<<" events are accepted"<<endl;
 
+    TFile file_out (fname,"RECREATE");
     for (int i=0;i<(int)charges.size();++i){
         for (int j=0;j<(int)channels.size();++j){
             for (int k=0;k<(int)regions.size();++k){
                 for( auto it = vars.cbegin() ; it != vars.cend() ; ++it ){
+                    name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first;
+                    Hists[i][j][k][it->second.at(0)]->SetName((name.str()).c_str());
                     Hists[i][j][k][it->second.at(0)]->Write("",TObject::kOverwrite);
                     delete Hists[i][j][k][it->second.at(0)];
+                    name.str("");
                 }
             }
         }
@@ -362,5 +371,6 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     Hists.clear();
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    printf("Time measured: %.3f seconds\n", elapsed.count() * 1e-9);
+    name<<"Thread "<<workerID_<<": from "<<ntotal<<" events, "<<nAccept<<" events are accepted; Time measured: "<<ceil(elapsed.count() * 1e-9 * 100)/100<<" seconds.";
+    cout<<name.str()<<endl;
 }

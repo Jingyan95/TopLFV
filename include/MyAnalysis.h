@@ -18,6 +18,8 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TString        run_;
    bool           verbose_;
    trigger        *myTrig;
+   int            nThread_;
+   int            workerID_;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -140,11 +142,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Float_t         L1PreFiringWeight_ECAL_Nom;
    Float_t         L1PreFiringWeight_Muon_Nom;
 
-   // List of branches
-   TBranch         *b_event;
-   TBranch         *b_run;
-   TBranch         *b_luminosityBlock;
-    
+   // List of branches  
    TBranch         *b_nElectron;
    TBranch         *b_Electron_charge;
    TBranch         *b_Electron_deltaEtaSC;
@@ -262,7 +260,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    TBranch         *b_L1PreFiringWeight_ECAL_Nom;
    TBranch         *b_L1PreFiringWeight_Muon_Nom;
     
-   MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", bool verbose_=false);
+   MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", int nThread=8, int workerID=0, bool verbose_=false);
    virtual ~MyAnalysis();
    virtual Int_t    Cut(Long64_t entry);
    virtual void     GetEntry(Long64_t entry);
@@ -288,7 +286,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
 #endif
 
 #ifdef MyAnalysis_cxx
-MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, bool verbose) : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_,data_)), verbose_(verbose)
+MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool verbose) : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_,data_)), nThread_(nThread), workerID_(workerID), verbose_(verbose)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.

@@ -82,7 +82,6 @@ for key, value in SAMPLES.items():
             sub1 = open('Jobs/'+key+'/'+submitName,'wt')
             sub1.write(submit+'\n')
             sub1.close()
-            subprocess.call('rm -f '+ dire + year + '/' + key +'_' + str(idx) + '_*.root', shell=True)
             qsub = "condor_submit Jobs/" + key + '/' + submitName 
             print "------------------------------------------------------"
             print qsub
