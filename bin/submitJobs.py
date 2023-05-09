@@ -53,7 +53,7 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-jobruntime = 900 #15min
+jobruntime = 600 #10min
 
 for key, value in SAMPLES.items():
     if name  not in key:
@@ -74,10 +74,10 @@ for key, value in SAMPLES.items():
             submit += 'log = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).log' + '\n'
             submit += 'request_cpus = ' + str(nCPUS) + '\n'
             submit += '+MaxRuntime = ' + str(jobruntime) + '\n' 
-            submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.4*jobruntime)) + '\n'
+            submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.8*jobruntime)) + '\n'
             submit += 'periodic_hold_reason = "Job is getting close to be terminated due to run time"\n'
             submit += 'periodic_hold_subcode = 42\n'
-            submit += 'periodic_release = (HoldReasonSubCode == 42)\n'
+            #submit += 'periodic_release = (HoldReasonSubCode == 42)\n'
             submit += 'queue '+str(len(sequance)) +'\n'
             submitName = key + '_' + str(idx) + '.sub'
             subprocess.call('rm -f Jobs/'+key+'/*.out', shell=True)
