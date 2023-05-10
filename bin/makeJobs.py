@@ -100,25 +100,31 @@ for key, value in SAMPLES.items():
                 text += '    system("rm -f ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '*.root");\n'
                 text += '    ROOT::EnableThreadSafety();\n'
                 text += '    UInt_t nThread = '+str(nThread)+';\n'
+                text += '    std::stringstream Summary;\n'
+                text += '    Summary<<"\\nNumber of threads requested "<<nThread<<".\\n";\n'
+                text += '    std::atomic<Long64_t> progress(0);\n'
                 text += '    auto workerIDs = ROOT::TSeqI(nThread);\n'
-                text += '    auto workItem = [=](UInt_t workerID) {\n'
+                text += '    auto workItem = [=,&Summary,&progress](UInt_t workerID) {\n'
                 text += '        TChain* ch = new TChain("Events") ;\n'
                 for filename in seq:
                     text += '        ch ->Add("' + S+ filename + '");\n'
                 text += '        MyAnalysis t1(ch, "' + value[3] + '" , "'+ value[1] + '" , "' + value[4] + '", nThread, workerID, false);\n'
-                text += '        t1.Loop(Form("'+dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '_%u.root",workerID), "' + value[1] + '" , "'+ value[2] + '" , "'+ value[3] + '" , "'+ value[4] + '" , ' + value[5] + ' , '+ value[6] + ' , '+ value[7] + ');\n'
+                text += '        auto workerSummary = t1.Loop(Form("'+dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '_%u.root",workerID), "' + value[1] + '" , "'+ value[2] + '" , "'+ value[3] + '" , "'+ value[4] + '" , ' + value[5] + ' , '+ value[6] + ' , '+ value[7] + ', std::ref(progress));\n'
+                text += '        Summary<<workerSummary.str();\n'
                 text += '    };\n'
                 text += '    std::vector<std::thread> workers;\n'
                 text += '    for (auto workerID : workerIDs) {\n'
                 text += '        workers.emplace_back(workItem, workerID);\n'
                 text += '    }\n'
                 text += '    for (auto&& worker : workers) worker.join();\n'
+                text += '    std::cout<<Summary.str();\n'
                 text += '    system("hadd ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num) + '.root ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num) + '_*.root");\n'
                 text += '    system("rm -f ' + dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '_*.root");\n'
                 SHNAME1 = key +'_' + str(idx) +'_' +str(num) + '.C'
                 SHFILE1='#include "MyAnalysis.h"\n' +\
                 '#include "ROOT/TSeq.hxx"\n' +\
                 '#include <thread>\n' +\
+                '#include <atomic>\n' +\
                 'int main(){\n' +\
                 text +\
                 '    return 0;\n' +\

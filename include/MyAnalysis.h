@@ -267,20 +267,19 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    virtual void     InitTrigger();
-   virtual void     Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t);
+   virtual std::stringstream     Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t,std::atomic<Long64_t>&);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
     
-   typedef vector<TH1F*> Dim1;
-   typedef vector<Dim1> Dim2;
-   typedef vector<Dim2> Dim3;
-   typedef vector<Dim3> Dim4;
+   typedef std::vector<TH1F*> Dim1;
+   typedef std::vector<Dim1> Dim2;
+   typedef std::vector<Dim2> Dim3;
+   typedef std::vector<Dim3> Dim4;
    //Utility functions
    int vInd(std::map<TString, std::vector<float>> V, TString name);
    void FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight);
    int getSign(double x);
-   float scale_factor(TH2F* h, float X, float Y, TString uncert);
-   // void deleteContainters(vector<T>* v);
+   float scale_factor(const TH2F* h, float X, float Y, TString uncert);
 };
 
 #endif
@@ -486,7 +485,7 @@ int MyAnalysis::getSign(double x){
 }
 
 template <class T>
-void deleteContainter(vector<T>* v){
+void deleteContainter(std::vector<T>* v){
    for (int l=0;l<(int)v->size();l++){
       delete (*v)[l];
    }
@@ -495,15 +494,15 @@ void deleteContainter(vector<T>* v){
    delete v;
 }
 
-float MyAnalysis::scale_factor(TH2F* h, float X, float Y, TString uncert){
+float MyAnalysis::scale_factor(const TH2F* h, float X, float Y, TString uncert){
    int NbinsX=h->GetXaxis()->GetNbins();
    int NbinsY=h->GetYaxis()->GetNbins();
    float x_min=h->GetXaxis()->GetBinLowEdge(1);
    float x_max=h->GetXaxis()->GetBinLowEdge(NbinsX)+h->GetXaxis()->GetBinWidth(NbinsX);
    float y_min=h->GetYaxis()->GetBinLowEdge(1);
    float y_max=h->GetYaxis()->GetBinLowEdge(NbinsY)+h->GetYaxis()->GetBinWidth(NbinsY);
-   TAxis *Xaxis = h->GetXaxis();
-   TAxis *Yaxis = h->GetYaxis();
+   const TAxis *Xaxis = h->GetXaxis();
+   const TAxis *Yaxis = h->GetYaxis();
    Int_t binx=1;
    Int_t biny=1;
    if(x_min < X && X < x_max) binx = Xaxis->FindBin(X);

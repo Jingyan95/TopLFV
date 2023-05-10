@@ -4,28 +4,37 @@
 #include "lepton_candidate.h"
 #include "jet_candidate.h"
 #include "event_candidate.h"
-#include <chrono>
 
-void displayProgress(long current, long min, long max){
+void updateProgress(std::atomic<Long64_t>& progress, float percent, int nThread, int workerID, int nDigit){
+     float digitMin = ((float)nDigit/nThread)*workerID;
+     float digitMax = ((float)nDigit/nThread)*(workerID+1);
+     for (int i=0;i<nDigit;i++){
+         if (i>=digitMin&&i<digitMax&&i<percent*nDigit){
+            progress = ((1 << i) | progress);
+         }
+     }
+}
+
+void displayProgress(std::atomic<Long64_t>& progress, long current, long max, int nDigit){
     using std::cerr;
     if (max<500) return;
     if (current%(max/500)!=0 && current<max-1) return;
-
-    int width = 50; // Hope the terminal is at least that wide.
-    int barWidth = width - 2;
+    int barWidth = nDigit;
     cerr << "\x1B[2K"; // Clear line
     cerr << "\x1B[2000D"; // Cursor left
-    cerr << "[";
-    for(int i=0 ; i<barWidth ; ++i){ if(i<barWidth*current/max&&i>barWidth*min/max){ cerr << '=' ; }else{ cerr << ' ' ; } }
+    cerr << '[';
+    int counter = 0;
+    for(int i=0 ; i<barWidth ; ++i){ if(((progress >> i) & 1)){ cerr << '=' ;counter++;}else{ cerr << ' ' ; } }
     cerr << ']';
-    cerr << " " << Form("%8d/%8d (%5.2f%%)", (int)current, (int)max, 100.0*current/max);
+    cerr << " " << Form("(%u%%)", (int)100.0*counter/barWidth);
     cerr.flush();
 }
 
-void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent)
-{
-    if (fChain == 0) return;
-    gROOT->Reset();
+std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent, std::atomic<Long64_t>& progress)
+{        
+
+    std::stringstream summary;
+    if (fChain == 0) {summary<<"TChain is empty.\n";return summary;}
     auto begin = std::chrono::high_resolution_clock::now();
     std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
     std::vector<TString> channels{"ee", "emu", "mumu"};
@@ -101,15 +110,15 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     TFile *f_Ta_ID_mu = new TFile("data/TAU/"+year+"TauID_SF_eta_DeepTau2017v2p1VSmu.root");
     TFile *f_Ta_ES_jet = new TFile("data/TAU/"+year+"TauES_dm_DeepTau2017v2p1VSjet.root");//Tau energy scale
     TFile *f_Btag_corr = new TFile("data/BTV/"+year+"BtagCorr.root");
-    auto sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
-    auto sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
-    auto sf_Mu_RECO = *(TH2F*)f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
-    auto sf_Mu_ID = *(TH2F*)f_Mu_ID->Get("NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt");
-    auto sf_Ta_ID_jet = *(TF1*)f_Ta_ID_jet->Get("Tight_cent");
-    auto sf_Ta_ID_e = *(TH1F*)f_Ta_ID_e->Get("VVLoose");
-    auto sf_Ta_ID_mu = *(TH1F*)f_Ta_ID_mu->Get("Tight");
-    auto sf_Ta_ES_jet = *(TH1F*)f_Ta_ES_jet->Get("tes");
-    auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection");
+    const auto sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
+    const auto sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
+    const auto sf_Mu_RECO = *(TH2F*)f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
+    const auto sf_Mu_ID = *(TH2F*)f_Mu_ID->Get("NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt");
+    const auto sf_Ta_ID_jet = *(TF1*)f_Ta_ID_jet->Get("Tight_cent");
+    const auto sf_Ta_ID_e = *(TH1F*)f_Ta_ID_e->Get("VVLoose");
+    const auto sf_Ta_ID_mu = *(TH1F*)f_Ta_ID_mu->Get("Tight");
+    const auto sf_Ta_ES_jet = *(TH1F*)f_Ta_ES_jet->Get("tes");
+    const auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection");
     f_El_RECO->Close();
     f_El_ID->Close();
     f_Mu_RECO->Close();
@@ -155,7 +164,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         fChain->GetEntry(jentry);  
-        // displayProgress(jentry, ntrmin, ntr);//Currently not thread safe. Please don't use it.
+        updateProgress(progress, (float)jentry/ntr, nThread_, workerID_, 32);
+        displayProgress(progress, jentry-ntrmin, ntrperworker, 32);
         ntotal++;
         InitTrigger();
         metFilterPass = false;
@@ -176,8 +186,8 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
         weight_Event = 1;
         
         if (verbose_) {
-        cout << ".............................................................................................." << endl;
-        cout << "event " << jentry << endl;
+        std::cout << ".............................................................................................." << std::endl;
+        std::cout << "event " << jentry << std::endl;
         }
         //MET filters
         if (year == "2017" || year == "2018"){
@@ -370,6 +380,6 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     Hists.clear();
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    name<<"Thread "<<workerID_<<": from "<<ntotal<<" events, "<<nAccept<<" events are accepted; Time measured: "<<ceil(elapsed.count() * 1e-9 * 100)/100<<" seconds.";
-    cout<<name.str()<<endl;
+    summary<<"Thread "<<workerID_<<": from "<<ntotal<<" events, "<<nAccept<<" events are accepted; Time measured: "<<ceil(elapsed.count() * 1e-9 * 100)/100<<" seconds.\n";
+    return summary;
 }
