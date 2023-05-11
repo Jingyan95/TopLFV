@@ -78,7 +78,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             for (int k=0;k<(int)regions.size();++k){
                 for( auto it = vars.cbegin() ; it != vars.cend() ; ++it ){
                     name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first<<"_"<<workerID_;//adding working ID to avoid mem leak
-                    // delete gROOT->FindObject((name.str()).c_str());
                     if (it->first.Contains("llM") && i==0 && j!=1){
                     h_test = new TH1F((name.str()).c_str(),"",18,llMBin);
                     }else{

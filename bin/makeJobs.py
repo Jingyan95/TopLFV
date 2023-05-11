@@ -105,7 +105,7 @@ for key, value in SAMPLES.items():
                 text += '    auto workerIDs = ROOT::TSeqI(nThread);\n'
                 text += '    std::atomic<ULong64_t> progress(0);\n'
                 text += '    std::atomic<ULong64_t> counter(0);\n'
-                text += '    auto workItem = [=,&Summary,&progress,&counter](UInt_t workerID) {\n'
+                text += '    auto workItem = [&](UInt_t workerID) {\n'
                 text += '        TChain* ch = new TChain("Events") ;\n'
                 for filename in seq:
                     text += '        ch ->Add("' + S+ filename + '");\n'
