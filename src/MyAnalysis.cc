@@ -38,6 +38,7 @@ int vInd(std::map<TString, std::vector<float>> V, TString name){
 
 void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent)
 {
+  auto begin = std::chrono::high_resolution_clock::now();
   std::vector<TString> charges{"OS", "SS"};//Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{"ll","llOnZMetg20Jetgeq1","llOffZMetg20B1","llOffZMetg20B2","llStl300","llOnZ","llbtagg1p3","llStg300OffZbtagl1p3","llStg300OffZbtagl1p3Tight"};
@@ -400,4 +401,7 @@ void MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year
     
   file_out.Close() ;
   Hists.clear();
+  auto end = std::chrono::high_resolution_clock::now();
+  auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+  std::cout<<"Time measured: "<<ceil(elapsed.count() * 1e-9 * 100)/100<<std::endl;
 }
