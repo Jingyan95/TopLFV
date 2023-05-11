@@ -1,5 +1,9 @@
 #include "MyAnalysis.h"
 int main(){
+    // int nthreads = 8;
+    // ROOT::EnableImplicitMT(nthreads);
+
+    ROOT::EnableImplicitMT();
     TChain* ch    = new TChain("Events");  //"Events") ;
     ch ->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTToSemiLeptonic_UL/230501_150229/0000/tree_1.root");
     ch ->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTToSemiLeptonic_UL/230501_150229/0000/tree_2.root");
