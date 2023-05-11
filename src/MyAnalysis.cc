@@ -5,17 +5,17 @@
 #include "jet_candidate.h"
 #include "event_candidate.h"
 
-void updateProgress(std::atomic<Long64_t>& progress, float percent, int nThread, int workerID, int nDigit){
-     float digitMin = ((float)nDigit/nThread)*workerID;
-     float digitMax = ((float)nDigit/nThread)*(workerID+1);
-     for (int i=0;i<nDigit;i++){
-         if (i>=digitMin&&i<digitMax&&i<percent*nDigit){
+void updateProgress(std::atomic<ULong64_t>& progress, float percent, int nThread, int workerID, int nDigit){
+    float digitMin = ((float)nDigit/nThread)*workerID;
+    float digitMax = ((float)nDigit/nThread)*(workerID+1);
+    for (int i=0;i<nDigit;i++){
+        if (i>=digitMin&&i<digitMax&&i<percent*nDigit){
             progress = ((1 << i) | progress);
-         }
-     }
+        }
+    }
 }
 
-void displayProgress(std::atomic<Long64_t>& progress, long current, long max, int nDigit){
+void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& current, long max, int nDigit){
     using std::cerr;
     if (max<500) return;
     if (current%(max/500)!=0 && current<max-1) return;
@@ -23,14 +23,14 @@ void displayProgress(std::atomic<Long64_t>& progress, long current, long max, in
     cerr << "\x1B[2K"; // Clear line
     cerr << "\x1B[2000D"; // Cursor left
     cerr << '[';
-    int counter = 0;
-    for(int i=0 ; i<barWidth ; ++i){ if(((progress >> i) & 1)){ cerr << '=' ;counter++;}else{ cerr << ' ' ; } }
+    int bitcounter = 0;
+    for(int i=0 ; i<barWidth ; ++i){ if(((progress >> i) & 1)){ cerr << '=' ;bitcounter++;}else{ cerr << ' ' ; } }
     cerr << ']';
-    cerr << " " << Form("(%u%%)", (int)100.0*counter/barWidth);
+    cerr << " " << Form("%6d/%6d (%4.1f%%)", (int)current, (int)max, 100.0*current/max);
     cerr.flush();
 }
 
-std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent, std::atomic<Long64_t>& progress)
+std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent, std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& counter)
 {        
 
     std::stringstream summary;
@@ -77,7 +77,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         for (int j=0;j<(int)channels.size();++j){
             for (int k=0;k<(int)regions.size();++k){
                 for( auto it = vars.cbegin() ; it != vars.cend() ; ++it ){
-                    name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first<<"_"<<workerID_;
+                    name<<charges[i]<<"_"<<channels[j]<<"_"<<regions[k]<<"_"<<it->first<<"_"<<workerID_;//adding working ID to avoid mem leak
                     // delete gROOT->FindObject((name.str()).c_str());
                     if (it->first.Contains("llM") && i==0 && j!=1){
                     h_test = new TH1F((name.str()).c_str(),"",18,llMBin);
@@ -164,9 +164,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         fChain->GetEntry(jentry);  
+        ntotal++;//thread-private counter
+        std::lock_guard<std::mutex> lock(mtx_);//locking mutex before accessing atomic variables
+        ++counter;
         updateProgress(progress, (float)jentry/ntr, nThread_, workerID_, 32);
-        displayProgress(progress, jentry-ntrmin, ntrperworker, 32);
-        ntotal++;
+        if (!verbose_) displayProgress(progress, counter, ntr, 32);
+        mtx_.unlock();//releasing mutex
         InitTrigger();
         metFilterPass = false;
         reg.clear();
@@ -252,7 +255,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             }
             Leptons->push_back(new lepton_candidate(tauPt,Tau_eta[l],Tau_phi[l],Tau_dz[l],Tau_charge[l],Tau_rawDeepTau2017v2p1VSjet[l],
                 Tau_rawDeepTau2017v2p1VSe[l],Tau_rawDeepTau2017v2p1VSmu[l],l,3,data=="mc"?(int)Tau_genPartFlav[l]:5));
-            //break;//Only look at the leading tau
         }
                             
         if (Leptons->size()!=3 || 
@@ -275,11 +277,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             jet_temp->SetPtEtaPhiM(Jet_pt_nom[l],Jet_eta[l],Jet_phi[l],Jet_mass_nom[l]);
             JetEnergy = jet_temp->Energy() ;
             Jets->push_back(new jet_candidate(Jet_pt_nom[l],Jet_eta[l],Jet_phi[l],JetEnergy,Jet_btagDeepFlavB[l],data=="mc"?Jet_btagSF_deepjet_shape[l]:1,year,0));
-            //break;//Only look at the leading tau
+            delete jet_temp;
         }
 
         Event = new event_candidate(Leptons,Jets,data=="mc"?MET_T1Smear_pt:MET_T1_pt,MET_phi,verbose_);//Reconstruction of heavy particles
-        //lumi xs weights
+        //MC weights
         if (data == "mc") {
         weight_Lumi = (1000*xs*lumi*getSign(Generator_weight))/Nevent;//N.B. Nevent here should be sum of generator weights instead of raw event counts
         weight_PU = wPU.getPUweight(year,int(Pileup_nTrueInt),"nominal");
@@ -294,37 +296,37 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         reg.push_back(0);
         wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[0]);
         if (Event->MET()->Pt()>20&&Event->njet()>0){
-            if (Event->OnZ()){
+            if (Event->OnZ()){//Z+jets CR
             reg.push_back(1);
             wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[1]);
             }
             else{
-                if (Event->nbjet()==1){
+                if (Event->nbjet()==1){//SR
                     reg.push_back(2);
                     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[2]);
                 }
-                if (Event->nbjet()==2){
+                if (Event->nbjet()==2){//ttbar+jets CR
                     reg.push_back(3);
                     wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[3]);
                 }
             }
         }
-        if (Event->St()<300){
+        if (Event->St()<300){//Generic signal-free region
             reg.push_back(4);
             wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[4]);
         }
-        if (Event->OnZ()){
+        if (Event->OnZ()){//Z+jets CR
             reg.push_back(5);
             wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[5]);
         }
-        if (Event->btagSum()>1.3){
+        if (Event->btagSum()>1.3){//ttbar+jets CR
             reg.push_back(6);
             wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[6]);
         }
-        if (Event->St()>300&&!Event->OnZ()&&Event->btagSum()<1.3){
+        if (Event->St()>300&&!Event->OnZ()&&Event->btagSum()<1.3){//New SR
             reg.push_back(7);
             wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[7]);
-            if(Event->SRindex()%2==0?Event->njet()>0:Event->St()>500){
+            if(Event->SRindex()%2==0?Event->njet()>0:Event->St()>500){//New SR(Tight)
                 reg.push_back(8);
                 wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
             }
@@ -357,7 +359,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         
         nAccept++;
     } //end of event loop
-
+    //Writing output and delete pointers 
     TFile file_out (fname,"RECREATE");
     for (int i=0;i<(int)charges.size();++i){
         for (int j=0;j<(int)channels.size();++j){
@@ -372,12 +374,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             }
         }
     }
-
     // h_2D_woBtagSF->Write("",TObject::kOverwrite);
-    // h_2D_wBtagSF->Write("",TObject::kOverwrite);
-        
+    // h_2D_wBtagSF->Write("",TObject::kOverwrite);   
     file_out.Close() ;
     Hists.clear();
+    //Writing summary
     auto end = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
     summary<<"Thread "<<workerID_<<": from "<<ntotal<<" events, "<<nAccept<<" events are accepted; Time measured: "<<ceil(elapsed.count() * 1e-9 * 100)/100<<" seconds.\n";

@@ -7,11 +7,14 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TF1.h>
+#include <thread>
+#include <mutex>
 #include "trigger.h"
 
 using namespace std;
 class MyAnalysis {
-public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
+public :
+   TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    Int_t          fCurrent; //!current Tree number in a TChain
    TString        year_;
    TString        data_;
@@ -267,7 +270,7 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    virtual void     InitTrigger();
-   virtual std::stringstream     Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t,std::atomic<Long64_t>&);
+   virtual std::stringstream     Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t,std::atomic<ULong64_t>&,std::atomic<ULong64_t>&);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
     
@@ -280,6 +283,9 @@ public :TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
    void FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight);
    int getSign(double x);
    float scale_factor(const TH2F* h, float X, float Y, TString uncert);
+
+private:
+   static std::mutex mtx_;//Standard mutex to achieve synchronization
 };
 
 #endif

@@ -102,14 +102,15 @@ for key, value in SAMPLES.items():
                 text += '    UInt_t nThread = '+str(nThread)+';\n'
                 text += '    std::stringstream Summary;\n'
                 text += '    Summary<<"\\nNumber of threads requested "<<nThread<<".\\n";\n'
-                text += '    std::atomic<Long64_t> progress(0);\n'
                 text += '    auto workerIDs = ROOT::TSeqI(nThread);\n'
-                text += '    auto workItem = [=,&Summary,&progress](UInt_t workerID) {\n'
+                text += '    std::atomic<ULong64_t> progress(0);\n'
+                text += '    std::atomic<ULong64_t> counter(0);\n'
+                text += '    auto workItem = [=,&Summary,&progress,&counter](UInt_t workerID) {\n'
                 text += '        TChain* ch = new TChain("Events") ;\n'
                 for filename in seq:
                     text += '        ch ->Add("' + S+ filename + '");\n'
                 text += '        MyAnalysis t1(ch, "' + value[3] + '" , "'+ value[1] + '" , "' + value[4] + '", nThread, workerID, false);\n'
-                text += '        auto workerSummary = t1.Loop(Form("'+dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '_%u.root",workerID), "' + value[1] + '" , "'+ value[2] + '" , "'+ value[3] + '" , "'+ value[4] + '" , ' + value[5] + ' , '+ value[6] + ' , '+ value[7] + ', std::ref(progress));\n'
+                text += '        auto workerSummary = t1.Loop(Form("'+dire_h+ value[3] + '/' + key +'_' + str(idx) +'_' +str(num)  + '_%u.root",workerID), "' + value[1] + '" , "'+ value[2] + '" , "'+ value[3] + '" , "'+ value[4] + '" , ' + value[5] + ' , '+ value[6] + ' , '+ value[7] + ', std::ref(progress), std::ref(counter));\n'
                 text += '        Summary<<workerSummary.str();\n'
                 text += '    };\n'
                 text += '    std::vector<std::thread> workers;\n'
@@ -124,7 +125,8 @@ for key, value in SAMPLES.items():
                 SHFILE1='#include "MyAnalysis.h"\n' +\
                 '#include "ROOT/TSeq.hxx"\n' +\
                 '#include <thread>\n' +\
-                '#include <atomic>\n' +\
+                '#include <atomic>\n\n' +\
+                'std::mutex MyAnalysis::mtx_;\n\n' +\
                 'int main(){\n' +\
                 text +\
                 '    return 0;\n' +\
