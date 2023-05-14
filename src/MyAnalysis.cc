@@ -187,10 +187,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         weight_Btag_corr = 1;
         weight_Event = 1;
         
-        if (verbose_) {
-        std::cout << ".............................................................................................." << std::endl;
-        std::cout << "event " << jentry << std::endl;
-        }
         //MET filters
         if (year == "2017" || year == "2018"){
             if (Flag_goodVertices  &&  Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter &&  Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter && Flag_BadPFMuonDzFilter) metFilterPass = true;
@@ -200,6 +196,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Leptons = new std::vector<lepton_candidate*>();
         for (UInt_t l=0;l<nElectron;l++){
             if (l>=16) break;//Restrict the loop size
+            if (Leptons->size()>2) break;
             eleEta = abs(Electron_eta[l] + Electron_deltaEtaSC[l]);
             if (Electron_pt[l]<20 || abs(Electron_eta[l]) > 2.4 || (eleEta>1.4442 && eleEta<1.566)) continue;
             if (Electron_sip3d[l]>15) continue;
@@ -217,6 +214,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
                             
         for (UInt_t l=0;l<nMuon;l++){
             if (l>=16) break;//Restrict the loop size
+            if (Leptons->size()>2) break;
             if (Muon_pt[l]<20 || abs(Muon_eta[l])>2.4) continue;
             if (Muon_sip3d[l]>15 || (!Muon_mediumId[l])) continue;
             if (Muon_sip3d[l]>8 || abs(Muon_dxy[l])>0.05 || abs(Muon_dz[l])>0.1) continue;
@@ -238,6 +236,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         //Tau selection
         for (UInt_t l=0;l<nTau;l++){
             if (l>=16) break;//Restrict the loop size
+            if (Leptons->size()>3) break;
             tauPt = Tau_pt[l];
             if (data=="mc" && (int)Tau_genPartFlav[l]==5) tauPt = Tau_pt[l] * sf_Ta_ES_jet.GetBinContent(sf_Ta_ES_jet.GetXaxis()->FindBin(Tau_decayMode[l]));
             if (tauPt<20 || abs(Tau_eta[l])>2.3 || abs(Tau_dxy[l])>0.05 || abs(Tau_dz[l])>0.1) continue;
@@ -330,27 +329,29 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
                 wgt.push_back(data == "mc"?weight_Event:weight_Event*unBlind[8]);
             }
         }
-        //Start filling histograms
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llM"), Event->llM(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"llDr"), Event->llDr(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep1Pt"), Event->lep1()->pt_, wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"lep2Pt"), Event->lep2()->pt_, wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"taPt"), Event->ta1()->pt_, wgt);
-        if (Event->njet()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"jet1Pt"), Event->jet1()->pt_, wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"njet"), Event->njet(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"nbjet"), Event->nbjet(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"MET"), Event->MET()->Pt(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"subSR"), Event->SRindex(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuM")+Event->lfvch(), Event->LFVllM(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVemuDr")+Event->lfvch(), Event->LFVllDr(), wgt);
-        if (Event->lfvch()!=2) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVePt"), Event->LFVe()->pt_, wgt);
-        if (Event->lfvch()!=1) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVmuPt"), Event->LFVmu()->pt_, wgt);
-        if (Event->lfvch()!=0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"LFVtaPt"), Event->LFVta()->pt_, wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"BalepPt"), Event->Balep()->pt_, wgt);
-        if (Event->njet()>0) FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Topmass"), Event->Topmass(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"Ht"), Event->Ht(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"St"), Event->St(), wgt);
-        FillD4Hists(Hists, Event->c(), Event->ch(), reg, vInd(vars,"btagSum"), Event->btagSum(), wgt);
+        //Filling histograms
+        for (int i = 0; i < reg.size(); ++i) {
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"llM")]->Fill(Event->llM(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"llDr")]->Fill(Event->llDr(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"lep1Pt")]->Fill(Event->lep1()->pt_,wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"lep2Pt")]->Fill(Event->lep2()->pt_,wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"taPt")]->Fill(Event->ta1()->pt_,wgt[i]);
+            if (Event->njet()>0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"jet1Pt")]->Fill(Event->jet1()->pt_,wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"njet")]->Fill(Event->njet(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"nbjet")]->Fill(Event->nbjet(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"MET")]->Fill(Event->MET()->Pt(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"subSR")]->Fill(Event->SRindex(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVemuM")+Event->lfvch()]->Fill(Event->LFVllM(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVemuDr")+Event->lfvch()]->Fill(Event->LFVllDr(),wgt[i]);
+            if (Event->lfvch()!=2) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVePt")]->Fill(Event->LFVe()->pt_,wgt[i]);
+            if (Event->lfvch()!=1) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVmuPt")]->Fill(Event->LFVmu()->pt_,wgt[i]);
+            if (Event->lfvch()!=0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVtaPt")]->Fill(Event->LFVta()->pt_,wgt[i]);
+            Hists[Event->c()][Event->ch()][i][vInd(vars,"BalepPt")]->Fill(Event->Balep()->pt_,wgt[i]);
+            if (Event->njet()>0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"Topmass")]->Fill(Event->Topmass(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"Ht")]->Fill(Event->Ht(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"St")]->Fill(Event->St(),wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"btagSum")]->Fill(Event->btagSum(),wgt[i]);
+        }
         
         deleteContainter(Leptons);
         deleteContainter(Jets); 

@@ -52,5 +52,5 @@ data2016_samples['2016_G_SingleElectron'] = [['/eos/cms/store/user/jingyan/LFV_T
 data2016_samples['2016_H_SingleElectron'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr29_JEC/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/'], 'data','SingleElectron','2016', 'H','1','1','1',20]
 
 data2016_samples['2016_F_SingleMuon'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr29_JEC/2016_F_SingleMuon/SingleMuon/crab_Trilep_Inclusive_Apr29_JEC_2016_F_SingleMuon/230429_191005/0000/'], 'data','SingleMuon','2016', 'F','1','1','1',5]
-data2016_samples['2016_G_SingleMuon'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr29_JEC/2016_G_SingleMuon/SingleMuon/crab_Trilep_Inclusive_Apr29_JEC_2016_G_SingleMuon/230429_191441/0000/'], 'data','SingleMuon','2016', 'G','1','1','1',35]
+data2016_samples['2016_G_SingleMuon'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr29_JEC/2016_G_SingleMuon/SingleMuon/crab_Trilep_Inclusive_Apr29_JEC_2016_G_SingleMuon/230429_191441/0000/'], 'data','SingleMuon','2016', 'G','1','1','1',24]
 data2016_samples['2016_H_SingleMuon'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr29_JEC/2016_H_SingleMuon/SingleMuon/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleMuon/230429_194502/0000/'], 'data','SingleMuon','2016', 'H','1','1','1',28]

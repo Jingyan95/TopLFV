@@ -270,7 +270,7 @@ public :
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
    virtual void     InitTrigger();
-   virtual std::stringstream     Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t,std::atomic<ULong64_t>&,std::atomic<ULong64_t>&);
+   virtual std::stringstream Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t,std::atomic<ULong64_t>&,std::atomic<ULong64_t>&);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
     
@@ -280,8 +280,7 @@ public :
    typedef std::vector<Dim3> Dim4;
    //Utility functions
    int vInd(std::map<TString, std::vector<float>> V, TString name);
-   void FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight);
-   int getSign(double x);
+   int getSign(const double& x);
    float scale_factor(const TH2F* h, float X, float Y, TString uncert);
 
 private:
@@ -478,13 +477,7 @@ int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name){
    return V.find(name)->second.at(0);
 }
 
-void MyAnalysis::FillD4Hists(Dim4 H4, int v0, int v1, std::vector<int> v2, int v3, float value, std::vector<float> weight){
-   for (int i = 0; i < v2.size(); ++i) {
-      H4[v0][v1][v2[i]][v3]->Fill(value, weight[i]);
-   }
-}
-
-int MyAnalysis::getSign(double x){
+int MyAnalysis::getSign(const double& x){
    if (x>0) return 1;
    if (x<0) return -1;
    return 0;
