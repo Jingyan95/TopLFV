@@ -14,7 +14,7 @@
 using namespace std;
 class MyAnalysis {
 public :
-   TTree          *fChain;   //!poInt_ter to the analyzed TTree or TChain
+   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t          fCurrent; //!current Tree number in a TChain
    TString        year_;
    TString        data_;
