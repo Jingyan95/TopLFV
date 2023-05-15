@@ -665,6 +665,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
 
     pad2.cd()
     dummy_ratio = hists[0].Clone()
+    dummy_ratio.Divide(SumofMC)
     dummy_ratio.SetTitle("")
     dummy_ratio.SetMarkerStyle(20)
     dummy_ratio.SetMarkerSize(1.2)
@@ -707,7 +708,6 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     dummy_ratio.GetXaxis().SetBinLabel(16,"m(#mu#tau)>150GeV")
     dummy_ratio.GetXaxis().SetBinLabel(17,"m(#mu#tau)<150GeV")
     dummy_ratio.GetXaxis().SetBinLabel(18,"m(#mu#tau)>150GeV")
-    dummy_ratio.Divide(SumofMC)
     dummy_ratio.SetStats(ROOT.kFALSE)
     dummy_ratio.GetYaxis().SetTitle('#frac{Data}{Pred.}')
     dummy_ratio.Draw('E1')

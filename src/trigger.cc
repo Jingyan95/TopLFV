@@ -54,7 +54,7 @@ void trigger::Init(Bool_t Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,
                    DoubleEle33_CaloIdL_GsfTrkIdVL_ = DoubleEle33_CaloIdL_GsfTrkIdVL;
                    Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_ = Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;
                    Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_ = Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL;
-                   Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_ = Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_;
+                   Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_ = Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ;
                    Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_ = Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ;
                    Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_ = Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8;
                    Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_ = Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;
@@ -173,10 +173,10 @@ Bool_t trigger::triggerLogic(TString dataset){
 
 Bool_t trigger::triggerPass(int ch){
     ch_ = ch;
-    assert(ch_>=0&&ch_<=2);
     if (ch_ == 0) return triggerPassEE_;
     if (ch_ == 1) return triggerPassEMu_;
     if (ch_ == 2) return triggerPassMuMu_;
+    assert(0);
 }
 
 trigger::~trigger(){}
