@@ -153,7 +153,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   int nAccept=0;
   PU wPU;
 
-  Long64_t nentries = fChain->GetEntriesFast();
   Long64_t ntr = fChain->GetEntries();
   Long64_t ntrperworker = 1 + ntr / nThread_;
   Long64_t ntrmin = workerID_ * ntrperworker;
