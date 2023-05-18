@@ -47,25 +47,26 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             {"lep1Pt",           {2,   10,    30,   230}},
             {"lep2Pt",           {3,   10,    20,   180}},
             {"taPt",             {4,   10,    20,   220}},
-            {"jet1Pt",           {5,   10,    25,   225}},
-            {"njet",             {6,   6,     0,    6}},
-            {"nbjet",            {7,   4,     0,    4}},
-            {"MET",              {8,   10,    0,    200}},
-            {"subSR",            {9,   18,    0,    18}},
-            {"LFVemuM",          {10,  10,    0,    300}},
-            {"LFVetaM",          {11,  10,    0,    300}},
-            {"LFVmutaM",         {12,  10,    0,    300}},
-            {"LFVemuDr",         {13,  10,    0,    4.5}},
-            {"LFVetaDr",         {14,  10,    0,    4.5}},
-            {"LFVmutaDr",        {15,  10,    0,    4.5}},
-            {"LFVePt",           {16,  10,    20,   300}},
-            {"LFVmuPt",          {17,  10,    20,   300}},
-            {"LFVtaPt",          {18,  10,    20,   300}},
-            {"BalepPt",          {19,  10,    20,   180}},
-            {"Topmass",          {20,  10,    0,    300}},
-            {"Ht",               {21,  10,    0,    300}},
-            {"St",               {22,  20,    70,   600}},
-            {"btagSum",          {23,  25,    0,    2.5}}
+            {"taDz",             {5,   16,    -0.2, 0.2}},
+            {"jet1Pt",           {6,   10,    25,   225}},
+            {"njet",             {7,   6,     0,    6}},
+            {"nbjet",            {8,   4,     0,    4}},
+            {"MET",              {9,   10,    0,    200}},
+            {"subSR",            {10,  18,    0,    18}},
+            {"LFVemuM",          {11,  10,    0,    300}},
+            {"LFVetaM",          {12,  10,    0,    300}},
+            {"LFVmutaM",         {13,  10,    0,    300}},
+            {"LFVemuDr",         {14,  10,    0,    4.5}},
+            {"LFVetaDr",         {15,  10,    0,    4.5}},
+            {"LFVmutaDr",        {16,  10,    0,    4.5}},
+            {"LFVePt",           {17,  10,    20,   300}},
+            {"LFVmuPt",          {18,  10,    20,   300}},
+            {"LFVtaPt",          {19,  10,    20,   300}},
+            {"BalepPt",          {20,  10,    20,   180}},
+            {"Topmass",          {21,  10,    0,    300}},
+            {"Ht",               {22,  10,    0,    300}},
+            {"St",               {23,  20,    70,   600}},
+            {"btagSum",          {24,  25,    0,    2.5}}
         };
     
     Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -239,7 +240,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             if (Leptons->size()>3) break;
             tauPt = Tau_pt[l];
             if (data=="mc" && (int)Tau_genPartFlav[l]==5) tauPt = Tau_pt[l] * sf_Ta_ES_jet.GetBinContent(sf_Ta_ES_jet.GetXaxis()->FindBin(Tau_decayMode[l]));
-            if (tauPt<20 || abs(Tau_eta[l])>2.3 || abs(Tau_dxy[l])>0.05 || abs(Tau_dz[l])>0.1) continue;
+            if (tauPt<20 || abs(Tau_eta[l])>2.3) continue;
+            if (abs(Tau_dxy[l])>0.05 || abs(Tau_dz[l])>0.1) continue;
             if (Tau_decayMode[l]==5 || Tau_decayMode[l]==6) continue;
             //The Loosest possible Deep-Tau Working Point
             if ((int)Tau_idDeepTau2017v2p1VSe[l]<2 || (int)Tau_idDeepTau2017v2p1VSmu[l]<8 || (int)Tau_idDeepTau2017v2p1VSjet[l]<32) continue;
@@ -336,6 +338,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"lep1Pt")]->Fill(Event->lep1()->pt_,wgt[i]);
             Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"lep2Pt")]->Fill(Event->lep2()->pt_,wgt[i]);
             Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"taPt")]->Fill(Event->ta1()->pt_,wgt[i]);
+            Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"taDz")]->Fill(Event->ta1()->dz_,wgt[i]);
             if (Event->njet()>0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"jet1Pt")]->Fill(Event->jet1()->pt_,wgt[i]);
             Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"njet")]->Fill(Event->njet(),wgt[i]);
             Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"nbjet")]->Fill(Event->nbjet(),wgt[i]);
