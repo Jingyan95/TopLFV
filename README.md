@@ -135,3 +135,11 @@ We use the function under TopLFV/plot/ to make plots:
 cd ../plot/
 python drawHists.py 
 ```
+
+## IV.a To make cutflow tables
+
+```sh
+cd ../helper/
+python cutflow.py
+```
+This script will print out cutflow tables in LaTeX format.
