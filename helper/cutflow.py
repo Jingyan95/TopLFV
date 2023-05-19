@@ -13,7 +13,6 @@ Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalar
 SamplesName = ['Data', '$t\\bar{t}X$', 'VV', 'DY', '$t\\bar{t}$', 'St Scalar U', 'Tt Scalar U']
 charges = ['OS', 'SS']
 channels = ['ee', 'emu', 'mumu']
-regions = ['ll']
 regions = ['ll', 'llOnZMetg20Jetgeq1', 'llOffZMetg20B1', 'llOffZMetg20B2', 'llStl300', 'llOnZ', 'llbtagg1p3', 'llStg300OffZbtagl1p3', 'llStg300OffZbtagl1p3Tight']
 regionsName = ['2$l+\\tau_h$, no cuts',
     '2$l+\\tau_h$, Z + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, on Z',
@@ -24,6 +23,7 @@ regionsName = ['2$l+\\tau_h$, no cuts',
     '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$',
     '2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, off Z, btag $>1.3$',
     '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $>1.3$, njet $\\geq 1$ or $S_T>500$ GeV']
+
 
 
 # set up an argument parser
