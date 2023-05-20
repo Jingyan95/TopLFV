@@ -79,7 +79,3 @@ if (name == '2016'):
     os.system(haddVV_2016)
     os.system(haddTT_2016)
     os.system(haddDY_2016)
-    
-
-    
-

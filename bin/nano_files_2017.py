@@ -19,5 +19,3 @@ mc2017_samples['2017_TTTo2L2Nu_preUL'] = [['/eos/cms/store/user/jingyan/LFV_Dile
 #UL ntuples are pre-selected with cut = "((Sum$(Electron_pt>20 && abs(Electron_eta)<2.4 && Electron_sip3d<15) + Sum$(Muon_pt>20 && abs(Muon_eta)<2.4 && Muon_sip3d<15 && Muon_mediumId))>=2)"
 #Please apply event selection that is no looser than the pre-selection
 mc2017_samples['2017_TTTo2L2Nu_UL'] = [['/eos/cms/store/user/jingyan/LFV_Dilepton_TopLeptonMVAStudy/2017_TTTo2L2Nu_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Dilepton_TopLeptonMVAStudy_UL_2017_TTTo2L2Nu/230411_165319/0000/'], 'mc', 'TTTo2L2Nu', '2017', '', '87.31', '41.53', '106724000', 1]
-
-

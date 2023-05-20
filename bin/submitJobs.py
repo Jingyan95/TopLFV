@@ -6,19 +6,19 @@ import string
 import csv, subprocess
 
 import argparse
-# set up an argument parser                                                                                                                                                                                        
+# set up an argument parser
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--v', dest='VERBOSE', default=True)
 parser.add_argument('--n', dest = 'NAMETAG', default= '2016' )
-parser.add_argument('--t', dest='NCPUS', default=6)##number of CPUs requested 
+parser.add_argument('--t', dest='NCPUS', default=6) # number of CPUs requested
 
 ARGS = parser.parse_args()
 
 verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
 ncpus =  ARGS.NCPUS
-loc = os.path.dirname(sys.path[0])+'/'
+loc = os.path.dirname(sys.path[0]) + '/'
 dire = loc + 'hists/'
 
 import nano_files_2016APV
@@ -53,11 +53,11 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-jobruntime = 600 #10min
+jobruntime = 600 # 10min
 
 for key, value in SAMPLES.items():
     if name  not in key:
-       continue
+        continue
     year = value[3]
     nf = value[8]
     nCPUS = ncpus
@@ -66,7 +66,7 @@ for key, value in SAMPLES.items():
     for idx, S in enumerate(value[0]):
         for subdir, dirs, files in os.walk(S):
             sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
-            submit = 'universe = vanilla\n' ##writing .sub file
+            submit = 'universe = vanilla\n' # writing .sub file
             submit += 'executable = Jobs/' + key + '/' + key + '_' + str(idx) + '.sh' + '\n'
             submit += 'arguments = $(Process)\n'
             submit += 'output = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).out' + '\n'
@@ -77,17 +77,16 @@ for key, value in SAMPLES.items():
             submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.8*jobruntime)) + '\n'
             submit += 'periodic_hold_reason = "Job is getting close to be terminated due to run time"\n'
             submit += 'periodic_hold_subcode = 42\n'
-            #submit += 'periodic_release = (HoldReasonSubCode == 42)\n'
-            submit += 'queue '+str(len(sequance)) +'\n'
+            # submit += 'periodic_release = (HoldReasonSubCode == 42)\n'
+            submit += 'queue ' + str(len(sequance)) +'\n'
             submitName = key + '_' + str(idx) + '.sub'
-            subprocess.call('rm -f Jobs/'+key+'/*.out', shell=True)
-            subprocess.call('rm -f Jobs/'+key+'/*.err', shell=True)
-            subprocess.call('rm -f Jobs/'+key+'/*.log', shell=True)
-            sub1 = open('Jobs/'+key+'/'+submitName,'wt')
-            sub1.write(submit+'\n')
+            subprocess.call('rm -f Jobs/' + key + '/*.out', shell = True)
+            subprocess.call('rm -f Jobs/' + key + '/*.err', shell = True)
+            subprocess.call('rm -f Jobs/' + key + '/*.log', shell = True)
+            sub1 = open('Jobs/' + key + '/' + submitName, 'wt')
+            sub1.write(submit + '\n')
             sub1.close()
             qsub = "condor_submit Jobs/" + key + '/' + submitName 
             print "------------------------------------------------------"
             print qsub
-            subprocess.call(qsub, shell=True)
-
+            subprocess.call(qsub, shell = True)

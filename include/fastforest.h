@@ -37,85 +37,83 @@ SOFTWARE.
 
 namespace fastforest {
 
-    // The floating point number type that will be used to accept features and store cut values
-    typedef float FeatureType;
-    // Tue floating point number type that the individual trees return their responses in
-    typedef float TreeResponseType;
-    // The floating point number type that is used to sum the individual tree responses
-    typedef float TreeEnsembleResponseType;
-    // This integer type stores the indices of the feature employed in each cut.
-    // Set to `unsigned char` for most compact fastforest ofjects if you have less than 256 features.
-    typedef unsigned int CutIndexType;
+  // The floating point number type that will be used to accept features and store cut values
+  typedef float FeatureType;
+  // Tue floating point number type that the individual trees return their responses in
+  typedef float TreeResponseType;
+  // The floating point number type that is used to sum the individual tree responses
+  typedef float TreeEnsembleResponseType;
+  // This integer type stores the indices of the feature employed in each cut.
+  // Set to `unsigned char` for most compact fastforest ofjects if you have less than 256 features.
+  typedef unsigned int CutIndexType;
 
-    // The base response you have to use with older XGBoost versions might be
-    // zero, so try to explicitely pass zero to the model evaluation if the
-    // results from this library are incorrect.
-    const TreeEnsembleResponseType defaultBaseResponse = 0.5;
+  // The base response you have to use with older XGBoost versions might be
+  // zero, so try to explicitely pass zero to the model evaluation if the
+  // results from this library are incorrect.
+  const TreeEnsembleResponseType defaultBaseResponse = 0.5;
 
-    namespace details {
+  namespace details {
+    void softmaxTransformInplace(TreeEnsembleResponseType* out, int nOut);
+  }
 
-        void softmaxTransformInplace(TreeEnsembleResponseType* out, int nOut);
-
+  struct FastForest {
+    inline TreeEnsembleResponseType operator()(const FeatureType* array,
+        TreeEnsembleResponseType baseResponse = defaultBaseResponse) const {
+      return evaluateBinary(array, baseResponse);
     }
 
-    struct FastForest {
-        inline TreeEnsembleResponseType operator()(const FeatureType* array,
-                                                   TreeEnsembleResponseType baseResponse = defaultBaseResponse) const {
-            return evaluateBinary(array, baseResponse);
-        }
-
 #if __cplusplus >= 201103L
-        template <int nClasses>
-        std::array<TreeEnsembleResponseType, nClasses> softmax(
-            const FeatureType* array, TreeEnsembleResponseType baseResponse = defaultBaseResponse) const {
-            // static softmax interface: no manual memory allocation, but requires to know nClasses at compile time
-            static_assert(nClasses >= 3, "nClasses should be >= 3");
-            std::array<TreeEnsembleResponseType, nClasses> out{};
-            evaluate(array, out.data(), nClasses, baseResponse);
-            details::softmaxTransformInplace(out.data(), nClasses);
-            return out;
-        }
+    template <int nClasses>
+    std::array<TreeEnsembleResponseType, nClasses> softmax(
+        const FeatureType* array, TreeEnsembleResponseType baseResponse = defaultBaseResponse) const {
+      // static softmax interface: no manual memory allocation, but requires to know nClasses at compile time
+      static_assert(nClasses >= 3, "nClasses should be >= 3");
+      std::array<TreeEnsembleResponseType, nClasses> out{};
+      evaluate(array, out.data(), nClasses, baseResponse);
+      details::softmaxTransformInplace(out.data(), nClasses);
+      return out;
+    }
 #endif
 
-        // dynamic softmax interface with manually allocated std::vector: simple but inefficient
-        std::vector<TreeEnsembleResponseType> softmax(
-            const FeatureType* array, TreeEnsembleResponseType baseResponse = defaultBaseResponse) const;
+    // dynamic softmax interface with manually allocated std::vector: simple but inefficient
+    std::vector<TreeEnsembleResponseType> softmax(
+        const FeatureType* array, TreeEnsembleResponseType baseResponse = defaultBaseResponse) const;
 
-        // softmax interface that is not a pure function, but no manual allocation and no compile-time knowledge needed
-        void softmax(const FeatureType* array,
-                     TreeEnsembleResponseType* out,
-                     TreeEnsembleResponseType baseResponse = defaultBaseResponse) const;
+    // softmax interface that is not a pure function, but no manual allocation and no compile-time knowledge needed
+    void softmax(const FeatureType* array,
+                 TreeEnsembleResponseType* out,
+                 TreeEnsembleResponseType baseResponse = defaultBaseResponse) const;
 
-        void write_bin(std::string const& filename) const;
+    void write_bin(std::string const& filename) const;
 
-        int nClasses() const { return baseResponses_.size() > 2 ? baseResponses_.size() : 2; }
+    int nClasses() const { return baseResponses_.size() > 2 ? baseResponses_.size() : 2; }
 
-        std::vector<int> rootIndices_;
-        std::vector<CutIndexType> cutIndices_;
-        std::vector<FeatureType> cutValues_;
-        std::vector<int> leftIndices_;
-        std::vector<int> rightIndices_;
-        std::vector<TreeResponseType> responses_;
-        std::vector<int> treeNumbers_;
-        std::vector<TreeEnsembleResponseType> baseResponses_;
+    std::vector<int> rootIndices_;
+    std::vector<CutIndexType> cutIndices_;
+    std::vector<FeatureType> cutValues_;
+    std::vector<int> leftIndices_;
+    std::vector<int> rightIndices_;
+    std::vector<TreeResponseType> responses_;
+    std::vector<int> treeNumbers_;
+    std::vector<TreeEnsembleResponseType> baseResponses_;
 
-      private:
-        void evaluate(const FeatureType* array,
-                      TreeEnsembleResponseType* out,
-                      int nOut,
-                      TreeEnsembleResponseType baseResponse) const;
+  private:
+    void evaluate(const FeatureType* array,
+                  TreeEnsembleResponseType* out,
+                  int nOut,
+                  TreeEnsembleResponseType baseResponse) const;
 
-        TreeEnsembleResponseType evaluateBinary(const FeatureType* array, TreeEnsembleResponseType baseResponse) const;
-    };
+    TreeEnsembleResponseType evaluateBinary(const FeatureType* array, TreeEnsembleResponseType baseResponse) const;
+  };
 
-    FastForest load_txt(std::string const& txtpath, std::vector<std::string>& features, int nClasses = 2);
-    FastForest load_txt(std::istream& is, std::vector<std::string>& features, int nClasses = 2);
-    FastForest load_bin(std::string const& txtpath);
-    FastForest load_bin(std::istream& is);
+  FastForest load_txt(std::string const& txtpath, std::vector<std::string>& features, int nClasses = 2);
+  FastForest load_txt(std::istream& is, std::vector<std::string>& features, int nClasses = 2);
+  FastForest load_bin(std::string const& txtpath);
+  FastForest load_bin(std::istream& is);
 #ifdef EXPERIMENTAL_TMVA_SUPPORT
-    FastForest load_tmva_xml(std::string const& xmlpath, std::vector<std::string>& features);
+  FastForest load_tmva_xml(std::string const& xmlpath, std::vector<std::string>& features);
 #endif
 
-}  // namespace fastforest
+} // namespace fastforest
 
 #endif

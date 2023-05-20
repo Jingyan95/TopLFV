@@ -32,17 +32,17 @@ SOFTWARE.
 #include <stdexcept>
 
 namespace fastforest {
-    namespace detail {
+  namespace detail {
 
-        typedef std::map<int, int> IndexMap;
+    typedef std::map<int, int> IndexMap;
 
-        void correctIndices(std::vector<int>::iterator begin,
-                            std::vector<int>::iterator end,
-                            IndexMap const& nodeIndices,
-                            IndexMap const& leafIndices);
+    void correctIndices(std::vector<int>::iterator begin,
+                        std::vector<int>::iterator end,
+                        IndexMap const& nodeIndices,
+                        IndexMap const& leafIndices);
 
-    }  // namespace detail
+  } // namespace detail
 
-}  // namespace fastforest
+} // namespace fastforest
 
 #endif

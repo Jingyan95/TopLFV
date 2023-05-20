@@ -16,5 +16,3 @@ mc2018_samples = {}
 
 ## Scalar-like signal
 
-
-
