@@ -24,9 +24,9 @@ year_RunII = ['2016APV', '2016', '2017', '2018', 'All']
 year = []
 charges = ["OS", "SS"]
 channels = ["ee", "emu", "mumu"]
+
 regions = ["ll", "llOnZMetg20Jetgeq1", "llOffZMetg20B1", "llOffZMetg20B2", "llStl300", "llOnZ", "llbtagg1p3",
     "llStg300OffZbtagl1p3", "llStg300OffZbtagl1p3Tight"]
-
 regionsName = [["No cuts", "", ""],
     ["p_{T}^{miss}>20GeV, njet#geq1", "OnZ", ", Z+jets CR"], ["p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1", ", SR"], 
     ["p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2", ", t#bar{t}+jets CR"], ["S_{T}<300GeV", "", ", CR"],
@@ -35,7 +35,6 @@ regionsName = [["No cuts", "", ""],
 
 vars = ["llM", "llDr", "lep1Pt", "lep2Pt", "taPt", "taDz", "jet1Pt", "njet", "nbjet", "MET", "subSR", "LFVemuM", "LFVetaM", "LFVmutaM",
     "LFVemuDr", "LFVetaDr", "LFVmutaDr", "LFVePt", "LFVmuPt", "LFVtaPt", "BalepPt", "Topmass", "Ht", "St", "btagSum"]
-
 varsName = ["m(l#bar{l}) [GeV]", "#DeltaR(l#bar{l})", "Leading lepton p_{T} [GeV]",
     "Sub-leading lepton p_{T} [GeV]", "Tau p_{T} [GeV]", "Tau dz [cm]",
     "Leading jet p_{T} [GeV]", "njet", "nbjet (Loose WP)", "MET [GeV]", "SR subdivided",
@@ -43,7 +42,6 @@ varsName = ["m(l#bar{l}) [GeV]", "#DeltaR(l#bar{l})", "Leading lepton p_{T} [GeV
     "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]", "#DeltaR(#mu,#bar{#tau}) [GeV]",
     "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
     "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]", "H_{T} [GeV]", "S_{T} [GeV]", "Sum of btagging scores"]
-
 
 # set up an argument parser
 parser = argparse.ArgumentParser()
