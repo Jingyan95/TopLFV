@@ -31,58 +31,60 @@ for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
         year.append(year_RunII[numyear])
 
+nBins = 18
 for yr in year:
     Counts = {}
-    Counts[yr] = {}
+    Totals = {}
+
+    for reg in regions:
+        Totals[reg] = []
+        for b in range(nBins):
+            Totals[reg].append(0.0)
+
     for f in Samples:
-        Counts[yr][f] = {}
+        Counts[f] = {}
         file = ROOT.TFile.Open(HistAddress + yr + '_' + f)
         for reg in regions:
-            Counts[yr][f][reg] = {}
-            total = 0.0
-            for c in charges:
-                Counts[yr][f][reg][c] = {}
-                for ch in channels:
-                    h = file.Get(c + '_' + ch + '_' + reg + '_llM')
-                    nbinsX = h.GetXaxis().GetNbins()
-                    err = ROOT.Double()
-                    integral = h.IntegralAndError(1, nbinsX, err)
-                    Counts[yr][f][reg][c][ch] = [integral, err, -1.0] # [integral, error, %]
-                    total += integral
+            Counts[f][reg] = {}
+            for b in range(nBins):
+                Counts[f][reg][b] = [0.0, 0.0, -1.0]
+
             for c in charges:
                 for ch in channels:
-                    if total == 0.0:
-                        Counts[yr][f][reg][c][ch][2] = 0.0
-                    else:
-                        Counts[yr][f][reg][c][ch][2] = Counts[yr][f][reg][c][ch][0] / total * 100.0
+                    h = file.Get(c + '_' + ch + '_' + reg + '_subSR')
+                    for b in range(nBins):
+                        Counts[f][reg][b][0] += h.GetBinContent(b + 1)
+                        Counts[f][reg][b][1] += h.GetBinError(b + 1)
+                        if 'Data' not in f: Totals[reg][b] += h.GetBinContent(b + 1)
+
+    for f in Samples:
+        for reg in regions:
+            for b in range(nBins):
+                if Totals[reg][b] == 0.0:
+                    Counts[f][reg][b][2] = 0.0
+                else:
+                    Counts[f][reg][b][2] = Counts[f][reg][b][0] / Totals[reg][b] * 100.0
 
     Background = {}
-    Background[yr] = {}
     Signal = {}
-    Signal[yr] = {}
     SOverB = {}
-    SOverB[yr] = {}
     for reg in regions:
-        Signal[yr][reg] = {}
-        Background[yr][reg] = {}
-        SOverB[yr][reg] = {}
-        for c in charges:
-            Signal[yr][reg][c] = {}
-            Background[yr][reg][c] = {}
-            SOverB[yr][reg][c] = {}
-            for ch in channels:
-                sig = Counts[yr]['LFVStScalarU.root'][reg][c][ch][0] + Counts[yr]['LFVTtScalarU.root'][reg][c][ch][0]
-                sig_err = sqrt(Counts[yr]['LFVStScalarU.root'][reg][c][ch][1]**2 + Counts[yr]['LFVTtScalarU.root'][reg][c][ch][1]**2)
-                Signal[yr][reg][c][ch] = [sig, sig_err]
+        Signal[reg] = {}
+        Background[reg] = {}
+        SOverB[reg] = {}
+        for b in range(nBins):
+            sig = Counts['LFVStScalarU.root'][reg][b][0] + Counts['LFVTtScalarU.root'][reg][b][0]
+            sig_err = sqrt(Counts['LFVStScalarU.root'][reg][b][1]**2 + Counts['LFVTtScalarU.root'][reg][b][1]**2)
+            Signal[reg][b] = [sig, sig_err]
 
-                bkg = Counts[yr]['TX.root'][reg][c][ch][0] + Counts[yr]['VV.root'][reg][c][ch][0] + Counts[yr]['DY.root'][reg][c][ch][0] + Counts[yr]['TT.root'][reg][c][ch][0]
-                bkg_err = sqrt(Counts[yr]['TX.root'][reg][c][ch][1]**2 + Counts[yr]['VV.root'][reg][c][ch][1]**2 + Counts[yr]['DY.root'][reg][c][ch][1]**2 + Counts[yr]['TT.root'][reg][c][ch][1]**2)
-                Background[yr][reg][c][ch] = [bkg, bkg_err]
+            bkg = Counts['TX.root'][reg][b][0] + Counts['VV.root'][reg][b][0] + Counts['DY.root'][reg][b][0] + Counts['TT.root'][reg][b][0]
+            bkg_err = sqrt(Counts['TX.root'][reg][b][1]**2 + Counts['VV.root'][reg][b][1]**2 + Counts['DY.root'][reg][b][1]**2 + Counts['TT.root'][reg][b][1]**2)
+            Background[reg][b] = [bkg, bkg_err]
 
-                if bkg == 0.0:
-                    SOverB[yr][reg][c][ch] = -1.0
-                else:
-                    SOverB[yr][reg][c][ch] = sig / sqrt(bkg)
+            if bkg == 0.0:
+                SOverB[reg][b] = -1.0
+            else:
+                SOverB[reg][b] = sig / sqrt(bkg)
 
     # open and write to output text file
     outFile = open('cutflow' + yr + '.txt', 'w')
@@ -90,52 +92,120 @@ for yr in year:
         outFile.write('- - - - - - - - - - ' + reg + ' - - - - - - - - - -\n')
 
         outFile.write('\\hline\n')
-        line = 'Samples'
-        for c in charges:
-            for ch in channels:
-                line += ' & ' + c + '\\_' + ch
-        line += ' \\\\'
+        line = 'Mass & OS-$ee$ & OS-$ee$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ \\\\'
         outFile.write(line + '\n')
-
+        line = 'Region & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV & $m(e\\mu)<150$GeV & $m(e\\mu)>150$GeV & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV \\\\'
+        outFile.write(line + '\n')
         outFile.write('\\hline\n')
         for fidx, f in enumerate(Samples):
             line = SamplesName[fidx]
-            for c in charges:
-                for ch in channels:
-                    line += ' & ' + str(int(Counts[yr][f][reg][c][ch][0]))
-                    line += '$\\pm$' + str(int(Counts[yr][f][reg][c][ch][1]))
-                    line += '[%.2f\\%%]' % Counts[yr][f][reg][c][ch][2]
+            for b in range(nBins / 3):
+                line += ' & ' + str(int(Counts[f][reg][b][0]))
+                line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
+                if 'Data' not in f: line += '[%.2f\\%%]' % Counts[f][reg][b][2]
             line += ' \\\\'
             outFile.write(line + '\n')
             if f == 'Data.root' or f == 'TT.root': outFile.write('\\hline\n')
-
         outFile.write('\\hline\n')
         line = 'Background'
-        for c in charges:
-            for ch in channels:
-                line += ' & ' + str(int(Background[yr][reg][c][ch][0]))
-                line += '$\\pm$' + str(int(Background[yr][reg][c][ch][1]))
+        for b in range(nBins / 3):
+            line += ' & ' + str(int(Background[reg][b][0]))
+            line += '$\\pm$' + str(int(Background[reg][b][1]))
         line += ' \\\\'
         outFile.write(line + '\n')
         line = 'Signal'
-        for c in charges:
-            for ch in channels:
-                line += ' & ' + str(int(Signal[yr][reg][c][ch][0]))
-                line += '$\\pm$' + str(int(Signal[yr][reg][c][ch][1]))
+        for b in range(nBins / 3):
+            line += ' & ' + str(int(Signal[reg][b][0]))
+            line += '$\\pm$' + str(int(Signal[reg][b][1]))
         line += ' \\\\'
         outFile.write(line + '\n')
-
         outFile.write('\\hline\n')
         line = '$S/\\sqrt{B}$'
-        for c in charges:
-            for ch in channels:
-                if SOverB[yr][reg][c][ch] > 0.0:
-                    line += ' & %.2f' % SOverB[yr][reg][c][ch]
-                else:
-                    line += ' & undefined'
+        for b in range(nBins / 3):
+            if SOverB[reg][b] > 0.0:
+                line += ' & %.2f' % SOverB[reg][b]
+            else:
+                line += ' & undefined'
         line += ' \\\\'
         outFile.write(line + '\n')
+        outFile.write('\\hline\n')
 
+        outFile.write('\\hline\n')
+        line = 'Mass & OS-$e\\mu$ & OS-$e\\mu$ & OS-$\\mu\\mu$ & OS-$\\mu\\mu$ & SS-$ee$ & SS-$ee$ \\\\'
+        outFile.write(line + '\n')
+        line = 'Region & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV \\\\'
+        outFile.write(line + '\n')
+        outFile.write('\\hline\n')
+        for fidx, f in enumerate(Samples):
+            line = SamplesName[fidx]
+            for b in range(nBins / 3, 2 * nBins / 3):
+                line += ' & ' + str(int(Counts[f][reg][b][0]))
+                line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
+                if 'Data' not in f: line += '[%.2f\\%%]' % Counts[f][reg][b][2]
+            line += ' \\\\'
+            outFile.write(line + '\n')
+            if f == 'Data.root' or f == 'TT.root': outFile.write('\\hline\n')
+        outFile.write('\\hline\n')
+        line = 'Background'
+        for b in range(nBins / 3, 2 * nBins / 3):
+            line += ' & ' + str(int(Background[reg][b][0]))
+            line += '$\\pm$' + str(int(Background[reg][b][1]))
+        line += ' \\\\'
+        outFile.write(line + '\n')
+        line = 'Signal'
+        for b in range(nBins / 3, 2 * nBins / 3):
+            line += ' & ' + str(int(Signal[reg][b][0]))
+            line += '$\\pm$' + str(int(Signal[reg][b][1]))
+        line += ' \\\\'
+        outFile.write(line + '\n')
+        outFile.write('\\hline\n')
+        line = '$S/\\sqrt{B}$'
+        for b in range(nBins / 3, 2 * nBins / 3):
+            if SOverB[reg][b] > 0.0:
+                line += ' & %.2f' % SOverB[reg][b]
+            else:
+                line += ' & undefined'
+        line += ' \\\\'
+        outFile.write(line + '\n')
+        outFile.write('\\hline\n')
+
+        outFile.write('\\hline\n')
+        line = 'Mass & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$\\mu\\mu$ & SS-$\\mu\\mu$ \\\\'
+        outFile.write(line + '\n')
+        line = 'Region & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV \\\\'
+        outFile.write(line + '\n')
+        outFile.write('\\hline\n')
+        for fidx, f in enumerate(Samples):
+            line = SamplesName[fidx]
+            for b in range(2 * nBins / 3, nBins):
+                line += ' & ' + str(int(Counts[f][reg][b][0]))
+                line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
+                if 'Data' not in f: line += '[%.2f\\%%]' % Counts[f][reg][b][2]
+            line += ' \\\\'
+            outFile.write(line + '\n')
+            if f == 'Data.root' or f == 'TT.root': outFile.write('\\hline\n')
+        outFile.write('\\hline\n')
+        line = 'Background'
+        for b in range(2 * nBins / 3, nBins):
+            line += ' & ' + str(int(Background[reg][b][0]))
+            line += '$\\pm$' + str(int(Background[reg][b][1]))
+        line += ' \\\\'
+        outFile.write(line + '\n')
+        line = 'Signal'
+        for b in range(2 * nBins / 3, nBins):
+            line += ' & ' + str(int(Signal[reg][b][0]))
+            line += '$\\pm$' + str(int(Signal[reg][b][1]))
+        line += ' \\\\'
+        outFile.write(line + '\n')
+        outFile.write('\\hline\n')
+        line = '$S/\\sqrt{B}$'
+        for b in range(2 * nBins / 3, nBins):
+            if SOverB[reg][b] > 0.0:
+                line += ' & %.2f' % SOverB[reg][b]
+            else:
+                line += ' & undefined'
+        line += ' \\\\'
+        outFile.write(line + '\n')
         outFile.write('\\hline\n')
 
     outFile.close()

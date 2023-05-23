@@ -17,7 +17,7 @@ import gc
 from operator import truediv
 import copy
 import argparse
-from plotter import StackHist,CompareBackgrounds,SummaryPlot
+from plotter import StackHist, CompareBackgrounds, SummaryPlot
 TGaxis.SetMaxDigits(2)
 
 year_RunII = ['2016APV','2016','2017','2018','All']
@@ -72,18 +72,18 @@ SaveMVA = False
 
 Hists = []
 for numyear, nameyear in enumerate(year):
-    l0=[]
+    l0 = []
     Files = []
     for f in range(len(Samples)):
-        l1=[]
-        print HistAddress + nameyear+ '_' + Samples[f]
-        Files.append(ROOT.TFile.Open(HistAddress + nameyear+ '_' + Samples[f]))
+        l1 = []
+        print HistAddress + nameyear + '_' + Samples[f]
+        Files.append(ROOT.TFile.Open(HistAddress + nameyear + '_' + Samples[f]))
         for numc, namec in enumerate(charges):
-            l2=[]
+            l2 = []
             for numch, namech in enumerate(channels):
-                l3=[]
+                l3 = []
                 for numreg, namereg in enumerate(regions):
-                    l4=[]
+                    l4 = []
                     for numvar, namevar in enumerate(vars):
                         h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
                         h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
@@ -137,7 +137,7 @@ for numyear, nameyear in enumerate(year):
             h.Reset("ICE")
             for numc, namec in enumerate(charges):
                 for numch, namech in enumerate(channels):
-                    h+=Hists[numyear][f][numc][numch][numreg][10]
+                    h += Hists[numyear][f][numc][numch][numreg][10]
             h.SetFillColor(colors[f])
             if 'LFV' not in Samples[f]:
                 h.SetLineColor(colors[0])

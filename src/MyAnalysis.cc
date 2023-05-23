@@ -359,27 +359,27 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     }
     // Filling histograms
     for (int i = 0; i < reg.size(); ++i) {
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"llM")]->Fill(Event->llM(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"llDr")]->Fill(Event->llDr(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"taPt")]->Fill(Event->ta1()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
-      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"njet")]->Fill(Event->njet(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"nbjet")]->Fill(Event->nbjet(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"MET")]->Fill(Event->MET()->Pt(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"subSR")]->Fill(Event->SRindex(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVemuM")+Event->lfvch()]->Fill(Event->LFVllM(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVemuDr")+Event->lfvch()]->Fill(Event->LFVllDr(), wgt[i]);
-      if (Event->lfvch() != 2) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVePt")]->Fill(Event->LFVe()->pt_, wgt[i]);
-      if (Event->lfvch() != 1) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVmuPt")]->Fill(Event->LFVmu()->pt_, wgt[i]);
-      if (Event->lfvch() != 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"LFVtaPt")]->Fill(Event->LFVta()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][i][vInd(vars,"BalepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
-      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"Topmass")]->Fill(Event->Topmass(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"Ht")]->Fill(Event->Ht(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"St")]->Fill(Event->St(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars,"btagSum")]->Fill(Event->btagSum(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPt")]->Fill(Event->ta1()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
+      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "njet")]->Fill(Event->njet(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "nbjet")]->Fill(Event->nbjet(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "MET")]->Fill(Event->MET()->Pt(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "subSR")]->Fill(Event->SRindex(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVemuM")+Event->lfvch()]->Fill(Event->LFVllM(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVemuDr")+Event->lfvch()]->Fill(Event->LFVllDr(), wgt[i]);
+      if (Event->lfvch() != 2) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVePt")]->Fill(Event->LFVe()->pt_, wgt[i]);
+      if (Event->lfvch() != 1) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVmuPt")]->Fill(Event->LFVmu()->pt_, wgt[i]);
+      if (Event->lfvch() != 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVtaPt")]->Fill(Event->LFVta()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][i][vInd(vars, "BalepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
+      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Topmass")]->Fill(Event->Topmass(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
     }
 
     deleteContainter(Leptons);
