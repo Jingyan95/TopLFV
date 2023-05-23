@@ -25,7 +25,6 @@ regionsName = ['2$l+\\tau_h$, no cuts',
     '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $>1.3$, njet $\\geq 1$ or $S_T>500$ GeV']
 
 
-
 # set up an argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--n', dest = 'NAMETAG', default = '2016')
