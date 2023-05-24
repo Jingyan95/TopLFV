@@ -94,14 +94,16 @@ for yr in year:
         outFile.write('\\hline\n')
         line = 'Mass & OS-$ee$ & OS-$ee$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ \\\\'
         outFile.write(line + '\n')
-        line = 'Region & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV & $m(e\\mu)<150$GeV & $m(e\\mu)>150$GeV & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV \\\\'
+        line = 'Region & $m(e\\tau_\\h)<150$GeV & $m(e\\tau_\\h)>150$GeV & $m(e\\mu)<150$GeV & $m(e\\mu)>150$GeV & $m(e\\tau_\\h)<150$GeV & $m(e\\tau_\\h)>150$GeV \\\\'
         outFile.write(line + '\n')
         outFile.write('\\hline\n')
         for fidx, f in enumerate(Samples):
             line = SamplesName[fidx]
             for b in range(nBins / 3):
-                line += ' & ' + str(int(Counts[f][reg][b][0]))
-                line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
+                if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
+                else: line += ' & ' + str(int(Counts[f][reg][b][0]))
+                if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
+                else: line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
                 if 'Data' not in f: line += '[%.2f\\%%]' % Counts[f][reg][b][2]
             line += ' \\\\'
             outFile.write(line + '\n')
@@ -133,14 +135,16 @@ for yr in year:
         outFile.write('\\hline\n')
         line = 'Mass & OS-$e\\mu$ & OS-$e\\mu$ & OS-$\\mu\\mu$ & OS-$\\mu\\mu$ & SS-$ee$ & SS-$ee$ \\\\'
         outFile.write(line + '\n')
-        line = 'Region & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV \\\\'
+        line = 'Region & $m(\\mu\\tau_\\h)<150$GeV & $m(\\mu\\tau_\\h)>150$GeV & $m(\\mu\\tau_\\h)<150$GeV & $m(\\mu\\tau_\\h)>150$GeV & $m(e\\tau_\\h)<150$GeV & $m(e\\tau_\\h)>150$GeV \\\\'
         outFile.write(line + '\n')
         outFile.write('\\hline\n')
         for fidx, f in enumerate(Samples):
             line = SamplesName[fidx]
             for b in range(nBins / 3, 2 * nBins / 3):
-                line += ' & ' + str(int(Counts[f][reg][b][0]))
-                line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
+                if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
+                else: line += ' & ' + str(int(Counts[f][reg][b][0]))
+                if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
+                else: line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
                 if 'Data' not in f: line += '[%.2f\\%%]' % Counts[f][reg][b][2]
             line += ' \\\\'
             outFile.write(line + '\n')
@@ -172,14 +176,16 @@ for yr in year:
         outFile.write('\\hline\n')
         line = 'Mass & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$\\mu\\mu$ & SS-$\\mu\\mu$ \\\\'
         outFile.write(line + '\n')
-        line = 'Region & $m(e\\tau)<150$GeV & $m(e\\tau)>150$GeV & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV & $m(\\mu\\tau)<150$GeV & $m(\\mu\\tau)>150$GeV \\\\'
+        line = 'Region & $m(e\\tau_\\h)<150$GeV & $m(e\\tau_\\h)>150$GeV & $m(\\mu\\tau_\\h)<150$GeV & $m(\\mu\\tau_\\h)>150$GeV & $m(\\mu\\tau_\\h)<150$GeV & $m(\\mu\\tau_\\h)>150$GeV \\\\'
         outFile.write(line + '\n')
         outFile.write('\\hline\n')
         for fidx, f in enumerate(Samples):
             line = SamplesName[fidx]
             for b in range(2 * nBins / 3, nBins):
-                line += ' & ' + str(int(Counts[f][reg][b][0]))
-                line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
+                if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
+                else: line += ' & ' + str(int(Counts[f][reg][b][0]))
+                if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
+                else: line += '$\\pm$' + str(int(Counts[f][reg][b][1]))
                 if 'Data' not in f: line += '[%.2f\\%%]' % Counts[f][reg][b][2]
             line += ' \\\\'
             outFile.write(line + '\n')
