@@ -13,7 +13,6 @@ Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalar
 SamplesName = ['Data', '$t\\bar{t}X$', 'VV', 'DY', '$t\\bar{t}$', 'St Scalar U', 'Tt Scalar U']
 charges = ['OS', 'SS']
 channels = ['ee', 'emu', 'mumu']
-regions = ['ll']
 regions = ['ll', 'llOnZMetg20Jetgeq1', 'llOffZMetg20B1', 'llOffZMetg20B2', 'llStl300', 'llOnZ', 'llbtagg1p3', 'llStg300OffZbtagl1p3', 'llStg300OffZbtagl1p3Tight']
 regionsName = ['2$l+\\tau_h$, no cuts',
     '2$l+\\tau_h$, Z + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, on Z',
