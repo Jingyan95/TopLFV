@@ -259,9 +259,9 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     dummy_ratio.GetYaxis().SetNdivisions(504)
     dummy_ratio.GetYaxis().SetRangeUser(0.2,1.8)
     if ('njet' in var):
-        dummy_ratio.GetXaxis().SetNdivisions(-006)
+        dummy_ratio.GetXaxis().SetNdivisions(6)
     if ('nbjet' in var):
-        dummy_ratio.GetXaxis().SetNdivisions(-004)
+        dummy_ratio.GetXaxis().SetNdivisions(4)
     dummy_ratio.Divide(SumofMC)
     dummy_ratio.SetStats(ROOT.kFALSE)
     dummy_ratio.GetYaxis().SetTitle('#frac{Data}{Pred.}')
