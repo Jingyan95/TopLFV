@@ -30,16 +30,16 @@ SOFTWARE.
 #include <stdexcept>
 
 void fastforest::detail::correctIndices(std::vector<int>::iterator begin,
-                                        std::vector<int>::iterator end,
-                                        fastforest::detail::IndexMap const& nodeIndices,
-                                        fastforest::detail::IndexMap const& leafIndices) {
-    for (std::vector<int>::iterator it = begin; it != end; ++it) {
-        if (nodeIndices.count(*it)) {
-            *it = nodeIndices.at(*it);
-        } else if (leafIndices.count(*it)) {
-            *it = -leafIndices.at(*it);
-        } else {
-            throw std::runtime_error("something is wrong in the node structure");
-        }
+    std::vector<int>::iterator end,
+    fastforest::detail::IndexMap const& nodeIndices,
+    fastforest::detail::IndexMap const& leafIndices) {
+  for (std::vector<int>::iterator it = begin; it != end; ++it) {
+    if (nodeIndices.count(*it)) {
+      *it = nodeIndices.at(*it);
+    } else if (leafIndices.count(*it)) {
+      *it = -leafIndices.at(*it);
+    } else {
+      throw std::runtime_error("something is wrong in the node structure");
     }
+  }
 }

@@ -11,7 +11,7 @@
 using namespace std;
 //using namespace math;
 class lepton_candidate {
-  
+
 public:
   lepton_candidate(float, float, float, float, int, float, float, float, int, int, int);
   ~lepton_candidate();
@@ -29,7 +29,7 @@ public:
   TLorentzVector p4_;
 
 private:
-  
+
 };
 
 #endif

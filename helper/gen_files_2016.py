@@ -32,5 +32,3 @@ mc2016_samples['2016_WWW'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive
 mc2016_samples['2016_WWZ'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr30_SumOfGenWeights/2016_WWZ_UL/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/crab_Trilep_Inclusive_Apr30_SumOfGenWeights_2016_WWZ_UL/230430_081444/0000/']]
 mc2016_samples['2016_WZZ'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr30_SumOfGenWeights/2016_WZZ_UL/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/crab_Trilep_Inclusive_Apr30_SumOfGenWeights_2016_WZZ_UL/230430_082434/0000/']]
 mc2016_samples['2016_ZZZ'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Apr30_SumOfGenWeights/2016_ZZZ_UL/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/crab_Trilep_Inclusive_Apr30_SumOfGenWeights_2016_ZZZ_UL/230430_081938/0000/']]
-
-
