@@ -41,31 +41,32 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0};
   const std::map<TString, std::vector<float>> vars =
   {
-    {"llM",              {0,   10,    0,    180}},
-    {"llDr",             {1,   10,    0,    4.5}},
+    {"llM",              {0,   10,     0,   180}},
+    {"llDr",             {1,   10,     0,   4.5}},
     {"lep1Pt",           {2,   10,    30,   230}},
     {"lep2Pt",           {3,   10,    20,   180}},
     {"taPt",             {4,   10,    20,   220}},
-    {"taDz",             {5,   16,    -0.2, 0.2}},
-    {"jet1Pt",           {6,   10,    25,   225}},
-    {"njet",             {7,   6,     0,    6}},
-    {"nbjet",            {8,   4,     0,    4}},
-    {"MET",              {9,   10,    0,    200}},
-    {"subSR",            {10,  18,    0,    18}},
-    {"LFVemuM",          {11,  10,    0,    300}},
-    {"LFVetaM",          {12,  10,    0,    300}},
-    {"LFVmutaM",         {13,  10,    0,    300}},
-    {"LFVemuDr",         {14,  10,    0,    4.5}},
-    {"LFVetaDr",         {15,  10,    0,    4.5}},
-    {"LFVmutaDr",        {16,  10,    0,    4.5}},
-    {"LFVePt",           {17,  10,    20,   300}},
-    {"LFVmuPt",          {18,  10,    20,   300}},
-    {"LFVtaPt",          {19,  10,    20,   300}},
-    {"BalepPt",          {20,  10,    20,   180}},
-    {"Topmass",          {21,  10,    0,    300}},
-    {"Ht",               {22,  10,    0,    300}},
-    {"St",               {23,  20,    70,   600}},
-    {"btagSum",          {24,  25,    0,    2.5}}
+    {"taDxy",            {5,   16,  -0.1,   0.1}},
+    {"taDz",             {6,   16,  -0.2,   0.2}},
+    {"jet1Pt",           {7,   10,    25,   225}},
+    {"njet",             {8,    6,     0,     6}},
+    {"nbjet",            {9,    4,     0,     4}},
+    {"MET",              {10,  10,     0,   200}},
+    {"subSR",            {11,  18,     0,    18}},
+    {"LFVemuM",          {12,  10,     0,   300}},
+    {"LFVetaM",          {13,  10,     0,   300}},
+    {"LFVmutaM",         {14,  10,     0,   300}},
+    {"LFVemuDr",         {15,  10,     0,   4.5}},
+    {"LFVetaDr",         {16,  10,     0,   4.5}},
+    {"LFVmutaDr",        {17,  10,     0,   4.5}},
+    {"LFVePt",           {18,  10,    20,   300}},
+    {"LFVmuPt",          {19,  10,    20,   300}},
+    {"LFVtaPt",          {20,  10,    20,   300}},
+    {"BalepPt",          {21,  10,    20,   180}},
+    {"Topmass",          {22,  10,     0,   300}},
+    {"Ht",               {23,  10,     0,   300}},
+    {"St",               {24,  20,    70,   600}},
+    {"btagSum",          {25,  25,     0,   2.5}}
   };
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -218,7 +219,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         weight_El_ID = weight_El_ID * scale_factor(&sf_El_ID, eleEta, Electron_pt[l], "");
       }
 
-      Leptons->push_back(new lepton_candidate(Electron_pt[l], Electron_eta[l], Electron_phi[l], Electron_dz[l],
+      Leptons->push_back(new lepton_candidate(Electron_pt[l], Electron_eta[l], Electron_phi[l], Electron_dxy[l], Electron_dz[l],
         Electron_charge[l], Electron_topLeptonMVA_v1[l], Electron_topLeptonMVA_v2[l], 0, l, 1,
         data == "mc" ? (int) Electron_genPartFlav[l] : 1));
     }
@@ -239,7 +240,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         weight_Mu_ID = weight_Mu_ID * scale_factor(&sf_Mu_ID, abs(Muon_eta[l]), Muon_pt[l], "");
       }
 
-      Leptons->push_back(new lepton_candidate(Muon_pt[l], Muon_eta[l], Muon_phi[l], Muon_dz[l],
+      Leptons->push_back(new lepton_candidate(Muon_pt[l], Muon_eta[l], Muon_phi[l], Muon_dxy[l], Muon_dz[l],
         Muon_charge[l], Muon_topLeptonMVA_v1[l], Muon_topLeptonMVA_v2[l], 0, l, 2,
         data == "mc" ? (int) Muon_genPartFlav[l] : 1));
     }
@@ -273,7 +274,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         if ((int) Tau_genPartFlav[l] == 2 || (int) Tau_genPartFlav[l] == 4) weight_Ta_ID_mu = weight_Ta_ID_mu * sf_Ta_ID_mu.GetBinContent(sf_Ta_ID_mu.GetXaxis()->FindBin(abs(Tau_eta[l])));
       }
 
-      Leptons->push_back(new lepton_candidate(tauPt, Tau_eta[l], Tau_phi[l], Tau_dz[l],
+      Leptons->push_back(new lepton_candidate(tauPt, Tau_eta[l], Tau_phi[l], Tau_dxy[l], Tau_dz[l],
         Tau_charge[l], Tau_rawDeepTau2017v2p1VSjet[l], Tau_rawDeepTau2017v2p1VSe[l], Tau_rawDeepTau2017v2p1VSmu[l], l, 3,
         data == "mc" ? (int) Tau_genPartFlav[l] : 5));
     }
@@ -364,6 +365,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPt")]->Fill(Event->ta1()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
       if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "njet")]->Fill(Event->njet(), wgt[i]);
