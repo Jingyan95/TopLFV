@@ -21,8 +21,8 @@ regionsName = ['2$l+\\tau_h$, no cuts',
     '2$l+\\tau_h$, CR, $S_T<300$ GeV',
     '2$l+\\tau_h$, Z + jets CR, on Z',
     '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$',
-    '2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, off Z, btag $>1.3$',
-    '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $>1.3$, njet $\\geq 1$ or $S_T>500$ GeV']
+    '2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, off Z, btag $<1.3$',
+    '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV']
 
 
 # set up an argument parser
