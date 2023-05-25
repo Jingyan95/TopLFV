@@ -138,7 +138,7 @@ for yr in year:
         outFile.write('        \\hline\n')
         for fidx, f in enumerate(Samples):
             line = '        ' + SamplesName[fidx]
-            for b in range(nBins / 3):
+            for b in range(nBins // 3):
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
                 else: line += ' & ' + str(int(Counts[f][reg][b][0]))
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
@@ -149,20 +149,20 @@ for yr in year:
             if f == 'Data.root' or f == 'TT.root': outFile.write('        \\hline\n')
         outFile.write('        \\hline\n')
         line = '        Background'
-        for b in range(nBins / 3):
+        for b in range(nBins // 3):
             line += ' & ' + str(int(Background[reg][b][0]))
             line += '$\\pm$' + str(int(Background[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         line = '        Signal'
-        for b in range(nBins / 3):
+        for b in range(nBins // 3):
             line += ' & ' + str(int(Signal[reg][b][0]))
             line += '$\\pm$' + str(int(Signal[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         outFile.write('        \\hline\n')
         line = '        $S/\\sqrt{B}$'
-        for b in range(nBins / 3):
+        for b in range(nBins // 3):
             if SOverB[reg][b] > 0.0:
                 line += ' & %.2f' % SOverB[reg][b]
             else:
@@ -179,7 +179,7 @@ for yr in year:
         outFile.write('        \\hline\n')
         for fidx, f in enumerate(Samples):
             line = '        ' + SamplesName[fidx]
-            for b in range(nBins / 3, 2 * nBins / 3):
+            for b in range(nBins // 3, 2 * nBins // 3):
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
                 else: line += ' & ' + str(int(Counts[f][reg][b][0]))
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
@@ -190,20 +190,20 @@ for yr in year:
             if f == 'Data.root' or f == 'TT.root': outFile.write('        \\hline\n')
         outFile.write('        \\hline\n')
         line = '        Background'
-        for b in range(nBins / 3, 2 * nBins / 3):
+        for b in range(nBins // 3, 2 * nBins // 3):
             line += ' & ' + str(int(Background[reg][b][0]))
             line += '$\\pm$' + str(int(Background[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         line = '        Signal'
-        for b in range(nBins / 3, 2 * nBins / 3):
+        for b in range(nBins // 3, 2 * nBins // 3):
             line += ' & ' + str(int(Signal[reg][b][0]))
             line += '$\\pm$' + str(int(Signal[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         outFile.write('        \\hline\n')
         line = '        $S/\\sqrt{B}$'
-        for b in range(nBins / 3, 2 * nBins / 3):
+        for b in range(nBins // 3, 2 * nBins // 3):
             if SOverB[reg][b] > 0.0:
                 line += ' & %.2f' % SOverB[reg][b]
             else:
@@ -220,7 +220,7 @@ for yr in year:
         outFile.write('        \\hline\n')
         for fidx, f in enumerate(Samples):
             line = '        ' + SamplesName[fidx]
-            for b in range(2 * nBins / 3, nBins):
+            for b in range(2 * nBins // 3, nBins):
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
                 else: line += ' & ' + str(int(Counts[f][reg][b][0]))
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
@@ -231,20 +231,20 @@ for yr in year:
             if f == 'Data.root' or f == 'TT.root': outFile.write('        \\hline\n')
         outFile.write('        \\hline\n')
         line = '        Background'
-        for b in range(2 * nBins / 3, nBins):
+        for b in range(2 * nBins // 3, nBins):
             line += ' & ' + str(int(Background[reg][b][0]))
             line += '$\\pm$' + str(int(Background[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         line = '        Signal'
-        for b in range(2 * nBins / 3, nBins):
+        for b in range(2 * nBins // 3, nBins):
             line += ' & ' + str(int(Signal[reg][b][0]))
             line += '$\\pm$' + str(int(Signal[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         outFile.write('        \\hline\n')
         line = '        $S/\\sqrt{B}$'
-        for b in range(2 * nBins / 3, nBins):
+        for b in range(2 * nBins // 3, nBins):
             if SOverB[reg][b] > 0.0:
                 line += ' & %.2f' % SOverB[reg][b]
             else:
