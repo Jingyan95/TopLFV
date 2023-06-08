@@ -21,8 +21,8 @@ regionsName = ['2$l+\\tau_h$, no cuts',
     '2$l+\\tau_h$, CR, $S_T<300$ GeV',
     '2$l+\\tau_h$, Z + jets CR, on Z',
     '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$',
-    '2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, off Z, btag $>1.3$',
-    '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $>1.3$, njet $\\geq 1$ or $S_T>500$ GeV']
+    '2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, off Z, btag $<1.3$',
+    '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV']
 
 
 # set up an argument parser
@@ -138,7 +138,7 @@ for yr in year:
         outFile.write('        \\hline\n')
         for fidx, f in enumerate(Samples):
             line = '        ' + SamplesName[fidx]
-            for b in range(nBins / 3):
+            for b in range(nBins // 3):
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
                 else: line += ' & ' + str(int(Counts[f][reg][b][0]))
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
@@ -149,20 +149,20 @@ for yr in year:
             if f == 'Data.root' or f == 'TT.root': outFile.write('        \\hline\n')
         outFile.write('        \\hline\n')
         line = '        Background'
-        for b in range(nBins / 3):
+        for b in range(nBins // 3):
             line += ' & ' + str(int(Background[reg][b][0]))
             line += '$\\pm$' + str(int(Background[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         line = '        Signal'
-        for b in range(nBins / 3):
+        for b in range(nBins // 3):
             line += ' & ' + str(int(Signal[reg][b][0]))
             line += '$\\pm$' + str(int(Signal[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         outFile.write('        \\hline\n')
         line = '        $S/\\sqrt{B}$'
-        for b in range(nBins / 3):
+        for b in range(nBins // 3):
             if SOverB[reg][b] > 0.0:
                 line += ' & %.2f' % SOverB[reg][b]
             else:
@@ -179,7 +179,7 @@ for yr in year:
         outFile.write('        \\hline\n')
         for fidx, f in enumerate(Samples):
             line = '        ' + SamplesName[fidx]
-            for b in range(nBins / 3, 2 * nBins / 3):
+            for b in range(nBins // 3, 2 * nBins // 3):
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
                 else: line += ' & ' + str(int(Counts[f][reg][b][0]))
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
@@ -190,20 +190,20 @@ for yr in year:
             if f == 'Data.root' or f == 'TT.root': outFile.write('        \\hline\n')
         outFile.write('        \\hline\n')
         line = '        Background'
-        for b in range(nBins / 3, 2 * nBins / 3):
+        for b in range(nBins // 3, 2 * nBins // 3):
             line += ' & ' + str(int(Background[reg][b][0]))
             line += '$\\pm$' + str(int(Background[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         line = '        Signal'
-        for b in range(nBins / 3, 2 * nBins / 3):
+        for b in range(nBins // 3, 2 * nBins // 3):
             line += ' & ' + str(int(Signal[reg][b][0]))
             line += '$\\pm$' + str(int(Signal[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         outFile.write('        \\hline\n')
         line = '        $S/\\sqrt{B}$'
-        for b in range(nBins / 3, 2 * nBins / 3):
+        for b in range(nBins // 3, 2 * nBins // 3):
             if SOverB[reg][b] > 0.0:
                 line += ' & %.2f' % SOverB[reg][b]
             else:
@@ -220,7 +220,7 @@ for yr in year:
         outFile.write('        \\hline\n')
         for fidx, f in enumerate(Samples):
             line = '        ' + SamplesName[fidx]
-            for b in range(2 * nBins / 3, nBins):
+            for b in range(2 * nBins // 3, nBins):
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += ' & %.2f' % Counts[f][reg][b][0]
                 else: line += ' & ' + str(int(Counts[f][reg][b][0]))
                 if f == 'LFVStScalarU.root' or f == 'LFVTtScalarU.root': line += '$\\pm$%.2f' % Counts[f][reg][b][1]
@@ -231,20 +231,20 @@ for yr in year:
             if f == 'Data.root' or f == 'TT.root': outFile.write('        \\hline\n')
         outFile.write('        \\hline\n')
         line = '        Background'
-        for b in range(2 * nBins / 3, nBins):
+        for b in range(2 * nBins // 3, nBins):
             line += ' & ' + str(int(Background[reg][b][0]))
             line += '$\\pm$' + str(int(Background[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         line = '        Signal'
-        for b in range(2 * nBins / 3, nBins):
+        for b in range(2 * nBins // 3, nBins):
             line += ' & ' + str(int(Signal[reg][b][0]))
             line += '$\\pm$' + str(int(Signal[reg][b][1]))
         line += ' \\\\\n'
         outFile.write(line)
         outFile.write('        \\hline\n')
         line = '        $S/\\sqrt{B}$'
-        for b in range(2 * nBins / 3, nBins):
+        for b in range(2 * nBins // 3, nBins):
             if SOverB[reg][b] > 0.0:
                 line += ' & %.2f' % SOverB[reg][b]
             else:
