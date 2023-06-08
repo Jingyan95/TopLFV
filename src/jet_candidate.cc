@@ -4,7 +4,7 @@ jet_candidate::jet_candidate(float pt_in, float eta_in, float phi_in, float E_in
   pt_ = pt_in;
   eta_ = eta_in;
   phi_ = phi_in;
-  btag_ = isb(btag_in,year);
+  btag_ = isb(btag_in, year);
   p4_.SetPtEtaPhiE(pt_, eta_, phi_, E_in);
   flavor_ = ind_in;
   bt_ = btag_in;

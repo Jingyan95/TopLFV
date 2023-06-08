@@ -39,36 +39,36 @@ addedFilesDY = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 
 for key, value in SAMPLES.items():
     year = value[3]
-    os.system('rm -f '+ year + '/' +key + '.root ')
+    os.system('rm -f ' + year + '/' + key + '.root ')
     nf = value[8]
-    hadd='hadd ' + year + '/' + key + '.root '
-    if value[1]=='data':
-        addedFilesData[year].append( year + '/' + key + '.root ')
+    hadd = 'hadd ' + year + '/' + key + '.root '
+    if value[1] == 'data':
+        addedFilesData[year].append(year + '/' + key + '.root ')
     elif ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
-        addedFilesTX[year].append( year + '/' + key + '.root ')
+        addedFilesTX[year].append(year + '/' + key + '.root ')
     elif ('WW' in key) or ('WZ' in key) or ('ZZ' in key):
-        addedFilesVV[year].append( year + '/' + key + '.root ')
+        addedFilesVV[year].append(year + '/' + key + '.root ')
     elif ('TTTo' in key):
-        addedFilesTT[year].append( year + '/' + key + '.root ')
+        addedFilesTT[year].append(year + '/' + key + '.root ')
     elif ('DYM' in key):
-        addedFilesDY[year].append( year + '/' + key + '.root ')
+        addedFilesDY[year].append(year + '/' + key + '.root ')
     else:
         os.system('rm -f ' + key + '.root')
-        hadd='hadd ' + key + '.root '
+        hadd = 'hadd ' + key + '.root '
     for idx, S in enumerate(value[0]):
         for subdir, dirs, files in os.walk(S):
-            sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
-            for num,  seq in enumerate(sequance):
-                hadd +=  year + '/' + key +'_' + str(idx) +'_' + str(num) + '.root '
+            sequance = [files[i:i + nf] for i in range(0, len(files), nf)]
+            for num, seq in enumerate(sequance):
+                hadd +=  year + '/' + key + '_' + str(idx) + '_' + str(num) + '.root '
             break
     os.system(hadd)
 
 if (name == '2016'):
-    haddData_2016 ='hadd 2016_Data' + '.root ' + ' '.join(addedFilesData['2016'])
-    haddTX_2016 ='hadd 2016_TX' + '.root ' + ' '.join(addedFilesTX['2016'])
-    haddVV_2016 ='hadd 2016_VV' + '.root ' + ' '.join(addedFilesVV['2016'])
-    haddTT_2016 ='hadd 2016_TT' + '.root ' + ' '.join(addedFilesTT['2016'])
-    haddDY_2016 ='hadd 2016_DY' + '.root ' + ' '.join(addedFilesDY['2016'])
+    haddData_2016 = 'hadd 2016_Data' + '.root ' + ' '.join(addedFilesData['2016'])
+    haddTX_2016 = 'hadd 2016_TX' + '.root ' + ' '.join(addedFilesTX['2016'])
+    haddVV_2016 = 'hadd 2016_VV' + '.root ' + ' '.join(addedFilesVV['2016'])
+    haddTT_2016 = 'hadd 2016_TT' + '.root ' + ' '.join(addedFilesTT['2016'])
+    haddDY_2016 = 'hadd 2016_DY' + '.root ' + ' '.join(addedFilesDY['2016'])
     os.system('rm -f 2016_Data.root')
     os.system('rm -f 2016_TX.root')
     os.system('rm -f 2016_VV.root')

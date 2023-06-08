@@ -37,46 +37,77 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   auto begin = std::chrono::high_resolution_clock::now();
   std::vector<TString> charges{"OS", "SS"}; // Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
-  std::vector<TString> regions{"ll", "llOnZMetg20Jetgeq1", "llOffZMetg20B1", "llOffZMetg20B2", "llStl300", "llOnZ", "llbtagg1p3", "llStg300OffZbtagl1p3", "llStg300OffZbtagl1p3Tight"};
-  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0};
+  std::vector<TString> regions{
+    /*0*/ "ll", // No cuts
+    /*1*/ "llOnZMetg20Jetgeq1", // Z + jets CR (Tight)
+    /*2*/ "llOffZMetg20B1", // SR (Tight)
+    /*3*/ "llOffZMetg20B2", // ttbar + jets CR (Tight)
+    /*4*/ "llStl300", // Generic signal-free region
+    /*5*/ "llOnZ", // Z + jets CR
+    /*6*/ "llbtagg1p3", // ttbar + jets CR
+    /*7*/ "llStg300OffZbtagl1p3", // New SR (Loose)
+    /*8*/ "llStg300OffZbtagl1p3Tight", // New SR (Tight)
+    /*9*/ "llMetg20Jetgeq1" // Background estimation
+    // /*9*/ "llOnZMetg20Jetgeq1Loose", // Z + jets CR (Loose)
+    // /*10*/ "llOffZMetg20B1Loose", // SR (Loose)
+    // /*11*/ "llOffZMetg20B2Loose" // ttbar + jets CR (Loose)
+    // 
+  };
+  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1};
   const std::map<TString, std::vector<float>> vars =
   {
     {"llM",              {0,   10,     0,   180}},
     {"llDr",             {1,   10,     0,   4.5}},
     {"lep1Pt",           {2,   10,    30,   230}},
     {"lep2Pt",           {3,   10,    20,   180}},
-    {"taPt",             {4,   10,    20,   220}},
-    {"taDxy",            {5,   16,  -0.1,   0.1}},
-    {"taDz",             {6,   16,  -0.2,   0.2}},
-    {"jet1Pt",           {7,   10,    25,   225}},
-    {"njet",             {8,    6,     0,     6}},
-    {"nbjet",            {9,    4,     0,     4}},
-    {"MET",              {10,  10,     0,   200}},
-    {"subSR",            {11,  18,     0,    18}},
-    {"LFVemuM",          {12,  10,     0,   300}},
-    {"LFVetaM",          {13,  10,     0,   300}},
-    {"LFVmutaM",         {14,  10,     0,   300}},
-    {"LFVemuDr",         {15,  10,     0,   4.5}},
-    {"LFVetaDr",         {16,  10,     0,   4.5}},
-    {"LFVmutaDr",        {17,  10,     0,   4.5}},
-    {"LFVePt",           {18,  10,    20,   300}},
-    {"LFVmuPt",          {19,  10,    20,   300}},
-    {"LFVtaPt",          {20,  10,    20,   300}},
-    {"BalepPt",          {21,  10,    20,   180}},
-    {"Topmass",          {22,  10,     0,   300}},
-    {"Ht",               {23,  10,     0,   300}},
-    {"St",               {24,  20,    70,   600}},
-    {"btagSum",          {25,  25,     0,   2.5}}
+    {"taPt",             {4,   20,    20,   220}},
+    {"taPtHadronic",     {5,   20,    20,   220}},
+    {"taEta",            {6,   23,  -2.3,   2.3}},
+    {"taEtaHadronic",    {7,   23,  -2.3,   2.3}},
+    {"taVsJetWP",        {8,    8,     0,     8}},
+    {"taDxy",            {9,   16,  -0.1,   0.1}},
+    {"taDz",             {10,  16,  -0.2,   0.2}},
+    {"jet1Pt",           {11,  10,    25,   225}},
+    {"njet",             {12,   6,     0,     6}},
+    {"nbjet",            {13,   4,     0,     4}},
+    {"MET",              {14,  10,     0,   200}},
+    {"subSR",            {15,  18,     0,    18}},
+    {"LFVemuM",          {16,  10,     0,   300}},
+    {"LFVetaM",          {17,  10,     0,   300}},
+    {"LFVmutaM",         {18,  10,     0,   300}},
+    {"LFVemuDr",         {19,  10,     0,   4.5}},
+    {"LFVetaDr",         {20,  10,     0,   4.5}},
+    {"LFVmutaDr",        {21,  10,     0,   4.5}},
+    {"LFVePt",           {22,  10,    20,   300}},
+    {"LFVmuPt",          {23,  10,    20,   300}},
+    {"LFVtaPt",          {24,  10,    20,   300}},
+    {"BalepPt",          {25,  10,    20,   180}},
+    {"Topmass",          {26,  10,     0,   300}},
+    {"Ht",               {27,  10,     0,   300}},
+    {"St",               {28,  20,    70,   600}},
+    {"btagSum",          {29,  25,     0,   2.5}}
+  };
+
+  const std::map<TString, std::vector<float>> vars2D =
+  {
+    // Divide on/off Z into multiple pt regions?
+    {"nbjetvsOnZ",          {0,   2,   0,   2,   4,   0,   4}},
+    {"nbjetvsOnZHadronic",  {1,   2,   0,   2,   4,   0,   4}}
   };
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
-  Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(regions.size(),Dim1(vars.size())))));
-  std::stringstream name;
+  Dim4 Hists(Dim4(charges.size(), Dim3(channels.size(), Dim2(regions.size(), Dim1(vars.size())))));
   TH1F *h_test;
+  Dim2D_4 Hists2D(Dim2D_4(charges.size(), Dim2D_3(channels.size(), Dim2D_2(regions.size(), Dim2D_1(vars2D.size())))));
+  TH2F* h2_test;
+  std::stringstream name;
 
+  // Creating histograms
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
+
+        // Create 1D histograms
         for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
           name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_; // adding working ID to avoid mem leak
           if (it->first.Contains("llM") && i == 0 && j != 1) {
@@ -87,6 +118,18 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           h_test->StatOverflows(kTRUE);
           h_test->Sumw2(kTRUE);
           Hists[i][j][k][it->second.at(0)] = h_test;
+          name.str("");
+        }
+
+        // Create 2D histograms for background estimation
+        for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
+          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_;
+          h2_test = new TH2F((name.str()).c_str(), "",
+            it->second.at(1), it->second.at(2), it->second.at(3),
+            it->second.at(4), it->second.at(5), it->second.at(6));
+          h2_test->StatOverflows(kTRUE);
+          h2_test->Sumw2(kTRUE);
+          Hists2D[i][j][k][it->second.at(0)] = h2_test;
           name.str("");
         }
       }
@@ -151,7 +194,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_mu;
   float weight_Btag_corr; // correction for btag shape to preserve normalization 
   float weight_Event;
-  int nAccept=0;
+  int nAccept = 0;
   PU wPU;
 
   Long64_t ntr = fChain->GetEntries();
@@ -219,7 +262,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
 
       Leptons->push_back(new lepton_candidate(Electron_pt[l], Electron_eta[l], Electron_phi[l], Electron_dxy[l], Electron_dz[l],
-        Electron_charge[l], Electron_topLeptonMVA_v1[l], Electron_topLeptonMVA_v2[l], 0, l, 1,
+        Electron_charge[l], 0, Electron_topLeptonMVA_v1[l], Electron_topLeptonMVA_v2[l], 0, l, 1,
         data == "mc" ? (int) Electron_genPartFlav[l] : 1));
     }
 
@@ -240,12 +283,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
 
       Leptons->push_back(new lepton_candidate(Muon_pt[l], Muon_eta[l], Muon_phi[l], Muon_dxy[l], Muon_dz[l],
-        Muon_charge[l], Muon_topLeptonMVA_v1[l], Muon_topLeptonMVA_v2[l], 0, l, 2,
+        Muon_charge[l], 0, Muon_topLeptonMVA_v1[l], Muon_topLeptonMVA_v2[l], 0, l, 2,
         data == "mc" ? (int) Muon_genPartFlav[l] : 1));
     }
 
     if (Leptons->size() != 2 || ((*Leptons)[0]->pt_ < lep1PtCut && (*Leptons)[1]->pt_ < lep1PtCut)
-        || !myTrig->triggerPass((*Leptons)[0]->flavor_ + (*Leptons)[1]->flavor_-2)) { // Applying flavor-dependent trigger requirement
+        || !myTrig->triggerPass((*Leptons)[0]->flavor_ + (*Leptons)[1]->flavor_ - 2)) { // Applying flavor-dependent trigger requirement
       deleteContainter(Leptons);
       continue;
     }
@@ -261,7 +304,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
       // The Loosest possible DeepTau Working Point
-      if ((int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8 || (int) Tau_idDeepTau2017v2p1VSjet[l] < 32) continue;
+      if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 32 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
 
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
@@ -273,9 +316,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         if ((int) Tau_genPartFlav[l] == 2 || (int) Tau_genPartFlav[l] == 4) weight_Ta_ID_mu = weight_Ta_ID_mu * sf_Ta_ID_mu.GetBinContent(sf_Ta_ID_mu.GetXaxis()->FindBin(abs(Tau_eta[l])));
       }
 
-      Leptons->push_back(new lepton_candidate(tauPt, Tau_eta[l], Tau_phi[l], Tau_dxy[l], Tau_dz[l],
-        Tau_charge[l], Tau_rawDeepTau2017v2p1VSjet[l], Tau_rawDeepTau2017v2p1VSe[l], Tau_rawDeepTau2017v2p1VSmu[l], l, 3,
-        data == "mc" ? (int) Tau_genPartFlav[l] : 5));
+      Leptons->push_back(new lepton_candidate(tauPt, Tau_eta[l], Tau_phi[l], Tau_dxy[l], Tau_dz[l], Tau_charge[l],
+        Tau_idDeepTau2017v2p1VSjet[l], Tau_rawDeepTau2017v2p1VSjet[l], Tau_rawDeepTau2017v2p1VSe[l], Tau_rawDeepTau2017v2p1VSmu[l],
+        l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5));
     }
 
     if (Leptons->size() != 3
@@ -319,10 +362,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
     // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF());
 
+    // TODO: CHANGE REGIONS TO ACCESS INDICES VIA MAP?
     reg.push_back(0);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[0]);
     if (Event->MET()->Pt() > 20 && Event->njet() > 0) {
-      if (Event->OnZ()) { // Z+jets CR
+      reg.push_back(9); // Background estimation
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[9]);
+      if (Event->OnZ()) { // Z + jets CR
         reg.push_back(1);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[1]);
       }
@@ -331,7 +377,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           reg.push_back(2);
           wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[2]);
         }
-        if (Event->nbjet() == 2) { // ttbar+jets CR
+        if (Event->nbjet() == 2) { // ttbar + jets CR
           reg.push_back(3);
           wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[3]);
         }
@@ -341,11 +387,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       reg.push_back(4);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[4]);
     }
-    if (Event->OnZ()) { // Z+jets CR
+    if (Event->OnZ()) { // Z + jets CR
       reg.push_back(5);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[5]);
     }
-    if (Event->btagSum() > 1.3) { // ttbar+jets CR
+    if (Event->btagSum() > 1.3) { // ttbar + jets CR
       reg.push_back(6);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[6]);
     }
@@ -357,6 +403,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[8]);
       }
     }
+
     // Filling histograms
     for (int i = 0; i < reg.size(); ++i) {
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
@@ -364,6 +411,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPt")]->Fill(Event->ta1()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEta")]->Fill(Event->ta1()->eta_, wgt[i]);
+      if (Event->ta1()->truth_ == 0) {
+        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPtHadronic")]->Fill(Event->ta1()->pt_, wgt[i]);
+        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEtaHadronic")]->Fill(Event->ta1()->eta_, wgt[i]);
+      }
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetWP")]->Fill(Event->ta1()->mva1WP_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
       if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
@@ -381,6 +434,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
+
+      Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZ")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
+      if (Event->ta1()->truth_ == 0) {
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
+      }
     }
 
     deleteContainter(Leptons);
@@ -395,6 +453,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
+
+        // Write 1D histograms
         for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
           name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first;
           Hists[i][j][k][it->second.at(0)]->SetName((name.str()).c_str());
@@ -402,13 +462,26 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           delete Hists[i][j][k][it->second.at(0)];
           name.str("");
         }
+
+        // Write 2D histograms
+        for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
+          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first;
+          Hists2D[i][j][k][it->second.at(0)]->SetName((name.str()).c_str());
+          Hists2D[i][j][k][it->second.at(0)]->Write("", TObject::kOverwrite);
+          delete Hists2D[i][j][k][it->second.at(0)];
+          name.str("");
+        }
+
       }
     }
   }
+
   // h_2D_woBtagSF->Write("", TObject::kOverwrite);
   // h_2D_wBtagSF->Write("", TObject::kOverwrite);
+
   file_out.Close();
   Hists.clear();
+  Hists2D.clear();
 
   // Writing summary
   auto end = std::chrono::high_resolution_clock::now();

@@ -53,7 +53,7 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-jobruntime = 600 # 10min
+jobruntime = 600 # 10 min
 
 for key, value in SAMPLES.items():
     if name  not in key:

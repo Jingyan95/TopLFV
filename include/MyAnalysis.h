@@ -14,8 +14,8 @@
 using namespace std;
 class MyAnalysis {
 public :
-  TTree          *fChain; //!pointer to the analyzed TTree or TChain
-  Int_t          fCurrent; //!current Tree number in a TChain
+  TTree          *fChain; // !pointer to the analyzed TTree or TChain
+  Int_t          fCurrent; // !current Tree number in a TChain
   TString        year_;
   TString        data_;
   TString        run_;
@@ -116,36 +116,36 @@ public :
   Bool_t          Flag_ecalBadCalibFilter; 
   Bool_t          Flag_BadPFMuonDzFilter;
 
-  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL;//2016 APV
-  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL;//2016 APV, 2017, 2018
-  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;//2016, 2017, 2018
-  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016
+  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL; // 2016APV
+  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL; // 2016APV, 2017, 2018
+  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017, 2018
+  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016
 
-  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;//2017, 2018
-  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016 APV, 2016
-  Bool_t          HLT_DoubleEle33_CaloIdL_MW;//2016APV, 2016, 2017, 2018
-  Bool_t          HLT_DoubleEle33_CaloIdL_GsfTrkIdVL;//2016APV, 2016 
+  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL; // 2017, 2018
+  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016APV, 2016
+  Bool_t          HLT_DoubleEle33_CaloIdL_MW; // 2016APV, 2016, 2017, 2018
+  Bool_t          HLT_DoubleEle33_CaloIdL_GsfTrkIdVL; // 2016APV, 2016
 
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;//2016 APV
-  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL;//2016 APV
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ;//2016
-  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ;//2016
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8;//2017
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;//2018
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL; // 2016APV
+  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL; // 2016APV
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ; // 2016
+  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ; // 2016
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8; // 2017
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8; // 2018
 
-  Bool_t          HLT_Ele27_WPTight_Gsf;//2016 APV, 2016
-  Bool_t          HLT_Ele32_WPTight_Gsf;//2018
-  Bool_t          HLT_Ele35_WPTight_Gsf;//2017
-  Bool_t          HLT_IsoMu24;//2016 APV, 2016, 2018
-  Bool_t          HLT_IsoTkMu24;//2016 APV, 2016
-  Bool_t          HLT_IsoMu27;//2017
+  Bool_t          HLT_Ele27_WPTight_Gsf; // 2016APV, 2016
+  Bool_t          HLT_Ele32_WPTight_Gsf; // 2018
+  Bool_t          HLT_Ele35_WPTight_Gsf; // 2017
+  Bool_t          HLT_IsoMu24; // 2016APV, 2016, 2018
+  Bool_t          HLT_IsoTkMu24; // 2016APV, 2016
+  Bool_t          HLT_IsoMu27; // 2017
 
-  Float_t         Generator_weight;//MC generator weight
+  Float_t         Generator_weight; // MC generator weight
   Float_t         Pileup_nTrueInt;
   Float_t         L1PreFiringWeight_ECAL_Nom;
   Float_t         L1PreFiringWeight_Muon_Nom;
 
-  // List of branches  
+  // List of branches
   TBranch         *b_nElectron;
   TBranch         *b_Electron_charge;
   TBranch         *b_Electron_deltaEtaSC;
@@ -234,43 +234,43 @@ public :
   TBranch         *b_Flag_ecalBadCalibFilter; 
   TBranch         *b_Flag_BadPFMuonDzFilter;
 
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL;//2016 APV
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL;//2016 APV, 2017, 2018
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;//2016, 2017, 2018
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016
+  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL; // 2016APV
+  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL; // 2016APV, 2017, 2018
+  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017, 2018
+  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016
 
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;//2017, 2018
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016 APV, 2016
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_MW;//2016APV, 2016, 2017, 2018
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL;//2016APV, 2016 
+  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL; // 2017, 2018
+  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016APV, 2016
+  TBranch         *b_HLT_DoubleEle33_CaloIdL_MW; // 2016APV, 2016, 2017, 2018
+  TBranch         *b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL; // 2016APV, 2016
 
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;//2016 APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL;//2016 APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ;//2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ;//2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8;//2017
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;//2018
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL; // 2016APV
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL; // 2016APV
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ; // 2016
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ; // 2016
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8; // 2017
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8; // 2018
 
-  TBranch         *b_HLT_Ele27_WPTight_Gsf;//2016 APV, 2016
-  TBranch         *b_HLT_Ele32_WPTight_Gsf;//2018
-  TBranch         *b_HLT_Ele35_WPTight_Gsf;//2017
-  TBranch         *b_HLT_IsoMu24;//2016 APV, 2016, 2018
-  TBranch         *b_HLT_IsoTkMu24;//2016 APV, 2016
-  TBranch         *b_HLT_IsoMu27;//2017
+  TBranch         *b_HLT_Ele27_WPTight_Gsf; // 2016APV, 2016
+  TBranch         *b_HLT_Ele32_WPTight_Gsf; // 2018
+  TBranch         *b_HLT_Ele35_WPTight_Gsf; // 2017
+  TBranch         *b_HLT_IsoMu24; // 2016APV, 2016, 2018
+  TBranch         *b_HLT_IsoTkMu24; // 2016APV, 2016
+  TBranch         *b_HLT_IsoMu27; // 2017
 
   TBranch         *b_Generator_weight;
   TBranch         *b_Pileup_nTrueInt;
   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
   TBranch         *b_L1PreFiringWeight_Muon_Nom;
 
-  MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", int nThread=8, int workerID=0, bool verbose_=false);
+  MyAnalysis(TTree *tree = 0, TString year = "", TString data = "", TString run = "", int nThread = 8, int workerID = 0, bool verbose_ = false);
   virtual ~MyAnalysis();
   virtual Int_t    Cut(Long64_t entry);
   virtual void     GetEntry(Long64_t entry);
   virtual Long64_t LoadTree(Long64_t entry);
   virtual void     Init(TTree *tree);
   virtual void     InitTrigger();
-  virtual std::stringstream Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t,std::atomic<ULong64_t>&,std::atomic<ULong64_t>&);
+  virtual std::stringstream Loop(TString, TString, TString, TString, TString, Float_t, Float_t, Float_t, std::atomic<ULong64_t>&, std::atomic<ULong64_t>&);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
 
@@ -278,27 +278,35 @@ public :
   typedef std::vector<Dim1> Dim2;
   typedef std::vector<Dim2> Dim3;
   typedef std::vector<Dim3> Dim4;
-  //Utility functions
+
+  typedef std::vector<TH2F*> Dim2D_1;
+  typedef std::vector<Dim2D_1> Dim2D_2;
+  typedef std::vector<Dim2D_2> Dim2D_3;
+  typedef std::vector<Dim2D_3> Dim2D_4;
+
+  // Utility functions
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
   float scale_factor(const TH2F* h, float X, float Y, TString uncert);
+  int char_to_int(UChar_t wp);
 
 private:
-  static std::mutex mtx_;//Standard mutex to achieve synchronization
+  static std::mutex mtx_; // Standard mutex to achieve synchronization
 };
 
 #endif
 
 #ifdef MyAnalysis_cxx
-MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool verbose) : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_,data_)), nThread_(nThread), workerID_(workerID), verbose_(verbose) {
+MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool verbose)
+    : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_, data_)), nThread_(nThread), workerID_(workerID), verbose_(verbose) {
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
   if (tree == 0) {
-    TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");
+    TFile *f = (TFile*) gROOT->GetListOfFiles()->FindObject("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");
     if (!f || !f->IsOpen()) {
       f = new TFile("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");
     }
-    f->GetObject("Events",tree);
+    f->GetObject("Events", tree);
   }
   Init(tree);
 }
@@ -328,15 +336,15 @@ Long64_t MyAnalysis::LoadTree(Long64_t entry) {
 void MyAnalysis::Init(TTree *tree) {
   // The Init() function is called when the selector needs to initialize
   // a new tree or chain. Typically here the branch addresses and branch
-  // poInt_ters of the tree will be set.
+  // pointers of the tree will be set.
   // It is normally not necessary to make changes to the generated
   // code, but the routine can be extended by the user if needed.
   // Init() will be called many times when running on PROOF
   // (once per file to be processed).
 
-  // Set object poInt_ter
+  // Set object pointer
 
-  // Set branch addresses and branch poInt_ters
+  // Set branch addresses and branch pointers
   if (!tree) return;
   fChain = tree;
   fCurrent = -1;
@@ -463,10 +471,12 @@ void MyAnalysis::Init(TTree *tree) {
 }
 
 void MyAnalysis::InitTrigger() {
-  myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,
-    HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,HLT_DoubleEle33_CaloIdL_MW,HLT_DoubleEle33_CaloIdL_GsfTrkIdVL,
-    HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,
-    HLT_Ele27_WPTight_Gsf,HLT_Ele32_WPTight_Gsf,HLT_Ele35_WPTight_Gsf,HLT_IsoMu24,HLT_IsoTkMu24,HLT_IsoMu27);
+  myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,
+    HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,
+    HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_DoubleEle33_CaloIdL_MW, HLT_DoubleEle33_CaloIdL_GsfTrkIdVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,
+    HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,
+    HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, HLT_Ele27_WPTight_Gsf, HLT_Ele32_WPTight_Gsf,
+    HLT_Ele35_WPTight_Gsf, HLT_IsoMu24, HLT_IsoTkMu24, HLT_IsoMu27);
 }
 
 int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {
@@ -493,21 +503,31 @@ float MyAnalysis::scale_factor(const TH2F* h, float X, float Y, TString uncert) 
   int NbinsX = h->GetXaxis()->GetNbins();
   int NbinsY = h->GetYaxis()->GetNbins();
   float x_min = h->GetXaxis()->GetBinLowEdge(1);
-  float x_max = h->GetXaxis()->GetBinLowEdge(NbinsX)+h->GetXaxis()->GetBinWidth(NbinsX);
+  float x_max = h->GetXaxis()->GetBinLowEdge(NbinsX) + h->GetXaxis()->GetBinWidth(NbinsX);
   float y_min = h->GetYaxis()->GetBinLowEdge(1);
-  float y_max = h->GetYaxis()->GetBinLowEdge(NbinsY)+h->GetYaxis()->GetBinWidth(NbinsY);
+  float y_max = h->GetYaxis()->GetBinLowEdge(NbinsY) + h->GetYaxis()->GetBinWidth(NbinsY);
   const TAxis *Xaxis = h->GetXaxis();
   const TAxis *Yaxis = h->GetYaxis();
   Int_t binx = 1;
   Int_t biny = 1;
   if (x_min < X && X < x_max) binx = Xaxis->FindBin(X);
-  else binx = (X <= x_min) ? 1 : NbinsX ;
+  else binx = (X <= x_min) ? 1 : NbinsX;
   if (y_min < Y && Y < y_max) biny = Yaxis->FindBin(Y);
-  else biny = (Y <= y_min) ? 1 : NbinsY ;
-  if (uncert == "up") return (h->GetBinContent(binx, biny)+h->GetBinError(binx, biny));
-  else if (uncert == "down") return (h->GetBinContent(binx, biny)-h->GetBinError(binx, biny));
+  else biny = (Y <= y_min) ? 1 : NbinsY;
+  if (uncert == "up") return (h->GetBinContent(binx, biny) + h->GetBinError(binx, biny));
+  else if (uncert == "down") return (h->GetBinContent(binx, biny) - h->GetBinError(binx, biny));
   else return h->GetBinContent(binx, biny);
 }
+
+// int MyAnalysis::char_to_int(UChar_t wp) {
+//   int intWP = (static_cast<int>(wp) + 1) / 2;
+//   int power = 0;
+//   while (intWP > 1) {
+//     intWP /= 2;
+//     power++;
+//   }
+//   return power;
+// }
 
 Bool_t MyAnalysis::Notify() {
   // The Notify() function is called when a new file is opened. This
@@ -520,14 +540,14 @@ Bool_t MyAnalysis::Notify() {
 
 void MyAnalysis::Show(Long64_t entry) {
   // Print contents of entry.
-  // If entry is not specified, prInt_t current entry
+  // If entry is not specified, print current entry
   if (!fChain) return;
   fChain->Show(entry);
 }
 
 Int_t MyAnalysis::Cut(Long64_t entry) {
   // This function may be called from Loop.
-  // returns  1 if entry is accepted.
+  // returns 1 if entry is accepted.
   // returns -1 otherwise.
   return 1;
 }
