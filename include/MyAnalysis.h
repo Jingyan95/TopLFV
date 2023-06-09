@@ -285,6 +285,7 @@ public :
   typedef std::vector<Dim2D_3> Dim2D_4;
 
   // Utility functions
+  int rInd(std::vector<TString> R, TString name);
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
   float scale_factor(const TH2F* h, float X, float Y, TString uncert);
@@ -477,6 +478,11 @@ void MyAnalysis::InitTrigger() {
     HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,
     HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, HLT_Ele27_WPTight_Gsf, HLT_Ele32_WPTight_Gsf,
     HLT_Ele35_WPTight_Gsf, HLT_IsoMu24, HLT_IsoTkMu24, HLT_IsoMu27);
+}
+
+int MyAnalysis::rInd(std::vector<TString> R, TString name) {
+  auto iter = std::find(R.begin(), R.end(), name);
+  return iter - R.begin();
 }
 
 int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {
