@@ -1,79 +1,43 @@
-# prints out cutflows in LaTeX table format
-
-import argparse
-import ROOT
-import sys
-import os
 from math import sqrt
 
+nBins = 18 # number of bins in subSR histogram
 
-year_RunII = ['2016APV', '2016', '2017', '2018', 'All']
-year = []
-Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ['Data', '$t\\bar{t}X$', 'VV', 'DY', '$t\\bar{t}$', 'St Scalar U', 'Tt Scalar U']
-charges = ['OS', 'SS']
-channels = ['ee', 'emu', 'mumu']
-regions = ['ll', 'llOnZMetg20Jetgeq1', 'llOffZMetg20B1', 'llOffZMetg20B2', 'llStl300', 'llOnZ', 'llbtagg1p3', 'llStg300OffZbtagl1p3', 'llStg300OffZbtagl1p3Tight']
-regionsName = ['2$l+\\tau_h$, no cuts',
-    '2$l+\\tau_h$, Z + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, on Z',
-    '2$l+\\tau_h$, SR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, off Z, nbjet $=1$',
-    '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, off Z, nbjet $=2$',
-    '2$l+\\tau_h$, CR, $S_T<300$ GeV',
-    '2$l+\\tau_h$, Z + jets CR, on Z',
-    '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$',
-    '2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, off Z, btag $<1.3$',
-    '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV']
+def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, channels, Samples, SamplesName):
+    print("making cutflow tables...")
 
-
-# set up an argument parser
-parser = argparse.ArgumentParser()
-parser.add_argument('--n', dest = 'NAMETAG', default = '2016')
-ARGS = parser.parse_args()
-name = ARGS.NAMETAG
-
-sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'bin'))
-loc = os.path.dirname(sys.path[0]) + '/'
-HistAddress = loc + 'hists/'
-
-
-for numyear, nameyear in enumerate(year_RunII):
-    if name == nameyear or name == 'RunII':
-        year.append(year_RunII[numyear])
-
-nBins = 18
-for yr in year:
+    # initialize counts and totals
     Counts = {}
+    for f in Samples:
+        Counts[f] = {}
+        for reg in regions:
+            Counts[f][reg] = {}
+            for b in range(nBins):
+                Counts[f][reg][b] = [0.0, 0.0, -1.0] # [count, error, %]
     Totals = {}
-
     for reg in regions:
         Totals[reg] = []
         for b in range(nBins):
             Totals[reg].append(0.0)
 
-    for f in Samples:
-        Counts[f] = {}
-        file = ROOT.TFile.Open(HistAddress + yr + '_' + f)
-        for reg in regions:
-            Counts[f][reg] = {}
-            for b in range(nBins):
-                Counts[f][reg][b] = [0.0, 0.0, -1.0]
-
-            for c in charges:
-                for ch in channels:
-                    h = file.Get(c + '_' + ch + '_' + reg + '_subSR')
+    # get counts for each sample
+    for numf, namef in enumerate(Samples):
+        for numreg, namereg in enumerate(regions):
+            for c in range(len(charges)):
+                for ch in range(len(channels)):
+                    h = Hists[numyear][numf][c][ch][numreg][15].Clone()
                     for b in range(nBins):
-                        Counts[f][reg][b][0] += h.GetBinContent(b + 1)
-                        Counts[f][reg][b][1] += h.GetBinError(b + 1)
-                        if 'Data' not in f: Totals[reg][b] += h.GetBinContent(b + 1)
-
+                        Counts[namef][namereg][b][0] += h.GetBinContent(b + 1)
+                        Counts[namef][namereg][b][1] += h.GetBinError(b + 1)
+                        if 'Data' not in f: Totals[namereg][b] += h.GetBinContent(b + 1)
     for f in Samples:
         for reg in regions:
             for b in range(nBins):
                 if Totals[reg][b] == 0.0:
-                    Counts[f][reg][b][2] = 0.0
+                    Counts[f][reg][b][2] = 0.0 # technically undefined
                 else:
                     Counts[f][reg][b][2] = Counts[f][reg][b][0] / Totals[reg][b] * 100.0
 
+    # get counts for signal and background
     Background = {}
     Signal = {}
     SOverB = {}
@@ -82,12 +46,12 @@ for yr in year:
         Background[reg] = {}
         SOverB[reg] = {}
         for b in range(nBins):
-            sig = Counts['LFVStScalarU.root'][reg][b][0] + Counts['LFVTtScalarU.root'][reg][b][0]
-            sig_err = sqrt(Counts['LFVStScalarU.root'][reg][b][1]**2 + Counts['LFVTtScalarU.root'][reg][b][1]**2)
+            sig = Counts[Samples[5]][reg][b][0] + Counts[Samples[6]][reg][b][0]
+            sig_err = sqrt(Counts[Samples[5]][reg][b][1]**2 + Counts[Samples[6]][reg][b][1]**2)
             Signal[reg][b] = [sig, sig_err]
 
-            bkg = Counts['TX.root'][reg][b][0] + Counts['VV.root'][reg][b][0] + Counts['DY.root'][reg][b][0] + Counts['TT.root'][reg][b][0]
-            bkg_err = sqrt(Counts['TX.root'][reg][b][1]**2 + Counts['VV.root'][reg][b][1]**2 + Counts['DY.root'][reg][b][1]**2 + Counts['TT.root'][reg][b][1]**2)
+            bkg = Counts[Samples[1]][reg][b][0] + Counts[Samples[2]][reg][b][0] + Counts[Samples[3]][reg][b][0] + Counts[Samples[4]][reg][b][0]
+            bkg_err = sqrt(Counts[Samples[1]][reg][b][1]**2 + Counts[Samples[2]][reg][b][1]**2 + Counts[Samples[3]][reg][b][1]**2 + Counts[Samples[4]][reg][b][1]**2)
             Background[reg][b] = [bkg, bkg_err]
 
             if bkg == 0.0:
@@ -96,7 +60,7 @@ for yr in year:
                 SOverB[reg][b] = sig / sqrt(bkg)
 
     # open and write to output text file
-    outFile = open('cutflow' + yr + '.tex', 'w')
+    outFile = open('cutflow' + nameyear + '.tex', 'w')
 
     # stuff for beginning .tex file
     outFile.write('\\documentclass{beamer}\n')
@@ -261,4 +225,4 @@ for yr in year:
     outFile.write('\\end{document}\n')
 
     outFile.close()
-    print('cutflow' + yr + '.tex created!')
+    print('cutflow' + nameyear + '.tex created!')
