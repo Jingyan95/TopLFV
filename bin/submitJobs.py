@@ -6,12 +6,12 @@ import string
 import csv, subprocess
 
 import argparse
-# set up an argument parser
+# Set up an argument parser
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--v', dest='VERBOSE', default=True)
-parser.add_argument('--n', dest = 'NAMETAG', default= '2016' )
-parser.add_argument('--t', dest='NCPUS', default=6) # number of CPUs requested
+parser.add_argument('--v', dest = 'VERBOSE', default = True)
+parser.add_argument('--n', dest = 'NAMETAG', default = '2016')
+parser.add_argument('--t', dest = 'NCPUS', default = 6) # Number of CPUs requested
 
 ARGS = parser.parse_args()
 
@@ -66,7 +66,7 @@ for key, value in SAMPLES.items():
     for idx, S in enumerate(value[0]):
         for subdir, dirs, files in os.walk(S):
             sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
-            submit = 'universe = vanilla\n' # writing .sub file
+            submit = 'universe = vanilla\n' # Writing .sub file
             submit += 'executable = Jobs/' + key + '/' + key + '_' + str(idx) + '.sh' + '\n'
             submit += 'arguments = $(Process)\n'
             submit += 'output = Jobs/'+ key + '/' + key + '_' + str(idx) + '_$(Process).out' + '\n'
@@ -87,6 +87,6 @@ for key, value in SAMPLES.items():
             sub1.write(submit + '\n')
             sub1.close()
             qsub = "condor_submit Jobs/" + key + '/' + submitName 
-            print "------------------------------------------------------"
-            print qsub
+            print("------------------------------------------------------")
+            print(qsub)
             subprocess.call(qsub, shell = True)

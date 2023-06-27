@@ -1,11 +1,11 @@
 from math import sqrt
 
-nBins = 18 # number of bins in subSR histogram
+nBins = 18 # Number of bins in subSR histogram
 
+# Calculates cutflow tables and prints them in LaTeX table format
 def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, channels, Samples, SamplesName):
-    print("making cutflow tables...")
 
-    # initialize counts and totals
+    # Initialize counts and totals
     Counts = {}
     for f in Samples:
         Counts[f] = {}
@@ -19,7 +19,7 @@ def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, chann
         for b in range(nBins):
             Totals[reg].append(0.0)
 
-    # get counts for each sample
+    # Get counts for each sample
     for numf, namef in enumerate(Samples):
         for numreg, namereg in enumerate(regions):
             for c in range(len(charges)):
@@ -33,11 +33,11 @@ def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, chann
         for reg in regions:
             for b in range(nBins):
                 if Totals[reg][b] == 0.0:
-                    Counts[f][reg][b][2] = 0.0 # technically undefined
+                    Counts[f][reg][b][2] = 0.0 # Technically undefined
                 else:
                     Counts[f][reg][b][2] = Counts[f][reg][b][0] / Totals[reg][b] * 100.0
 
-    # get counts for signal and background
+    # Get counts for signal and background
     Background = {}
     Signal = {}
     SOverB = {}
@@ -59,10 +59,10 @@ def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, chann
             else:
                 SOverB[reg][b] = sig / sqrt(bkg)
 
-    # open and write to output text file
+    # Open and write to output text file
     outFile = open('cutflow' + nameyear + '.tex', 'w')
 
-    # stuff for beginning .tex file
+    # Stuff for beginning .tex file
     outFile.write('\\documentclass{beamer}\n')
     outFile.write('\\usepackage[orientation = landscape, size = custom, width = 16, height = 12, scale = 0.5, debug]{beamerposter}\n')
     outFile.write('\n')
@@ -75,7 +75,7 @@ def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, chann
     outFile.write('    \\maketitle\n')
     outFile.write('  \\end{frame}\n')
 
-    # slide listing all cuts
+    # Slide listing all cuts
     outFile.write('\n')
     outFile.write('  \\begin{frame}{\\textbf{Cutflow}}\n')
     outFile.write('    \\begin{enumerate}\n')
@@ -84,7 +84,7 @@ def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, chann
     outFile.write('    \\end{enumerate}\n')
     outFile.write('  \\end{frame}\n')
 
-    # cutflow table slides, 1 per region
+    # Cutflow table slides, 1 per region
     for ridx, reg in enumerate(regions):
         outFile.write('\n')
         outFile.write('  \\begin{frame}{\\textbf{Cutflow}}\n')
@@ -220,9 +220,10 @@ def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, chann
         outFile.write('    }\n')
         outFile.write('  \\end{frame}\n')
 
-    # stuff for ending .tex file
+    # Stuff for ending .tex file
     outFile.write('\n')
     outFile.write('\\end{document}\n')
 
+    # Close output file
     outFile.close()
     print('cutflow' + nameyear + '.tex created!')

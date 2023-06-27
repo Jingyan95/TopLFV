@@ -525,15 +525,15 @@ float MyAnalysis::scale_factor(const TH2F* h, float X, float Y, TString uncert) 
   else return h->GetBinContent(binx, biny);
 }
 
-// int MyAnalysis::char_to_int(UChar_t wp) {
-//   int intWP = (static_cast<int>(wp) + 1) / 2;
-//   int power = 0;
-//   while (intWP > 1) {
-//     intWP /= 2;
-//     power++;
-//   }
-//   return power;
-// }
+int MyAnalysis::char_to_int(UChar_t wp) {
+  int intWP = (static_cast<int>(wp) + 1) / 2;
+  int power = 0;
+  while (intWP > 1) {
+    intWP /= 2;
+    power++;
+  }
+  return power;
+}
 
 Bool_t MyAnalysis::Notify() {
   // The Notify() function is called when a new file is opened. This

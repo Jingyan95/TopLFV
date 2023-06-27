@@ -18,7 +18,10 @@ from operator import truediv
 import copy
 TGaxis.SetMaxDigits(2)
 
-def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "region", regName = ["region", "", ""], year = '2016', var = "sample", varname = "v"):
+
+def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "region", regName = ["region", "", ""],
+              year = '2016',var = "sample", varname = "v"):
+
     folder = 'StackHist'
     hs = ROOT.THStack("hs", "")
     for num in range(1, len(hists)):
@@ -65,8 +68,8 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     legend3.SetTextFont(42)
     legend3.SetTextSize(0.05)
 
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # used for the hist plot
-    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # used for the ratio plot
+    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # Used for the hist plot
+    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # Used for the ratio plot
     pad1.Draw()
     pad2.Draw() 
     pad2.SetGridy()
@@ -131,7 +134,7 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     yerrupRatio = array('d')
     yerrdownRatio = array('d')
     for b in range(SumofMC.GetNbinsX()):
-        if SumofMC.GetBinContent(b + 1)>0:
+        if SumofMC.GetBinContent(b + 1) > 0:
             binwidth.append(SumofMC.GetBinWidth(b + 1) / 2)
             bincenter.append(SumofMC.GetBinCenter(b + 1))
             yvalue.append(SumofMC.GetBinContent(b + 1))
@@ -152,15 +155,7 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     error.SetLineWidth(4)
     error.Draw("2")
 
-    Lumi = '138'
-    if (year == '2016APV'):
-        Lumi = '19.5'
-    if (year == '2016'):
-        Lumi = '16.8'
-    if (year == '2017'):
-        Lumi = '41.5'
-    if (year == '2018'):
-        Lumi = '59.8'
+    Lumi = getLumi(year)
     label_cms = "CMS"
     Label_cms = ROOT.TLatex(0.15, 0.92, label_cms)
     Label_cms.SetNDC()
@@ -287,12 +282,13 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     del canvas
     gc.collect()
 
-def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", regName = ["region", "", ""], year = '2016', min = 0.1, max = 1.0, var = "sample", varXName = "xlabel", varYName = "ylabel", xLines = [], yLines = [], xBinLabels = [], yBinLabels = []):
+
+def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", regName = ["region", "", ""], year = '2016',
+           var = "sample", varXName = "xlabel", varYName = "ylabel", xLines = [], yLines = [], xBinLabels = [], yBinLabels = []):
+
     folder = 'StackHist'
 
     h = hist.Clone()
-    h.SetMinimum(min)
-    h.SetMaximum(max)
     h.GetXaxis().SetNoExponent()
     h.GetYaxis().SetNoExponent()
     # h.GetZaxis().SetNoExponent()
@@ -308,7 +304,7 @@ def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", regName = 
     canvas = ROOT.TCanvas(year + c + ch + reg + var, year + c + ch + reg + var, 50, 50, 865, 780)
     canvas.SetGrid()
     canvas.SetBottomMargin(0.12)
-    canvas.SetLeftMargin(0.12)
+    canvas.SetLeftMargin(0.17)
     canvas.SetRightMargin(0.12)
     canvas.cd()
     canvas.SetLogz(ROOT.kTRUE)
@@ -334,15 +330,7 @@ def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", regName = 
         line.Draw("same")
         lines.append(line)
 
-    Lumi = '138'
-    if (year == '2016APV'):
-        Lumi = '19.5'
-    if (year == '2016'):
-        Lumi = '16.8'
-    if (year == '2017'):
-        Lumi = '41.5'
-    if (year == '2018'):
-        Lumi = '59.8'
+    Lumi = getLumi(year)
     label_cms = "CMS"
     Label_cms = ROOT.TLatex(0.115, 0.92, label_cms)
     Label_cms.SetTextSize(0.04)
@@ -376,7 +364,9 @@ def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", regName = 
     del canvas
     gc.collect()
 
+
 def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mva1", varname = "v", SamplesName = []):
+
     folder = 'CompareBackgrounds'
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -398,8 +388,8 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
     legend.SetTextFont(42)
     legend.SetTextSize(0.3)
 
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.0, 0.1, 0.99, 0) # used for the legend
-    pad2 = ROOT.TPad("pad2", "pad2", 0.1, 0.0, 1, 1, 0) # used for the hists
+    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.0, 0.1, 0.99, 0) # Used for the legend
+    pad2 = ROOT.TPad("pad2", "pad2", 0.1, 0.0, 1, 1, 0) # Used for the hists
     pad1.Draw()
     pad2.Draw()
     pad2.SetTickx()
@@ -444,15 +434,8 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
         hists[n].Draw('HIST P SAME')
     hists[0].Draw("AXISSAMEY+")
     hists[0].Draw("AXISSAMEX+")
-    Lumi = '138'
-    if (year == '2016APV'):
-        Lumi = '19.5'
-    if (year == '2016'):
-        Lumi = '16.8'
-    if (year == '2017'):
-        Lumi = '41.5'
-    if (year == '2018'):
-        Lumi = '59.8'
+
+    Lumi = getLumi(year)
     label_cms = "CMS"
     Label_cms = ROOT.TLatex(0.115, 0.92, label_cms)
     Label_cms.SetTextSize(0.04)
@@ -482,7 +465,9 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
     del canvas
     gc.collect()
 
+
 def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region", "", ""], year = '2016'):
+
     folder = 'StackHist'
     ROOT.gStyle.SetErrorX(0) # No horizontal error bar
     hs = ROOT.THStack("hs", "")
@@ -527,24 +512,24 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
             Sig.Draw("")
             sig.append(Sig)
 
-    legend = ROOT.TLegend(0.56,0.68,0.63,0.87)
+    legend = ROOT.TLegend(0.56, 0.68, 0.63, 0.87)
     legend.SetBorderSize(0)
     legend.SetFillStyle(0)
     legend.SetTextFont(42)
     legend.SetTextSize(0.05)
-    legend2 = ROOT.TLegend(0.63,0.68,0.7,0.87)
+    legend2 = ROOT.TLegend(0.63, 0.68, 0.7, 0.87)
     legend2.SetBorderSize(0)
     legend2.SetFillStyle(0)
     legend2.SetTextFont(42)
     legend2.SetTextSize(0.05)
-    legend3 = ROOT.TLegend(0.7,0.75,0.85,0.87)
+    legend3 = ROOT.TLegend(0.7, 0.75, 0.85, 0.87)
     legend3.SetBorderSize(0)
     legend3.SetFillStyle(0)
     legend3.SetTextFont(42)
     legend3.SetTextSize(0.05)
 
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # used for the hist plot
-    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # used for the ratio plot
+    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # Used for the hist plot
+    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # Used for the ratio plot
     pad1.Draw()
     pad2.Draw() 
     pad2.SetGridy()
@@ -601,27 +586,27 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     frame.Draw("AXISSAMEX+")
     pad1.Update()
     # Sub-SR boundries and legends
-    line = ROOT.TLine(2, 0, 2, y_max*15)
+    line = ROOT.TLine(2, 0, 2, y_max * 15)
     line.SetLineColor(ROOT.kBlack)
     line.SetLineWidth(1)
     line.SetLineStyle(2)
     line.Draw("")
-    line1 = ROOT.TLine(8, 0, 8, y_max*15)
+    line1 = ROOT.TLine(8, 0, 8, y_max * 15)
     line1.SetLineColor(ROOT.kBlack)
     line1.SetLineWidth(1)
     line1.SetLineStyle(2)
     line1.Draw("")
-    line2 = ROOT.TLine(10, 0, 10, y_max*15)
+    line2 = ROOT.TLine(10, 0, 10, y_max * 15)
     line2.SetLineColor(ROOT.kBlack)
     line2.SetLineWidth(1)
     line2.SetLineStyle(2)
     line2.Draw("")
-    line3 = ROOT.TLine(12, 0, 12, y_max*15)
+    line3 = ROOT.TLine(12, 0, 12, y_max * 15)
     line3.SetLineColor(ROOT.kBlack)
     line3.SetLineWidth(1)
     line3.SetLineStyle(2)
     line3.Draw("")
-    line4 = ROOT.TLine(16, 0, 16, y_max*15)
+    line4 = ROOT.TLine(16, 0, 16, y_max * 15)
     line4.SetLineColor(ROOT.kBlack)
     line4.SetLineWidth(1)
     line4.SetLineStyle(2)
@@ -668,14 +653,14 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     yerrdownRatio = array('d')
     for b in range(SumofMC.GetNbinsX()):
         if SumofMC.GetBinContent(b + 1) > 0:
-            binwidth.append(SumofMC.GetBinWidth(b + 1)/2)
+            binwidth.append(SumofMC.GetBinWidth(b + 1) / 2)
             bincenter.append(SumofMC.GetBinCenter(b + 1))
             yvalue.append(SumofMC.GetBinContent(b + 1))
             yerrup.append(SumofMC.GetBinError(b + 1))
             yerrdown.append(SumofMC.GetBinError(b + 1))
             yvalueRatio.append(1)
-            yerrupRatio.append(SumofMC.GetBinError(b + 1)/SumofMC.GetBinContent(b + 1))
-            yerrdownRatio.append(SumofMC.GetBinError(b + 1)/SumofMC.GetBinContent(b + 1))
+            yerrupRatio.append(SumofMC.GetBinError(b + 1) / SumofMC.GetBinContent(b + 1))
+            yerrdownRatio.append(SumofMC.GetBinError(b + 1) / SumofMC.GetBinContent(b + 1))
     if len(bincenter) > 0:
         error = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalue, binwidth, binwidth, yerrdown, yerrup)
         errorRatio = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalueRatio, binwidth, binwidth, yerrdownRatio, yerrupRatio)
@@ -688,15 +673,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     error.SetLineWidth(4)
     error.Draw("2")
 
-    Lumi = '138'
-    if (year == '2016APV'):
-        Lumi = '19.5'
-    if (year == '2016'):
-        Lumi = '16.8'
-    if (year == '2017'):
-        Lumi = '41.5'
-    if (year == '2018'):
-        Lumi = '59.8'
+    Lumi = getLumi(year)
     label_cms = "CMS"
     Label_cms = ROOT.TLatex(0.08, 0.92, label_cms)
     Label_cms.SetNDC()
@@ -807,6 +784,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     errorRatio.SetFillStyle(3154)
     errorRatio.SetLineWidth(4)
     errorRatio.Draw("2")
+
     if not os.path.exists(folder):
         os.makedirs(folder)
     if not os.path.exists(folder + '/' + year):
@@ -815,7 +793,9 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     del canvas
     gc.collect()
 
+
 def SimplePlot(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mva1", varname = "v", SamplesName = []):
+
     folder = 'StackHist'
 
     canvas = ROOT.TCanvas(year + c + ch + reg + var, year + c + ch + reg + var, 50, 50, 865, 780)
@@ -827,8 +807,8 @@ def SimplePlot(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mv
     legend.SetTextFont(42)
     legend.SetTextSize(0.3)
 
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.0, 0.1, 0.99, 0) # used for the legend
-    pad2 = ROOT.TPad("pad2", "pad2", 0.1, 0.0, 1, 1, 0) # used for the hists
+    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.0, 0.1, 0.99, 0) # Used for the legend
+    pad2 = ROOT.TPad("pad2", "pad2", 0.1, 0.0, 1, 1, 0) # Used for the hists
     pad1.Draw()
     pad2.Draw()
     pad2.SetTickx()
@@ -874,15 +854,8 @@ def SimplePlot(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mv
         hists[n].Draw('HIST P SAME')
     hists[0].Draw("AXISSAMEY+")
     hists[0].Draw("AXISSAMEX+")
-    Lumi = '138'
-    if (year == '2016APV'):
-        Lumi = '19.5'
-    if (year == '2016'):
-        Lumi = '16.8'
-    if (year == '2017'):
-        Lumi = '41.5'
-    if (year == '2018'):
-        Lumi = '59.8'
+
+    Lumi = getLumi(year)
     label_cms = "CMS"
     Label_cms = ROOT.TLatex(0.115, 0.92, label_cms)
     Label_cms.SetTextSize(0.04)
@@ -915,3 +888,16 @@ def SimplePlot(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mv
     canvas.Print(folder + '/' + year + '/' + var + '_' + reg + '_' + ch + '.pdf')
     del canvas
     gc.collect()
+
+
+def getLumi(year):
+
+    if (year == '2016APV'):
+        return '19.5'
+    elif (year == '2016'):
+        return '16.8'
+    elif (year == '2017'):
+        return '41.5'
+    elif (year == '2018'):
+        return '59.8'
+    return '138'

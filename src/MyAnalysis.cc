@@ -38,7 +38,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> charges{"OS", "SS"}; // Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
-    /*0*/ "ll", // No selection
+    /*0*/ "ll", // No cuts
     /*1*/ "llOnZMetg20Jetgeq1", // Z + jets CR
     /*2*/ "llOffZMetg20B1", // SR
     /*3*/ "llOffZMetg20B2", // ttbar + jets CR
@@ -90,8 +90,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Divide on/off Z into multiple pt regions?
     {"nbjetvsOnZ",          {0,   2,   0,   2,   4,   0,   4}},
     {"nbjetvsOnZHadronic",  {1,   2,   0,   2,   4,   0,   4}},
-    {"OnZvsTauId",          {2,   8,   0,   8,   2,   0,   2}},
-    {"OnZvsTauIdHadronic",  {3,   8,   0,   8,   2,   0,   2}}
+    {"TauIdvsOnZ",          {2,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZHadronic",  {3,   2,   0,   2,   8,   0,   8}}
   };
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -250,7 +250,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
       eleEta = abs(Electron_eta[l] + Electron_deltaEtaSC[l]);
       if (Electron_pt[l] < 20 || abs(Electron_eta[l]) > 2.4 || (eleEta > 1.4442 && eleEta < 1.566)) continue;
-      // if (Electron_sip3d[l] > 15) continue;
       if (Electron_sip3d[l] > 8 || abs(Electron_dxy[l]) > 0.05 || abs(Electron_dz[l]) > 0.1) continue;
       if (Electron_miniPFRelIso_all[l] > 0.4 || (int) Electron_lostHits[l] > 1) continue;
       if (!Electron_convVeto[l] || (int) Electron_tightCharge[l] == 0) continue;
@@ -271,7 +270,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Leptons->size() > 2) break;
 
       if (Muon_pt[l] < 20 || abs(Muon_eta[l]) > 2.4) continue;
-      // if (Muon_sip3d[l] > 15) continue;
       if (!Muon_mediumId[l]) continue;
       if (Muon_sip3d[l] > 8 || abs(Muon_dxy[l]) > 0.05 || abs(Muon_dz[l]) > 0.1) continue;
       if (Muon_miniPFRelIso_all[l] > 0.4) continue;
@@ -362,7 +360,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
     // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF());
 
-    int rIdx = rInd(regions, "ll"); // No selection
+    int rIdx = rInd(regions, "ll"); // No cuts
     reg.push_back(rIdx);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
@@ -424,6 +422,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
     // Filling histograms
     for (int i = 0; i < reg.size(); ++i) {
+      int tauWP = char_to_int(Event->ta1()->mva1WP_);
+
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
@@ -434,7 +434,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPtHadronic")]->Fill(Event->ta1()->pt_, wgt[i]);
         Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEtaHadronic")]->Fill(Event->ta1()->eta_, wgt[i]);
       }
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetWP")]->Fill(Event->ta1()->mva1WP_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetWP")]->Fill(tauWP, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
       if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
@@ -454,10 +454,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
 
       Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZ")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
-      Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "OnZvsTauId")]->Fill(Event->ta1()->mva1WP_, Event->OnZ() ? 0 : 1, wgt[i]);
+      Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
       if (Event->ta1()->truth_ == 0) {
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
-        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "OnZvsTauIdHadronic")]->Fill(Event->ta1()->mva1WP_, Event->OnZ() ? 0 : 1, wgt[i]);
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
       }
     }
 
