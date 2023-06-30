@@ -51,15 +51,26 @@ def BackgroundEstimate(Hists2D, numyear, numsample, numsubsamples, numc, numch, 
             errD += H2.GetBinError(xidx, yidx) * H2.GetBinError(xidx, yidx)
     errD = sqrt(errD)
 
-    ff = numA / numC # Fake factor
-    ffErr = ff * sqrt((errA / numA)**2 + (errC / numC)**2)
-    pred = ff * numD
-    predErr = pred * sqrt((ffErr / ff)**2 + (errD / numD)**2)
+    if numC > 0:
+        ff = numA / numC # Fake factor
+        if numA > 0:
+            ffErr = ff * sqrt((errA / numA)**2 + (errC / numC)**2)
+        else:
+            ffErr = 0.0
+        pred = ff * numD
+        if numD > 0 and ff > 0:
+            predErr = pred * sqrt((ffErr / ff)**2 + (errD / numD)**2)
+        else:
+            predErr = 0.0
+    else:
+        ff = -1.0
+        ffErr = 0.0
+        pred = -1.0
+        predErr = 0.0
 
     # Make output LaTeX file
     if makeLaTeX:
         folder = "StackHist"
-
         if not os.path.exists(folder):
             os.makedirs(folder)
         if not os.path.exists(folder + '/' + year):

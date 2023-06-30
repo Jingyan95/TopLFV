@@ -202,24 +202,23 @@ for numyear, nameyear in enumerate(year):
     CutflowTables(Hists, numyear, nameyear, regions, regionsNameLatex, charges, channels, Samples, SamplesNameLatex)
 
     for numch, namech in enumerate(channels):
-        if namech == 'emu': continue
         for numreg, namereg in enumerate(regions):
-            if namereg == 'llMetg20Jetgeq1' or namereg == 'llMetg20Jetgeq1B1':
-                tauWPcut = 5
-                tauWPstr = 'Tight'
+            tauWPcut = 5
+            tauWPstr = 'Tight'
 
-                # BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), numch, numreg,
-                #                    vars2D.index('TauIdvsOnZ'), -1, 1, tauWPcut,
-                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
-                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
-                #                    '2016-DY-OS-' + namech + '-' + namereg, True)
-                # BackgroundEstimate(Hists2D, numyear, Samples.index('Data.root'), [1, 2, 3, 4, 5, 6], charges.index('OS'), numch, numreg,
-                #                    vars2D.index('TauIdvsOnZ'), vars2D.index('TauIdvsOnZHadronic'), 1, tauWPcut,
-                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
-                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
-                #                    '2016-All-OS-' + namech + '-' + namereg, True)
+            # BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), numch, numreg,
+            #                    vars2D.index('TauIdvsOnZ'), -1, 1, tauWPcut,
+            #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+            #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
+            #                    '2016-DY-OS-' + namech + '-' + namereg, True)
+            # BackgroundEstimate(Hists2D, numyear, Samples.index('Data.root'), [1, 2, 3, 4, 5, 6], charges.index('OS'), numch, numreg,
+            #                    vars2D.index('TauIdvsOnZ'), vars2D.index('TauIdvsOnZHadronic'), 1, tauWPcut,
+            #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+            #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
+            #                    '2016-All-OS-' + namech + '-' + namereg, True)
 
-                # Plot comparing background estimate vs simulation with pt bins
+            # Plot comparing background estimate vs simulation with pt bins
+            for sample in ['DY.root', 'TT.root']:
                 ff = []
                 errFf = []
                 pred = []
@@ -227,25 +226,25 @@ for numyear, nameyear in enumerate(year):
                 sim = []
                 errSim = []
                 for pt in range(20, 220, 40):
-                    results = BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), numch, numreg,
+                    results = BackgroundEstimate(Hists2D, numyear, Samples.index(sample), [], charges.index('OS'), numch, numreg,
                                                  vars2D.index('TauIdvsOnZ_pt' + str(pt) + 'to' + str(pt + 40)), -1, 1, tauWPcut,
                                                  '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
                                                  '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
-                                                nameyear, 'OS', namech, namereg, 'pt' + str(pt) + 'to' + str(pt + 40), False)
+                                                 nameyear, 'OS', namech, namereg, 'pt' + str(pt) + 'to' + str(pt + 40), False)
                     ff.append(results[0])
                     errFf.append(results[1])
                     pred.append(results[2])
                     errPred.append(results[3])
                     sim.append(results[4])
                     errSim.append(results[5])
-                CompareEstimate(ff, errFf, [], [], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], 'DY.root',
+                CompareEstimate(ff, errFf, [], [], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], sample,
                                 'OS', namech, namereg, regionsName[numreg], nameyear, 'bkg_estimate_ff_vspt',
-                                '#tau p_{T} [GeV]', 'DY Background Estimation', ['Fake Factor'])
-                CompareEstimate(pred, errPred, [sim], [errSim], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], 'DY.root',
+                                '#tau p_{T} [GeV]', sample[0:-5] + ' Background Estimation', ['Fake Factor'])
+                CompareEstimate(pred, errPred, [sim], [errSim], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], sample,
                                 'OS', namech, namereg, regionsName[numreg], nameyear, 'bkg_estimate_vspt',
-                                '#tau p_{T} [GeV]', 'DY Background Estimation', ['Prediction', 'Simulation'])
+                                '#tau p_{T} [GeV]', sample[0:-5] + ' Background Estimation', ['Prediction', 'Simulation'])
 
-
+'''
 # Make 1D histograms
 for numyear, nameyear in enumerate(year):
     for numc, namec in enumerate(charges):
@@ -322,3 +321,4 @@ for numyear, nameyear in enumerate(year):
                     Hist2D(dataH2, 'All.....', namec, namech, namereg, nameyear, vars2D[numvar],
                            vars2DName[numvar][0], vars2DName[numvar][1], vars2DLines[numvar / 2][0], vars2DLines[numvar / 2][1],
                            vars2DBinLabels[numvar][0], vars2DBinLabels[numvar][1])
+'''

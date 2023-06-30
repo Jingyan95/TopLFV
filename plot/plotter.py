@@ -817,7 +817,7 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
         h1.SetBinContent(idx + 1, arr1[idx])
         h1.SetBinError(idx + 1, err1[idx])
     h1.GetXaxis().SetNoExponent()
-    h1.GetYaxis().SetNoExponent()
+    # h1.GetYaxis().SetNoExponent()
     h1.SetLineWidth(2)
     h1.SetLineColor(ROOT.kBlue)
     h1.SetMarkerStyle(20)
@@ -833,7 +833,7 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
             h.SetBinContent(idx + 1, arr[idx])
             h.SetBinError(idx + 1, errs[arrIdx][idx])
         h.GetXaxis().SetNoExponent()
-        h.GetYaxis().SetNoExponent()
+        # h.GetYaxis().SetNoExponent()
         h.SetLineWidth(2)
         h.SetLineColor(colors[arrIdx])
         h.SetMarkerStyle(20)
@@ -845,12 +845,16 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
 
     h1.GetXaxis().SetTitle(xlabel)
     h1.GetYaxis().SetTitle(ylabel)
-    h1.GetYaxis().SetRangeUser(0.0, 1.4 * maxi)
+    h1.GetYaxis().SetRangeUser(0.001, 2000 * maxi)
+    h1.SetMinimum(0.001)
     h1.Draw("hist e")
     legend.AddEntry(h1, hlabels[0], "lep")
     for hIdx, hist in enumerate(hists):
+        hist.SetMinimum(0.001)
         hist.Draw("hist e same")
         legend.AddEntry(hist, hlabels[hIdx + 1], "lep")
+
+    canvas.SetLogy(ROOT.kTRUE)
 
     legend.Draw("same")
     Lumi = getLumi(year)
