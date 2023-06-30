@@ -5,7 +5,9 @@
 #include "jet_candidate.h"
 #include "event_candidate.h"
 
+
 void updateProgress(std::atomic<ULong64_t>& progress, float percent, int nThread, int workerID, int nDigit) {
+
   float digitMin = ((float) nDigit / nThread) * workerID;
   float digitMax = ((float) nDigit / nThread) * (workerID + 1);
   for (int i = 0; i < nDigit; i++) {
@@ -15,7 +17,9 @@ void updateProgress(std::atomic<ULong64_t>& progress, float percent, int nThread
   }
 }
 
+
 void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& current, long max, int nDigit) {
+
   using std::cerr;
   if (max < 500) return;
   if (current % (max / 500) != 0 && current < max - 1) return;
@@ -30,7 +34,9 @@ void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& c
   cerr.flush();
 }
 
-std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi, float Nevent, std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& counter) {
+
+std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi,
+                                   float Nevent, std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& counter) {
 
   std::stringstream summary;
   if (fChain == 0) { summary << "TChain is empty.\n"; return summary; }
@@ -88,10 +94,15 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const std::map<TString, std::vector<float>> vars2D =
   {
     // Divide on/off Z into multiple pt regions?
-    {"nbjetvsOnZ",          {0,   2,   0,   2,   4,   0,   4}},
-    {"nbjetvsOnZHadronic",  {1,   2,   0,   2,   4,   0,   4}},
-    {"TauIdvsOnZ",          {2,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZHadronic",  {3,   2,   0,   2,   8,   0,   8}}
+    {"nbjetvsOnZ",             {0,   2,   0,   2,   4,   0,   4}},
+    {"nbjetvsOnZHadronic",     {1,   2,   0,   2,   4,   0,   4}},
+    {"TauIdvsOnZ",             {2,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZHadronic",     {3,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to60",    {4,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100",   {5,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to140",  {6,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt140to180",  {7,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt180to220",  {8,   2,   0,   2,   8,   0,   8}}
   };
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -108,7 +119,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
         // Create 1D histograms
         for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
-          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_; // adding working ID to avoid mem leak
+          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_; // Adding working ID to avoid mem leak
           if (it->first.Contains("llM") && i == 0 && j != 1) {
             h_test = new TH1F((name.str()).c_str(), "", 18, llMBin);
           } else {
@@ -180,6 +191,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float lep1PtCut = 30;
   float eleEta;
   float tauPt;
+  int tauWP;
   float weight_Lumi;
   float weight_PU;
   float weight_L1ECALPreFiring;
@@ -191,7 +203,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_jet;
   float weight_Ta_ID_e;
   float weight_Ta_ID_mu;
-  float weight_Btag_corr; // correction for btag shape to preserve normalization
+  float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
   int nAccept = 0;
   PU wPU;
@@ -205,12 +217,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     fChain->GetEntry(jentry);
-    ntotal++; // thread-private counter
-    std::lock_guard<std::mutex> lock(mtx_); // locking mutex before accessing atomic variables
+    ntotal++; // Thread-private counter
+    std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
     ++counter;
     updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
     if (!verbose_) displayProgress(progress, counter, ntr, 32);
-    mtx_.unlock(); // releasing mutex
+    mtx_.unlock(); // Releasing mutex
     InitTrigger();
     metFilterPass = false;
     reg.clear();
@@ -422,7 +434,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
     // Filling histograms
     for (int i = 0; i < reg.size(); ++i) {
-      int tauWP = char_to_int(Event->ta1()->mva1WP_);
+      tauPt = Event->ta1()->pt_;
+      tauWP = char_to_int(Event->ta1()->mva1WP_);
 
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
@@ -459,6 +472,17 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
       }
+      if (tauPt > 20.0 && tauPt < 60.0) {
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ_pt20to60")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+      } else if (tauPt > 60.0 && tauPt < 100.0) {
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ_pt60to100")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+      } else if (tauPt > 100.0 && tauPt < 140.0) {
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ_pt100to140")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+      } else if (tauPt > 140.0 && tauPt < 180.0) {
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ_pt140to180")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+      } else if (tauPt > 180.0 && tauPt < 220.0) {
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ_pt180to220")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+      }
     }
 
     deleteContainter(Leptons);
@@ -466,7 +490,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     delete Event;
 
     nAccept++;
-  } // end of event loop
+  } // End of event loop
 
   // Writing output and delete pointers
   TFile file_out (fname, "RECREATE");

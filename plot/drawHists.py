@@ -17,7 +17,7 @@ import gc
 from operator import truediv
 import copy
 import argparse
-from plotter import StackHist, Hist2D, CompareBackgrounds, SummaryPlot, SimplePlot
+from plotter import StackHist, Hist2D, CompareBackgrounds, SummaryPlot, CompareEstimate
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'helper'))
 from cutflow import CutflowTables
 from bkg_estimate import BackgroundEstimate
@@ -84,15 +84,27 @@ varsName = [
     'LFV electron p_{T} [GeV]', 'LFV muon p_{T} [GeV]', 'LFV tau p_{T} [GeV]',
     'Bachelor lepton p_{T} [GeV]', 'm(top) [GeV]', 'H_{T} [GeV]', 'S_{T} [GeV]', 'Sum of btagging scores']
 
-vars2D = ['nbjetvsOnZ', 'nbjetvsOnZHadronic', 'TauIdvsOnZ', 'TauIdvsOnZHadronic']
+vars2D = [
+    'nbjetvsOnZ', 'nbjetvsOnZHadronic', 'TauIdvsOnZ', 'TauIdvsOnZHadronic', 'TauIdvsOnZ_pt20to60',
+    'TauIdvsOnZ_pt60to100', 'TauIdvsOnZ_pt100to140', 'TauIdvsOnZ_pt140to180', 'TauIdvsOnZ_pt180to220']
 vars2DName = [
     ['All Events', 'nbjet (Loose WP)'],
     ['Events with #tau_{h}', 'nbjet (Loose WP)'],
     ['All Events', '#tau vs Jets WP'],
-    ['Events with #tau_{h}', '#tau vs Jets WP']]
+    ['Events with #tau_{h}', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 60.0 [GeV]', '#tau vs Jets WP'],
+    ['Events with 60.0 < #tau p_{T} < 100.0 [GeV]', '#tau vs Jets WP'],
+    ['Events with 100.0 < #tau p_{T} < 140.0 [GeV]', '#tau vs Jets WP'],
+    ['Events with 140.0 < #tau p_{T} < 180.0 [GeV]', '#tau vs Jets WP'],
+    ['Events with 180.0 < #tau p_{T} < 220.0 [GeV]', '#tau vs Jets WP']]
 vars2DBinLabels = [
     [['On Z', 'Off Z'], ['0', '1', '2', '3']],
     [['On Z', 'Off Z'], ['0', '1', '2', '3']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']]]
 vars2DLines = [
@@ -184,13 +196,54 @@ for numyear, nameyear in enumerate(year):
     Hists.append(l0)
     Hists2D.append(l0_2D)
 
+
+# Make cutflow tables and background estimates
+for numyear, nameyear in enumerate(year):
     CutflowTables(Hists, numyear, nameyear, regions, regionsNameLatex, charges, channels, Samples, SamplesNameLatex)
-    BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), channels.index('ee'),
-                       regions.index('llMetg20Jetgeq1'), vars2D.index('TauIdvsOnZ'), -1, 1, 5, '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ Tight WP',
-                       '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ Tight WP', 'On Z', 'Off Z', '2016-DY-OS-ee-llMetg20Jetgeq1')
-    BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), channels.index('mumu'),
-                       regions.index('llMetg20Jetgeq1'), vars2D.index('TauIdvsOnZ'), -1, 1, 5, '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ Tight WP',
-                       '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ Tight WP', 'On Z', 'Off Z', '2016-DY-OS-mumu-llMetg20Jetgeq1')
+
+    for numch, namech in enumerate(channels):
+        if namech == 'emu': continue
+        for numreg, namereg in enumerate(regions):
+            if namereg == 'llMetg20Jetgeq1' or namereg == 'llMetg20Jetgeq1B1':
+                tauWPcut = 5
+                tauWPstr = 'Tight'
+
+                # BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), numch, numreg,
+                #                    vars2D.index('TauIdvsOnZ'), -1, 1, tauWPcut,
+                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
+                #                    '2016-DY-OS-' + namech + '-' + namereg, True)
+                # BackgroundEstimate(Hists2D, numyear, Samples.index('Data.root'), [1, 2, 3, 4, 5, 6], charges.index('OS'), numch, numreg,
+                #                    vars2D.index('TauIdvsOnZ'), vars2D.index('TauIdvsOnZHadronic'), 1, tauWPcut,
+                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+                #                    '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
+                #                    '2016-All-OS-' + namech + '-' + namereg, True)
+
+                # Plot comparing background estimate vs simulation with pt bins
+                ff = []
+                errFf = []
+                pred = []
+                errPred = []
+                sim = []
+                errSim = []
+                for pt in range(20, 220, 40):
+                    results = BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), numch, numreg,
+                                                 vars2D.index('TauIdvsOnZ_pt' + str(pt) + 'to' + str(pt + 40)), -1, 1, tauWPcut,
+                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
+                                                nameyear, 'OS', namech, namereg, 'pt' + str(pt) + 'to' + str(pt + 40), False)
+                    ff.append(results[0])
+                    errFf.append(results[1])
+                    pred.append(results[2])
+                    errPred.append(results[3])
+                    sim.append(results[4])
+                    errSim.append(results[5])
+                CompareEstimate(ff, errFf, [], [], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], 'DY.root',
+                                'OS', namech, namereg, regionsName[numreg], nameyear, 'bkg_estimate_ff_vspt',
+                                '#tau p_{T} [GeV]', 'DY Background Estimation', ['Fake Factor'])
+                CompareEstimate(pred, errPred, [sim], [errSim], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], 'DY.root',
+                                'OS', namech, namereg, regionsName[numreg], nameyear, 'bkg_estimate_vspt',
+                                '#tau p_{T} [GeV]', 'DY Background Estimation', ['Prediction', 'Simulation'])
 
 
 # Make 1D histograms
@@ -254,16 +307,18 @@ for numyear, nameyear in enumerate(year):
 
                 for f in range(len(Samples)):
                     for numvar, namevar in enumerate(vars2D):
+                        if numvar >= 4: continue
                         h2D = Hists2D[numyear][f][numc][numch][numreg][numvar].Clone()
-                        Hist2D(h2D, Samples[f], namec, namech, namereg, regionsName[numreg], nameyear, vars2D[numvar],
+                        Hist2D(h2D, Samples[f], namec, namech, namereg, nameyear, vars2D[numvar],
                                vars2DName[numvar][0], vars2DName[numvar][1], [], [], vars2DBinLabels[numvar][0], vars2DBinLabels[numvar][1])
 
                 # Make 2D histograms for fake tau background estimation
                 for numvar in range(0, len(vars2D), 2):
+                    if numvar >= 4: continue
                     dataH2 = Hists2D[numyear][0][numc][numch][numreg][numvar].Clone() # Get data
                     for f in range(1, len(Samples)):
                         mcH2 = Hists2D[numyear][f][numc][numch][numreg][numvar + 1].Clone() # Subtract hadronic taus
                         dataH2.Add(mcH2, -1.0)
-                    Hist2D(dataH2, 'All.....', namec, namech, namereg, regionsName[numreg], nameyear, vars2D[numvar],
+                    Hist2D(dataH2, 'All.....', namec, namech, namereg, nameyear, vars2D[numvar],
                            vars2DName[numvar][0], vars2DName[numvar][1], vars2DLines[numvar / 2][0], vars2DLines[numvar / 2][1],
                            vars2DBinLabels[numvar][0], vars2DBinLabels[numvar][1])

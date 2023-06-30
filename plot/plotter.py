@@ -5,6 +5,7 @@ import ROOT
 import numpy as np
 import copy
 import os
+import array
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 ROOT.gROOT.ProcessLine("gErrorIgnoreLevel = 1;")
 ROOT.TH1.AddDirectory(ROOT.kFALSE)
@@ -278,13 +279,13 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
     if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg):
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg)
-    canvas.Print(folder + '/' + year + '/' + c + '/' + ch +'/'+ reg + '/' + var + ".pdf")
+    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + ".pdf")
     del canvas
     gc.collect()
 
 
-def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", regName = ["region", "", ""], year = '2016',
-           var = "sample", varXName = "xlabel", varYName = "ylabel", xLines = [], yLines = [], xBinLabels = [], yBinLabels = []):
+def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", year = '2016', var = "sample",
+           varXName = "xlabel", varYName = "ylabel", xLines = [], yLines = [], xBinLabels = [], yBinLabels = []):
 
     folder = 'StackHist'
 
@@ -359,7 +360,7 @@ def Hist2D(hist, fname, c = "charge", ch = "channel", reg = "region", regName = 
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
     if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg):
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg)
-    canvas.Print(folder + '/' + year + '/' + c + '/' + ch +'/'+ reg + '/' + var + '_' + fname[0:-5] + ".pdf")
+    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + '_' + fname[0:-5] + ".pdf")
 
     del canvas
     gc.collect()
@@ -429,7 +430,7 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
     hists[0].GetYaxis().SetRangeUser(0.01, 100 * maxi)
     hists[0].GetXaxis().SetNoExponent()
     hists[0].Draw('HIST')
-    for n,G in enumerate(hists):
+    for n, G in enumerate(hists):
         hists[n].Draw('HIST SAME')
         hists[n].Draw('HIST P SAME')
     hists[0].Draw("AXISSAMEY+")
@@ -794,67 +795,64 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     gc.collect()
 
 
-def SimplePlot(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mva1", varname = "v", SamplesName = []):
+def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = "channel", reg = "region",
+                    regName = ["region", "", ""], year = '2016', var = "sample",
+                    xlabel = "xlabel", ylabel = "ylabel", hlabels = []):
 
-    folder = 'StackHist'
+    folder = "StackHist"
 
     canvas = ROOT.TCanvas(year + c + ch + reg + var, year + c + ch + reg + var, 50, 50, 865, 780)
-    canvas.SetGrid()
+    canvas.SetBottomMargin(0.12)
+    canvas.SetLeftMargin(0.17)
+    canvas.SetRightMargin(0.12)
     canvas.cd()
 
-    legend = ROOT.TLegend(0.1, 0.3, 1, 0.8)
+    legend = ROOT.TLegend(0.25, 0.7, 0.5, 0.88)
     legend.SetBorderSize(0)
     legend.SetTextFont(42)
-    legend.SetTextSize(0.3)
+    legend.SetTextSize(0.028)
 
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.0, 0.1, 0.99, 0) # Used for the legend
-    pad2 = ROOT.TPad("pad2", "pad2", 0.1, 0.0, 1, 1, 0) # Used for the hists
-    pad1.Draw()
-    pad2.Draw()
-    pad2.SetTickx()
-    pad1.SetBottomMargin(0.1)
-    pad1.SetLeftMargin(0.2)
-    pad1.SetRightMargin(0.01)
-    pad2.SetBottomMargin(0.1)
-    pad2.SetLeftMargin(0.1)
-    pad2.SetRightMargin(0.1)
-    pad2.SetFillStyle(0)
-    pad1.SetFillStyle(0)
-    pad1.SetLogx(ROOT.kFALSE)
-    pad2.SetLogx(ROOT.kFALSE)
-    pad1.SetLogy(ROOT.kFALSE)
-    pad2.SetLogy(ROOT.kTRUE)
+    h1 = ROOT.TH1F("h1" + year + c + ch + reg + var, "", len(arr1), array("d", binEdges))
+    for idx in range(len(arr1)):
+        h1.SetBinContent(idx + 1, arr1[idx])
+        h1.SetBinError(idx + 1, err1[idx])
+    h1.GetXaxis().SetNoExponent()
+    h1.GetYaxis().SetNoExponent()
+    h1.SetLineWidth(2)
+    h1.SetLineColor(ROOT.kBlue)
+    h1.SetMarkerStyle(20)
+    h1.SetMarkerSize(1.2)
+    h1.SetMarkerColor(ROOT.kBlue)
+    maxi = h1.GetMaximum()
 
-    pad2.cd()
-    maxi = 0
-    for n, G in enumerate(hists):
-        if hists[n].GetMaximum() > maxi:
-            maxi = hists[n].GetMaximum()
-        hists[n].SetFillColor(0)
-        hists[n].SetMinimum(0.001)
-        legend.AddEntry(hists[n], SamplesName[n], 'LP')
-    hists[0].SetTitle('')
-    hists[0].GetYaxis().SetTitle('Events')
-    hists[0].GetXaxis().SetTitle(varname)
-    hists[0].GetXaxis().SetLabelSize(0.03)
-    hists[0].GetYaxis().SetLabelSize(0.03)
-    hists[0].GetXaxis().SetTitleSize(0.03)
-    hists[0].GetYaxis().SetTitleSize(0.03)
-    # hists[0].GetYaxis().SetNoExponent()
-    hists[0].GetXaxis().SetTitleOffset(1.1)
-    hists[0].GetYaxis().SetTitleOffset(1.5)
-    hists[0].GetYaxis().SetNdivisions(804)
-    hists[0].GetXaxis().SetNdivisions(808)
-    hists[0].GetYaxis().SetRangeUser(0.01, 100 * maxi)
-    hists[0].GetXaxis().SetNoExponent()
-    hists[0].Draw('HIST')
-    # hists[0].Draw('HIST P SAME')
-    for n, G in enumerate(hists):
-        hists[n].Draw('HIST SAME')
-        hists[n].Draw('HIST P SAME')
-    hists[0].Draw("AXISSAMEY+")
-    hists[0].Draw("AXISSAMEX+")
+    hists = []
+    colors = [ROOT.kRed]
+    for arrIdx, arr in enumerate(arrs):
+        h = ROOT.TH1F("h" + str(arrIdx) + year + c + ch + reg + var, "", len(arr), array("d", binEdges))
+        for idx in range(len(arr)):
+            h.SetBinContent(idx + 1, arr[idx])
+            h.SetBinError(idx + 1, errs[arrIdx][idx])
+        h.GetXaxis().SetNoExponent()
+        h.GetYaxis().SetNoExponent()
+        h.SetLineWidth(2)
+        h.SetLineColor(colors[arrIdx])
+        h.SetMarkerStyle(20)
+        h.SetMarkerSize(1.2)
+        h.SetMarkerColor(colors[arrIdx])
+        hists.append(h)
+        if h.GetMaximum() > maxi:
+            maxi = h.GetMaximum()
 
+    h1.GetXaxis().SetTitle(xlabel)
+    h1.GetYaxis().SetTitle(ylabel)
+    h1.GetYaxis().SetRangeUser(0.0, 1.4 * maxi)
+    h1.Draw("hist e")
+    legend.AddEntry(h1, hlabels[0], "lep")
+    for hIdx, hist in enumerate(hists):
+        hist.Draw("hist e same")
+        legend.AddEntry(hist, hlabels[hIdx + 1], "lep")
+
+    legend.Draw("same")
     Lumi = getLumi(year)
     label_cms = "CMS"
     Label_cms = ROOT.TLatex(0.115, 0.92, label_cms)
@@ -873,19 +871,34 @@ def SimplePlot(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mv
     Label_lumi.SetNDC()
     Label_lumi.SetTextFont(42)
     Label_lumi.Draw("same")
-    reg_plot = year + " / " + c + " / " + ch + " / " + reg
-    Label_channel = ROOT.TLatex(0.2, 0.85, reg_plot)
+    Label_channel = ROOT.TLatex(0.5, 0.81, "2l+#tau_{h}" + regName[2])
     Label_channel.SetNDC()
-    Label_channel.SetTextSize(0.035)
     Label_channel.SetTextFont(42)
+    Label_channel.SetTextSize(0.028)
     Label_channel.Draw("same")
-    pad1.cd()
-    legend.Draw("same")
+    Label_region = ROOT.TLatex(0.5, 0.73, regName[0])
+    Label_region.SetNDC()
+    Label_region.SetTextFont(42)
+    Label_region.SetTextSize(0.028)
+    Label_region.Draw("same")
+    Label_region2 = ROOT.TLatex(0.5, 0.65, regName[1])
+    Label_region2.SetNDC()
+    Label_region2.SetTextFont(42)
+    Label_region2.SetTextSize(0.028)
+    Label_region2.Draw("same")
+
     if not os.path.exists(folder):
         os.makedirs(folder)
     if not os.path.exists(folder + '/' + year):
-        os.makedirs(folder + '/' + year)
-    canvas.Print(folder + '/' + year + '/' + var + '_' + reg + '_' + ch + '.pdf')
+        os.makedirs(folder  + '/' + year)
+    if not os.path.exists(folder + '/' + year + '/' + c):
+        os.makedirs(folder + '/' + year + '/' + c)
+    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch):
+        os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
+    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg):
+        os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg)
+    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + '_' + fname[0:-5] + ".pdf")
+
     del canvas
     gc.collect()
 

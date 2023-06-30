@@ -2,6 +2,7 @@ from math import sqrt
 
 nBins = 18 # Number of bins in subSR histogram
 
+
 # Calculates cutflow tables and prints them in LaTeX table format
 def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, channels, Samples, SamplesName):
 
@@ -226,4 +227,4 @@ def CutflowTables(Hists, numyear, nameyear, regions, regionsName, charges, chann
 
     # Close output file
     outFile.close()
-    print('cutflow' + nameyear + '.tex created!')
+    print('cutflow' + nameyear + '.tex created')
