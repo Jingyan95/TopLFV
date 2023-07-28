@@ -63,8 +63,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     /*11*/ "llMetg20Jetgeq1B0" // Background estimation
   };
   std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0};
-  const std::map<TString, std::vector<float>> vars =
-  {
+  const std::map<TString, std::vector<float>> vars = {
     {"llM",              {0,    10,     0,   180}},
     {"llDr",             {1,    10,     0,   4.5}},
     {"lep1Pt",           {2,    10,    30,   230}},
@@ -98,8 +97,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"btagSum",          {30,   25,     0,   2.5}}
   };
   const std::vector<double> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
-  const std::map<TString, std::vector<float>> vars2D =
-  {
+  const std::map<TString, std::vector<float>> vars2D = {
     {"nbjetvsOnZ",                    {0,    2,   0,   2,   4,   0,   4}},
     {"nbjetvsOnZHadronic",            {1,    2,   0,   2,   4,   0,   4}},
     {"TauIdvsOnZ",                    {2,    2,   0,   2,   8,   0,   8}},
@@ -108,30 +106,30 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"TauIdvsOnZ_pt40to60",           {5,    2,   0,   2,   8,   0,   8}},
     {"TauIdvsOnZ_pt60to100",          {6,    2,   0,   2,   8,   0,   8}},
     {"TauIdvsOnZ_pt100to220",         {7,    2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt20to40_dm0",       {8,    2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt40to60_dm0",       {9,    2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt60to100_dm0",      {10,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt100to220_dm0",     {11,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt20to40_dm1",       {12,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt40to60_dm1",       {13,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt60to100_dm1",      {14,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt100to220_dm1",     {15,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt20to40_dm2",       {16,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt40to60_dm2",       {17,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt60to100_dm2",      {18,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt100to220_dm2",     {19,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt20to40_dm7",       {20,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt40to60_dm7",       {21,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt60to100_dm7",      {22,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt100to220_dm7",     {23,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt20to40_dm10",      {24,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt40to60_dm10",      {25,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt60to100_dm10",     {26,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt100to220_dm10",    {27,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt20to40_dm11",      {28,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt40to60_dm11",      {29,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt60to100_dm11",     {30,   2,   0,   2,   8,   0,   8}},
-    // {"TauIdvsOnZ_pt100to220_dm11",    {31,   2,   0,   2,   8,   0,   8}}
+    {"TauIdvsOnZ_pt20to40_dm0",       {8,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm0",       {9,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm0",      {10,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm0",     {11,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm1",       {12,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm1",       {13,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm1",      {14,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm1",     {15,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm2",       {16,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm2",       {17,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm2",      {18,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm2",     {19,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm7",       {20,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm7",       {21,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm7",      {22,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm7",     {23,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm10",      {24,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm10",      {25,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm10",     {26,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm10",    {27,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm11",      {28,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm11",      {29,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm11",     {30,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm11",    {31,   2,   0,   2,   8,   0,   8}}
   };
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -498,7 +496,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Event->lfvch() != 2) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVePt")]->Fill(Event->LFVe()->pt_, wgt[i]);
       if (Event->lfvch() != 1) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVmuPt")]->Fill(Event->LFVmu()->pt_, wgt[i]);
       if (Event->lfvch() != 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVtaPt")]->Fill(Event->LFVta()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][i][vInd(vars, "BalepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "BalepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
       if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Topmass")]->Fill(Event->Topmass(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
@@ -510,14 +508,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
       }
-      for (int i = 0; i < ptBins.size() - 1; i++) {
-        std::cout << histname << std::endl;
-        std::cout << tauPt << std::endl;
-        if (tauPt > ptBins[i] && tauPt < ptBins[i + 1]) {
-          histname = "TauIdvsOnZ_pt" + std::to_string((int) ptBins[i]) + "to" + std::to_string((int) ptBins[i + 1]);
+      for (int j = 0; j < ptBins.size() - 1; j++) {
+        if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
+          histname = "TauIdvsOnZ_pt" + std::to_string((int) ptBins[j]) + "to" + std::to_string((int) ptBins[j + 1]);
           Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, histname)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-          // histname += "_dm" + to_string(tauDM);
-          // Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, histname)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+          histname += "_dm" + to_string(tauDM);
+          Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, histname)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
           break;
         }
       }

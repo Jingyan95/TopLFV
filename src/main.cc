@@ -20,8 +20,10 @@ int main() {
     ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_6.root");
     ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_7.root");
     ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_10.root");
+    // ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_DY50_UL/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_DY50_UL/230501_150132/0000/tree_1.root");
     MyAnalysis t1(ch, "2016", "mc", "", nThread, workerID, false);
     auto workerSummary = t1.Loop(Form("test_%u.root", workerID), "mc", "TTW", "2016", "", 0.235, 16.81, 3322643, std::ref(progress), std::ref(counter));
+    // auto workerSummary = t1.Loop(Form("test_%u.root", workerID), "mc", "DYM50", "2016", "", 6077.22, 16.81, 3322643, std::ref(progress), std::ref(counter));
     Summary << workerSummary.str();
   };
   std::vector<std::thread> workers;
