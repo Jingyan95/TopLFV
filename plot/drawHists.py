@@ -31,17 +31,18 @@ charges = ['OS', 'SS']
 channels = ['ee', 'emu', 'mumu']
 
 regions = [
-    'll',
-    'llOnZMetg20Jetgeq1',
-    'llOffZMetg20B1',
-    'llOffZMetg20B2',
-    'llStl300',
-    'llOnZ',
-    'llbtagg1p3',
-    'llStg300OffZbtagl1p3',
-    'llStg300OffZbtagl1p3Tight',
-    'llMetg20Jetgeq1',
-    'llMetg20Jetgeq1B1']
+    'll',                         #0
+    'llOnZMetg20Jetgeq1',         #1
+    'llOffZMetg20B1',             #2
+    'llOffZMetg20B2',             #3
+    'llStl300',                   #4
+    'llOnZ',                      #5
+    'llbtagg1p3',                 #6
+    'llStg300OffZbtagl1p3',       #7
+    'llStg300OffZbtagl1p3Tight',  #8
+    'llMetg20Jetgeq1',            #9
+    'llMetg20Jetgeq1B1',          #10
+    'llMetg20Jetgeq1B0']          #11
 regionsName = [
     ['No cuts', '', ''],
     ['p_{T}^{miss}>20GeV, njet#geq1', 'OnZ', ', Z+jets CR'],
@@ -53,7 +54,8 @@ regionsName = [
     ['S_{T}>300GeV, OffZ', 'btag<1.3', ', SR(Alt, Loose)'],
     ['S_{T}>300GeV, OffZ', 'btag<1.3, njet#geq1 or S_{T}>500GeV', ', SR(Alt, Tight)'],
     ['p_{T}^{miss}>20GeV, njet#geq1', '', ', Background Estimation'],
-    ['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=1', ', Background Estimation']]
+    ,['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=1', ', Background Estimation'],
+    ['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=0', ', Background Estimation']]
 regionsNameLatex = [
     '2$l+\\tau_h$, no cuts',
     '2$l+\\tau_h$, Z + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, on Z',
@@ -65,11 +67,12 @@ regionsNameLatex = [
     '2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, off Z, btag $<1.3$',
     '2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV',
     '2$l+\\tau_h$, Background Estimation, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$',
-    '2$l+\\tau_h$, Background Estimation, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$']
+    '2$l+\\tau_h$, Background Estimation, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$',
+    '2$l+\\tau_h$, Background Estimation, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$']
 
 vars = [
     'llM', 'llDr', 'lep1Pt', 'lep2Pt',
-    'taPt', 'taPtHadronic', 'taEta', 'taEtaHadronic', 'taVsJetWP', 'taDxy', 'taDz',
+    'taPt', 'taPtHadronic', 'taEta', 'taEtaHadronic', 'taVsJetWP', 'taDxy', 'taDz', 'taDecayMode',
     'jet1Pt', 'njet', 'nbjet', 'MET', 'subSR', 'LFVemuM', 'LFVetaM', 'LFVmutaM',
     'LFVemuDr', 'LFVetaDr', 'LFVmutaDr', 'LFVePt', 'LFVmuPt', 'LFVtaPt', 'BalepPt',
     'Topmass', 'Ht', 'St', 'btagSum']
@@ -77,7 +80,7 @@ varsName = [
     'm(l#bar{l}) [GeV]', '#DeltaR(l#bar{l})',
     'Leading lepton p_{T} [GeV]', 'Sub-leading lepton p_{T} [GeV]',
     '#tau p_{T} [GeV]', '#tau_{h} p_{T} [GeV]', '#tau #eta', '#tau_{h} #eta',
-    '#tau vs Jets WP', '#tau d_{xy} [cm]', '#tau d_{z} [cm]',
+    '#tau vs Jets WP', '#tau d_{xy} [cm]', '#tau d_{z} [cm]', '#tau Decay Mode',
     'Leading jet p_{T} [GeV]', 'njet', 'nbjet (Loose WP)', 'MET [GeV]', 'SR subdivided',
     'm(e#bar{#mu}) [GeV]', 'm(e#bar{#tau}) [GeV]', 'm(#mu#bar{#tau}) [GeV]',
     '#DeltaR(e,#bar{#mu}) [GeV]', '#DeltaR(e,#bar{#tau}) [GeV]', '#DeltaR(#mu,#bar{#tau}) [GeV]',
@@ -85,18 +88,27 @@ varsName = [
     'Bachelor lepton p_{T} [GeV]', 'm(top) [GeV]', 'H_{T} [GeV]', 'S_{T} [GeV]', 'Sum of btagging scores']
 
 vars2D = [
-    'nbjetvsOnZ', 'nbjetvsOnZHadronic', 'TauIdvsOnZ', 'TauIdvsOnZHadronic', 'TauIdvsOnZ_pt20to60',
-    'TauIdvsOnZ_pt60to100', 'TauIdvsOnZ_pt100to140', 'TauIdvsOnZ_pt140to180', 'TauIdvsOnZ_pt180to220']
+    'nbjetvsOnZ', 'nbjetvsOnZHadronic', 'TauIdvsOnZ', 'TauIdvsOnZHadronic',
+    'TauIdvsOnZ_pt20to40', 'TauIdvsOnZ_pt40to60', 'TauIdvsOnZ_pt60to100', 'TauIdvsOnZ_pt100to220']
+    # 'TauIdvsOnZ_pt20to40', 'TauIdvsOnZ_pt40to60', 'TauIdvsOnZ_pt60to80', 'TauIdvsOnZ_pt80to100',
+    # 'TauIdvsOnZ_pt100to120', 'TauIdvsOnZ_pt120to140', 'TauIdvsOnZ_pt140to160', 'TauIdvsOnZ_pt160to180',
+    # 'TauIdvsOnZ_pt180to200', 'TauIdvsOnZ_pt200to220']
 vars2DName = [
     ['All Events', 'nbjet (Loose WP)'],
     ['Events with #tau_{h}', 'nbjet (Loose WP)'],
     ['All Events', '#tau vs Jets WP'],
     ['Events with #tau_{h}', '#tau vs Jets WP'],
-    ['Events with 20.0 < #tau p_{T} < 60.0 [GeV]', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 40.0 [GeV]', '#tau vs Jets WP'],
+    ['Events with 40.0 < #tau p_{T} < 60.0 [GeV]', '#tau vs Jets WP'],
     ['Events with 60.0 < #tau p_{T} < 100.0 [GeV]', '#tau vs Jets WP'],
-    ['Events with 100.0 < #tau p_{T} < 140.0 [GeV]', '#tau vs Jets WP'],
-    ['Events with 140.0 < #tau p_{T} < 180.0 [GeV]', '#tau vs Jets WP'],
-    ['Events with 180.0 < #tau p_{T} < 220.0 [GeV]', '#tau vs Jets WP']]
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV]', '#tau vs Jets WP']]
+    # ['Events with 80.0 < #tau p_{T} < 100.0 [GeV]', '#tau vs Jets WP'],
+    # ['Events with 100.0 < #tau p_{T} < 120.0 [GeV]', '#tau vs Jets WP'],
+    # ['Events with 120.0 < #tau p_{T} < 140.0 [GeV]', '#tau vs Jets WP'],
+    # ['Events with 140.0 < #tau p_{T} < 160.0 [GeV]', '#tau vs Jets WP'],
+    # ['Events with 160.0 < #tau p_{T} < 180.0 [GeV]', '#tau vs Jets WP'],
+    # ['Events with 180.0 < #tau p_{T} < 200.0 [GeV]', '#tau vs Jets WP'],
+    # ['Events with 200.0 < #tau p_{T} < 220.0 [GeV]', '#tau vs Jets WP']]
 vars2DBinLabels = [
     [['On Z', 'Off Z'], ['0', '1', '2', '3']],
     [['On Z', 'Off Z'], ['0', '1', '2', '3']],
@@ -105,16 +117,25 @@ vars2DBinLabels = [
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
-    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']]]
 vars2DLines = [
     [[1], [2, 3]],
     [[1], []]]
 
-Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY', 't#bar{t}', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
-SamplesNameLatex = ['Data', '$t\\bar{t}X$', 'VV', 'DY', '$t\\bar{t}$', 'St Scalar U', 'Tt Scalar U']
-SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY', 't#bar{t}', 'CLFV top production', 'CLFV top decay']
+# Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
+# SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY', 't#bar{t}', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
+# SamplesNameLatex = ['Data', '$t\\bar{t}X$', 'VV', 'DY', '$t\\bar{t}$', 'St Scalar U', 'Tt Scalar U']
+# SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY', 't#bar{t}', 'CLFV top production', 'CLFV top decay']
+Samples = ['fr_LFVStScalarU.root', 'sim_LFVStScalarU.root']
+SamplesName = ['C_{ll`tu}^{ST} fr', 'C_{ll`tu}^{ST} sim']
+SamplesNameLatex = ['fr St Scalar U', 'sim St Scalar U']
+SamplesNameStack = ['fr CLFV top production', 'sim CLFV top production']
 
 colors = [ROOT.kBlack, ROOT.kYellow, ROOT.kGreen, ROOT.kOrange - 3, ROOT.kRed - 4, ROOT.kViolet + 1, ROOT.kGray]
 markerStyle = [20, 25, 26, 27, 28, 29, 30]
@@ -205,6 +226,8 @@ for numyear, nameyear in enumerate(year):
         for numreg, namereg in enumerate(regions):
             tauWPcut = 5
             tauWPstr = 'Tight'
+            # binEdges = [20.0, 40.0, 60.0, 80.0, 100.0, 120.0, 140.0, 160.0, 180.0, 200.0, 220.0]
+            binEdges = [20.0, 40.0, 60.0, 100.0, 220.0]
 
             # BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), numch, numreg,
             #                    vars2D.index('TauIdvsOnZ'), -1, 1, tauWPcut,
@@ -225,24 +248,28 @@ for numyear, nameyear in enumerate(year):
                 errPred = []
                 sim = []
                 errSim = []
-                for pt in range(20, 220, 40):
+                for ptIdx in range(len(binEdges) - 1):
                     results = BackgroundEstimate(Hists2D, numyear, Samples.index(sample), [], charges.index('OS'), numch, numreg,
-                                                 vars2D.index('TauIdvsOnZ_pt' + str(pt) + 'to' + str(pt + 40)), -1, 1, tauWPcut,
-                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
-                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z',
-                                                 nameyear, 'OS', namech, namereg, 'pt' + str(pt) + 'to' + str(pt + 40), False)
+                                                 vars2D.index('TauIdvsOnZ_pt' + str(int(binEdges[ptIdx])) + 'to' + str(int(binEdges[ptIdx + 1]))),
+                                                 -1, 1, tauWPcut, '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z', nameyear, 'OS',
+                                                 namech, namereg, 'pt' + str(int(binEdges[ptIdx])) + 'to' + str(int(binEdges[ptIdx + 1])), False)
                     ff.append(results[0])
                     errFf.append(results[1])
                     pred.append(results[2])
                     errPred.append(results[3])
                     sim.append(results[4])
                     errSim.append(results[5])
-                CompareEstimate(ff, errFf, [], [], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], sample,
-                                'OS', namech, namereg, regionsName[numreg], nameyear, 'bkg_estimate_ff_vspt',
-                                '#tau p_{T} [GeV]', sample[0:-5] + ' Background Estimation', ['Fake Factor'])
-                CompareEstimate(pred, errPred, [sim], [errSim], [20.0, 60.0, 100.0, 140.0, 180.0, 220.0], sample,
-                                'OS', namech, namereg, regionsName[numreg], nameyear, 'bkg_estimate_vspt',
-                                '#tau p_{T} [GeV]', sample[0:-5] + ' Background Estimation', ['Prediction', 'Simulation'])
+                print(namech, namereg, sample)
+                print('fake', ff, errFf)
+                print('prediction', pred, errPred)
+                print('simulation', sim, errSim)
+                CompareEstimate(ff, errFf, [], [], binEdges, sample, 'OS', namech, namereg,
+                                regionsName[numreg], nameyear, 'bkg_estimate_ff_vspt', '#tau p_{T} [GeV]',
+                                sample[0:-5] + ' Fake Factor', ['Fake Factor'])
+                CompareEstimate(pred, errPred, [sim], [errSim], binEdges, sample, 'OS', namech, namereg,
+                                regionsName[numreg], nameyear, 'bkg_estimate_vspt', '#tau p_{T} [GeV]',
+                                sample[0:-5] + ' Background Estimation', ['Prediction', 'Actual'])
 
 '''
 # Make 1D histograms
@@ -255,9 +282,11 @@ for numyear, nameyear in enumerate(year):
                     if ('MVA' in namevar) and (not SaveMVA):
                         continue
 
+                    if not namevar == 'taPt': continue
+
                     H1 = []
                     H1Signal = []
-                    H2 = []
+                    # H2 = []
                     for f in range(len(Samples)):
                         h1 = Hists[numyear][f][numc][numch][numreg][numvar].Clone()
                         h1.SetFillColor(colors[f])
@@ -269,12 +298,17 @@ for numyear, nameyear in enumerate(year):
                             H1Signal.append(h1)
                         if 'Data' in Samples[f]:
                             continue
-                        h2 = Hists[numyear][f][numc][numch][numreg][numvar].Clone()
-                        h2.SetLineColor(colors[f])
-                        h2.SetLineWidth(2)
-                        h2.SetMarkerColor(colors[f])
-                        h2.SetMarkerStyle(markerStyle[f])
-                        H2.append(h2)
+                        # h2 = Hists[numyear][f][numc][numch][numreg][numvar].Clone()
+                        # h2.SetLineColor(colors[f])
+                        # h2.SetLineWidth(2)
+                        # h2.SetMarkerColor(colors[f])
+                        # h2.SetMarkerStyle(markerStyle[f])
+                        # H2.append(h2)
+
+                        # print(Samples[f], namevar)
+                        # for bIdx in range(1, h1.GetNbinsX() + 1):
+                        #     
+
                     StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar, varsName[numvar])
                     # CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 

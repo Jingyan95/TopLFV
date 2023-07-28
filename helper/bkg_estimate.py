@@ -51,6 +51,8 @@ def BackgroundEstimate(Hists2D, numyear, numsample, numsubsamples, numc, numch, 
             errD += H2.GetBinError(xidx, yidx) * H2.GetBinError(xidx, yidx)
     errD = sqrt(errD)
 
+    print('all = %d' % (numA + numB + numC + numD))
+
     if numC > 0:
         ff = numA / numC # Fake factor
         if numA > 0:

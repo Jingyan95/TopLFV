@@ -9,11 +9,11 @@
 #include <TLorentzVector.h>
 
 using namespace std;
-//using namespace math;
+// using namespace math;
 class lepton_candidate {
 
 public:
-  lepton_candidate(float, float, float, float, float, int, unsigned char, float, float, float, int, int, int);
+  lepton_candidate(float, float, float, float, float, int, unsigned char, float, float, float, int, int, int, int);
   ~lepton_candidate();
   float pt_;
   float eta_;
@@ -28,6 +28,7 @@ public:
   int index_;
   int flavor_;
   int truth_;
+  int decaymode_;
   TLorentzVector p4_;
 
 private:
