@@ -32,9 +32,9 @@ channels = ['ee', 'emu', 'mumu']
 
 regions = [
     'll',                         #0
-    'llOnZMetg20Jetgeq1',         #1
-    'llOffZMetg20B1',             #2
-    'llOffZMetg20B2',             #3
+    # 'llOnZMetg20Jetgeq1',         #1
+    # 'llOffZMetg20B1',             #2
+    # 'llOffZMetg20B2',             #3
     'llStl300',                   #4
     'llOnZ',                      #5
     'llbtagg1p3',                 #6
@@ -45,22 +45,22 @@ regions = [
     'llMetg20Jetgeq1B0']          #11
 regionsName = [
     ['No cuts', '', ''],
-    ['p_{T}^{miss}>20GeV, njet#geq1', 'OnZ', ', Z+jets CR'],
-    ['p_{T}^{miss}>20GeV, njet#geq1', 'OffZ, nbjet=1', ', SR'],
-    ['p_{T}^{miss}>20GeV, njet#geq1', 'OffZ, nbjet=2', ', t#bar{t}+jets CR'],
+    # ['p_{T}^{miss}>20GeV, njet#geq1', 'OnZ', ', Z+jets CR'],
+    # ['p_{T}^{miss}>20GeV, njet#geq1', 'OffZ, nbjet=1', ', SR'],
+    # ['p_{T}^{miss}>20GeV, njet#geq1', 'OffZ, nbjet=2', ', t#bar{t}+jets CR'],
     ['S_{T}<300GeV', '', ', CR'],
     ['OnZ', '', ', Z+jets CR'],
     ['btag>1.3', '', ', t#bar{t}+jets CR'],
     ['S_{T}>300GeV, OffZ', 'btag<1.3', ', SR(Alt, Loose)'],
     ['S_{T}>300GeV, OffZ', 'btag<1.3, njet#geq1 or S_{T}>500GeV', ', SR(Alt, Tight)'],
     ['p_{T}^{miss}>20GeV, njet#geq1', '', ', Background Estimation'],
-    ,['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=1', ', Background Estimation'],
+    ['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=1', ', Background Estimation'],
     ['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=0', ', Background Estimation']]
 regionsNameLatex = [
     '2$l+\\tau_h$, no cuts',
-    '2$l+\\tau_h$, Z + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, on Z',
-    '2$l+\\tau_h$, SR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, off Z, nbjet $=1$',
-    '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, off Z, nbjet $=2$',
+    # '2$l+\\tau_h$, Z + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, on Z',
+    # '2$l+\\tau_h$, SR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, off Z, nbjet $=1$',
+    # '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, off Z, nbjet $=2$',
     '2$l+\\tau_h$, CR, $S_T<300$ GeV',
     '2$l+\\tau_h$, Z + jets CR, on Z',
     '2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$',
@@ -72,14 +72,17 @@ regionsNameLatex = [
 
 vars = [
     'llM', 'llDr', 'lep1Pt', 'lep2Pt',
-    'taPt', 'taPtHadronic', 'taEta', 'taEtaHadronic', 'taVsJetWP', 'taDxy', 'taDz', 'taDecayMode',
+    'taPt',# 'taPtHadronic',
+    'taEta',# 'taEtaHadronic',
+    'taVsJetWP', 'taDxy', 'taDz', 'taDecayMode',
     'jet1Pt', 'njet', 'nbjet', 'MET', 'subSR', 'LFVemuM', 'LFVetaM', 'LFVmutaM',
-    'LFVemuDr', 'LFVetaDr', 'LFVmutaDr', 'LFVePt', 'LFVmuPt', 'LFVtaPt', 'BalepPt',
-    'Topmass', 'Ht', 'St', 'btagSum']
+    'LFVemuDr', 'LFVetaDr', 'LFVmutaDr', 'LFVePt', 'LFVmuPt', 'LFVtaPt', 'balepPt',
+    'topmass', 'Ht', 'St', 'btagSum']
 varsName = [
     'm(l#bar{l}) [GeV]', '#DeltaR(l#bar{l})',
     'Leading lepton p_{T} [GeV]', 'Sub-leading lepton p_{T} [GeV]',
-    '#tau p_{T} [GeV]', '#tau_{h} p_{T} [GeV]', '#tau #eta', '#tau_{h} #eta',
+    '#tau p_{T} [GeV]',# '#tau_{h} p_{T} [GeV]',
+    '#tau #eta',# '#tau_{h} #eta',
     '#tau vs Jets WP', '#tau d_{xy} [cm]', '#tau d_{z} [cm]', '#tau Decay Mode',
     'Leading jet p_{T} [GeV]', 'njet', 'nbjet (Loose WP)', 'MET [GeV]', 'SR subdivided',
     'm(e#bar{#mu}) [GeV]', 'm(e#bar{#tau}) [GeV]', 'm(#mu#bar{#tau}) [GeV]',
@@ -88,54 +91,88 @@ varsName = [
     'Bachelor lepton p_{T} [GeV]', 'm(top) [GeV]', 'H_{T} [GeV]', 'S_{T} [GeV]', 'Sum of btagging scores']
 
 vars2D = [
-    'nbjetvsOnZ', 'nbjetvsOnZHadronic', 'TauIdvsOnZ', 'TauIdvsOnZHadronic',
-    'TauIdvsOnZ_pt20to40', 'TauIdvsOnZ_pt40to60', 'TauIdvsOnZ_pt60to100', 'TauIdvsOnZ_pt100to220']
-    # 'TauIdvsOnZ_pt20to40', 'TauIdvsOnZ_pt40to60', 'TauIdvsOnZ_pt60to80', 'TauIdvsOnZ_pt80to100',
-    # 'TauIdvsOnZ_pt100to120', 'TauIdvsOnZ_pt120to140', 'TauIdvsOnZ_pt140to160', 'TauIdvsOnZ_pt160to180',
-    # 'TauIdvsOnZ_pt180to200', 'TauIdvsOnZ_pt200to220']
+    # 'nbjetvsOnZ',
+    'TauIdvsOnZ',
+    'TauIdvsOnZ_pt20to40', 'TauIdvsOnZ_pt40to60', 'TauIdvsOnZ_pt60to100', 'TauIdvsOnZ_pt100to220',
+    'TauIdvsOnZ_pt20to40_dm0', 'TauIdvsOnZ_pt40to60_dm0', 'TauIdvsOnZ_pt60to100_dm0', 'TauIdvsOnZ_pt100to220_dm0',
+    'TauIdvsOnZ_pt20to40_dm1', 'TauIdvsOnZ_pt40to60_dm1', 'TauIdvsOnZ_pt60to100_dm1', 'TauIdvsOnZ_pt100to220_dm1',
+    'TauIdvsOnZ_pt20to40_dm2', 'TauIdvsOnZ_pt40to60_dm2', 'TauIdvsOnZ_pt60to100_dm2', 'TauIdvsOnZ_pt100to220_dm2',
+    'TauIdvsOnZ_pt20to40_dm7', 'TauIdvsOnZ_pt40to60_dm7', 'TauIdvsOnZ_pt60to100_dm7', 'TauIdvsOnZ_pt100to220_dm7',
+    'TauIdvsOnZ_pt20to40_dm10', 'TauIdvsOnZ_pt40to60_dm10', 'TauIdvsOnZ_pt60to100_dm10', 'TauIdvsOnZ_pt100to220_dm10',
+    'TauIdvsOnZ_pt20to40_dm11', 'TauIdvsOnZ_pt40to60_dm11', 'TauIdvsOnZ_pt60to100_dm11', 'TauIdvsOnZ_pt100to220_dm11']
 vars2DName = [
-    ['All Events', 'nbjet (Loose WP)'],
-    ['Events with #tau_{h}', 'nbjet (Loose WP)'],
+    # ['All Events', 'nbjet (Loose WP)'],
     ['All Events', '#tau vs Jets WP'],
-    ['Events with #tau_{h}', '#tau vs Jets WP'],
     ['Events with 20.0 < #tau p_{T} < 40.0 [GeV]', '#tau vs Jets WP'],
     ['Events with 40.0 < #tau p_{T} < 60.0 [GeV]', '#tau vs Jets WP'],
     ['Events with 60.0 < #tau p_{T} < 100.0 [GeV]', '#tau vs Jets WP'],
-    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV]', '#tau vs Jets WP']]
-    # ['Events with 80.0 < #tau p_{T} < 100.0 [GeV]', '#tau vs Jets WP'],
-    # ['Events with 100.0 < #tau p_{T} < 120.0 [GeV]', '#tau vs Jets WP'],
-    # ['Events with 120.0 < #tau p_{T} < 140.0 [GeV]', '#tau vs Jets WP'],
-    # ['Events with 140.0 < #tau p_{T} < 160.0 [GeV]', '#tau vs Jets WP'],
-    # ['Events with 160.0 < #tau p_{T} < 180.0 [GeV]', '#tau vs Jets WP'],
-    # ['Events with 180.0 < #tau p_{T} < 200.0 [GeV]', '#tau vs Jets WP'],
-    # ['Events with 200.0 < #tau p_{T} < 220.0 [GeV]', '#tau vs Jets WP']]
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV]', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 40.0 [GeV] & Decay Mode 0', '#tau vs Jets WP'],
+    ['Events with 40.0 < #tau p_{T} < 60.0 [GeV] & Decay Mode 0', '#tau vs Jets WP'],
+    ['Events with 60.0 < #tau p_{T} < 100.0 [GeV] & Decay Mode 0', '#tau vs Jets WP'],
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV] & Decay Mode 0', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 40.0 [GeV] & Decay Mode 1', '#tau vs Jets WP'],
+    ['Events with 40.0 < #tau p_{T} < 60.0 [GeV] & Decay Mode 1', '#tau vs Jets WP'],
+    ['Events with 60.0 < #tau p_{T} < 100.0 [GeV] & Decay Mode 1', '#tau vs Jets WP'],
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV] & Decay Mode 1', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 40.0 [GeV] & Decay Mode 2', '#tau vs Jets WP'],
+    ['Events with 40.0 < #tau p_{T} < 60.0 [GeV] & Decay Mode 2', '#tau vs Jets WP'],
+    ['Events with 60.0 < #tau p_{T} < 100.0 [GeV] & Decay Mode 2', '#tau vs Jets WP'],
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV] & Decay Mode 2', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 40.0 [GeV] & Decay Mode 7', '#tau vs Jets WP'],
+    ['Events with 40.0 < #tau p_{T} < 60.0 [GeV] & Decay Mode 7', '#tau vs Jets WP'],
+    ['Events with 60.0 < #tau p_{T} < 100.0 [GeV] & Decay Mode 7', '#tau vs Jets WP'],
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV] & Decay Mode 7', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 40.0 [GeV] & Decay Mode 10', '#tau vs Jets WP'],
+    ['Events with 40.0 < #tau p_{T} < 60.0 [GeV] & Decay Mode 10', '#tau vs Jets WP'],
+    ['Events with 60.0 < #tau p_{T} < 100.0 [GeV] & Decay Mode 10', '#tau vs Jets WP'],
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV] & Decay Mode 10', '#tau vs Jets WP'],
+    ['Events with 20.0 < #tau p_{T} < 40.0 [GeV] & Decay Mode 11', '#tau vs Jets WP'],
+    ['Events with 40.0 < #tau p_{T} < 60.0 [GeV] & Decay Mode 11', '#tau vs Jets WP'],
+    ['Events with 60.0 < #tau p_{T} < 100.0 [GeV] & Decay Mode 11', '#tau vs Jets WP'],
+    ['Events with 100.0 < #tau p_{T} < 220.0 [GeV] & Decay Mode 11', '#tau vs Jets WP']]
 vars2DBinLabels = [
-    [['On Z', 'Off Z'], ['0', '1', '2', '3']],
-    [['On Z', 'Off Z'], ['0', '1', '2', '3']],
+    # [['On Z', 'Off Z'], ['0', '1', '2', '3']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
-    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
-    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
-    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
-    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
-    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
-    # [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
+    [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']],
     [['On Z', 'Off Z'], ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']]]
 vars2DLines = [
     [[1], [2, 3]],
     [[1], []]]
 
-# Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-# SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY', 't#bar{t}', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
-# SamplesNameLatex = ['Data', '$t\\bar{t}X$', 'VV', 'DY', '$t\\bar{t}$', 'St Scalar U', 'Tt Scalar U']
-# SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY', 't#bar{t}', 'CLFV top production', 'CLFV top decay']
-Samples = ['fr_LFVStScalarU.root', 'sim_LFVStScalarU.root']
-SamplesName = ['C_{ll`tu}^{ST} fr', 'C_{ll`tu}^{ST} sim']
-SamplesNameLatex = ['fr St Scalar U', 'sim St Scalar U']
-SamplesNameStack = ['fr CLFV top production', 'sim CLFV top production']
+Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'fr_LFVStScalarU.root', 'sim_LFVStScalarU.root']
+SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY', 't#bar{t}', 'C_{ll`tu}^{STfr}', 'C_{ll`tu}^{STsim}']
+SamplesNameLatex = ['Data', '$t\\bar{t}X$', 'VV', 'DY', '$t\\bar{t}$', 'St Scalar U (fr)', 'St Scalar U (sim)']
+SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY', 't#bar{t}', 'CLFV top production (fr)', 'CLFV top production (sim)']
+
+ptEdges = [20.0, 40.0, 60.0, 100.0, 220.0]
+tauDMs = [0, 1, 2, 7, 10, 11]
 
 colors = [ROOT.kBlack, ROOT.kYellow, ROOT.kGreen, ROOT.kOrange - 3, ROOT.kRed - 4, ROOT.kViolet + 1, ROOT.kGray]
 markerStyle = [20, 25, 26, 27, 28, 29, 30]
@@ -226,8 +263,6 @@ for numyear, nameyear in enumerate(year):
         for numreg, namereg in enumerate(regions):
             tauWPcut = 5
             tauWPstr = 'Tight'
-            # binEdges = [20.0, 40.0, 60.0, 80.0, 100.0, 120.0, 140.0, 160.0, 180.0, 200.0, 220.0]
-            binEdges = [20.0, 40.0, 60.0, 100.0, 220.0]
 
             # BackgroundEstimate(Hists2D, numyear, Samples.index('DY.root'), [], charges.index('OS'), numch, numreg,
             #                    vars2D.index('TauIdvsOnZ'), -1, 1, tauWPcut,
@@ -241,37 +276,82 @@ for numyear, nameyear in enumerate(year):
             #                    '2016-All-OS-' + namech + '-' + namereg, True)
 
             # Plot comparing background estimate vs simulation with pt bins
-            for sample in ['DY.root', 'TT.root']:
+            # for sample in ['DY.root', 'TT.root']:
+            for sample in ['TT.root']:
                 ff = []
                 errFf = []
                 pred = []
                 errPred = []
                 sim = []
                 errSim = []
-                for ptIdx in range(len(binEdges) - 1):
+                for ptIdx in range(len(ptEdges) - 1):
                     results = BackgroundEstimate(Hists2D, numyear, Samples.index(sample), [], charges.index('OS'), numch, numreg,
-                                                 vars2D.index('TauIdvsOnZ_pt' + str(int(binEdges[ptIdx])) + 'to' + str(int(binEdges[ptIdx + 1]))),
-                                                 -1, 1, tauWPcut, '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
-                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP', 'On Z', 'Off Z', nameyear, 'OS',
-                                                 namech, namereg, 'pt' + str(int(binEdges[ptIdx])) + 'to' + str(int(binEdges[ptIdx + 1])), False)
+                                                 vars2D.index('TauIdvsOnZ_pt' + str(int(ptEdges[ptIdx])) + 'to' + str(int(ptEdges[ptIdx + 1]))),
+                                                 -1, # numsubvar2D, doesn't matter what I put here because numsubsamples is empty
+                                                 1, tauWPcut,
+                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+                                                 '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP',
+                                                 'On Z', 'Off Z',
+                                                 nameyear, 'OS', namech, namereg,
+                                                 'pt' + str(int(ptEdges[ptIdx])) + 'to' + str(int(ptEdges[ptIdx + 1])),
+                                                 False)
                     ff.append(results[0])
                     errFf.append(results[1])
                     pred.append(results[2])
                     errPred.append(results[3])
                     sim.append(results[4])
                     errSim.append(results[5])
-                print(namech, namereg, sample)
-                print('fake', ff, errFf)
-                print('prediction', pred, errPred)
-                print('simulation', sim, errSim)
-                CompareEstimate(ff, errFf, [], [], binEdges, sample, 'OS', namech, namereg,
+                CompareEstimate(ff, errFf, [], [], ptEdges, sample, 'OS', namech, namereg,
                                 regionsName[numreg], nameyear, 'bkg_estimate_ff_vspt', '#tau p_{T} [GeV]',
                                 sample[0:-5] + ' Fake Factor', ['Fake Factor'])
-                CompareEstimate(pred, errPred, [sim], [errSim], binEdges, sample, 'OS', namech, namereg,
+                CompareEstimate(pred, errPred, [sim], [errSim], ptEdges, sample, 'OS', namech, namereg,
                                 regionsName[numreg], nameyear, 'bkg_estimate_vspt', '#tau p_{T} [GeV]',
                                 sample[0:-5] + ' Background Estimation', ['Prediction', 'Actual'])
 
-'''
+                ff_DMs = []
+                errFf_DMs = []
+                pred_DMs = []
+                errPred_DMs = []
+                sim_DMs = []
+                errSim_DMs = []
+                for dmIdx in range(len(tauDMs)):
+                    ff_DMs.append([])
+                    errFf_DMs.append([])
+                    pred_DMs.append([])
+                    errPred_DMs.append([])
+                    sim_DMs.append([])
+                    errSim_DMs.append([])
+                    for ptIdx in range(len(ptEdges) - 1):
+                        varname = 'pt' + str(int(ptEdges[ptIdx])) + 'to' + str(int(ptEdges[ptIdx + 1])) + '_dm' + str(tauDMs[dmIdx])
+                        histname = 'TauIdvsOnZ_' + varname
+                        results = BackgroundEstimate(Hists2D, numyear, Samples.index(sample), [], charges.index('OS'), numch, numreg,
+                                                     vars2D.index(histname),
+                                                     -1, # numsubvar2D, doesn't matter what I put here because numsubsamples is empty
+                                                     1, tauWPcut,
+                                                     '$\\bm{\\tau_h}$ vs Jets $\\bm{\\geq}$ ' + tauWPstr + ' WP',
+                                                     '$\\bm{\\tau_h}$ vs Jets $\\bm{<}$ ' + tauWPstr + ' WP',
+                                                     'On Z', 'Off Z',
+                                                     nameyear, 'OS', namech, namereg,
+                                                     varname,
+                                                     False)
+                        ff_DMs[dmIdx].append(results[0])
+                        errFf_DMs[dmIdx].append(results[1])
+                        pred_DMs[dmIdx].append(results[2])
+                        errPred_DMs[dmIdx].append(results[3])
+                        sim_DMs[dmIdx].append(results[4])
+                        errSim_DMs[dmIdx].append(results[5])
+                    ffVarName = 'bkg_estimate_ff_vspt_dm' + str(tauDMs[dmIdx])
+                    compVarName = 'bkg_estimate_vspt_dm' + str(tauDMs[dmIdx])
+                    CompareEstimate(ff_DMs[dmIdx], errFf_DMs[dmIdx], [], [], ptEdges,
+                                    sample, 'OS', namech, namereg,
+                                    regionsName[numreg], nameyear, ffVarName, '#tau p_{T} [GeV]',
+                                    sample[0:-5] + ' Fake Factor', ['Fake Factor'])
+                    CompareEstimate(pred_DMs[dmIdx], errPred_DMs[dmIdx], [sim_DMs[dmIdx]], [errSim_DMs[dmIdx]], ptEdges,
+                                    sample, 'OS', namech, namereg,
+                                    regionsName[numreg], nameyear, compVarName, '#tau p_{T} [GeV]',
+                                    sample[0:-5] + ' Background Estimation', ['Prediction', 'Actual'])
+
+
 # Make 1D histograms
 for numyear, nameyear in enumerate(year):
     for numc, namec in enumerate(charges):
@@ -281,8 +361,6 @@ for numyear, nameyear in enumerate(year):
 
                     if ('MVA' in namevar) and (not SaveMVA):
                         continue
-
-                    if not namevar == 'taPt': continue
 
                     H1 = []
                     H1Signal = []
@@ -305,10 +383,6 @@ for numyear, nameyear in enumerate(year):
                         # h2.SetMarkerStyle(markerStyle[f])
                         # H2.append(h2)
 
-                        # print(Samples[f], namevar)
-                        # for bIdx in range(1, h1.GetNbinsX() + 1):
-                        #     
-
                     StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar, varsName[numvar])
                     # CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
@@ -318,11 +392,11 @@ for numyear, nameyear in enumerate(year):
         H = []
         HSignal = []
         for f in range(len(Samples)):
-            h = Hists[numyear][f][0][0][numreg][15].Clone()
+            h = Hists[numyear][f][0][0][numreg][14].Clone()
             h.Reset('ICE')
             for numc, namec in enumerate(charges):
                 for numch, namech in enumerate(channels):
-                    h += Hists[numyear][f][numc][numch][numreg][15]
+                    h += Hists[numyear][f][numc][numch][numreg][14]
             h.SetFillColor(colors[f])
             if 'LFV' not in Samples[f]:
                 h.SetLineColor(colors[0])
@@ -339,20 +413,11 @@ for numyear, nameyear in enumerate(year):
             for numreg, namereg in enumerate(regions):
 
                 for f in range(len(Samples)):
+
+                    if not Samples[f] == 'TT.root': continue
+
                     for numvar, namevar in enumerate(vars2D):
-                        if numvar >= 4: continue
+                        # if numvar >= 4: continue
                         h2D = Hists2D[numyear][f][numc][numch][numreg][numvar].Clone()
                         Hist2D(h2D, Samples[f], namec, namech, namereg, nameyear, vars2D[numvar],
                                vars2DName[numvar][0], vars2DName[numvar][1], [], [], vars2DBinLabels[numvar][0], vars2DBinLabels[numvar][1])
-
-                # Make 2D histograms for fake tau background estimation
-                for numvar in range(0, len(vars2D), 2):
-                    if numvar >= 4: continue
-                    dataH2 = Hists2D[numyear][0][numc][numch][numreg][numvar].Clone() # Get data
-                    for f in range(1, len(Samples)):
-                        mcH2 = Hists2D[numyear][f][numc][numch][numreg][numvar + 1].Clone() # Subtract hadronic taus
-                        dataH2.Add(mcH2, -1.0)
-                    Hist2D(dataH2, 'All.....', namec, namech, namereg, nameyear, vars2D[numvar],
-                           vars2DName[numvar][0], vars2DName[numvar][1], vars2DLines[numvar / 2][0], vars2DLines[numvar / 2][1],
-                           vars2DBinLabels[numvar][0], vars2DBinLabels[numvar][1])
-'''

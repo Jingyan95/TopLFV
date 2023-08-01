@@ -812,6 +812,7 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
     legend.SetTextFont(42)
     legend.SetTextSize(0.028)
 
+    # First histogram
     h1 = ROOT.TH1F("h1" + year + c + ch + reg + var, "", len(arr1), array("d", binEdges))
     for idx in range(len(arr1)):
         h1.SetBinContent(idx + 1, arr1[idx])
@@ -825,6 +826,7 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
     h1.SetMarkerColor(ROOT.kBlue)
     maxi = h1.GetMaximum()
 
+    # Rest of the histograms
     hists = []
     colors = [ROOT.kRed]
     for arrIdx, arr in enumerate(arrs):
@@ -845,16 +847,16 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
 
     h1.GetXaxis().SetTitle(xlabel)
     h1.GetYaxis().SetTitle(ylabel)
-    h1.GetYaxis().SetRangeUser(0.001, 2000 * maxi)
-    h1.SetMinimum(0.001)
+    h1.GetYaxis().SetRangeUser(0.0, 1.6 * maxi)
+    # h1.SetMinimum(0.001)
     h1.Draw("hist e")
     legend.AddEntry(h1, hlabels[0], "lep")
     for hIdx, hist in enumerate(hists):
-        hist.SetMinimum(0.001)
+        # hist.SetMinimum(0.001)
         hist.Draw("hist e same")
         legend.AddEntry(hist, hlabels[hIdx + 1], "lep")
 
-    canvas.SetLogy(ROOT.kTRUE)
+    # canvas.SetLogy(ROOT.kTRUE)
 
     legend.Draw("same")
     Lumi = getLumi(year)

@@ -69,67 +69,67 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"lep1Pt",           {2,    10,    30,   230}},
     {"lep2Pt",           {3,    10,    20,   180}},
     {"taPt",             {4,    20,    20,   220}},
-    {"taPtHadronic",     {5,    20,    20,   220}},
-    {"taEta",            {6,    23,  -2.3,   2.3}},
-    {"taEtaHadronic",    {7,    23,  -2.3,   2.3}},
-    {"taVsJetWP",        {8,     8,     0,     8}},
-    {"taDxy",            {9,    16,  -0.1,   0.1}},
-    {"taDz",             {10,   16,  -0.2,   0.2}},
-    {"taDecayMode",      {11,   11,     0,    11}},
-    {"jet1Pt",           {12,   10,    25,   225}},
-    {"njet",             {13,    6,     0,     6}},
-    {"nbjet",            {14,    4,     0,     4}},
-    {"MET",              {15,   10,     0,   200}},
-    {"subSR",            {16,   18,     0,    18}},
-    {"LFVemuM",          {17,   10,     0,   300}},
-    {"LFVetaM",          {18,   10,     0,   300}},
-    {"LFVmutaM",         {19,   10,     0,   300}},
-    {"LFVemuDr",         {20,   10,     0,   4.5}},
-    {"LFVetaDr",         {21,   10,     0,   4.5}},
-    {"LFVmutaDr",        {22,   10,     0,   4.5}},
-    {"LFVePt",           {23,   10,    20,   300}},
-    {"LFVmuPt",          {24,   10,    20,   300}},
-    {"LFVtaPt",          {25,   10,    20,   300}},
-    {"BalepPt",          {26,   10,    20,   180}},
-    {"Topmass",          {27,   10,     0,   300}},
-    {"Ht",               {28,   10,     0,   300}},
-    {"St",               {29,   20,    70,   600}},
-    {"btagSum",          {30,   25,     0,   2.5}}
+    // {"taPtHadronic",     {5,    20,    20,   220}},
+    {"taEta",            {5,    23,  -2.3,   2.3}},
+    // {"taEtaHadronic",    {7,    23,  -2.3,   2.3}},
+    {"taVsJetWP",        {6,     8,     0,     8}},
+    {"taDxy",            {7,    16,  -0.1,   0.1}},
+    {"taDz",             {8,    16,  -0.2,   0.2}},
+    {"taDecayMode",      {9,    12,     0,    12}},
+    {"jet1Pt",           {10,   10,    25,   225}},
+    {"njet",             {11,    6,     0,     6}},
+    {"nbjet",            {12,    4,     0,     4}},
+    {"MET",              {13,   10,     0,   200}},
+    {"subSR",            {14,   18,     0,    18}},
+    {"LFVemuM",          {15,   10,     0,   300}},
+    {"LFVetaM",          {16,   10,     0,   300}},
+    {"LFVmutaM",         {17,   10,     0,   300}},
+    {"LFVemuDr",         {18,   10,     0,   4.5}},
+    {"LFVetaDr",         {19,   10,     0,   4.5}},
+    {"LFVmutaDr",        {20,   10,     0,   4.5}},
+    {"LFVePt",           {21,   10,    20,   300}},
+    {"LFVmuPt",          {22,   10,    20,   300}},
+    {"LFVtaPt",          {23,   10,    20,   300}},
+    {"balepPt",          {24,   10,    20,   180}},
+    {"topmass",          {25,   10,     0,   300}},
+    {"Ht",               {26,   10,     0,   300}},
+    {"St",               {27,   20,    70,   600}},
+    {"btagSum",          {28,   25,     0,   2.5}}
   };
   const std::vector<double> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
   const std::map<TString, std::vector<float>> vars2D = {
-    {"nbjetvsOnZ",                    {0,    2,   0,   2,   4,   0,   4}},
-    {"nbjetvsOnZHadronic",            {1,    2,   0,   2,   4,   0,   4}},
-    {"TauIdvsOnZ",                    {2,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZHadronic",            {3,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt20to40",           {4,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt40to60",           {5,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt60to100",          {6,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt100to220",         {7,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt20to40_dm0",       {8,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt40to60_dm0",       {9,    2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt60to100_dm0",      {10,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt100to220_dm0",     {11,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt20to40_dm1",       {12,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt40to60_dm1",       {13,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt60to100_dm1",      {14,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt100to220_dm1",     {15,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt20to40_dm2",       {16,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt40to60_dm2",       {17,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt60to100_dm2",      {18,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt100to220_dm2",     {19,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt20to40_dm7",       {20,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt40to60_dm7",       {21,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt60to100_dm7",      {22,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt100to220_dm7",     {23,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt20to40_dm10",      {24,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt40to60_dm10",      {25,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt60to100_dm10",     {26,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt100to220_dm10",    {27,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt20to40_dm11",      {28,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt40to60_dm11",      {29,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt60to100_dm11",     {30,   2,   0,   2,   8,   0,   8}},
-    {"TauIdvsOnZ_pt100to220_dm11",    {31,   2,   0,   2,   8,   0,   8}}
+    // {"nbjetvsOnZ",                    {0,    2,   0,   2,   4,   0,   4}},
+    // {"nbjetvsOnZHadronic",            {1,    2,   0,   2,   4,   0,   4}},
+    {"TauIdvsOnZ",                    {0,    2,   0,   2,   8,   0,   8}},
+    // {"TauIdvsOnZHadronic",            {3,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40",           {1,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60",           {2,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100",          {3,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220",         {4,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm0",       {5,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm0",       {6,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm0",      {7,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm0",     {8,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm1",       {9,    2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm1",       {10,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm1",      {11,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm1",     {12,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm2",       {13,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm2",       {14,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm2",      {15,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm2",     {16,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm7",       {17,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm7",       {18,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm7",      {19,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm7",     {20,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm10",      {21,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm10",      {22,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm10",     {23,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm10",    {24,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt20to40_dm11",      {25,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt40to60_dm11",      {26,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt60to100_dm11",     {27,   2,   0,   2,   8,   0,   8}},
+    {"TauIdvsOnZ_pt100to220_dm11",    {28,   2,   0,   2,   8,   0,   8}}
   };
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
@@ -478,10 +478,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEta")]->Fill(Event->ta1()->eta_, wgt[i]);
-      if (Event->ta1()->truth_ == 0) {
-        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPtHadronic")]->Fill(Event->ta1()->pt_, wgt[i]);
-        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEtaHadronic")]->Fill(Event->ta1()->eta_, wgt[i]);
-      }
+      // if (Event->ta1()->truth_ == 0) {
+      //   Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPtHadronic")]->Fill(Event->ta1()->pt_, wgt[i]);
+      //   Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEtaHadronic")]->Fill(Event->ta1()->eta_, wgt[i]);
+      // }
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetWP")]->Fill(tauWP, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
@@ -496,18 +496,18 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Event->lfvch() != 2) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVePt")]->Fill(Event->LFVe()->pt_, wgt[i]);
       if (Event->lfvch() != 1) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVmuPt")]->Fill(Event->LFVmu()->pt_, wgt[i]);
       if (Event->lfvch() != 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVtaPt")]->Fill(Event->LFVta()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "BalepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
-      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Topmass")]->Fill(Event->Topmass(), wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "balepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
+      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "topmass")]->Fill(Event->Topmass(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
 
-      Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZ")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
+      // Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZ")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
       Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-      if (Event->ta1()->truth_ == 0) {
-        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
-        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-      }
+      // if (Event->ta1()->truth_ == 0) {
+      //   Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "nbjetvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, Event->nbjet(), wgt[i]);
+      //   Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+      // }
       for (int j = 0; j < ptBins.size() - 1; j++) {
         if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
           histname = "TauIdvsOnZ_pt" + std::to_string((int) ptBins[j]) + "to" + std::to_string((int) ptBins[j + 1]);
