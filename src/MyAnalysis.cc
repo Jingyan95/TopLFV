@@ -165,7 +165,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     fChain->GetEntry(jentry);  
     ntotal++; // thread-private counter
     std::lock_guard<std::mutex> lock(mtx_); // locking mutex before accessing atomic variables
-    ++counter;
+    ++counter; // shared counter 
     updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
     if (!verbose_) displayProgress(progress, counter, ntr, 32);
     mtx_.unlock(); // releasing mutex
@@ -260,13 +260,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (tauPt < 20 || abs(Tau_eta[l]) > 2.3) continue;
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
-      // The Loosest possible DeepTau Working Point
       if ((int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8 || (int) Tau_idDeepTau2017v2p1VSjet[l] < 32) continue;
 
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
           || event_candidate::deltaR((*Leptons)[1]->eta_, (*Leptons)[1]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4) continue;
-
+      // Applying tau ID scale factors
       if (data == "mc") {
         if ((int) Tau_genPartFlav[l] == 5) weight_Ta_ID_jet = weight_Ta_ID_jet * sf_Ta_ID_jet.Eval(tauPt < 140 ? tauPt : 140); // SF measured up to 140GeV
         if ((int) Tau_genPartFlav[l] == 1 || (int) Tau_genPartFlav[l] == 3) weight_Ta_ID_e = weight_Ta_ID_e * sf_Ta_ID_e.GetBinContent(sf_Ta_ID_e.GetXaxis()->FindBin(abs(Tau_eta[l])));
@@ -337,7 +336,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         }
       }
     }
-    if (Event->St() < 300) { // Generic signal-free region
+    if (Event->St() < 300) { // Generic signal-deleted region
       reg.push_back(4);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[4]);
     }
@@ -358,6 +357,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
     }
     // Filling histograms
+    if ((int)lfvSignal==2){
     for (int i = 0; i < reg.size(); ++i) {
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
@@ -381,6 +381,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
+    }
     }
 
     deleteContainter(Leptons);

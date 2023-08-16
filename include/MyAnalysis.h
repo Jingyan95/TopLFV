@@ -140,6 +140,7 @@ public :
   Bool_t          HLT_IsoTkMu24;//2016 APV, 2016
   Bool_t          HLT_IsoMu27;//2017
 
+  Int_t           lfvSignal;
   Float_t         Generator_weight;//MC generator weight
   Float_t         Pileup_nTrueInt;
   Float_t         L1PreFiringWeight_ECAL_Nom;
@@ -258,6 +259,7 @@ public :
   TBranch         *b_HLT_IsoTkMu24;//2016 APV, 2016
   TBranch         *b_HLT_IsoMu27;//2017
 
+  TBranch         *b_lfvSignal;
   TBranch         *b_Generator_weight;
   TBranch         *b_Pileup_nTrueInt;
   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
@@ -454,6 +456,7 @@ void MyAnalysis::Init(TTree *tree) {
   if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_IsoTkMu24", &HLT_IsoTkMu24, &b_HLT_IsoTkMu24);
   if (year_ == "2017") fChain->SetBranchAddress("HLT_IsoMu27", &HLT_IsoMu27, &b_HLT_IsoMu27);
 
+  if (data_ == "mc") fChain->SetBranchAddress("lfvSignal", &lfvSignal, &b_lfvSignal);
   if (data_ == "mc") fChain->SetBranchAddress("Generator_weight", &Generator_weight, &b_Generator_weight);
   if (data_ == "mc") fChain->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt, &b_Pileup_nTrueInt);
   fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
