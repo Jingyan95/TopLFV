@@ -165,7 +165,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     fChain->GetEntry(jentry);  
     ntotal++; // thread-private counter
     std::lock_guard<std::mutex> lock(mtx_); // locking mutex before accessing atomic variables
-    ++counter;
+    ++counter; // shared-counter 
     updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
     if (!verbose_) displayProgress(progress, counter, ntr, 32);
     mtx_.unlock(); // releasing mutex
@@ -260,9 +260,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (tauPt < 20 || abs(Tau_eta[l]) > 2.3) continue;
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
-      // The Loosest possible DeepTau Working Point
       if ((int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8 || (int) Tau_idDeepTau2017v2p1VSjet[l] < 32) continue;
-
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
           || event_candidate::deltaR((*Leptons)[1]->eta_, (*Leptons)[1]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4) continue;
