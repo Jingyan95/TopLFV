@@ -10,9 +10,9 @@ import nano_files_2016
 import nano_files_2017
 import nano_files_2018
 
-mc_2016APV = False
-data_2016APV = False
-mc_2016 = True
+mc_2016APV = True
+data_2016APV = True
+mc_2016 = False
 data_2016 = False
 mc_2017 = False
 data_2017 = False
@@ -50,8 +50,10 @@ for key, value in dataset.items():
                 continue
             if 'log' in fname:
                 continue
-            f = ROOT.TFile.Open(filename)
-            if not f:
+            try:
+                f = ROOT.TFile.Open(filename)
+            except:
+                print 'failed to open ' + filename
                 continue
             tree_events = f.Get('Events')
             nFiles += 1

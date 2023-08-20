@@ -3,12 +3,24 @@ import ROOT
 import sys
 dataset = {}
 
+import gen_files_2016APV
 import gen_files_2016
+import gen_files_2017
+import gen_files_2018
 
-mc_2016 = True
+mc_2016APV = False
+mc_2016 = False
+mc_2017 = False
+mc_2018 = True
 
+if mc_2016APV:
+    dataset.update(gen_files_2016APV.mc2016APV_samples)
 if mc_2016:
     dataset.update(gen_files_2016.mc2016_samples)
+if mc_2017:
+    dataset.update(gen_files_2017.mc2017_samples)
+if mc_2018:
+    dataset.update(gen_files_2018.mc2018_samples)
 
 for key, value in dataset.items():
     print '-----------------------'

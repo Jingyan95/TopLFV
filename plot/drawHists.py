@@ -47,7 +47,7 @@ varsName = ["m(l#bar{l}) [GeV]", "#DeltaR(l#bar{l})", "Leading lepton p_{T} [GeV
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--v', dest = 'VERBOSE', default = True)
-parser.add_argument('--n', dest = 'NAMETAG', default = '2016')
+parser.add_argument('--n', dest = 'NAMETAG', default = 'RunII')
 
 ARGS = parser.parse_args()
 

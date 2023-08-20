@@ -6,22 +6,13 @@ import string
 
 data2016_samples = {}
 mc2016_samples = {}
-##data2016_samples ['2016_LFVStVecU'] = ['address', 'data/mc','dataset','year', 'run', 'cross section','lumi','Neventsraw','# of files per job']
+##mc2016_samples ['2016_LFVStVecU'] = ['address', 'data/mc','dataset','year', 'run', 'cross section','lumi','Neventsraw','# of files per job']
 ##cut = "((Sum$(Electron_pt>18 && abs(Electron_eta)<2.5 && Electron_sip3d<15) + Sum$(Muon_pt>18 && abs(Muon_eta)<2.4 && Muon_sip3d<15 && Muon_mediumId))>=2)"
 ##cut += " && ((Sum$(Tau_pt>18 && abs(Tau_eta)<2.3 && Tau_idDeepTau2017v2p1VSe>=1 && Tau_idDeepTau2017v2p1VSmu>=1 && Tau_idDeepTau2017v2p1VSjet>=1 && Tau_decayMode!=5 && Tau_decayMode!=6))>=1)"
 
 ##Scalar interaction
-mc2016_samples['2016_LFVStScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_May1_BtagSF_2016_LFVStScalarU_UL/230501_150328/0000/'], 'mc','LFVStScalarU','2016', '','0.417' ,'16.81','100000',100]
-mc2016_samples['2016_LFVTtScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_May1_BtagSF_2016_LFVTtScalarU_UL/230501_145549/0000/'], 'mc','LFVTtScalarU','2016', '','0.012','16.81','100000',100]
-
-##Fake background samples
-mc2016_samples['2016_TTTo2L2Nu'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTTo2L2Nu_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTTo2L2Nu_UL/230501_150625/0000/'], 'mc','TTTo2L2Nu','2016', '','88.4' ,'16.81','43193956',5]
-mc2016_samples['2016_TTToSemiLeptonic'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTToSemiLeptonic_UL/230501_150229/0000/'], 'mc','TTToSemiLeptonic','2016', '','365.34' ,'16.81','143553998',6]
-# mc2016_samples['2016_TTToHadronic'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTToHadronic_UL/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTToHadronic_UL/230501_145258/0000/'], 'mc','TTToHadronic','2016', '','377.96' ,'16.81','106200414',25]#No events pass baseline selection, therefore not included
-mc2016_samples['2016_DYM50'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_DY50_UL/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_DY50_UL/230501_150132/0000/'], 'mc','DYM50','2016', '','6077.22' ,'16.81','48335328',11]
-mc2016_samples['2016_DYM10to50'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_DY10to50_UL/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_DY10to50_UL/230501_145201/0000/'], 'mc','DYM10to50','2016', '','15810' ,'16.81','22388550',34]
-mc2016_samples['2016_WWTo2L2Nu'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_WWTo2L2Nu_UL/WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_WWTo2L2Nu_UL/230501_150034/0000/'], 'mc','WWTo2L2Nu','2016', '','12.178' ,'16.81','2888924',7]
-mc2016_samples['2016_ZZTo2L2Nu'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_ZZTo2L2Nu_UL/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_ZZTo2L2Nu_UL/230501_145643/0000/'], 'mc','ZZTo2L2Nu','2016', '','0.564' ,'16.81','15894442',15]
+mc2016_samples['2016_LFVStScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_May1_BtagSF_2016_LFVStScalarU_UL/230501_150328/0000/'], 'mc','LFVStScalarU','2016', '','0.460','16.81','100000',100]
+mc2016_samples['2016_LFVTtScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_May1_BtagSF_2016_LFVTtScalarU_UL/230501_145549/0000/'], 'mc','LFVTtScalarU','2016', '','0.032','16.81','100000',100]
 
 ##Real background samples
 mc2016_samples['2016_TTW'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/'], 'mc','TTW','2016', '','0.235' ,'16.81','1800823',6]
@@ -33,6 +24,14 @@ mc2016_samples['2016_WWW'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive
 mc2016_samples['2016_WWZ'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_WWZ_UL/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_WWZ_UL/230501_145057/0000/'], 'mc','WWZ','2016', '','0.1651' ,'16.81','61060',8]
 mc2016_samples['2016_WZZ'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_WZZ_UL/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_WZZ_UL/230501_145835/0000/'], 'mc','WZZ','2016', '','0.05565' ,'16.81','124388',18]
 mc2016_samples['2016_ZZZ'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_ZZZ_UL/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_ZZZ_UL/230501_145451/0000/'], 'mc','ZZZ','2016', '','0.01476' ,'16.81','64358',4]
+
+##Fake background samples
+mc2016_samples['2016_TTTo2L2Nu'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTTo2L2Nu_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTTo2L2Nu_UL/230501_150625/0000/'], 'mc','TTTo2L2Nu','2016', '','88.4' ,'16.81','43193956',5]
+mc2016_samples['2016_TTToSemiLeptonic'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTToSemiLeptonic_UL/230501_150229/0000/'], 'mc','TTToSemiLeptonic','2016', '','365.34' ,'16.81','143553998',6]
+mc2016_samples['2016_DYM50'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_DY50_UL/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_DY50_UL/230501_150132/0000/'], 'mc','DYM50','2016', '','6077.22' ,'16.81','48335328',11]
+mc2016_samples['2016_DYM10to50'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_DY10to50_UL/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_DY10to50_UL/230501_145201/0000/'], 'mc','DYM10to50','2016', '','15810' ,'16.81','22388550',34]
+mc2016_samples['2016_WWTo2L2Nu'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_WWTo2L2Nu_UL/WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_WWTo2L2Nu_UL/230501_150034/0000/'], 'mc','WWTo2L2Nu','2016', '','12.178' ,'16.81','2888924',7]
+mc2016_samples['2016_ZZTo2L2Nu'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_ZZTo2L2Nu_UL/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_ZZTo2L2Nu_UL/230501_145643/0000/'], 'mc','ZZTo2L2Nu','2016', '','0.564' ,'16.81','15894442',15]
 
 ##Data
 data2016_samples['2016_F_MuonEG'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_F_MuonEG/MuonEG/crab_Trilep_Inclusive_Apr29_JEC_2016_F_MuonEG/230429_193335/0000/'], 'data','MuonEG','2016', 'F','1','1','1',3]
