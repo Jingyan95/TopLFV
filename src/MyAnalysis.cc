@@ -96,9 +96,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   // TH2F *h_2D_wBtagSF;
   // TH2F *h_2D_woBtagSF;
   // Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
-  // Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
-  // h_2D_wBtagSF = new TH2F("2D_wBtagSF", "2D_wBtagSF", 5, njetBin, 5, HtBin);
-  // h_2D_woBtagSF = new TH2F("2D_woBtagSF", "2D_woBtagSF", 5, njetBin, 5, HtBin);
+  // Double_t njetBin[6] = {-0.5, 0.5, 1.5, 2.5, 3.5, 4.5};
+  // name<< "2D_wBtagSF" << "_" << workerID_;
+  // h_2D_wBtagSF = new TH2F((name.str()).c_str(), "", 5, njetBin, 5, HtBin);
+  // name.str("");
+  // name<< "2D_woBtagSF" << "_" << workerID_;
+  // h_2D_woBtagSF = new TH2F((name.str()).c_str(), "", 5, njetBin, 5, HtBin);
+  // name.str("");
 
   std::string string_year(year.Data());
   TFile *f_El_RECO = new TFile("data/EGM/RECO/" + year + "egammaEffi_ptAbove20.txt_EGM2D.root"); // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun2LegacyAnalysis
@@ -403,8 +407,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
     }
   }
+  // h_2D_woBtagSF->SetName("2D_woBtagSF");
   // h_2D_woBtagSF->Write("", TObject::kOverwrite);
+  // h_2D_wBtagSF->SetName("2D_wBtagSF");
   // h_2D_wBtagSF->Write("", TObject::kOverwrite);
+  // delete h_2D_woBtagSF;
+  // delete h_2D_wBtagSF;
   file_out.Close();
   Hists.clear();
 
