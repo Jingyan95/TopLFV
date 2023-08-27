@@ -9,9 +9,9 @@ import gen_files_2017
 import gen_files_2018
 
 mc_2016APV = False
-mc_2016 = False
+mc_2016 = True
 mc_2017 = False
-mc_2018 = True
+mc_2018 = False
 
 if mc_2016APV:
     dataset.update(gen_files_2016APV.mc2016APV_samples)
