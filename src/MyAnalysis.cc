@@ -96,7 +96,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   // TH2F *h_2D_wBtagSF;
   // TH2F *h_2D_woBtagSF;
   // Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
-  // Double_t njetBin[6] = {-0.5, 0.5, 1.5, 2.5, 3.5, 4.5};
+  // Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
   // name<< "2D_wBtagSF" << "_" << workerID_;
   // h_2D_wBtagSF = new TH2F((name.str()).c_str(), "", 5, njetBin, 5, HtBin);
   // name.str("");
@@ -113,6 +113,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
+  TFile *f_TRG = new TFile("data/TRG/" + year + "TriggerSF.root"); 
   TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   const auto sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
   const auto sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
@@ -122,6 +123,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_Ta_ID_e = *(TH1F*)f_Ta_ID_e->Get("VVLoose");
   const auto sf_Ta_ID_mu = *(TH1F*)f_Ta_ID_mu->Get("Tight");
   const auto sf_Ta_ES_jet = *(TH1F*)f_Ta_ES_jet->Get("tes");
+  const auto sf_TRG_ee = *(TH2F*)f_TRG->Get("ee");
+  const auto sf_TRG_emu = *(TH2F*)f_TRG->Get("emu");
+  const auto sf_TRG_mue = *(TH2F*)f_TRG->Get("mue");
+  const auto sf_TRG_mumu = *(TH2F*)f_TRG->Get("mumu");
   const auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection"); // Jack To-Do: 2016APV, 2017, 2018
   f_El_RECO->Close();
   f_El_ID->Close();
@@ -131,6 +136,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   f_Ta_ID_e->Close();
   f_Ta_ID_mu->Close();
   f_Ta_ES_jet->Close();
+  f_TRG->Close();
   f_Btag_corr->Close();
 
   std::vector<lepton_candidate*> *Leptons;
@@ -153,6 +159,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_jet;
   float weight_Ta_ID_e;
   float weight_Ta_ID_mu;
+  float weight_TRG; // trigger sf
   float weight_Btag_corr; // correction for btag shape to preserve normalization 
   float weight_Event;
   int nAccept=0;
@@ -189,6 +196,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     weight_Ta_ID_e = 1;
     weight_Ta_ID_mu = 1;
     weight_Btag_corr = 1;
+    weight_TRG = 1;
     weight_Event = 1;
 
     // MET filters
@@ -315,11 +323,20 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       weight_PU = wPU.getPUweight(year, int(Pileup_nTrueInt), "nominal");
       weight_L1ECALPreFiring = L1PreFiringWeight_ECAL_Nom;
       weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
+      if (Event->ch()==0){
+        weight_TRG = scale_factor(&sf_TRG_ee, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else if (Event->ch()==2){
+        weight_TRG = scale_factor(&sf_TRG_mumu, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else if (Event->lep1()->flavor_==1){
+        weight_TRG = scale_factor(&sf_TRG_emu, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else{
+        weight_TRG = scale_factor(&sf_TRG_mue, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }
       weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
     }
-    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
-    // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
-    // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF());
+    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG * Event->btagSF() * weight_Btag_corr;
+    // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG);
+    // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG * Event->btagSF());
 
     reg.push_back(0);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[0]);
@@ -413,8 +430,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   // h_2D_wBtagSF->Write("", TObject::kOverwrite);
   // delete h_2D_woBtagSF;
   // delete h_2D_wBtagSF;
-  file_out.Close();
-  Hists.clear();
+  // file_out.Close();
+  // Hists.clear();
 
   // Writing summary
   auto end = std::chrono::high_resolution_clock::now();

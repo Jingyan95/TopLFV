@@ -68,8 +68,6 @@ SamplesNameStack = ["Data", "t#bar{t}+X", "VV(V)", "DY", "t#bar{t}", "CLFV top p
 colors = [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray]
 markerStyle = [20, 25, 26, 27, 28, 29, 30]
 
-SaveMVA = False
-
 Hists = []
 for numyear, nameyear in enumerate(year):
     l0 = []
@@ -103,8 +101,6 @@ for numyear, nameyear in enumerate(year):
         for numch, namech in enumerate(channels):
             for numreg, namereg in enumerate(regions):
                 for numvar, namevar in enumerate(vars):
-                    if ('MVA' in namevar) and (not SaveMVA):
-                        continue
                     H1 = []
                     H1Signal = []
                     H2 = []
