@@ -15,17 +15,20 @@ public:
   void Init(Bool_t, Bool_t, Bool_t, Bool_t,
             Bool_t, Bool_t, Bool_t, Bool_t,
             Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t,
-            Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t);
+            Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t,
+            Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t,
+            Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t);
   ~trigger();
-  Bool_t triggerLogic(TString);
+  Bool_t triggerLogic();
   Bool_t triggerPass(int);
 
 private:
 
   TString year_;
   TString data_;
-  TString dataset_;
   int ch_;
+
+  Bool_t triggerPassMET_;
 
   Bool_t triggerPassEE_;
   Bool_t triggerPassEMu_;
@@ -54,6 +57,22 @@ private:
   Bool_t IsoMu24_;//2016 APV, 2016, 2018
   Bool_t IsoTkMu24_;//2016 APV, 2016
   Bool_t IsoMu27_;//2017
+
+  Bool_t PFMET300_;//2016APV 2016
+  Bool_t MET200_;//2016APV 2016
+  Bool_t PFHT300_PFMET110_;//2016APV 2016
+  Bool_t PFMET170_HBHECleaned_;//2016APV 2016
+  Bool_t PFMET120_PFMHT120_IDTight_;//All
+  Bool_t PFMETNoMu120_PFMHTNoMu120_IDTight_;//All
+
+  Bool_t PFMET200_HBHECleaned_;//2017 2018
+  Bool_t PFMET200_HBHE_BeamHaloCleaned_;//2017 2018
+  Bool_t PFMETTypeOne200_HBHE_BeamHaloCleaned_;//2017 2018
+  Bool_t PFMET120_PFMHT120_IDTight_PFHT60_;//2017 2018
+  Bool_t PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60_;//2017 2018
+  Bool_t PFHT500_PFMET100_PFMHT100_IDTight_;//2017 2018
+  Bool_t PFHT700_PFMET85_PFMHT85_IDTight_;//2017 2018
+  Bool_t PFHT800_PFMET75_PFMHT75_IDTight_;//2017 2018
 
 };
 

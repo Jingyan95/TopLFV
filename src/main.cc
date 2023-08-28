@@ -16,12 +16,12 @@ int main() {
   std::atomic<ULong64_t> counter(0);
   auto workItem = [&](UInt_t workerID) {
     TChain* ch = new TChain("Events");  
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_5.root");
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_6.root");
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_7.root");
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_10.root");
+    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Trigger/2016_TTW/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Aug26_2016_TTW/230827_013541/0000/tree_1.root");
+    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Trigger/2016_TTW/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Aug26_2016_TTW/230827_013541/0000/tree_2.root");
+    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Trigger/2016_TTW/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Aug26_2016_TTW/230827_013541/0000/tree_3.root");
+    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_Trigger/2016_TTW/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Aug26_2016_TTW/230827_013541/0000/tree_4.root");
     MyAnalysis t1(ch, "2016", "mc", "", nThread, workerID, false);
-    auto workerSummary = t1.Loop(Form("test_%u.root", workerID), "mc", "TTW", "2016", "", 0.235, 16.81, 3322643, std::ref(progress), std::ref(counter));
+    auto workerSummary = t1.Loop(Form("test_%u.root", workerID), "mc", "TTW", "2016", "", 0.235, 16.81, 1800823, std::ref(progress), std::ref(counter));
     Summary << workerSummary.str();
   };
   std::vector<std::thread> workers;

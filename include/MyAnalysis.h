@@ -75,37 +75,6 @@ public :
   Float_t         Muon_topLeptonMVA_v1[16];
   Float_t         Muon_topLeptonMVA_v2[16];
 
-  UInt_t          nTau;
-  Int_t           Tau_charge[16];
-  Float_t         Tau_pt[16];
-  Float_t         Tau_eta[16];
-  Float_t         Tau_phi[16];
-  Float_t         Tau_dxy[16];
-  Float_t         Tau_dz[16];
-  Float_t         Tau_mass[16];
-  UChar_t         Tau_genPartFlav[16];
-  Int_t           Tau_decayMode[16];
-  Float_t         Tau_rawDeepTau2017v2p1VSe[16];
-  Float_t         Tau_rawDeepTau2017v2p1VSmu[16];
-  Float_t         Tau_rawDeepTau2017v2p1VSjet[16];
-  UChar_t         Tau_idDeepTau2017v2p1VSe[16];
-  UChar_t         Tau_idDeepTau2017v2p1VSmu[16];
-  UChar_t         Tau_idDeepTau2017v2p1VSjet[16];
-
-  UInt_t          nJet;
-  Float_t         Jet_pt_nom[16];
-  Float_t         Jet_eta[16];
-  Float_t         Jet_phi[16];
-  Float_t         Jet_mass_nom[16];
-  Int_t           Jet_puId[16];
-  Int_t           Jet_jetId[16];
-  Float_t         Jet_btagDeepFlavB[16];
-  Float_t         Jet_btagSF_deepjet_shape[16];
-
-  Float_t         MET_T1_pt;
-  Float_t         MET_T1Smear_pt;
-  Float_t         MET_phi;
-
   Bool_t          Flag_goodVertices; 
   Bool_t          Flag_globalSuperTightHalo2016Filter;
   Bool_t          Flag_HBHENoiseFilter;
@@ -139,6 +108,22 @@ public :
   Bool_t          HLT_IsoMu24;//2016 APV, 2016, 2018
   Bool_t          HLT_IsoTkMu24;//2016 APV, 2016
   Bool_t          HLT_IsoMu27;//2017
+
+  Bool_t          HLT_PFMET300;//2016APV 2016
+  Bool_t          HLT_MET200;//2016APV 2016
+  Bool_t          HLT_PFHT300_PFMET110;//2016APV 2016
+  Bool_t          HLT_PFMET170_HBHECleaned;//2016APV 2016
+  Bool_t          HLT_PFMET120_PFMHT120_IDTight;//All
+  Bool_t          HLT_PFMETNoMu120_PFMHTNoMu120_IDTight;//All
+
+  Bool_t          HLT_PFMET200_HBHECleaned;//2017 2018
+  Bool_t          HLT_PFMET200_HBHE_BeamHaloCleaned;//2017 2018
+  Bool_t          HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned;//2017 2018
+  Bool_t          HLT_PFMET120_PFMHT120_IDTight_PFHT60;//2017 2018
+  Bool_t          HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60;//2017 2018
+  Bool_t          HLT_PFHT500_PFMET100_PFMHT100_IDTight;//2017 2018
+  Bool_t          HLT_PFHT700_PFMET85_PFMHT85_IDTight;//2017 2018
+  Bool_t          HLT_PFHT800_PFMET75_PFMHT75_IDTight;//2017 2018
 
   Float_t         Generator_weight;//MC generator weight
   Float_t         Pileup_nTrueInt;
@@ -193,37 +178,6 @@ public :
   TBranch         *b_Muon_topLeptonMVA_v1;
   TBranch         *b_Muon_topLeptonMVA_v2;
 
-  TBranch         *b_nTau;
-  TBranch         *b_Tau_charge;
-  TBranch         *b_Tau_pt;
-  TBranch         *b_Tau_eta;
-  TBranch         *b_Tau_phi;
-  TBranch         *b_Tau_dxy;
-  TBranch         *b_Tau_dz;
-  TBranch         *b_Tau_mass;
-  TBranch         *b_Tau_genPartFlav;
-  TBranch         *b_Tau_decayMode;
-  TBranch         *b_Tau_rawDeepTau2017v2p1VSe;
-  TBranch         *b_Tau_rawDeepTau2017v2p1VSmu;
-  TBranch         *b_Tau_rawDeepTau2017v2p1VSjet;
-  TBranch         *b_Tau_idDeepTau2017v2p1VSe;
-  TBranch         *b_Tau_idDeepTau2017v2p1VSmu;
-  TBranch         *b_Tau_idDeepTau2017v2p1VSjet;
-
-  TBranch         *b_nJet;
-  TBranch         *b_Jet_pt_nom;
-  TBranch         *b_Jet_eta;
-  TBranch         *b_Jet_phi;
-  TBranch         *b_Jet_mass_nom;
-  TBranch         *b_Jet_puId;
-  TBranch         *b_Jet_jetId;
-  TBranch         *b_Jet_btagDeepFlavB;
-  TBranch         *b_Jet_btagSF_deepjet_shape;
-
-  TBranch         *b_MET_T1_pt;
-  TBranch         *b_MET_T1Smear_pt;
-  TBranch         *b_MET_phi;
-
   TBranch         *b_Flag_goodVertices; 
   TBranch         *b_Flag_globalSuperTightHalo2016Filter;
   TBranch         *b_Flag_HBHENoiseFilter;
@@ -258,6 +212,22 @@ public :
   TBranch         *b_HLT_IsoTkMu24;//2016 APV, 2016
   TBranch         *b_HLT_IsoMu27;//2017
 
+  TBranch         *b_HLT_PFMET300;//2016APV 2016
+  TBranch         *b_HLT_MET200;//2016APV 2016
+  TBranch         *b_HLT_PFHT300_PFMET110;//2016APV 2016
+  TBranch         *b_HLT_PFMET170_HBHECleaned;//2016APV 2016
+  TBranch         *b_HLT_PFMET120_PFMHT120_IDTight;//All
+  TBranch         *b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight;//All
+
+  TBranch         *b_HLT_PFMET200_HBHECleaned;//2017 2018
+  TBranch         *b_HLT_PFMET200_HBHE_BeamHaloCleaned;//2017 2018
+  TBranch         *b_HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned;//2017 2018
+  TBranch         *b_HLT_PFMET120_PFMHT120_IDTight_PFHT60;//2017 2018
+  TBranch         *b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60;//2017 2018
+  TBranch         *b_HLT_PFHT500_PFMET100_PFMHT100_IDTight;//2017 2018
+  TBranch         *b_HLT_PFHT700_PFMET85_PFMHT85_IDTight;//2017 2018
+  TBranch         *b_HLT_PFHT800_PFMET75_PFMHT75_IDTight;//2017 2018
+
   TBranch         *b_Generator_weight;
   TBranch         *b_Pileup_nTrueInt;
   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
@@ -278,6 +248,11 @@ public :
   typedef std::vector<Dim1> Dim2;
   typedef std::vector<Dim2> Dim3;
   typedef std::vector<Dim3> Dim4;
+
+  typedef std::vector<TH2F*> D2im1;
+  typedef std::vector<D2im1> D2im2;
+  typedef std::vector<D2im2> D2im3;
+  typedef std::vector<D2im3> D2im4;
   //Utility functions
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
@@ -389,37 +364,6 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Muon_topLeptonMVA_v1", &Muon_topLeptonMVA_v1, &b_Muon_topLeptonMVA_v1);
   fChain->SetBranchAddress("Muon_topLeptonMVA_v2", &Muon_topLeptonMVA_v2, &b_Muon_topLeptonMVA_v2);
 
-  fChain->SetBranchAddress("nTau", &nTau, &b_nTau);
-  fChain->SetBranchAddress("Tau_charge", &Tau_charge, &b_Tau_charge);
-  fChain->SetBranchAddress("Tau_pt", &Tau_pt, &b_Tau_pt);
-  fChain->SetBranchAddress("Tau_eta", &Tau_eta, &b_Tau_eta);
-  fChain->SetBranchAddress("Tau_phi", &Tau_phi, &b_Tau_phi);
-  fChain->SetBranchAddress("Tau_dxy", &Tau_dxy, &b_Tau_dxy);
-  fChain->SetBranchAddress("Tau_dz", &Tau_dz, &b_Tau_dz);
-  fChain->SetBranchAddress("Tau_mass", &Tau_mass, &b_Tau_mass);
-  if (data_ == "mc") fChain->SetBranchAddress("Tau_genPartFlav", &Tau_genPartFlav, &b_Tau_genPartFlav);
-  fChain->SetBranchAddress("Tau_decayMode", &Tau_decayMode, &b_Tau_decayMode);
-  fChain->SetBranchAddress("Tau_rawDeepTau2017v2p1VSe", &Tau_rawDeepTau2017v2p1VSe, &b_Tau_rawDeepTau2017v2p1VSe);
-  fChain->SetBranchAddress("Tau_rawDeepTau2017v2p1VSmu", &Tau_rawDeepTau2017v2p1VSmu, &b_Tau_rawDeepTau2017v2p1VSmu);
-  fChain->SetBranchAddress("Tau_rawDeepTau2017v2p1VSjet", &Tau_rawDeepTau2017v2p1VSjet, &b_Tau_rawDeepTau2017v2p1VSjet);
-  fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", &Tau_idDeepTau2017v2p1VSe, &b_Tau_idDeepTau2017v2p1VSe);
-  fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", &Tau_idDeepTau2017v2p1VSmu, &b_Tau_idDeepTau2017v2p1VSmu);
-  fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
-
-  fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
-  fChain->SetBranchAddress("Jet_pt_nom", &Jet_pt_nom, &b_Jet_pt_nom);
-  fChain->SetBranchAddress("Jet_eta", &Jet_eta, &b_Jet_eta);
-  fChain->SetBranchAddress("Jet_phi", &Jet_phi, &b_Jet_phi);
-  fChain->SetBranchAddress("Jet_mass_nom", &Jet_mass_nom, &b_Jet_mass_nom);
-  fChain->SetBranchAddress("Jet_puId", &Jet_puId, &b_Jet_puId);
-  fChain->SetBranchAddress("Jet_jetId", &Jet_jetId, &b_Jet_jetId);
-  fChain->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB, &b_Jet_btagDeepFlavB);
-  if (data_ == "mc") fChain->SetBranchAddress("Jet_btagSF_deepjet_shape", &Jet_btagSF_deepjet_shape, &b_Jet_btagSF_deepjet_shape);
-
-  fChain->SetBranchAddress("MET_T1_pt", &MET_T1_pt, &b_MET_T1_pt);
-  if (data_ == "mc") fChain->SetBranchAddress("MET_T1Smear_pt", &MET_T1Smear_pt, &b_MET_T1Smear_pt);
-  fChain->SetBranchAddress("MET_phi", &MET_phi, &b_MET_phi);
-
   fChain->SetBranchAddress("Flag_goodVertices", &Flag_goodVertices, &b_Flag_goodVertices);
   fChain->SetBranchAddress("Flag_globalSuperTightHalo2016Filter", &Flag_globalSuperTightHalo2016Filter, &b_Flag_globalSuperTightHalo2016Filter);
   fChain->SetBranchAddress("Flag_HBHENoiseFilter", &Flag_HBHENoiseFilter, &b_Flag_HBHENoiseFilter);
@@ -454,6 +398,21 @@ void MyAnalysis::Init(TTree *tree) {
   if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_IsoTkMu24", &HLT_IsoTkMu24, &b_HLT_IsoTkMu24);
   if (year_ == "2017") fChain->SetBranchAddress("HLT_IsoMu27", &HLT_IsoMu27, &b_HLT_IsoMu27);
 
+  if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_PFMET300", &HLT_PFMET300, &b_HLT_PFMET300);
+  if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_MET200", &HLT_MET200, &b_HLT_MET200);
+  if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_PFHT300_PFMET110", &HLT_PFHT300_PFMET110, &b_HLT_PFHT300_PFMET110);
+  if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_PFMET170_HBHECleaned", &HLT_PFMET170_HBHECleaned, &b_HLT_PFMET170_HBHECleaned);
+  fChain->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight, &b_HLT_PFMET120_PFMHT120_IDTight);
+  fChain->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight, &b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFMET200_HBHECleaned", &HLT_PFMET200_HBHECleaned, &b_HLT_PFMET200_HBHECleaned);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFMET200_HBHE_BeamHaloCleaned", &HLT_PFMET200_HBHE_BeamHaloCleaned, &b_HLT_PFMET200_HBHE_BeamHaloCleaned);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned", &HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned, &b_HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight_PFHT60", &HLT_PFMET120_PFMHT120_IDTight_PFHT60, &b_HLT_PFMET120_PFMHT120_IDTight_PFHT60);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60, &b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight, &b_HLT_PFHT500_PFMET100_PFMHT100_IDTight);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFHT700_PFMET85_PFMHT85_IDTight", &HLT_PFHT700_PFMET85_PFMHT85_IDTight, &b_HLT_PFHT700_PFMET85_PFMHT85_IDTight);
+  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_PFHT800_PFMET75_PFMHT75_IDTight", &HLT_PFHT800_PFMET75_PFMHT75_IDTight, &b_HLT_PFHT800_PFMET75_PFMHT75_IDTight);
+
   if (data_ == "mc") fChain->SetBranchAddress("Generator_weight", &Generator_weight, &b_Generator_weight);
   if (data_ == "mc") fChain->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt, &b_Pileup_nTrueInt);
   fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
@@ -466,7 +425,9 @@ void MyAnalysis::InitTrigger() {
   myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,
     HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,HLT_DoubleEle33_CaloIdL_MW,HLT_DoubleEle33_CaloIdL_GsfTrkIdVL,
     HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,
-    HLT_Ele27_WPTight_Gsf,HLT_Ele32_WPTight_Gsf,HLT_Ele35_WPTight_Gsf,HLT_IsoMu24,HLT_IsoTkMu24,HLT_IsoMu27);
+    HLT_Ele27_WPTight_Gsf,HLT_Ele32_WPTight_Gsf,HLT_Ele35_WPTight_Gsf,HLT_IsoMu24,HLT_IsoTkMu24,HLT_IsoMu27,HLT_PFMET300,HLT_MET200,HLT_PFHT300_PFMET110,HLT_PFMET170_HBHECleaned,
+    HLT_PFMET120_PFMHT120_IDTight,HLT_PFMETNoMu120_PFMHTNoMu120_IDTight,HLT_PFMET200_HBHECleaned,HLT_PFMET200_HBHE_BeamHaloCleaned,HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned,
+    HLT_PFMET120_PFMHT120_IDTight_PFHT60,HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60,HLT_PFHT500_PFMET100_PFMHT100_IDTight,HLT_PFHT700_PFMET85_PFMHT85_IDTight,HLT_PFHT800_PFMET75_PFMHT75_IDTight);
 }
 
 int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {

@@ -17,31 +17,21 @@ import gc
 from operator import truediv
 import copy
 import argparse
-from plotter import StackHist, CompareBackgrounds, SummaryPlot
+from plotter import CompareEff, PlotSF
 TGaxis.SetMaxDigits(2)
 
-year_RunII = ['2016APV', '2016', '2017', '2018', 'All']
+year_RunII = ['2016APV', '2016', '2017', '2018']
 year = []
 charges = ["OS", "SS"]
-channels = ["ee", "emu", "mumu"]
+channels = ["ee", "emu", "mue", "mumu"]
+passes = ["All", "Pass"]
 
-regions = ["ll", "llOnZMetg20Jetgeq1", "llOffZMetg20B1", "llOffZMetg20B2", "llStl300", "llOnZ", "llbtagg1p3",
-    "llStg300OffZbtagl1p3", "llStg300OffZbtagl1p3Tight"]
-regionsName = [["No cuts", "", ""],
-    ["p_{T}^{miss}>20GeV, njet#geq1", "OnZ", ", Z+jets CR"], ["p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1", ", SR"], 
-    ["p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2", ", t#bar{t}+jets CR"], ["S_{T}<300GeV", "", ", CR"],
-    ["OnZ", "", ", Z+jets CR"], ["btag>1.3", "", ", t#bar{t}+jets CR"],
-    ["S_{T}>300GeV, OffZ", "btag<1.3", ", SR(Alt, Loose)"], ["S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV", ", SR(Alt, Tight)"]]
-
-vars = ["llM", "llDr", "lep1Pt", "lep2Pt", "taPt", "taDxy", "taDz", "jet1Pt", "njet", "nbjet", "MET", "subSR", "LFVemuM", "LFVetaM", "LFVmutaM",
-    "LFVemuDr", "LFVetaDr", "LFVmutaDr", "LFVePt", "LFVmuPt", "LFVtaPt", "BalepPt", "Topmass", "Ht", "St", "btagSum"]
-varsName = ["m(l#bar{l}) [GeV]", "#DeltaR(l#bar{l})", "Leading lepton p_{T} [GeV]",
-    "Sub-leading lepton p_{T} [GeV]", "Tau p_{T} [GeV]", "Tau d_{xy} [cm]", "Tau d_{z} [cm]",
-    "Leading jet p_{T} [GeV]", "njet", "nbjet (Loose WP)", "MET [GeV]", "SR subdivided",
-    "m(e#bar{#mu}) [GeV]", "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]",
-    "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]", "#DeltaR(#mu,#bar{#tau}) [GeV]",
-    "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
-    "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]", "H_{T} [GeV]", "S_{T} [GeV]", "Sum of btagging scores"]
+vars = ["lep1Pt", "lep2Pt", "lep1Eta", "lep2Eta"]
+varsName = ["Leading lepton p_{T} [GeV]", "Sub-leading lepton p_{T} [GeV]",
+            "Leading lepton #eta", "Sub-leading lepton #eta"]
+varsD2 = ["lepPt", "lepEta"]
+varsD2Name = [["Leading lepton p_{T} [GeV]", "Sub-leading lepton p_{T} [GeV]"],
+            ["Leading lepton #eta", "Sub-leading lepton #eta"]]
 
 # set up an argument parser
 parser = argparse.ArgumentParser()
@@ -61,88 +51,80 @@ for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
         year.append(year_RunII[numyear])
 
-Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ["Data", "t#bar{t}X", "VV", "DY", "t#bar{t}", "C_{ll`tu}^{ST}", "C_{ll`tu}^{TT}"]
-SamplesNameStack = ["Data", "t#bar{t}+X", "VV(V)", "DY", "t#bar{t}", "CLFV top production", "CLFV top decay"]
+Samples = ['Data.root', 'TTTo2L2Nu.root', 'TTW.root']
+SamplesName = ["Data", "MC"]
 
-colors = [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray]
-markerStyle = [20, 25, 26, 27, 28, 29, 30]
-
-SaveMVA = False
+colors = [ROOT.kBlack,ROOT.kRed,ROOT.kRed]
+markerStyle = [20, 25, 25]
 
 Hists = []
+HistsD2 = []
 for numyear, nameyear in enumerate(year):
     l0 = []
+    l0D2 = []
     Files = []
     for f in range(len(Samples)):
         l1 = []
+        l1D2 = []
         print (HistAddress + nameyear + '_' + Samples[f])
         Files.append(ROOT.TFile.Open(HistAddress + nameyear + '_' + Samples[f]))
         for numc, namec in enumerate(charges):
             l2 = []
+            l2D2 = []
             for numch, namech in enumerate(channels):
                 l3 = []
-                for numreg, namereg in enumerate(regions):
+                l3D2 = []
+                for nump, namep in enumerate(passes):
                     l4 = []
+                    l4D2 = []
                     for numvar, namevar in enumerate(vars):
-                        h = Files[f].Get(namec + '_' + namech + '_' + namereg + '_' + namevar)
-                        h.SetBinContent(h.GetXaxis().GetNbins(), h.GetBinContent(h.GetXaxis().GetNbins()) + h.GetBinContent(h.GetXaxis().GetNbins()+1))
-                        h.SetBinContent(1, h.GetBinContent(0) + h.GetBinContent(1))
-                        if ('SS' in namec) and ('B2' in namereg or 'OnZ' in namereg or 'Stl300' in namereg or 'btagg1p3' in namereg):
-                            h.Reset("ICE")##No CR in SS channels 
+                        h = Files[f].Get(namec + '_' + namech + '_' + namep + '_' + namevar)
                         l4.append(h)
+                    for numvarD2, namevarD2 in enumerate(varsD2):
+                        h2 = Files[f].Get(namec + '_' + namech + '_' + namep + '_' + namevarD2)
+                        l4D2.append(h2)
                     l3.append(l4)
+                    l3D2.append(l4D2)
                 l2.append(l3)
+                l2D2.append(l3D2)
             l1.append(l2)
+            l1D2.append(l2D2)
         l0.append(l1)
+        l0D2.append(l1D2)
     Hists.append(l0)
+    HistsD2.append(l0D2)
 
 # Make histograms
 for numyear, nameyear in enumerate(year):
     for numc, namec in enumerate(charges):
         for numch, namech in enumerate(channels):
-            for numreg, namereg in enumerate(regions):
-                for numvar, namevar in enumerate(vars):
-                    if ('MVA' in namevar) and (not SaveMVA):
+            for numvar, namevar in enumerate(vars):
+                H1 = []
+                for f in range(len(Samples)):
+                    if (numc==0 and f==2):
+                        continue 
+                    if (numc==1 and f==1):
                         continue
-                    H1 = []
-                    H1Signal = []
-                    H2 = []
-                    for f in range(len(Samples)):
-                        h1 = Hists[numyear][f][numc][numch][numreg][numvar].Clone()
-                        h1.SetFillColor(colors[f])
-                        if 'LFV' not in Samples[f]:
-                            h1.SetLineColor(colors[0])
-                            H1.append(h1)
-                        else:
-                            h1.SetLineColor(colors[f])
-                            H1Signal.append(h1)
-                        if 'Data' in Samples[f]:
-                            continue
-                        h2 = Hists[numyear][f][numc][numch][numreg][numvar].Clone()
-                        h2.SetLineColor(colors[f])
-                        h2.SetLineWidth(2)
-                        h2.SetMarkerColor(colors[f])
-                        h2.SetMarkerStyle(markerStyle[f])
-                        H2.append(h2)
-                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
-                    #CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
+                    h1 = Hists[numyear][f][numc][numch][1][numvar].Clone()
+                    h1.SetLineColor(colors[f])
+                    h1.SetLineWidth(2)
+                    h1.SetMarkerColor(colors[f])
+                    h1.SetMarkerStyle(markerStyle[f])
+                    h1.Divide(Hists[numyear][f][numc][numch][0][numvar])
+                    H1.append(h1)
+                CompareEff(H1, SamplesName, namec, namech, nameyear, namevar, varsName[numvar])
 
 for numyear, nameyear in enumerate(year):
-    for numreg, namereg in enumerate(regions):
-        H = []
-        HSignal = []
-        for f in range(len(Samples)):
-            h = Hists[numyear][f][0][0][numreg][11].Clone()
-            h.Reset("ICE")
-            for numc, namec in enumerate(charges):
-                for numch, namech in enumerate(channels):
-                    h += Hists[numyear][f][numc][numch][numreg][11]
-            h.SetFillColor(colors[f])
-            if 'LFV' not in Samples[f]:
-                h.SetLineColor(colors[0])
-                H.append(h)
-            else:
-                h.SetLineColor(colors[f])
-                HSignal.append(h)
-        SummaryPlot(H, HSignal, SamplesNameStack, namereg, regionsName[numreg], nameyear)
+    fileout = ROOT.TFile(nameyear + 'TriggerSF.root','recreate')
+    for numch, namech in enumerate(channels):
+        hData = HistsD2[numyear][0][0][numch][1][0].Clone()
+        hData.Divide(HistsD2[numyear][0][0][numch][0][0])
+        hMC = HistsD2[numyear][1][0][numch][1][0].Clone()
+        hMC.Divide(HistsD2[numyear][1][0][numch][0][0])
+        hSF = hData.Clone()
+        hSF.Divide(hMC)
+        hSF.SetName(namech)
+        hSF.Write()
+        PlotSF(hSF, namech, nameyear, varsD2Name[0])
+    fileout.Close()
+

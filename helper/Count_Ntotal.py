@@ -12,12 +12,12 @@ import nano_files_2018
 
 mc_2016APV = True
 data_2016APV = True
-mc_2016 = False
-data_2016 = False
-mc_2017 = False
-data_2017 = False
-mc_2018 = False
-data_2018 = False
+mc_2016 = True
+data_2016 = True
+mc_2017 = True
+data_2017 = True
+mc_2018 = True
+data_2018 = True
 
 if mc_2016APV:
     dataset.update(nano_files_2016APV.mc2016APV_samples)

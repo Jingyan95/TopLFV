@@ -18,31 +18,12 @@ from operator import truediv
 import copy
 TGaxis.SetMaxDigits(2)
 
-def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "region", regName = ["region","",""], year = '2016', var = "sample", varname = "v"):
-    folder = 'StackHist'
-    hs = ROOT.THStack("hs","")
-    for num in range(1,len(hists)):
-        hs.Add(hists[num])
+def CompareEff(hists, Fnames, c = "charge", ch = "channel", year = '2016', var = "sample", varname = "v"):
+    folder = 'CompareEff'
+    
+    dummy = hists[0].Clone()
 
-    binwidth = array( 'd' )
-    bincenter = array( 'd' )
-    yvalue = array( 'd' )
-    yerrup = array( 'd' )
-    yerrdown = array( 'd' )
-    T = hists[0].Clone()
-    for b in range(T.GetNbinsX()):
-        if T.GetBinContent(b+1)>0:
-            binwidth.append(0)
-            bincenter.append(T.GetBinCenter(b+1))
-            yvalue.append(T.GetBinContent(b+1))
-            yerrup.append(T.GetBinError(b+1))
-            yerrdown.append(T.GetBinError(b+1))
-    if len(bincenter)>0:
-        dummy = ROOT.TGraphAsymmErrors(len(bincenter),bincenter,yvalue,binwidth,binwidth,yerrdown,yerrup)
-    else:
-        dummy = ROOT.TGraphAsymmErrors() 
-
-    canvas = ROOT.TCanvas(year+c+ch+reg+var,year+c+ch+reg+var,50,50,865,780)
+    canvas = ROOT.TCanvas(year+c+ch+var,year+c+ch+var,50,50,865,780)
     canvas.SetGrid()
     canvas.SetBottomMargin(0.17)
     canvas.cd()
@@ -54,18 +35,6 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     legend.SetFillStyle(0)
     legend.SetTextFont(42)
     legend.SetTextSize(0.05)
-    legend2 = ROOT.TLegend(0.77,0.69,0.92,0.88)
-    legend2.SetBorderSize(0)
-    legend2.SetFillStyle(0)
-    legend2.SetTextFont(42)
-    legend2.SetTextSize(0.05)
-    legend3 = ROOT.TLegend(0.442,0.56,0.78,0.683)
-    if 'Tight' in reg:
-        legend3 = ROOT.TLegend(0.442,0.47,0.78,0.593)
-    legend3.SetBorderSize(0)
-    legend3.SetFillStyle(0)
-    legend3.SetTextFont(42)
-    legend3.SetTextSize(0.05)
 
     pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # used for the hist plot
     pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # used for the ratio plot
@@ -85,74 +54,26 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     pad1.cd()
     pad1.SetLogx(ROOT.kFALSE)
     pad2.SetLogx(ROOT.kFALSE)
-    pad1.SetLogy(ROOT.kTRUE)
+    pad1.SetLogy(ROOT.kFALSE)
 
-    for H in range(len(SignalHists)):
-        if H>0:
-            SignalHists[H].Scale(20)
-        else:
-            SignalHists[H].Scale(0.5)
-
-    y_max = 6000*hists[0].GetMaximum()
-    if y_max < 6000*hs.GetStack().Last().GetMaximum():
-        y_max = 6000*hs.GetStack().Last().GetMaximum()
-    dummy.SetMarkerStyle(20)
-    dummy.SetMarkerSize(1.2)
-    dummy.SetLineWidth(2)
-    x_min = hists[0].GetXaxis().GetBinLowEdge(1)
-    x_max = hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins())+hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
-
-    frame = pad1.DrawFrame(x_min,0.2,x_max,y_max)
-    frame.SetTitle("")
-    frame.GetYaxis().SetTitle('Events')
+    y_max = 1.3*dummy.GetMaximum()
+    y_min = 0.5*dummy.GetMinimum()
+    x_min = dummy.GetXaxis().GetBinLowEdge(1)
+    x_max = dummy.GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins())+hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
+    frame = pad1.DrawFrame(x_min,y_min,x_max,y_max)
+    frame.GetYaxis().SetTitle('Efficiency')
     frame.GetXaxis().SetLabelSize(0)
+    frame.GetXaxis().SetNoExponent()
     frame.GetYaxis().SetTitleOffset(0.87)
     frame.GetYaxis().SetTitleSize(0.07)
     frame.GetYaxis().SetLabelSize(0.05)
-    #frame.GetYaxis().SetNoExponent()
+    frame.GetYaxis().SetNoExponent()
     pad1.Update()
-    dummy.Draw("P")
-    hs.Draw("histSAME")
-    for H in range(len(SignalHists)):
-        SignalHists[H].SetLineWidth(3)
-        SignalHists[H].SetFillColor(0)
-        SignalHists[H].SetLineStyle(H+1)
-        SignalHists[H].Draw("histSAME")
     dummy.Draw("PSAME")
+    hists[1].Draw("PSAME")
     frame.Draw("AXISSAMEY+")
     frame.Draw("AXISSAMEX+")
     pad1.Update()
-
-    SumofMC = hs.GetStack().Last()
-    binwidth = array( 'd' )
-    bincenter = array( 'd' )
-    yvalue = array( 'd' )
-    yerrup = array( 'd' )
-    yerrdown = array( 'd' )
-    yvalueRatio = array( 'd' )
-    yerrupRatio = array( 'd' )
-    yerrdownRatio = array( 'd' )
-    for b in range(SumofMC.GetNbinsX()):
-        if SumofMC.GetBinContent(b+1)>0:
-            binwidth.append(SumofMC.GetBinWidth(b+1)/2)
-            bincenter.append(SumofMC.GetBinCenter(b+1))
-            yvalue.append(SumofMC.GetBinContent(b+1))
-            yerrup.append(SumofMC.GetBinError(b+1))
-            yerrdown.append(SumofMC.GetBinError(b+1))
-            yvalueRatio.append(1)
-            yerrupRatio.append(SumofMC.GetBinError(b+1)/SumofMC.GetBinContent(b+1))
-            yerrdownRatio.append(SumofMC.GetBinError(b+1)/SumofMC.GetBinContent(b+1))
-    if len(bincenter) > 0:
-        error = ROOT.TGraphAsymmErrors(len(bincenter),bincenter,yvalue,binwidth,binwidth,yerrdown,yerrup)
-        errorRatio = ROOT.TGraphAsymmErrors(len(bincenter),bincenter,yvalueRatio,binwidth,binwidth,yerrdownRatio,yerrupRatio)
-    else:
-        error = ROOT.TGraphAsymmErrors()
-        errorRatio = ROOT.TGraphAsymmErrors()
-    error.SetFillColor(13)
-    error.SetLineColor(13)
-    error.SetFillStyle(3154)
-    error.SetLineWidth(4)
-    error.Draw("2")
 
     Lumi = '138'
     if (year == '2016APV'):
@@ -186,51 +107,33 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     ch_plot = ch
     if 'ee' in ch:
         if 'SS' in c:
-            ch_plot='ee#tau_{h}'
+            ch_plot='ee'
         else:
-            ch_plot='e#bar{e}#tau_{h}'
+            ch_plot='e#bar{e}'
     if 'emu' in ch:
         if 'SS' in c:
-            ch_plot='e#mu#tau_{h}'
+            ch_plot='e#mu'
         else:
-            ch_plot='e#bar{#mu}#tau_{h}'
+            ch_plot='e#bar{#mu}'
+    if 'mue' in ch:
+        if 'SS' in c:
+            ch_plot='#me'
+        else:
+            ch_plot='#bar{#mu}e'
     if 'mumu' in ch:
         if 'SS' in c:
-            ch_plot='#mu#mu#tau_{h}'
+            ch_plot='#mu#mu'
         else:
-            ch_plot='#mu#bar{#mu}#tau_{h}'
-    Label_channel = ROOT.TLatex(0.17, 0.78, ch_plot + regName[2])
+            ch_plot='#mu#bar{#mu}'
+    Label_channel = ROOT.TLatex(0.17, 0.78, ch_plot)
     Label_channel.SetNDC()
     Label_channel.SetTextFont(42)
     Label_channel.SetTextSize(0.058)
     Label_channel.Draw("same")
-    Label_region = ROOT.TLatex(0.17, 0.7, regName[0])
-    Label_region.SetNDC()
-    Label_region.SetTextFont(42)
-    Label_region.SetTextSize(0.058)
-    Label_region.Draw("same")
-    Label_region2 = ROOT.TLatex(0.17, 0.62, regName[1])
-    Label_region2.SetNDC()
-    Label_region2.SetTextFont(42)
-    Label_region2.SetTextSize(0.058)
-    Label_region2.Draw("same")
 
-    legend.AddEntry(dummy,Fnames[0],'ep')
-    for num in range(1,len(hists)):
-        if num < (len(hists)-2):
-            legend.AddEntry(hists[num], Fnames[num], 'F')
-        else:
-            legend2.AddEntry(hists[num], Fnames[num], 'F')
-    error.SetLineWidth(1)
-    legend2.AddEntry(error, 'Stat. only', 'F')
-    for H in range(len(SignalHists)):
-        if H == 0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 0.5)", 'L')
-        else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 20)", 'L')
+    for num in range(len(hists)):
+        legend.AddEntry(hists[num], Fnames[num], 'ep')
     legend.Draw("same")
-    legend2.Draw("same")
-    legend3.Draw("same")
 
     pad1.Update()
 
@@ -259,22 +162,17 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     dummy_ratio.GetYaxis().SetTitleOffset(0.36)
     dummy_ratio.GetXaxis().SetTitleOffset(0.9)
     dummy_ratio.GetYaxis().SetNdivisions(504)
-    dummy_ratio.GetYaxis().SetRangeUser(0.2,1.8)
+    dummy_ratio.GetYaxis().SetRangeUser(0.91,1.06)
     if ('njet' in var):
         dummy_ratio.GetXaxis().SetNdivisions(6)
     if ('nbjet' in var):
         dummy_ratio.GetXaxis().SetNdivisions(4)
-    dummy_ratio.Divide(SumofMC)
+    dummy_ratio.Divide(hists[1])
     dummy_ratio.SetStats(ROOT.kFALSE)
-    dummy_ratio.GetYaxis().SetTitle('#frac{Data}{Pred.}')
+    dummy_ratio.GetYaxis().SetTitle('Ratio')
     dummy_ratio.Draw('E1')
     dummy_ratio.Draw("AXISSAMEY+")
     dummy_ratio.Draw("AXISSAMEX+")
-    errorRatio.SetFillColor(13)
-    errorRatio.SetLineColor(13)
-    errorRatio.SetFillStyle(3154)
-    errorRatio.SetLineWidth(4)
-    errorRatio.Draw("2")
     if not os.path.exists(folder):
         os.makedirs(folder)
     if not os.path.exists(folder + '/' + year):
@@ -283,447 +181,70 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
         os.makedirs(folder + '/' + year + '/' + c)
     if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch):
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
-    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg):
-        os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg)
-    canvas.Print(folder + '/' + year + '/' + c + '/' + ch +'/'+ reg + '/' + var + ".pdf")
+    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + var + ".pdf")
     del canvas
     gc.collect()
 
-def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", var = "mva1", varname = "v", SamplesName = []):
-    folder = 'CompareBackgrounds'
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-    if not os.path.exists(folder + '/' + year):
-        os.makedirs(folder  + '/' + year)
-    if not os.path.exists(folder + '/' + year + '/' + c):
-        os.makedirs(folder + '/' + year + '/' + c)
-    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch):
-        os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
-    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg):
-        os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg)
-
-    canvas = ROOT.TCanvas(year + ch + reg + var, year + ch + reg + var, 50, 50, 865, 780)
-    canvas.SetGrid()
+def PlotSF(hist, ch = "channel", year = '2016', varnames = "v"):
+    folder = 'ScaleFactor'
+    ROOT.gStyle.SetPaintTextFormat("1.3f")
+    dummy = hist.Clone()
+    canvas = ROOT.TCanvas(year+ch,year+ch,50,50,865,750)
+    # canvas.SetTopMargin(0.12)
+    canvas.SetBottomMargin(0.12)
+    canvas.SetLeftMargin(0.12)
+    canvas.SetRightMargin(0.08)
     canvas.cd()
-
-    legend = ROOT.TLegend(0.1, 0.3, 1, 0.8)
-    legend.SetBorderSize(0)
-    legend.SetTextFont(42)
-    legend.SetTextSize(0.3)
-
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0., 0.1, 0.99 , 0) # used for the legend
-    pad2 = ROOT.TPad("pad2", "pad2", 0.1, 0.0, 1, 1 , 0) # used for the hists
-    pad1.Draw()
-    pad2.Draw()
-    pad2.SetTickx()
-    pad1.SetBottomMargin(0.1)
-    pad1.SetLeftMargin(0.2)
-    pad1.SetRightMargin(0.01)
-    pad2.SetBottomMargin(0.1)
-    pad2.SetLeftMargin(0.1)
-    pad2.SetRightMargin(0.1)
-    pad2.SetFillStyle(0)
-    pad1.SetFillStyle(0)
-    pad1.SetLogx(ROOT.kFALSE)
-    pad2.SetLogx(ROOT.kFALSE)
-    pad1.SetLogy(ROOT.kFALSE)
-    pad2.SetLogy(ROOT.kTRUE)
-
-    pad2.cd()
-    maxi = 0
-    for n,G in enumerate(hists):
-        if hists[n].GetMaximum() > maxi:
-            maxi = hists[n].GetMaximum()
-        hists[n].SetFillColor(0)
-        hists[n].SetMinimum(0.001)
-        legend.AddEntry(hists[n],SamplesName[n + 1], 'LP')
-    hists[0].SetTitle('')
-    hists[0].GetYaxis().SetTitle('Events')
-    hists[0].GetXaxis().SetTitle(varname)
-    hists[0].GetXaxis().SetLabelSize(0.03)
-    hists[0].GetYaxis().SetLabelSize(0.03)
-    hists[0].GetXaxis().SetTitleSize(0.03)
-    hists[0].GetYaxis().SetTitleSize(0.03)
-    # hists[0].GetYaxis().SetNoExponent()
-    hists[0].GetXaxis().SetTitleOffset(1.1)
-    hists[0].GetYaxis().SetTitleOffset(1.5)
-    hists[0].GetYaxis().SetNdivisions(804)
-    hists[0].GetXaxis().SetNdivisions(808)
-    hists[0].GetYaxis().SetRangeUser(0.01, 100 * maxi)
-    hists[0].GetXaxis().SetNoExponent()
-    hists[0].Draw('HIST')
-    for n,G in enumerate(hists):
-        hists[n].Draw('HIST SAME')
-        hists[n].Draw('HIST P SAME')
-    hists[0].Draw("AXISSAMEY+")
-    hists[0].Draw("AXISSAMEX+")
-    Lumi = '138'
-    if (year == '2016APV'):
-        Lumi = '19.5'
-    if (year == '2016'):
-        Lumi = '16.8'
-    if (year == '2017'):
-        Lumi = '41.5'
-    if (year == '2018'):
-        Lumi = '59.8'
+    dummy.GetXaxis().SetTitle(varnames[0])
+    dummy.GetXaxis().SetNoExponent()
+    dummy.GetXaxis().SetTitleOffset(1.3)
+    dummy.GetYaxis().SetTitle(varnames[1])
+    dummy.GetYaxis().SetNoExponent()
+    dummy.GetZaxis().SetRangeUser(0.96,1)
+    dummy.Draw("TEXTE  COL")
     label_cms = "CMS"
-    Label_cms = ROOT.TLatex(0.115, 0.92, label_cms)
-    Label_cms.SetTextSize(0.04)
+    Label_cms = ROOT.TLatex(0.13, 0.912, label_cms)
     Label_cms.SetNDC()
     Label_cms.SetTextFont(61)
-    Label_cms.Draw()
-    label_cms1 = "Work in Progress"
-    Label_cms1 = ROOT.TLatex(0.2, 0.92, label_cms1)
-    Label_cms1.SetNDC()
-    Label_cms1.SetTextSize(0.028)
-    Label_cms1.SetTextFont(52)
-    Label_cms1.Draw()
-    Label_lumi = ROOT.TLatex(0.63, 0.92, Lumi + " fb^{-1} (13 TeV)")
-    Label_lumi.SetTextSize(0.035)
-    Label_lumi.SetNDC()
-    Label_lumi.SetTextFont(42)
-    Label_lumi.Draw("same")
-    reg_plot = year + " / " + c + " / " + ch + " / " + reg
-    Label_channel = ROOT.TLatex(0.2, 0.85, reg_plot)
-    Label_channel.SetNDC()
-    Label_channel.SetTextSize(0.035)
-    Label_channel.SetTextFont(42)
-    Label_channel.Draw("same")
-    pad1.cd()
-    legend.Draw("same")
-    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + ".pdf")
-    del canvas
-    gc.collect()
-
-def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region", "", ""], year = '2016'):
-    folder = 'StackHist'
-    ROOT.gStyle.SetErrorX(0) # No horizontal error bar
-    hs = ROOT.THStack("hs", "")
-    for num in range(1, len(hists)):
-        hs.Add(hists[num])
-
-    binwidth = array( 'd' )
-    bincenter = array( 'd' )
-    yvalue = array( 'd' )
-    yerrup = array( 'd' )
-    yerrdown = array( 'd' )
-    T = hists[0].Clone()
-    for b in range(T.GetNbinsX()):
-        if T.GetBinContent(b + 1) > 0:
-            binwidth.append(0)
-            bincenter.append(T.GetBinCenter(b + 1))
-            yvalue.append(T.GetBinContent(b + 1))
-            yerrup.append(T.GetBinError(b + 1))
-            yerrdown.append(T.GetBinError(b + 1))
-    if len(bincenter) > 0:
-        dummy = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalue, binwidth, binwidth, yerrdown, yerrup)
-    else:
-        dummy = ROOT.TGraphAsymmErrors()
-
-    canvas = ROOT.TCanvas(year + reg, year + reg, 50, 50, 1865, 780)
-    canvas.SetGrid()
-    canvas.SetBottomMargin(0.17)
-    canvas.cd()
-    # Calculating S/sqrt(B)
-    Label_sig = ROOT.TLatex(0.051, 0.29, '#frac{S}{#sqrt{B}}')
-    Label_sig.SetNDC()
-    Label_sig.SetTextFont(42)
-    Label_sig.SetTextSize(0.03)
-    Label_sig.Draw("")
-    sig = []
-    for b in range(SignalHists[0].GetNbinsX()):
-        if hs.GetStack().Last().GetBinContent(b + 1) > 0:
-            Sig = ROOT.TLatex(0.085 + b * 0.0495, 0.29, str(round((SignalHists[0] + SignalHists[1]).GetBinContent(b + 1) / math.sqrt(hs.GetStack().Last().GetBinContent(b + 1)), 2)))
-            Sig.SetNDC()
-            Sig.SetTextFont(42)
-            Sig.SetTextSize(0.03)
-            Sig.Draw("")
-            sig.append(Sig)
-
-    legend = ROOT.TLegend(0.56,0.68,0.63,0.87)
-    legend.SetBorderSize(0)
-    legend.SetFillStyle(0)
-    legend.SetTextFont(42)
-    legend.SetTextSize(0.05)
-    legend2 = ROOT.TLegend(0.63,0.68,0.7,0.87)
-    legend2.SetBorderSize(0)
-    legend2.SetFillStyle(0)
-    legend2.SetTextFont(42)
-    legend2.SetTextSize(0.05)
-    legend3 = ROOT.TLegend(0.7,0.75,0.85,0.87)
-    legend3.SetBorderSize(0)
-    legend3.SetFillStyle(0)
-    legend3.SetTextFont(42)
-    legend3.SetTextSize(0.05)
-
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # used for the hist plot
-    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # used for the ratio plot
-    pad1.Draw()
-    pad2.Draw() 
-    pad2.SetGridy()
-    pad2.SetTickx()
-    pad1.SetBottomMargin(0.02)
-    pad1.SetLeftMargin(0.07)
-    pad1.SetRightMargin(0.035)
-    pad2.SetTopMargin(0.1)
-    pad2.SetBottomMargin(0.4)
-    pad2.SetLeftMargin(0.07)
-    pad2.SetRightMargin(0.035)
-    pad2.SetFillStyle(0)
-    pad1.SetFillStyle(0)
-    pad1.cd()
-    pad1.SetLogx(ROOT.kFALSE)
-    pad2.SetLogx(ROOT.kFALSE)
-    pad1.SetLogy(ROOT.kTRUE)
-
-    for H in range(len(SignalHists)):
-        if H > 0:
-            SignalHists[H].Scale(20)
-        else:
-            SignalHists[H].Scale(0.5)
-
-    y_max = hists[0].GetMaximum()
-    if y_max < hs.GetStack().Last().GetMaximum():
-        y_max = hs.GetStack().Last().GetMaximum()
-    dummy.SetMarkerStyle(20)
-    dummy.SetMarkerSize(1.2)
-    dummy.SetLineWidth(1)
-    x_min = hists[0].GetXaxis().GetBinLowEdge(1)
-    x_max = hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins()) + hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
-
-    frame = pad1.DrawFrame(x_min, 0.2, x_max, 6000 * y_max)
-    frame.SetTitle("")
-    frame.GetYaxis().SetTitle('Events')
-    frame.GetXaxis().SetLabelSize(0)
-    frame.GetYaxis().SetTitleOffset(0.4)
-    frame.GetYaxis().SetTitleSize(0.07)
-    frame.GetYaxis().SetLabelOffset(0.0006)
-    frame.GetYaxis().SetLabelSize(0.05)
-    # frame.GetYaxis().SetNoExponent()
-    pad1.Update()
-
-    dummy.Draw("P")
-    hs.Draw("histSAME")
-    for H in range(len(SignalHists)):
-        SignalHists[H].SetLineWidth(2)
-        SignalHists[H].SetFillColor(0)
-        SignalHists[H].SetLineStyle(H + 1)
-        SignalHists[H].Draw("histSAME")
-    dummy.Draw("PSAME")
-    frame.Draw("AXISSAMEY+")
-    frame.Draw("AXISSAMEX+")
-    pad1.Update()
-    # Sub-SR boundries and legends
-    line = ROOT.TLine(2, 0, 2, y_max*15)
-    line.SetLineColor(ROOT.kBlack)
-    line.SetLineWidth(1)
-    line.SetLineStyle(2)
-    line.Draw("")
-    line1 = ROOT.TLine(8, 0, 8, y_max*15)
-    line1.SetLineColor(ROOT.kBlack)
-    line1.SetLineWidth(1)
-    line1.SetLineStyle(2)
-    line1.Draw("")
-    line2 = ROOT.TLine(10, 0, 10, y_max*15)
-    line2.SetLineColor(ROOT.kBlack)
-    line2.SetLineWidth(1)
-    line2.SetLineStyle(2)
-    line2.Draw("")
-    line3 = ROOT.TLine(12, 0, 12, y_max*15)
-    line3.SetLineColor(ROOT.kBlack)
-    line3.SetLineWidth(1)
-    line3.SetLineStyle(2)
-    line3.Draw("")
-    line4 = ROOT.TLine(16, 0, 16, y_max*15)
-    line4.SetLineColor(ROOT.kBlack)
-    line4.SetLineWidth(1)
-    line4.SetLineStyle(2)
-    line4.Draw("")
-    Label_SRblock1 = ROOT.TLatex(0.099, 0.57, 'OS-ee')
-    Label_SRblock1.SetNDC()
-    Label_SRblock1.SetTextFont(42)
-    Label_SRblock1.SetTextSize(0.058)
-    Label_SRblock1.Draw("same")
-    Label_SRblock2 = ROOT.TLatex(0.298, 0.57, 'OS-e#mu')
-    Label_SRblock2.SetNDC()
-    Label_SRblock2.SetTextFont(42)
-    Label_SRblock2.SetTextSize(0.058)
-    Label_SRblock2.Draw("same")
-    Label_SRblock3 = ROOT.TLatex(0.498, 0.57, 'OS-#mu#mu')
-    Label_SRblock3.SetNDC()
-    Label_SRblock3.SetTextFont(42)
-    Label_SRblock3.SetTextSize(0.058)
-    Label_SRblock3.Draw("same")
-    Label_SRblock4 = ROOT.TLatex(0.598, 0.57, 'SS-ee')
-    Label_SRblock4.SetNDC()
-    Label_SRblock4.SetTextFont(42)
-    Label_SRblock4.SetTextSize(0.058)
-    Label_SRblock4.Draw("same")
-    Label_SRblock5 = ROOT.TLatex(0.748, 0.57, 'SS-e#mu')
-    Label_SRblock5.SetNDC()
-    Label_SRblock5.SetTextFont(42)
-    Label_SRblock5.SetTextSize(0.058)
-    Label_SRblock5.Draw("same")
-    Label_SRblock6 = ROOT.TLatex(0.898, 0.57, 'SS-#mu#mu')
-    Label_SRblock6.SetNDC()
-    Label_SRblock6.SetTextFont(42)
-    Label_SRblock6.SetTextSize(0.058)
-    Label_SRblock6.Draw("same")
-
-    SumofMC = hs.GetStack().Last()
-    binwidth = array( 'd' )
-    bincenter = array( 'd' )
-    yvalue = array( 'd' )
-    yerrup = array( 'd' )
-    yerrdown = array( 'd' )
-    yvalueRatio = array( 'd' )
-    yerrupRatio = array( 'd' )
-    yerrdownRatio = array( 'd' )
-    for b in range(SumofMC.GetNbinsX()):
-        if SumofMC.GetBinContent(b + 1) > 0:
-            binwidth.append(SumofMC.GetBinWidth(b+1)/2)
-            bincenter.append(SumofMC.GetBinCenter(b+1))
-            yvalue.append(SumofMC.GetBinContent(b+1))
-            yerrup.append(SumofMC.GetBinError(b+1))
-            yerrdown.append(SumofMC.GetBinError(b+1))
-            yvalueRatio.append(1)
-            yerrupRatio.append(SumofMC.GetBinError(b+1)/SumofMC.GetBinContent(b+1))
-            yerrdownRatio.append(SumofMC.GetBinError(b+1)/SumofMC.GetBinContent(b+1))
-    if len(bincenter) > 0:
-        error = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalue, binwidth, binwidth, yerrdown, yerrup)
-        errorRatio = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalueRatio, binwidth, binwidth, yerrdownRatio, yerrupRatio)
-    else:
-        error = ROOT.TGraphAsymmErrors()
-        errorRatio = ROOT.TGraphAsymmErrors()
-    error.SetFillColor(13)
-    error.SetLineColor(13)
-    error.SetFillStyle(3154)
-    error.SetLineWidth(4)
-    error.Draw("2")
-
-    Lumi = '138'
-    if (year == '2016APV'):
-        Lumi = '19.5'
-    if (year == '2016'):
-        Lumi = '16.8'
-    if (year == '2017'):
-        Lumi = '41.5'
-    if (year == '2018'):
-        Lumi = '59.8'
-    label_cms = "CMS"
-    Label_cms = ROOT.TLatex(0.08, 0.92, label_cms)
-    Label_cms.SetNDC()
-    Label_cms.SetTextFont(61)
-    Label_cms.SetTextSize(0.081)
+    Label_cms.SetTextSize(0.05)
     Label_cms.Draw()
     label_cms1 = "Work in progress"
-    Label_cms1 = ROOT.TLatex(0.128, 0.92, label_cms1)
+    Label_cms1 = ROOT.TLatex(0.225, 0.912, label_cms1)
     Label_cms1.SetNDC()
-    Label_cms1.SetTextSize(0.063)
+    Label_cms1.SetTextSize(0.04)
     Label_cms1.SetTextFont(52)
     Label_cms1.Draw()
-    if (year == 'All'):
-        Label_lumi = ROOT.TLatex(0.8314, 0.92, Lumi + " fb^{-1} (13 TeV)")
+    Label_year = ROOT.TLatex(0.835,0.912,year)
+    if 'APV' in year:
+        Label_year = ROOT.TLatex(0.775,0.912,year)
+    Label_year.SetNDC()
+    Label_year.SetTextSize(0.04)
+    Label_year.SetTextFont(42)
+    Label_year.Draw()
+    label_SF = "Trigger Scale Factor"
+    Label_SF = ROOT.TLatex(0.16, 0.82, label_SF)
+    Label_SF.SetNDC()
+    Label_SF.SetTextSize(0.04)
+    Label_SF.SetTextFont(42)
+    Label_SF.Draw()
+    label_ch = "ee"
+    if ch == 'emu':
+       label_ch = "e#mu"
+    elif ch == 'mue':
+       label_ch = "#mue"
     else:
-        Label_lumi = ROOT.TLatex(0.832, 0.92, Lumi + " fb^{-1} (13 TeV)")
-    Label_lumi.SetNDC()
-    Label_lumi.SetTextFont(42)
-    Label_lumi.SetTextSize(0.063)
-    Label_lumi.Draw("same")
-    Label_channel = ROOT.TLatex(0.1, 0.81, '2l+#tau_{h}' + regName[2])
-    Label_channel.SetNDC()
-    Label_channel.SetTextFont(42)
-    Label_channel.SetTextSize(0.058)
-    Label_channel.Draw("same")
-    Label_region = ROOT.TLatex(0.1, 0.73, regName[0])
-    Label_region.SetNDC()
-    Label_region.SetTextFont(42)
-    Label_region.SetTextSize(0.058)
-    Label_region.Draw("same")
-    Label_region2 = ROOT.TLatex(0.1, 0.65, regName[1])
-    Label_region2.SetNDC()
-    Label_region2.SetTextFont(42)
-    Label_region2.SetTextSize(0.058)
-    Label_region2.Draw("same")
-
-    legend.AddEntry(dummy,Fnames[0], 'ep')
-    for num in range(1, len(hists)):
-        if num < (len(hists) - 2):
-            legend.AddEntry(hists[num], Fnames[num], 'F')
-        else:
-            legend2.AddEntry(hists[num], Fnames[num], 'F')
-    error.SetLineWidth(1)
-    legend2.AddEntry(error, 'Stat. only', 'F')
-    for H in range(len(SignalHists)):
-        if H == 0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 0.5)", 'L')
-        else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 20)", 'L')
-    legend.Draw("same")
-    legend2.Draw("same")
-    legend3.Draw("same")
-
-    pad1.Update()
-
-    pad2.cd()
-    dummy_ratio = hists[0].Clone()
-    dummy_ratio.Divide(SumofMC)
-    dummy_ratio.SetTitle("")
-    dummy_ratio.SetMarkerStyle(20)
-    dummy_ratio.SetMarkerSize(1.2)
-    dummy_ratio.SetLineWidth(1)
-    dummy_ratio.GetXaxis().SetTitle('')
-    # dummy_ratio.GetXaxis().CenterTitle()
-    dummy_ratio.GetYaxis().CenterTitle()
-    dummy_ratio.GetXaxis().SetMoreLogLabels()
-    dummy_ratio.GetXaxis().SetNoExponent()
-    dummy_ratio.GetYaxis().SetNoExponent()
-    dummy_ratio.GetXaxis().SetTitleSize(0.05 / 0.3)
-    dummy_ratio.GetYaxis().SetTitleSize(0.05 / 0.3)
-    dummy_ratio.GetXaxis().SetTitleFont(42)
-    dummy_ratio.GetYaxis().SetTitleFont(42)
-    dummy_ratio.GetXaxis().SetTickLength(0.05)
-    dummy_ratio.GetYaxis().SetTickLength(0.05)
-    dummy_ratio.GetXaxis().SetLabelSize(0.115)
-    dummy_ratio.GetYaxis().SetLabelSize(0.1125)
-    dummy_ratio.GetXaxis().SetLabelOffset(0.02)
-    dummy_ratio.GetYaxis().SetLabelOffset(0.004)
-    dummy_ratio.GetYaxis().SetTitleOffset(0.17)
-    dummy_ratio.GetXaxis().SetTitleOffset(0.9)
-    dummy_ratio.GetYaxis().SetNdivisions(504)
-    dummy_ratio.GetYaxis().SetRangeUser(0.2, 1.8)
-    dummy_ratio.GetXaxis().SetBinLabel(1, "m(e#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(2, "m(e#tau)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(3, "m(e#mu)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(4, "m(e#mu)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(5, "m(e#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(6, "m(e#tau)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(7, "m(#mu#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(8, "m(#mu#tau)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(9, "m(#mu#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(10, "m(#mu#tau)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(11, "m(e#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(12, "m(e#tau)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(13, "m(e#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(14, "m(e#tau)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(15, "m(#mu#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(16, "m(#mu#tau)>150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(17, "m(#mu#tau)<150GeV")
-    dummy_ratio.GetXaxis().SetBinLabel(18, "m(#mu#tau)>150GeV")
-    dummy_ratio.SetStats(ROOT.kFALSE)
-    dummy_ratio.GetYaxis().SetTitle('#frac{Data}{Pred.}')
-    dummy_ratio.Draw('E1')
-    dummy_ratio.Draw("AXISSAMEY+")
-    dummy_ratio.Draw("AXISSAMEX+")
-    errorRatio.SetFillColor(13)
-    errorRatio.SetLineColor(13)
-    errorRatio.SetFillStyle(3154)
-    errorRatio.SetLineWidth(4)
-    errorRatio.Draw("2")
+       label_ch = "#mu#mu"
+    Label_ch = ROOT.TLatex(0.16, 0.79, label_ch)
+    Label_ch.SetNDC()
+    Label_ch.SetTextSize(0.04)
+    Label_ch.SetTextFont(42)
+    Label_ch.Draw()
     if not os.path.exists(folder):
         os.makedirs(folder)
     if not os.path.exists(folder + '/' + year):
-        os.makedirs(folder + '/' + year)
-    canvas.Print(folder + '/' + year + '/Summary_' + reg + ".pdf")
+        os.makedirs(folder  + '/' + year)
+    canvas.Print(folder + '/' + year + '/' + ch + "_SF2D.pdf")
     del canvas
     gc.collect()
+
+
