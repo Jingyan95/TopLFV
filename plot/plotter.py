@@ -405,15 +405,19 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
     pad1.SetLogx(ROOT.kFALSE)
     pad2.SetLogx(ROOT.kFALSE)
     pad1.SetLogy(ROOT.kFALSE)
-    pad2.SetLogy(ROOT.kTRUE)
+    pad2.SetLogy(ROOT.kFALSE)
 
     pad2.cd()
     maxi = 0
     for n, G in enumerate(hists):
+        if hists[n].Integral() > 0:
+            hists[n].Scale(1.0 / hists[n].Integral())
         if hists[n].GetMaximum() > maxi:
             maxi = hists[n].GetMaximum()
         hists[n].SetFillColor(0)
-        hists[n].SetMinimum(0.001)
+        #hists[n].SetMinimum(0.00001)
+        #if hists[n].Integral() > 0:
+        #    hists[n].Scale(1.0 / hists[n].Integral())
         legend.AddEntry(hists[n], SamplesName[n + 1], 'LP')
     hists[0].SetTitle('')
     hists[0].GetYaxis().SetTitle('Events')
@@ -422,12 +426,12 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
     hists[0].GetYaxis().SetLabelSize(0.03)
     hists[0].GetXaxis().SetTitleSize(0.03)
     hists[0].GetYaxis().SetTitleSize(0.03)
-    # hists[0].GetYaxis().SetNoExponent()
+    hists[0].GetYaxis().SetNoExponent()
     hists[0].GetXaxis().SetTitleOffset(1.1)
     hists[0].GetYaxis().SetTitleOffset(1.5)
     hists[0].GetYaxis().SetNdivisions(804)
     hists[0].GetXaxis().SetNdivisions(808)
-    hists[0].GetYaxis().SetRangeUser(0.01, 100 * maxi)
+    hists[0].GetYaxis().SetRangeUser(0.0, 1.6 * maxi)
     hists[0].GetXaxis().SetNoExponent()
     hists[0].Draw('HIST')
     for n, G in enumerate(hists):
@@ -818,7 +822,7 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
         h1.SetBinContent(idx + 1, arr1[idx])
         h1.SetBinError(idx + 1, err1[idx])
     h1.GetXaxis().SetNoExponent()
-    # h1.GetYaxis().SetNoExponent()
+    h1.GetYaxis().SetNoExponent()
     h1.SetLineWidth(2)
     h1.SetLineColor(ROOT.kBlue)
     h1.SetMarkerStyle(20)
@@ -835,7 +839,7 @@ def CompareEstimate(arr1, err1, arrs, errs, binEdges, fname, c = "charge", ch = 
             h.SetBinContent(idx + 1, arr[idx])
             h.SetBinError(idx + 1, errs[arrIdx][idx])
         h.GetXaxis().SetNoExponent()
-        # h.GetYaxis().SetNoExponent()
+        h.GetYaxis().SetNoExponent()
         h.SetLineWidth(2)
         h.SetLineColor(colors[arrIdx])
         h.SetMarkerStyle(20)

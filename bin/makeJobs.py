@@ -57,7 +57,7 @@ rootlib11 = "".join([s for s in rootlib1.strip().splitlines(True) if s.strip()])
 rootlib2 = subprocess.check_output("root-config --libs", shell = True)
 rootlib22 = "".join([s for s in rootlib2.strip().splitlines(True) if s.strip()])
 
-cms = '/afs/cern.ch/work/j/jingyan/public/CMSSW_10_6_4/src/'
+cms = '/eos/user/e/etsai/workspace/TopLFV_CMSSW_10_6_4/src/'
 dire_h = loc + 'hists/'
 
 for key, value in SAMPLES.items():

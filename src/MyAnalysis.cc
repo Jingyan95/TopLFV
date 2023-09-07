@@ -58,9 +58,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     /*6*/ "llbtagg1p3", // ttbar + jets CR
     /*7*/ "llStg300OffZbtagl1p3", // New SR (Loose)
     /*8*/ "llStg300OffZbtagl1p3Tight", // New SR (Tight)
-    /*9*/ "llMetg20Jetgeq1", // Background estimation
-    /*10*/ "llMetg20Jetgeq1B1", // Background estimation
-    /*11*/ "llMetg20Jetgeq1B0" // Background estimation
+    /*9*/ "llMetg20Jetgeq1B1", // SR background estimation
+    /*10*/ "llMetg20Jetgeq1B0", // CR background estimation
+    /*11*/ "llStg300btagl1p3", // New SR (Loose) background estimation
+    /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
   };
   std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0};
   const std::map<TString, std::vector<float>> vars = {
@@ -68,33 +69,41 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"llDr",             {1,    10,     0,   4.5}},
     {"lep1Pt",           {2,    10,    30,   230}},
     {"lep2Pt",           {3,    10,    20,   180}},
-    {"taPt",             {4,    20,    20,   220}},
+    {"elLeptonMVAv1",    {4,    50,     0,     1}},
+    {"elLeptonMVAv2",    {5,    50,     0,     1}},
+    {"muLeptonMVAv1",    {6,    50,     0,     1}},
+    {"muLeptonMVAv2",    {7,    50,     0,     1}},
+    {"taPt",             {8,    20,    20,   220}},
     // {"taPtHadronic",     {5,    20,    20,   220}},
-    {"taEta",            {5,    23,  -2.3,   2.3}},
+    {"taEta",            {9,    23,  -2.3,   2.3}},
     // {"taEtaHadronic",    {7,    23,  -2.3,   2.3}},
-    {"taVsJetWP",        {6,     8,     0,     8}},
-    {"taDxy",            {7,    16,  -0.1,   0.1}},
-    {"taDz",             {8,    16,  -0.2,   0.2}},
-    {"taDecayMode",      {9,    12,     0,    12}},
-    {"jet1Pt",           {10,   10,    25,   225}},
-    {"njet",             {11,    6,     0,     6}},
-    {"nbjet",            {12,    4,     0,     4}},
-    {"MET",              {13,   10,     0,   200}},
-    {"subSR",            {14,   18,     0,    18}},
-    {"LFVemuM",          {15,   10,     0,   300}},
-    {"LFVetaM",          {16,   10,     0,   300}},
-    {"LFVmutaM",         {17,   10,     0,   300}},
-    {"LFVemuDr",         {18,   10,     0,   4.5}},
-    {"LFVetaDr",         {19,   10,     0,   4.5}},
-    {"LFVmutaDr",        {20,   10,     0,   4.5}},
-    {"LFVePt",           {21,   10,    20,   300}},
-    {"LFVmuPt",          {22,   10,    20,   300}},
-    {"LFVtaPt",          {23,   10,    20,   300}},
-    {"balepPt",          {24,   10,    20,   180}},
-    {"topmass",          {25,   10,     0,   300}},
-    {"Ht",               {26,   10,     0,   300}},
-    {"St",               {27,   20,    70,   600}},
-    {"btagSum",          {28,   25,     0,   2.5}}
+    {"taVsJetWP",        {10,    8,     0,     8}},
+    {"taVsJetMVA",       {11,   50,     0,     1}},
+    {"taVsElMVA",        {12,   50,     0,     1}},
+    {"taVsMuMVA",        {13,   50,     0,     1}},
+    {"taDxy",            {14,   16,  -0.1,   0.1}},
+    {"taDz",             {15,   16,  -0.2,   0.2}},
+    {"taDecayMode",      {16,   12,     0,    12}},
+    {"jet1Pt",           {17,   10,    25,   225}},
+    {"jetbtagDeepFlavB", {18,   50,     0,     1}},
+    {"njet",             {19,    6,     0,     6}},
+    {"nbjet",            {20,    4,     0,     4}},
+    {"MET",              {21,   10,     0,   200}},
+    {"subSR",            {22,   18,     0,    18}},
+    {"LFVemuM",          {23,   10,     0,   300}},
+    {"LFVetaM",          {24,   10,     0,   300}},
+    {"LFVmutaM",         {25,   10,     0,   300}},
+    {"LFVemuDr",         {26,   10,     0,   4.5}},
+    {"LFVetaDr",         {27,   10,     0,   4.5}},
+    {"LFVmutaDr",        {28,   10,     0,   4.5}},
+    {"LFVePt",           {29,   10,    20,   300}},
+    {"LFVmuPt",          {30,   10,    20,   300}},
+    {"LFVtaPt",          {31,   10,    20,   300}},
+    {"balepPt",          {32,   10,    20,   180}},
+    {"topmass",          {33,   10,     0,   300}},
+    {"Ht",               {34,   10,     0,   300}},
+    {"St",               {35,   20,    70,   600}},
+    {"btagSum",          {36,   25,     0,   2.5}}
   };
   const std::vector<double> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
   const std::map<TString, std::vector<float>> vars2D = {
@@ -294,7 +303,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Electron_sip3d[l] > 8 || abs(Electron_dxy[l]) > 0.05 || abs(Electron_dz[l]) > 0.1) continue;
       if (Electron_miniPFRelIso_all[l] > 0.4 || (int) Electron_lostHits[l] > 1) continue;
       if (!Electron_convVeto[l] || (int) Electron_tightCharge[l] == 0) continue;
-      if (Electron_topLeptonMVA_v1[l] < 0.64) continue;
+      // if (Electron_topLeptonMVA_v1[l] < 0.64) continue;
 
       if (data == "mc") {
         weight_El_RECO = weight_El_RECO * scale_factor(&sf_El_RECO, eleEta, Electron_pt[l], "");
@@ -314,7 +323,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (!Muon_mediumId[l]) continue;
       if (Muon_sip3d[l] > 8 || abs(Muon_dxy[l]) > 0.05 || abs(Muon_dz[l]) > 0.1) continue;
       if (Muon_miniPFRelIso_all[l] > 0.4) continue;
-      if (Muon_topLeptonMVA_v1[l] < 0.64) continue;
+      // if (Muon_topLeptonMVA_v1[l] < 0.64) continue;
 
       if (data == "mc") {
         weight_Mu_RECO = weight_Mu_RECO * scale_factor(&sf_Mu_RECO, abs(Muon_eta[l]), Muon_pt[l], "");
@@ -343,7 +352,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
       // The Loosest possible DeepTau Working Point
-      if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 1 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
+      // if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 32 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
 
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
@@ -406,18 +415,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
     if (Event->MET()->Pt() > 20 && Event->njet() > 0) {
-
-      rIdx = rInd(regions, "llMetg20Jetgeq1"); // Background estimation
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
       if (Event->nbjet() == 0) {
-        rIdx = rInd(regions, "llMetg20Jetgeq1B0"); // Background estimation
+        rIdx = rInd(regions, "llMetg20Jetgeq1B0"); // CR background estimation
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
       if (Event->nbjet() == 1) {
-        rIdx = rInd(regions, "llMetg20Jetgeq1B1"); // Background estimation
+        rIdx = rInd(regions, "llMetg20Jetgeq1B1"); // SR background estimation
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
@@ -455,12 +459,23 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
     if (Event->St() > 300 && !Event->OnZ() && Event->btagSum() < 1.3) {
-      rIdx = rInd(regions, "llStg300OffZbtagl1p3"); // New SR
+      rIdx = rInd(regions, "llStg300OffZbtagl1p3"); // New SR (Loose)
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
         rIdx = rInd(regions, "llStg300OffZbtagl1p3Tight"); // New SR (Tight)
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
+    }
+    if (Event->St() > 300 && Event->btagSum() < 1.3) {
+      rIdx = rInd(regions, "llStg300btagl1p3"); // New SR (Loose) background estimation
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+
+      if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
+        rIdx = rInd(regions, "llStg300btagl1p3Tight"); // New SR (Tight) background estimation
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
@@ -476,6 +491,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
+      if (Event->lfvch() != 2) {
+        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "elLeptonMVAv1")]->Fill(Event->el1()->mva1_, wgt[i]);
+        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "elLeptonMVAv2")]->Fill(Event->el1()->mva2_, wgt[i]);
+      }
+      if (Event->lfvch() != 1) {
+        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "muLeptonMVAv1")]->Fill(Event->mu1()->mva1_, wgt[i]);
+        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "muLeptonMVAv2")]->Fill(Event->mu1()->mva2_, wgt[i]);
+      }
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEta")]->Fill(Event->ta1()->eta_, wgt[i]);
       // if (Event->ta1()->truth_ == 0) {
@@ -483,10 +506,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       //   Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEtaHadronic")]->Fill(Event->ta1()->eta_, wgt[i]);
       // }
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetWP")]->Fill(tauWP, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsElMVA")]->Fill(Event->ta1()->mva2_, wgt[i]);
+      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsMuMVA")]->Fill(Event->ta1()->mva3_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDecayMode")]->Fill(tauDM, wgt[i]);
       if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
+      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jetbtagDeepFlavB")]->Fill(Event->jet1()->bt_, wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "njet")]->Fill(Event->njet(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "nbjet")]->Fill(Event->nbjet(), wgt[i]);
       Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "MET")]->Fill(Event->MET()->Pt(), wgt[i]);
