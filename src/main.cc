@@ -14,10 +14,10 @@ int main() {
   std::atomic<ULong64_t> counter(0);
   auto workItem = [&](UInt_t workerID) {
     TChain* ch = new TChain("Events");
-    ch->Add("/Users/mango/Workspace/Projects/topLFV_files/tree_5.root");
-    ch->Add("/Users/mango/Workspace/Projects/topLFV_files/tree_6.root");
-    ch->Add("/Users/mango/Workspace/Projects/topLFV_files/tree_7.root");
-    ch->Add("/Users/mango/Workspace/Projects/topLFV_files/tree_10.root");
+    ch->Add("/Users/mango/Workspace/Projects/TopLFV/input/tree_5.root");
+    ch->Add("/Users/mango/Workspace/Projects/TopLFV/input/tree_6.root");
+    ch->Add("/Users/mango/Workspace/Projects/TopLFV/input/tree_7.root");
+    ch->Add("/Users/mango/Workspace/Projects/TopLFV/input/tree_10.root");
     MyAnalysis t1(ch, "2016", "mc", "", nThread, workerID, false);
     auto workerSummary = t1.Loop(Form("test_%u.root", workerID), "mc", "TTW", "2016", "", 0.235, 16.81, 3322643, std::ref(progress), std::ref(counter));
     Summary << workerSummary.str();
