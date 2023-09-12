@@ -60,6 +60,8 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     legend2.SetTextFont(42)
     legend2.SetTextSize(0.05)
     legend3 = ROOT.TLegend(0.442,0.56,0.78,0.683)
+    if 'Tight' in reg:
+        legend3 = ROOT.TLegend(0.442,0.47,0.78,0.593)
     legend3.SetBorderSize(0)
     legend3.SetFillStyle(0)
     legend3.SetTextFont(42)
@@ -87,13 +89,13 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
 
     for H in range(len(SignalHists)):
         if H>0:
-            SignalHists[H].Scale(20)
+            SignalHists[H].Scale(100)
         else:
-            SignalHists[H].Scale(0.5)
+            SignalHists[H].Scale(1)
 
-    y_max = 2000*hists[0].GetMaximum()
-    if y_max < 2000*hs.GetStack().Last().GetMaximum():
-        y_max = 2000*hs.GetStack().Last().GetMaximum()
+    y_max = 6000*hists[0].GetMaximum()
+    if y_max < 6000*hs.GetStack().Last().GetMaximum():
+        y_max = 6000*hs.GetStack().Last().GetMaximum()
     dummy.SetMarkerStyle(20)
     dummy.SetMarkerSize(1.2)
     dummy.SetLineWidth(2)
@@ -174,7 +176,7 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     Label_cms1.SetTextFont(52)
     Label_cms1.Draw()
     if (year == 'All'):
-       Label_lumi = ROOT.TLatex(0.625,0.92,Lumi+" fb^{-1} (13 TeV)")
+       Label_lumi = ROOT.TLatex(0.672,0.92,Lumi+" fb^{-1} (13 TeV)")
     else:
        Label_lumi = ROOT.TLatex(0.673,0.92,Lumi+" fb^{-1} (13 TeV)")
     Label_lumi.SetNDC()
@@ -223,9 +225,9 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     legend2.AddEntry(error, 'Stat. only', 'F')
     for H in range(len(SignalHists)):
         if H == 0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 0.5)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 1)", 'L')
         else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 20)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 100)", 'L')
     legend.Draw("same")
     legend2.Draw("same")
     legend3.Draw("same")
@@ -476,9 +478,9 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
 
     for H in range(len(SignalHists)):
         if H > 0:
-            SignalHists[H].Scale(20)
+            SignalHists[H].Scale(100)
         else:
-            SignalHists[H].Scale(0.5)
+            SignalHists[H].Scale(1)
 
     y_max = hists[0].GetMaximum()
     if y_max < hs.GetStack().Last().GetMaximum():
@@ -489,7 +491,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     x_min = hists[0].GetXaxis().GetBinLowEdge(1)
     x_max = hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins()) + hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
 
-    frame = pad1.DrawFrame(x_min, 0.2, x_max, 2000 * y_max)
+    frame = pad1.DrawFrame(x_min, 0.2, x_max, 6000 * y_max)
     frame.SetTitle("")
     frame.GetYaxis().SetTitle('Events')
     frame.GetXaxis().SetLabelSize(0)
@@ -621,7 +623,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     Label_cms1.SetTextFont(52)
     Label_cms1.Draw()
     if (year == 'All'):
-        Label_lumi = ROOT.TLatex(0.832, 0.92, Lumi + " fb^{-1} (13 TeV)")
+        Label_lumi = ROOT.TLatex(0.8314, 0.92, Lumi + " fb^{-1} (13 TeV)")
     else:
         Label_lumi = ROOT.TLatex(0.832, 0.92, Lumi + " fb^{-1} (13 TeV)")
     Label_lumi.SetNDC()
@@ -654,9 +656,9 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     legend2.AddEntry(error, 'Stat. only', 'F')
     for H in range(len(SignalHists)):
         if H == 0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 0.5)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 1)", 'L')
         else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 20)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 100)", 'L')
     legend.Draw("same")
     legend2.Draw("same")
     legend3.Draw("same")

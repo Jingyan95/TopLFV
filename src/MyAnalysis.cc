@@ -97,18 +97,23 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   // TH2F *h_2D_woBtagSF;
   // Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
   // Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
-  // h_2D_wBtagSF = new TH2F("2D_wBtagSF", "2D_wBtagSF", 5, njetBin, 5, HtBin);
-  // h_2D_woBtagSF = new TH2F("2D_woBtagSF", "2D_woBtagSF", 5, njetBin, 5, HtBin);
+  // name<< "2D_wBtagSF" << "_" << workerID_;
+  // h_2D_wBtagSF = new TH2F((name.str()).c_str(), "", 5, njetBin, 5, HtBin);
+  // name.str("");
+  // name<< "2D_woBtagSF" << "_" << workerID_;
+  // h_2D_woBtagSF = new TH2F((name.str()).c_str(), "", 5, njetBin, 5, HtBin);
+  // name.str("");
 
   std::string string_year(year.Data());
-  TFile *f_El_RECO = new TFile("data/EGM/RECO/" + year + "egammaEffi_ptAbove20.txt_EGM2D.root");
-  TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/" + year + "egammaEffi.txt_EGM2D.root");
-  TFile *f_Mu_RECO = new TFile("data/MUO/RECO/" + year + "Efficiency_muon_generalTracks_trackerMuon.root");
+  TFile *f_El_RECO = new TFile("data/EGM/RECO/" + year + "egammaEffi_ptAbove20.txt_EGM2D.root"); // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun2LegacyAnalysis
+  TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/" + year + "egammaEffi.txt_EGM2D.root"); 
+  TFile *f_Mu_RECO = new TFile("data/MUO/RECO/" + year + "Efficiency_muon_generalTracks_trackerMuon.root"); // https://gitlab.cern.ch/cms-muonPOG/muonefficiencies/-/tree/master/Run2/UL
   TFile *f_Mu_ID = new TFile("data/MUO/TOPMVASF/v1/Medium/" + year + "NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt.root");
   TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root"); // https://github.com/cms-tau-pog/TauIDSFs/tree/master/data
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
+  TFile *f_TRG = new TFile("data/TRG/" + year + "TriggerSF.root"); 
   TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   const auto sf_El_RECO = *(TH2F*)f_El_RECO->Get("EGamma_SF2D");
   const auto sf_El_ID = *(TH2F*)f_El_ID->Get("EGamma_SF2D");
@@ -118,7 +123,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_Ta_ID_e = *(TH1F*)f_Ta_ID_e->Get("VVLoose");
   const auto sf_Ta_ID_mu = *(TH1F*)f_Ta_ID_mu->Get("Tight");
   const auto sf_Ta_ES_jet = *(TH1F*)f_Ta_ES_jet->Get("tes");
-  const auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection");
+  const auto sf_TRG_ee = *(TH2F*)f_TRG->Get("ee");
+  const auto sf_TRG_emu = *(TH2F*)f_TRG->Get("emu");
+  const auto sf_TRG_mue = *(TH2F*)f_TRG->Get("mue");
+  const auto sf_TRG_mumu = *(TH2F*)f_TRG->Get("mumu");
+  const auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection"); 
   f_El_RECO->Close();
   f_El_ID->Close();
   f_Mu_RECO->Close();
@@ -127,6 +136,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   f_Ta_ID_e->Close();
   f_Ta_ID_mu->Close();
   f_Ta_ES_jet->Close();
+  f_TRG->Close();
   f_Btag_corr->Close();
 
   std::vector<lepton_candidate*> *Leptons;
@@ -149,6 +159,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_jet;
   float weight_Ta_ID_e;
   float weight_Ta_ID_mu;
+  float weight_TRG; // trigger sf
   float weight_Btag_corr; // correction for btag shape to preserve normalization 
   float weight_Event;
   int nAccept=0;
@@ -165,7 +176,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     fChain->GetEntry(jentry);  
     ntotal++; // thread-private counter
     std::lock_guard<std::mutex> lock(mtx_); // locking mutex before accessing atomic variables
-    ++counter;
+    ++counter; // shared-counter 
     updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
     if (!verbose_) displayProgress(progress, counter, ntr, 32);
     mtx_.unlock(); // releasing mutex
@@ -185,6 +196,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     weight_Ta_ID_e = 1;
     weight_Ta_ID_mu = 1;
     weight_Btag_corr = 1;
+    weight_TRG = 1;
     weight_Event = 1;
 
     // MET filters
@@ -260,9 +272,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (tauPt < 20 || abs(Tau_eta[l]) > 2.3) continue;
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
-      // The Loosest possible DeepTau Working Point
       if ((int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8 || (int) Tau_idDeepTau2017v2p1VSjet[l] < 32) continue;
-
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
           || event_candidate::deltaR((*Leptons)[1]->eta_, (*Leptons)[1]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4) continue;
@@ -313,11 +323,20 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       weight_PU = wPU.getPUweight(year, int(Pileup_nTrueInt), "nominal");
       weight_L1ECALPreFiring = L1PreFiringWeight_ECAL_Nom;
       weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
+      if (Event->ch()==0){
+        weight_TRG = scale_factor(&sf_TRG_ee, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else if (Event->ch()==2){
+        weight_TRG = scale_factor(&sf_TRG_mumu, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else if (Event->lep1()->flavor_==1){
+        weight_TRG = scale_factor(&sf_TRG_emu, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else{
+        weight_TRG = scale_factor(&sf_TRG_mue, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }
       weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
     }
-    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
-    // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
-    // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF());
+    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG * Event->btagSF() * weight_Btag_corr;
+    // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG);
+    // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG * Event->btagSF());
 
     reg.push_back(0);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[0]);
@@ -405,10 +424,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
     }
   }
+  // h_2D_woBtagSF->SetName("2D_woBtagSF");
   // h_2D_woBtagSF->Write("", TObject::kOverwrite);
+  // h_2D_wBtagSF->SetName("2D_wBtagSF");
   // h_2D_wBtagSF->Write("", TObject::kOverwrite);
-  file_out.Close();
-  Hists.clear();
+  // delete h_2D_woBtagSF;
+  // delete h_2D_wBtagSF;
+  // file_out.Close();
+  // Hists.clear();
 
   // Writing summary
   auto end = std::chrono::high_resolution_clock::now();
