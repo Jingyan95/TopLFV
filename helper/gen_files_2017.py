@@ -6,6 +6,10 @@ import string
 
 mc2017_samples = {}
 
+#Scalar interaction
+mc2017_samples['2017_LFVStScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2017/2017_LFVStScalarU_UL/CRAB_UserFiles/crab_Set11_2_GenWieght_2017_LFVStScalarU_UL/230911_230743/0000/']]
+mc2017_samples['2017_LFVTtScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2017/2017_LFVTtScalarU_UL/CRAB_UserFiles/crab_Set11_2_GenWieght_2017_LFVTtScalarU_UL/230911_230650/0000/']]
+
 ##Fake background samples
 mc2017_samples['2017_TTTo2L2Nu'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2017/2017_TTTo2L2Nu_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Aug18_2017_TTTo2L2Nu_UL/230819_021926/0000/']]
 mc2017_samples['2017_TTToSemiLeptonic'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2017/2017_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_Aug18_2017_TTToSemiLeptonic_UL/230819_021350/0000/']]

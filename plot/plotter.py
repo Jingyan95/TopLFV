@@ -89,9 +89,9 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
 
     for H in range(len(SignalHists)):
         if H>0:
-            SignalHists[H].Scale(20)
+            SignalHists[H].Scale(100)
         else:
-            SignalHists[H].Scale(0.5)
+            SignalHists[H].Scale(1)
 
     y_max = 6000*hists[0].GetMaximum()
     if y_max < 6000*hs.GetStack().Last().GetMaximum():
@@ -225,9 +225,9 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     legend2.AddEntry(error, 'Stat. only', 'F')
     for H in range(len(SignalHists)):
         if H == 0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 0.5)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 1)", 'L')
         else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 20)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 100)", 'L')
     legend.Draw("same")
     legend2.Draw("same")
     legend3.Draw("same")
@@ -478,9 +478,9 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
 
     for H in range(len(SignalHists)):
         if H > 0:
-            SignalHists[H].Scale(20)
+            SignalHists[H].Scale(100)
         else:
-            SignalHists[H].Scale(0.5)
+            SignalHists[H].Scale(1)
 
     y_max = hists[0].GetMaximum()
     if y_max < hs.GetStack().Last().GetMaximum():
@@ -656,9 +656,9 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     legend2.AddEntry(error, 'Stat. only', 'F')
     for H in range(len(SignalHists)):
         if H == 0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 0.5)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 1)", 'L')
         else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 20)", 'L')
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists) + H] + " (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 100)", 'L')
     legend.Draw("same")
     legend2.Draw("same")
     legend3.Draw("same")

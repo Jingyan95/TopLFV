@@ -5,9 +5,9 @@ import readline
 import string
 
 mc2016_samples = {}
-##Scalar interaction
-# mc2016_samples['2016_LFVStScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_Apr30_SumOfGenWeights_2016_LFVStScalarU_UL/230430_075611/0000/']]
-# mc2016_samples['2016_LFVTtScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_Apr30_SumOfGenWeights_2016_LFVTtScalarU_UL/230430_082051/0000/']]
+# #Scalar interaction
+mc2016_samples['2016_LFVStScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Sep11_3_GenWeight_2016_LFVStScalarU_UL/230912_023936/0000/']]
+mc2016_samples['2016_LFVTtScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Sep11_3_GenWeight_2016_LFVTtScalarU_UL/230912_024033/0000/']]
 
 ##Fake background samples
 mc2016_samples['2016_TTTo2L2Nu'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016/2016_TTTo2L2Nu_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Trilep_Inclusive_Apr30_SumOfGenWeights_2016_TTTo2L2Nu_UL/230430_083326/0000/']]

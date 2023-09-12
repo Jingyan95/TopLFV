@@ -6,6 +6,10 @@ import string
 
 mc2016APV_samples = {}
 
+#Scalar interaction
+mc2016APV_samples['2016APV_LFVStScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016APV/2016APV_LFVStScalarU_UL/CRAB_UserFiles/crab_Set11_2_GenWieght_2016APV_LFVStScalarU_UL/230911_225954/0000/']]
+mc2016APV_samples['2016APV_LFVTtScalarU'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016APV/2016APV_LFVTtScalarU_UL/CRAB_UserFiles/crab_Set11_2_GenWieght_2016APV_LFVTtScalarU_UL/230911_230050/0000/']]
+
 ##Fake background samples
 mc2016APV_samples['2016APV_TTTo2L2Nu'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016APV/2016APV_TTTo2L2Nu_UL/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Aug18_2016APV_TTTo2L2Nu_UL/230819_021537/0000/']]
 mc2016APV_samples['2016APV_TTToSemiLeptonic'] = [['/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive_SumOfGenWeights/2016APV/2016APV_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_Aug18_2016APV_TTToSemiLeptonic_UL/230819_022023/0000/']]

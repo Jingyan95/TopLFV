@@ -11,8 +11,8 @@ mc2016_samples = {}
 ##cut += " && ((Sum$(Tau_pt>18 && abs(Tau_eta)<2.3 && Tau_idDeepTau2017v2p1VSe>=1 && Tau_idDeepTau2017v2p1VSmu>=1 && Tau_idDeepTau2017v2p1VSjet>=1 && Tau_decayMode!=5 && Tau_decayMode!=6))>=1)"
 
 ##Scalar interaction
-mc2016_samples['2016_LFVStScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_May1_BtagSF_2016_LFVStScalarU_UL/230501_150328/0000/'], 'mc','LFVStScalarU','2016', '','0.460','16.81','100000',100]
-mc2016_samples['2016_LFVTtScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Trilep_Inclusive_May1_BtagSF_2016_LFVTtScalarU_UL/230501_145549/0000/'], 'mc','LFVTtScalarU','2016', '','0.032','16.81','100000',100]
+mc2016_samples['2016_LFVStScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVStScalarU_UL/CRAB_UserFiles/crab_Sep11_2_Signal_2016_LFVStScalarU_UL/230911_230400/0000/'], 'mc','LFVStScalarU','2016', '','0.097','16.81','233000',233]
+mc2016_samples['2016_LFVTtScalarU'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_LFVTtScalarU_UL/CRAB_UserFiles/crab_Sep11_2_Signal_2016_LFVTtScalarU_UL/230911_230454/0000/'], 'mc','LFVTtScalarU','2016', '','0.004','16.81','237000',237]
 
 ##Real background samples
 mc2016_samples['2016_TTW'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/'], 'mc','TTW','2016', '','0.235' ,'16.81','1800823',6]

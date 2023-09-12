@@ -106,7 +106,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
   std::string string_year(year.Data());
   TFile *f_El_RECO = new TFile("data/EGM/RECO/" + year + "egammaEffi_ptAbove20.txt_EGM2D.root"); // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun2LegacyAnalysis
-  TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/" + year + "egammaEffi.txt_EGM2D.root"); // Jack To-Do: TopMVA ID SF 2016APV,2017,2018
+  TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/" + year + "egammaEffi.txt_EGM2D.root"); 
   TFile *f_Mu_RECO = new TFile("data/MUO/RECO/" + year + "Efficiency_muon_generalTracks_trackerMuon.root"); // https://gitlab.cern.ch/cms-muonPOG/muonefficiencies/-/tree/master/Run2/UL
   TFile *f_Mu_ID = new TFile("data/MUO/TOPMVASF/v1/Medium/" + year + "NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt.root");
   TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root"); // https://github.com/cms-tau-pog/TauIDSFs/tree/master/data
@@ -127,7 +127,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_TRG_emu = *(TH2F*)f_TRG->Get("emu");
   const auto sf_TRG_mue = *(TH2F*)f_TRG->Get("mue");
   const auto sf_TRG_mumu = *(TH2F*)f_TRG->Get("mumu");
-  const auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection"); // Jack To-Do: 2016APV, 2017, 2018
+  const auto sf_Btag_corr = *(TH2F*)f_Btag_corr->Get("2DBtagShapeCorrection"); 
   f_El_RECO->Close();
   f_El_ID->Close();
   f_Mu_RECO->Close();
