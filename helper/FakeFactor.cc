@@ -1,5 +1,5 @@
 const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
-const TString SAMPLES[5] = {"Data", "TX", "VV", "DY", "TT"};
+const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT"};
 const TString CHARGES[1] = {"OS"/*, "SS"*/};
 const TString CHANNELS[2] = {"ee", /*"emu", */"mumu"};
 const TString REGIONS[5] = {"ll", "llStl300", "llbtagg1p3", "llMetg20Jetgeq1B1",
@@ -46,6 +46,7 @@ void FakeFactor() {
         for (TString channel : CHANNELS) {
           for (TString region : REGIONS) {
             for (TString var : VARS) {
+
               TString name = charge + "_" + channel + "_" + region + "_" + var;
               TString key = year + "_" + name + "_" + sample;
               TH2F* h = (TH2F*) f->Get<TH2F>(name)->Clone();
@@ -60,8 +61,8 @@ void FakeFactor() {
               }
               H2.emplace(std::make_pair(key, h));
 
-              // for (Int_t pt = 0; pt < N_PT - 1; pt++) {
               for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
+
                 // snprintf(nameBin, 500, name + "_pt%.1fto%.1f", PT_BINS[pt], PT_BINS[pt + 1]);
                 snprintf(nameBin, 500, name + "_pt%.0fto%.0f", PT_BINS[pt], PT_BINS[pt + 1]);
                 TString keyBin = year + "_" + nameBin + "_" + sample;
@@ -78,6 +79,7 @@ void FakeFactor() {
                 H2.emplace(std::make_pair(keyBin, hBin));
 
                 for (Int_t dm : DM) {
+
                   // snprintf(nameDM, 500, name + "_pt%.1fto%.1f_dm%d", PT_BINS[pt], PT_BINS[pt + 1], dm);
                   snprintf(nameDM, 500, name + "_pt%.0fto%.0f_dm%d", PT_BINS[pt], PT_BINS[pt + 1], dm);
                   TString keyDM = year + "_" + nameDM + "_" + sample;
@@ -111,6 +113,7 @@ void FakeFactor() {
   // Do fake factor estimation
   char hKey[500];
   TString key, pName;
+  Double_t results[6];
   std::vector<TH2F*> hEmpty{};
   for (TString year : YEARS) {
     for (TString charge : CHARGES) {
@@ -124,48 +127,77 @@ void FakeFactor() {
             std::vector<std::vector<Double_t>> resEstPred{{}, {}};
             std::vector<std::vector<Double_t>> resEstPredErr{{}, {}};
 
-            
-
-            for (TString sample : SAMPLES) {
-
-              // Plot some of the 2D histograms
-              // key = year + "_" + charge + "_" + channel + "_" + region + "_" + var + "_" + sample;
-              // pName = "../plot/" + key + ".pdf";
-              // PlotTH2F(H2.at(key), "All Events", "Tau vs Jets WP", xBinLabels, yBinLabels,
-              //   GetLumi(year), pName);
-
-              // Do validation of fake factor estimation
-              std::vector<std::vector<Double_t>> resValFF{{}};
-              std::vector<std::vector<Double_t>> resValFFErr{{}};
-              std::vector<std::vector<Double_t>> resValPred{{}, {}};
-              std::vector<std::vector<Double_t>> resValPredErr{{}, {}};
-
-              for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
-
+            for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
+              std::vector<TH2F*> hMC{};
+              for (int s = 1; s < SAMPLES.size(); s++) {
+                // snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + region + "_"
+                //   + var + "_pt%.1fto%.1f_" + SAMPLES[s], PT_BINS[pt], PT_BINS[pt + 1]);
                 snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + region + "_"
-                  + var + "_pt%.0fto%.0f_" + sample, PT_BINS[pt], PT_BINS[pt + 1]);
-                Double_t results[6];
-
-                Estimate(H2.at(hKey), hEmpty, 1, 5, results);
-                resValFF.at(0).push_back(results[0]);
-                resValFFErr.at(0).push_back(results[1]);
-                resValPred.at(0).push_back(results[2]);
-                resValPredErr.at(0).push_back(results[3]);
-                resValPred.at(1).push_back(results[4]);
-                resValPredErr.at(1).push_back(results[5]);
-
-                for (TString dm : DM) {
-                  //
-                }
+                  + var + "_pt%.0fto%.0f_" + SAMPLES[s], PT_BINS[pt], PT_BINS[pt + 1]);
+                hMC.push_back(H2.at(hKey));
               }
+              // snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + region + "_"
+              //   + var + "_pt%.1fto%.1f_Data", PT_BINS[pt], PT_BINS[pt + 1]);
+              snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + region + "_"
+                + var + "_pt%.0fto%.0f_Data", PT_BINS[pt], PT_BINS[pt + 1]);
+              // std::cout << hKey << std::endl;
+              Estimate(H2.at(hKey), hMC, 1, 5, results);
+              resEstFF.at(0).push_back(results[0]);
+              resEstFFErr.at(0).push_back(results[1]);
+              resEstPred.at(0).push_back(results[2]);
+              resEstPredErr.at(0).push_back(results[3]);
+              resEstPred.at(1).push_back(results[4]);
+              resEstPredErr.at(1).push_back(results[5]);
 
-              pName = year + "_" + charge + "_" + channel + "_" + region + "_" + var + "_" + sample;
-              // Plot validation fake factors
-              PlotTH1F(pName + "_ptValFF", "Tau p_{T}", "Fake Factor", resValFF, resValFFErr,
-                PT_BINS, {"Fake Factor"}, GetLumi(year));
-              // Plot validation estimation
-              PlotTH1F(pName + "_ptValEst", "Tau p_{T}", "Background Estimation", resValPred,
-                resValPredErr, PT_BINS, {"Estimation", "Actual"}, GetLumi(year));
+              for (TString dm : DM) {
+                //
+              }
+            }
+
+            pName = year + "_" + charge + "_" + channel + "_" + region + "_" + var;
+            PlotTH1F(pName + "_ptEstFF", "Tau p_{T}", "Fake Factor", resEstFF, resEstFFErr,
+              PT_BINS, {"Fake Factor"}, GetLumi(year));
+            // PlotTH1F(pName + "_ptValEst", "Tau p_{T}", "Background Estimation", resEstPred,
+            //   resEstPredErr, PT_BINS, {"Estimation", "Actual"}, GetLumi(year));
+
+            // Plot some of the 2D histograms
+            // for (TString sample : SAMPLES) {
+            //   key = year + "_" + charge + "_" + channel + "_" + region + "_" + var + "_" + sample;
+            //   pName = "../plot/" + key + ".pdf";
+            //   PlotTH2F(H2.at(key), "All Events", "Tau vs Jets WP", xBinLabels, yBinLabels,
+            //     GetLumi(year), pName);
+            // }
+
+            // Do validation of fake factor estimation
+            for (TString sample : SAMPLES) {
+              if (sample == "TT" || sample == "DY") {
+
+                std::vector<std::vector<Double_t>> resValFF{{}};
+                std::vector<std::vector<Double_t>> resValFFErr{{}};
+                std::vector<std::vector<Double_t>> resValPred{{}, {}};
+                std::vector<std::vector<Double_t>> resValPredErr{{}, {}};
+
+                for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
+
+                  snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + region + "_"
+                    + var + "_pt%.0fto%.0f_" + sample, PT_BINS[pt], PT_BINS[pt + 1]);
+                  // Double_t results[6];
+
+                  Estimate(H2.at(hKey), hEmpty, 1, 5, results);
+                  resValFF.at(0).push_back(results[0]);
+                  resValFFErr.at(0).push_back(results[1]);
+                  resValPred.at(0).push_back(results[2]);
+                  resValPredErr.at(0).push_back(results[3]);
+                  resValPred.at(1).push_back(results[4]);
+                  resValPredErr.at(1).push_back(results[5]);
+                }
+
+                pName = year + "_" + charge + "_" + channel + "_" + region + "_" + var + "_" + sample;
+                PlotTH1F(pName + "_ptValFF", "Tau p_{T}", "Fake Factor", resValFF, resValFFErr,
+                  PT_BINS, {"Fake Factor"}, GetLumi(year));
+                PlotTH1F(pName + "_ptValEst", "Tau p_{T}", "Background Estimation", resValPred,
+                  resValPredErr, PT_BINS, {"Estimation", "Actual"}, GetLumi(year));
+              }
             }
           }
         }
