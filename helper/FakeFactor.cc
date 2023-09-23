@@ -316,7 +316,7 @@ void FakeFactor() {
       }
     }
 
-    TString filename = year + "_TauFakeFactors.root";
+    TString filename = year + "_JetToTauFakeFactors.root";
     TFile fOut (filename, "RECREATE");
     for (TH1F* h : HFakeFactors) {
       h->Write("", TObject::kOverwrite);
