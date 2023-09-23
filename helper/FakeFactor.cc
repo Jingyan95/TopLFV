@@ -207,14 +207,14 @@ void FakeFactor() {
               resEstPredErr.at(1).push_back(results[5]);
             }
             pName = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var;
-            TH1F* hFFPt = new TH1F(pName + "_ptEstFF", "", PT_BINS.size() - 1, PT_BINS.data());
+            TH1F* hPredPt = new TH1F(pName + "_ptBkgPred", "", PT_BINS.size() - 1, PT_BINS.data());
             for (int b = 0; b < resEstFF.size(); b++) {
-              hFFPt->SetBinContent(b + 1, resEstFF.at(b));
-              hFFPt->SetBinError(b + 1, resEstFFErr.at(b));
+              hPredPt->SetBinContent(b + 1, resEstPred.at(0).at(b));
+              hPredPt->SetBinError(b + 1, resEstPredErr.at(0).at(b));
             }
-            HFakeFactors.push_back(hFFPt);
+            HFakeFactors.push_back(hPredPt);
             if (doDetailedPlots) {
-              PlotTH1F(pName + "_ptEstFF", "Tau p_{T}", "Fake Factor", {hFFPt},
+              PlotTH1F(pName + "_ptEstFF", "Tau p_{T}", "Fake Factor", {hPredPt},
                 {"Fake Factor"}, r, GetLumi(year));
               PlotTH1F(pName + "_ptEstComp", "Tau p_{T}", "Background Estimation", resEstPred,
                 resEstPredErr, PT_BINS, {"Fake Taus", "Data Taus"}, r, GetLumi(year));
@@ -243,14 +243,14 @@ void FakeFactor() {
               resEstPredErr.at(1).push_back(results[5]);
             }
             pName = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var;
-            TH1F* hFFEta = new TH1F(pName + "_etaEstFF", "", ETA_BINS.size() - 1, ETA_BINS.data());
+            TH1F* hPredEta = new TH1F(pName + "_etaBkgPred", "", ETA_BINS.size() - 1, ETA_BINS.data());
             for (int b = 0; b < resEstFF.size(); b++) {
-              hFFEta->SetBinContent(b + 1, resEstFF.at(b));
-              hFFEta->SetBinError(b + 1, resEstFFErr.at(b));
+              hPredEta->SetBinContent(b + 1, resEstPred.at(0).at(b));
+              hPredEta->SetBinError(b + 1, resEstPredErr.at(0).at(b));
             }
-            HFakeFactors.push_back(hFFEta);
+            HFakeFactors.push_back(hPredEta);
             if (doDetailedPlots) {
-              PlotTH1F(pName + "_etaEstFF", "Tau #eta", "Fake Factor", {hFFEta},
+              PlotTH1F(pName + "_etaEstFF", "Tau #eta", "Fake Factor", {hPredEta},
                 {"Fake Factor"}, r, GetLumi(year));
               PlotTH1F(pName + "_etaEstComp", "Tau #eta", "Background Estimation", resEstPred,
                 resEstPredErr, ETA_BINS, {"Fake Taus", "All Taus"}, r, GetLumi(year));
@@ -317,7 +317,7 @@ void FakeFactor() {
     }
   }
 
-  TFile fOut ("TauFakeFactors.root", "RECREATE");
+  TFile fOut ("FakeTauBackground.root", "RECREATE");
   for (TH1F* h : HFakeFactors) {
     h->Write("", TObject::kOverwrite);
   }
