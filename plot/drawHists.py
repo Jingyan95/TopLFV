@@ -55,7 +55,7 @@ verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
 
 loc = os.path.dirname(sys.path[0]) + '/'
-HistAddress = loc + 'hists/'
+HistAddress = loc + 'hists/Combine/'
 
 for numyear, nameyear in enumerate(year_RunII):
     if name == nameyear or name == 'RunII':
@@ -66,7 +66,7 @@ SamplesName = ["Data", "t#bar{t}X", "VV", "DY", "t#bar{t}", "C_{e#mutu}", "C_{e#
 SamplesNameStack = ["Data", "t#bar{t}+X", "VV(V)", "DY", "t#bar{t}", "CLFV e#mutu", "CLFV e#tautu", "CLFV #mu#tautu"]
 SamplesNameCombine = ["data_obs_llStg300OffZbtagl1p3", "ttX_llStg300OffZbtagl1p3", "VV_llStg300OffZbtagl1p3", "DY_llStg300OffZbtagl1p3", "tt_llStg300OffZbtagl1p3", "emu_llStg300OffZbtagl1p3", "eta_llStg300OffZbtagl1p3", "muta_llStg300OffZbtagl1p3"]
 
-colors = [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray,ROOT.kCyan]
+colors = [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray,ROOT.kPink]
 markerStyle = [20, 25, 26, 27, 28, 29, 30, 31]
 
 SaveMVA = False
@@ -129,7 +129,6 @@ for numyear, nameyear in enumerate(year):
                     #StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
                     #CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
-fout = ROOT.TFile("2016_llStg300OffZbtagl1p3.root","recreate")
 for numyear, nameyear in enumerate(year):
     for numreg, namereg in enumerate(regions):
         H = []
@@ -142,8 +141,6 @@ for numyear, nameyear in enumerate(year):
                     h += Hists[numyear][f][numc][numch][numreg][11]
             h.SetFillColor(colors[f])
             h.SetName(SamplesNameCombine[f])
-            if (namereg == 'llStg300OffZbtagl1p3') and ('emu' not in SamplesNameCombine[f]):
-                h.Write()
             if 'LFV' not in Samples[f]:
                 h.SetLineColor(colors[0])
                 H.append(h)
@@ -151,5 +148,3 @@ for numyear, nameyear in enumerate(year):
                 h.SetLineColor(colors[f])
                 HSignal.append(h)
         SummaryPlot(H, HSignal, SamplesNameStack, namereg, regionsName[numreg], nameyear)
-
-    fout.Close()
