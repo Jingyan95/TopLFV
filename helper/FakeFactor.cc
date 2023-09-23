@@ -166,8 +166,8 @@ void FakeFactor() {
   TString key, pName;
   Double_t results[6];
   std::vector<TH2F*> hEmpty{};
-  std::vector<TH1F*> HFakeFactors{};
   for (TString year : YEARS) {
+    std::vector<TH1F*> HFakeFactors{};
     for (TString charge : CHARGES) {
       for (TString channel : CHANNELS) {
         // for (TString region : REGIONS) {
@@ -207,14 +207,14 @@ void FakeFactor() {
               resEstPredErr.at(1).push_back(results[5]);
             }
             pName = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var;
-            TH1F* hPredPt = new TH1F(pName + "_ptBkgPred", "", PT_BINS.size() - 1, PT_BINS.data());
+            TH1F* hFFPt = new TH1F(pName + "_ptEstFF", "", PT_BINS.size() - 1, PT_BINS.data());
             for (int b = 0; b < resEstFF.size(); b++) {
-              hPredPt->SetBinContent(b + 1, resEstPred.at(0).at(b));
-              hPredPt->SetBinError(b + 1, resEstPredErr.at(0).at(b));
+              hFFPt->SetBinContent(b + 1, resEstFF.at(b));
+              hFFPt->SetBinError(b + 1, resEstFFErr.at(b));
             }
-            HFakeFactors.push_back(hPredPt);
+            HFakeFactors.push_back(hFFPt);
             if (doDetailedPlots) {
-              PlotTH1F(pName + "_ptEstFF", "Tau p_{T}", "Fake Factor", {hPredPt},
+              PlotTH1F(pName + "_ptEstFF", "Tau p_{T}", "Fake Factor", {hFFPt},
                 {"Fake Factor"}, r, GetLumi(year));
               PlotTH1F(pName + "_ptEstComp", "Tau p_{T}", "Background Estimation", resEstPred,
                 resEstPredErr, PT_BINS, {"Fake Taus", "Data Taus"}, r, GetLumi(year));
@@ -243,14 +243,14 @@ void FakeFactor() {
               resEstPredErr.at(1).push_back(results[5]);
             }
             pName = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var;
-            TH1F* hPredEta = new TH1F(pName + "_etaBkgPred", "", ETA_BINS.size() - 1, ETA_BINS.data());
+            TH1F* hFFEta = new TH1F(pName + "_etaEstFF", "", ETA_BINS.size() - 1, ETA_BINS.data());
             for (int b = 0; b < resEstFF.size(); b++) {
-              hPredEta->SetBinContent(b + 1, resEstPred.at(0).at(b));
-              hPredEta->SetBinError(b + 1, resEstPredErr.at(0).at(b));
+              hFFEta->SetBinContent(b + 1, resEstFF.at(b));
+              hFFEta->SetBinError(b + 1, resEstFFErr.at(b));
             }
-            HFakeFactors.push_back(hPredEta);
+            HFakeFactors.push_back(hFFEta);
             if (doDetailedPlots) {
-              PlotTH1F(pName + "_etaEstFF", "Tau #eta", "Fake Factor", {hPredEta},
+              PlotTH1F(pName + "_etaEstFF", "Tau #eta", "Fake Factor", {hFFEta},
                 {"Fake Factor"}, r, GetLumi(year));
               PlotTH1F(pName + "_etaEstComp", "Tau #eta", "Background Estimation", resEstPred,
                 resEstPredErr, ETA_BINS, {"Fake Taus", "All Taus"}, r, GetLumi(year));
@@ -315,13 +315,14 @@ void FakeFactor() {
         }
       }
     }
-  }
 
-  TFile fOut ("FakeTauBackground.root", "RECREATE");
-  for (TH1F* h : HFakeFactors) {
-    h->Write("", TObject::kOverwrite);
+    TString filename = year + "_TauFakeFactors.root";
+    TFile fOut (filename, "RECREATE");
+    for (TH1F* h : HFakeFactors) {
+      h->Write("", TObject::kOverwrite);
+    }
+    fOut.Close();
   }
-  fOut.Close();
 }
 
 
