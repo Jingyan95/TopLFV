@@ -279,17 +279,13 @@ public :
   typedef std::vector<Dim2> Dim3;
   typedef std::vector<Dim3> Dim4;
 
-  typedef std::vector<TH2F*> Dim2D_1;
-  typedef std::vector<Dim2D_1> Dim2D_2;
-  typedef std::vector<Dim2D_2> Dim2D_3;
-  typedef std::vector<Dim2D_3> Dim2D_4;
-
   // Utility functions
   int rInd(std::vector<TString> R, TString name);
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
   float scale_factor(const TH2F* h, float X, float Y, TString uncert);
   int char_to_int(UChar_t wp);
+  double getFF(double ff);
 
 private:
   static std::mutex mtx_; // Standard mutex to achieve synchronization
@@ -533,6 +529,13 @@ int MyAnalysis::char_to_int(UChar_t wp) {
     power++;
   }
   return power;
+}
+
+double MyAnalysis::getFF(double ff) {
+  double fake = ff;
+  if (ff < 0.0) fake = 0.0;
+  if (ff > 1.0) fake = 1.0;
+  return 1.0 - fake;
 }
 
 Bool_t MyAnalysis::Notify() {
