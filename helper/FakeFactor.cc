@@ -126,11 +126,11 @@ void FakeFactor() {
 
   // Set negative event counts due to NLO low statistics to 0
   for (auto it = H2.cbegin(); it != H2.cend(); it++) {
-    for (int j = 1; j <= it->second->GetNbinsX(); j++) {
-      for (int k = 1; k <= it->second->GetNbinsY(); k++) {
-        if (it->second->GetBinContent(j, k) < 0) {
-          it->second->SetBinContent(j, k, 0.0);
-          it->second->SetBinError(j, k, 0.0);
+    for (int i = 1; i <= it->second->GetNbinsX(); i++) {
+      for (int j = 1; j <= it->second->GetNbinsY(); j++) {
+        if (it->second->GetBinContent(i, j) < 0.0) {
+          it->second->SetBinContent(i, j, 0.0);
+          it->second->SetBinError(i, j, 0.0);
         }
       }
     }
