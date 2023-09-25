@@ -66,7 +66,7 @@ SamplesName = ["Data", "t#bar{t}X", "VV", "DY", "t#bar{t}", "C_{e#mutu}", "C_{e#
 SamplesNameStack = ["Data", "t#bar{t}+X", "VV(V)", "DY", "t#bar{t}", "CLFV e#mutu", "CLFV e#tautu", "CLFV #mu#tautu"]
 SamplesNameCombine = ["data_obs_llStg300OffZbtagl1p3", "ttX_llStg300OffZbtagl1p3", "VV_llStg300OffZbtagl1p3", "DY_llStg300OffZbtagl1p3", "tt_llStg300OffZbtagl1p3", "emu_llStg300OffZbtagl1p3", "eta_llStg300OffZbtagl1p3", "muta_llStg300OffZbtagl1p3"]
 
-colors = [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray,ROOT.kPink]
+colors = [ROOT.kBlack,ROOT.kYellow,ROOT.kGreen,ROOT.kOrange-3,ROOT.kRed-4,ROOT.kViolet+1,ROOT.kGray,ROOT.kCyan]
 markerStyle = [20, 25, 26, 27, 28, 29, 30, 31]
 
 SaveMVA = False
@@ -126,7 +126,7 @@ for numyear, nameyear in enumerate(year):
                         h2.SetMarkerColor(colors[f])
                         h2.SetMarkerStyle(markerStyle[f])
                         H2.append(h2)
-                    #StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
+                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], nameyear, namevar,varsName[numvar])
                     #CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
 for numyear, nameyear in enumerate(year):
