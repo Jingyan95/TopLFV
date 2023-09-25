@@ -532,10 +532,8 @@ int MyAnalysis::char_to_int(UChar_t wp) {
 }
 
 double MyAnalysis::getFF(double ff) {
-  double fake = ff;
-  if (ff < 0.0) fake = 0.0;
-  if (ff > 1.0) fake = 1.0;
-  return 1.0 - fake;
+  if (ff < 0.0) std::cout << "SOMETHING IS WRONG" << std::endl;
+  return ff > 1.0 ? 1.0 : 1.0 - ff;
 }
 
 Bool_t MyAnalysis::Notify() {
