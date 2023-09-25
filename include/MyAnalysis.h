@@ -532,7 +532,6 @@ int MyAnalysis::char_to_int(UChar_t wp) {
 }
 
 double MyAnalysis::getFF(double ff) {
-  if (ff < 0.0) std::cout << "SOMETHING IS WRONG" << std::endl;
   return ff > 1.0 ? 1.0 : 1.0 - ff;
 }
 

@@ -103,6 +103,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"St",               {35,   20,    70,   600}},
     {"btagSum",          {36,   25,     0,   2.5}}
   };
+  const std::vector<Double_t> ff_pt_bins = {20.0, 40.0, 60.0, 100.0, 220.0};
+  const std::vector<Double_t> ff_eta_bins = {-2.3, -1.4, 1.4, 2.3};
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
   Dim4 Hists(Dim4(charges.size(), Dim3(channels.size(), Dim2(regions.size(), Dim1(vars.size())))));
@@ -155,12 +157,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_Ta_ID_e = *(TH1F*) f_Ta_ID_e->Get("VVLoose");
   const auto sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
   const auto sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
-  const auto ff_Ta_OS_ee_llMetg20Jetgeq1B0 = *(TH1F*) f_Ta_JetFF->Get(year + "_OS_ee_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_mumu_llMetg20Jetgeq1B0 = *(TH1F*) f_Ta_JetFF->Get(year + "_OS_mumu_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_ee_llStl300 = *(TH1F*) f_Ta_JetFF->Get(year + "_OS_ee_llStl300_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_mumu_llStl300 = *(TH1F*) f_Ta_JetFF->Get(year + "_OS_mumu_llStl300_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_ee_llbtagg1p3 = *(TH1F*) f_Ta_JetFF->Get(year + "_OS_ee_llbtagg1p3_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_mumu_llbtagg1p3 = *(TH1F*) f_Ta_JetFF->Get(year + "_OS_mumu_llbtagg1p3_TauIdvsOnZ_ptEstFF");
+  const auto ff_Ta_OS_ee_llMetg20Jetgeq1B0 = *(TH1F*) f_Ta_JetFF->Get("OS_ee_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEstFF");
+  const auto ff_Ta_OS_mumu_llMetg20Jetgeq1B0 = *(TH1F*) f_Ta_JetFF->Get("OS_mumu_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEstFF");
+  const auto ff_Ta_OS_ee_llStl300 = *(TH1F*) f_Ta_JetFF->Get("OS_ee_llStl300_TauIdvsOnZ_ptEstFF");
+  const auto ff_Ta_OS_mumu_llStl300 = *(TH1F*) f_Ta_JetFF->Get("OS_mumu_llStl300_TauIdvsOnZ_ptEstFF");
+  const auto ff_Ta_OS_ee_llbtagg1p3 = *(TH1F*) f_Ta_JetFF->Get("OS_ee_llbtagg1p3_TauIdvsOnZ_ptEstFF");
+  const auto ff_Ta_OS_mumu_llbtagg1p3 = *(TH1F*) f_Ta_JetFF->Get("OS_mumu_llbtagg1p3_TauIdvsOnZ_ptEstFF");
   const auto sf_Btag_corr = *(TH2F*) f_Btag_corr->Get("2DBtagShapeCorrection");
   f_El_RECO->Close();
   f_El_ID->Close();
@@ -364,34 +366,21 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Jet to tau fake factor weight calculated here for specific charges/channels
     tauPt = Event->ta1()->pt_;
     tauEta = Event->ta1()->eta_;
-    if (tauPt < 40.0) {
-      weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(1));
-      weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(1));
-      weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(1));
-      weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(1));
-      weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(1));
-      weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(1));
-    } else if (tauPt > 40.0 && tauPt < 60.0) {
-      weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(2));
-      weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(2));
-      weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(2));
-      weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(2));
-      weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(2));
-      weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(2));
-    } else if (tauPt > 60.0 && tauPt < 100.0) {
-      weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(3));
-      weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(3));
-      weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(3));
-      weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(3));
-      weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(3));
-      weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(3));
-    } else if (tauPt > 100.0) {
-      weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(4));
-      weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(4));
-      weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(4));
-      weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(4));
-      weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(4));
-      weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(4));
+    for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
+      if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
+        for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
+          if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
+            weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
+            weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
+            weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1));
+            weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1));
+            weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
+            weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
+            break;
+          }
+        }
+        break;
+      }
     }
 
     // MC weights
