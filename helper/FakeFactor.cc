@@ -19,7 +19,6 @@ const TString VARS[1] = {"TauIdvsOnZ"};
 const std::vector<Double_t> PT_BINS = {20.0, 40.0, 60.0, 100.0, 220.0};
 const std::vector<Double_t> ETA_BINS = {-2.3, -1.4, 1.4, 2.3};
 const std::vector<Int_t> DM = {0, 1, 10, 11};
-const std::vector<Int_t> DM_BINS = {0, 1, 2};
 
 // Plot colors
 const Int_t COLORS[3] = {4, 2};
@@ -28,7 +27,7 @@ const Int_t COLORS[3] = {4, 2};
 const std::vector<TString> ZBinLabels{"On Z", "Off Z"};
 const std::vector<TString> WPBinLabels{"VVVLoose", "VVLoose", "VLoose", "Loose",
   "Medium", "Tight", "VTight", "VVTight"};
-const std::vector<TString> DMBinLabels{"0", "1", "10", "11"};
+// const std::vector<TString> DMBinLabels{"0", "1", "10", "11"};
 
 // --------------------------------- //
 bool doDetailedPlots = false;
