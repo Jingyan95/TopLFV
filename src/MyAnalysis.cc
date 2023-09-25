@@ -63,102 +63,71 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     /*11*/ "llStg300btagl1p3", // New SR (Loose) background estimation
     /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
   };
-  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
-  // const std::map<TString, std::vector<float>> vars = {
-  //   {"llM",              {0,    10,     0,   180}},
-  //   {"llDr",             {1,    10,     0,   4.5}},
-  //   {"lep1Pt",           {2,    10,    30,   230}},
-  //   {"lep2Pt",           {3,    10,    20,   180}},
-  //   {"elLeptonMVAv1",    {4,    50,     0,     1}},
-  //   {"elLeptonMVAv2",    {5,    50,     0,     1}},
-  //   {"muLeptonMVAv1",    {6,    50,     0,     1}},
-  //   {"muLeptonMVAv2",    {7,    50,     0,     1}},
-  //   {"taPt",             {8,    20,    20,   220}},
-  //   {"taEta",            {9,    23,  -2.3,   2.3}},
-  //   {"taVsJetWP",        {10,    8,     0,     8}},
-  //   {"taVsJetMVA",       {11,   50,     0,     1}},
-  //   {"taVsElMVA",        {12,   50,     0,     1}},
-  //   {"taVsMuMVA",        {13,   50,     0,     1}},
-  //   {"taDxy",            {14,   16,  -0.1,   0.1}},
-  //   {"taDz",             {15,   16,  -0.2,   0.2}},
-  //   {"taDecayMode",      {16,   12,     0,    12}},
-  //   {"jet1Pt",           {17,   10,    25,   225}},
-  //   {"jetbtagDeepFlavB", {18,   50,     0,     1}},
-  //   {"njet",             {19,    6,     0,     6}},
-  //   {"nbjet",            {20,    4,     0,     4}},
-  //   {"MET",              {21,   10,     0,   200}},
-  //   {"subSR",            {22,   18,     0,    18}},
-  //   {"LFVemuM",          {23,   10,     0,   300}},
-  //   {"LFVetaM",          {24,   10,     0,   300}},
-  //   {"LFVmutaM",         {25,   10,     0,   300}},
-  //   {"LFVemuDr",         {26,   10,     0,   4.5}},
-  //   {"LFVetaDr",         {27,   10,     0,   4.5}},
-  //   {"LFVmutaDr",        {28,   10,     0,   4.5}},
-  //   {"LFVePt",           {29,   10,    20,   300}},
-  //   {"LFVmuPt",          {30,   10,    20,   300}},
-  //   {"LFVtaPt",          {31,   10,    20,   300}},
-  //   {"balepPt",          {32,   10,    20,   180}},
-  //   {"topmass",          {33,   10,     0,   300}},
-  //   {"Ht",               {34,   10,     0,   300}},
-  //   {"St",               {35,   20,    70,   600}},
-  //   {"btagSum",          {36,   25,     0,   2.5}}
-  // };
+  const std::vector<TString> vars{"TauIdvsOnZ"};
+  std::vector<int> unBlind{0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
   const std::vector<double> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
   const std::vector<double> etaBins{-2.3, -1.4, 1.4, 2.3};
   const std::vector<int> tauDMs{0, 1, 2, 7, 10, 11};
-  std::map<TString, std::vector<float>> vars2D;
-  vars2D.insert(std::pair<TString, std::vector<float>>("TauIdvsOnZ", {0, 2, 0, 2, 8, 0, 8}));
-  vars2D.insert(std::pair<TString, std::vector<float>>("TauIdvsOnZHadronic", {1, 2, 0, 2, 8, 0, 8}));
   char text[500];
-  float hist2DIdx = vars2D.size();
-  for (int i = 0; i < ptBins.size() - 1; i++) { // Fake tau estimate vs. pt
-    snprintf(text, 500, "TauIdvsOnZ_pt%.1fto%.1f", ptBins[i], ptBins[i + 1]);
-    vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+  std::map<TString, std::vector<float>> vars2D;
+  float hist2DIdx = 0;
+  for (TString var : vars) {
+    vars2D.insert(std::pair<TString, std::vector<float>>(var, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
     hist2DIdx++;
-    for (int tauDM : tauDMs) {
-      snprintf(text, 500, "TauIdvsOnZ_pt%.1fto%.1f_dm%d", ptBins[i], ptBins[i + 1], tauDM);
+    vars2D.insert(std::pair<TString, std::vector<float>>(var + "Hadronic", {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+    hist2DIdx++;
+    for (int i = 0; i < ptBins.size() - 1; i++) { // Fake tau estimate vs. pt
+      snprintf(text, 500, var + "_pt%.1fto%.1f", ptBins[i], ptBins[i + 1]);
       vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
       hist2DIdx++;
+      snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f", ptBins[i], ptBins[i + 1]);
+      vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+      hist2DIdx++;
+      for (int tauDM : tauDMs) { // Fake tau estimate vs. pt and tau decay mode
+        snprintf(text, 500, var + "_pt%.1fto%.1f_dm%d", ptBins[i], ptBins[i + 1], tauDM);
+        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+        hist2DIdx++;
+        snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_dm%d", ptBins[i], ptBins[i + 1], tauDM);
+        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+        hist2DIdx++;
+      }
     }
-  }
-  for (int i = 0; i < etaBins.size() - 1; i++) { // Fake tau estimate vs. eta
-    snprintf(text, 500, "TauIdvsOnZ_eta%.1fto%.1f", etaBins[i], etaBins[i + 1]);
-    vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-    hist2DIdx++;
-    for (int tauDM : tauDMs) {
-      snprintf(text, 500, "TauIdvsOnZ_eta%.1fto%.1f_dm%d", etaBins[i], etaBins[i + 1], tauDM);
+    for (int i = 0; i < etaBins.size() - 1; i++) { // Fake tau estimate vs. eta
+      snprintf(text, 500, var + "_eta%.1fto%.1f", etaBins[i], etaBins[i + 1]);
       vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
       hist2DIdx++;
+      snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f", etaBins[i], etaBins[i + 1]);
+      vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+      hist2DIdx++;
+      for (int tauDM : tauDMs) { // Fake tau estimate vs. eta and tau decay mode
+        snprintf(text, 500, var + "_eta%.1fto%.1f_dm%d", etaBins[i], etaBins[i + 1], tauDM);
+        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+        hist2DIdx++;
+        snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f_dm%d", etaBins[i], etaBins[i + 1], tauDM);
+        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+        hist2DIdx++;
+      }
+    }
+    for (int i = 0; i < ptBins.size() - 1; i++) { // Fake tau estimate vs. pt and eta
+      for (int j = 0; j < etaBins.size() - 1; j++) {
+        snprintf(text, 500, var + "_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[i], ptBins[i + 1], etaBins[j], etaBins[j + 1]);
+        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+        hist2DIdx++;
+        snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[i], ptBins[i + 1], etaBins[j], etaBins[j + 1]);
+        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
+        hist2DIdx++;
+      }
     }
   }
 
-  // Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
-  // Dim4 Hists(Dim4(charges.size(), Dim3(channels.size(), Dim2(regions.size(), Dim1(vars.size())))));
-  // TH1F *h_test;
-  Dim2D_4 Hists2D(Dim2D_4(charges.size(), Dim2D_3(channels.size(), Dim2D_2(regions.size(), Dim2D_1(vars2D.size())))));
+  Dim4 Hists2D(Dim4(charges.size(), Dim3(channels.size(), Dim2(regions.size(), Dim1(vars2D.size())))));
   TH2F* h2_test;
   std::stringstream name;
 
-  // Creating histograms
+  // Create 2D histograms for background estimation
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
-
-        // Create 1D histograms
-        // for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
-        //   name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_; // Adding working ID to avoid mem leak
-        //   if (it->first.Contains("llM") && i == 0 && j != 1) {
-        //     h_test = new TH1F((name.str()).c_str(), "", 18, llMBin);
-        //   } else {
-        //     h_test = new TH1F((name.str()).c_str(), "", it->second.at(1), it->second.at(2), it->second.at(3));
-        //   }
-        //   h_test->StatOverflows(kTRUE);
-        //   h_test->Sumw2(kTRUE);
-        //   Hists[i][j][k][it->second.at(0)] = h_test;
-        //   name.str("");
-        // }
-
-        // Create 2D histograms for background estimation
         for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
           name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_;
           h2_test = new TH2F((name.str()).c_str(), "",
@@ -172,13 +141,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
     }
   }
-
-  // TH2F *h_2D_wBtagSF;
-  // TH2F *h_2D_woBtagSF;
-  // Double_t HtBin[6] = {0, 30, 60, 100, 160, 250};
-  // Double_t njetBin[6] = {0, 1, 2, 3, 4, 5};
-  // h_2D_wBtagSF = new TH2F("2D_wBtagSF", "2D_wBtagSF", 5, njetBin, 5, HtBin);
-  // h_2D_woBtagSF = new TH2F("2D_woBtagSF", "2D_woBtagSF", 5, njetBin, 5, HtBin);
 
   std::string string_year(year.Data());
   TFile *f_El_RECO = new TFile("data/EGM/RECO/" + year + "egammaEffi_ptAbove20.txt_EGM2D.root");
@@ -402,8 +364,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
     }
     weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
-    // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
-    // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF());
 
     int rIdx = rInd(regions, "ll"); // No cuts
     reg.push_back(rIdx);
@@ -477,70 +437,74 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     }
 
     // Filling histograms
+    tauPt = Event->ta1()->pt_;
+    tauEta = Event->ta1()->eta_;
+    tauWP = char_to_int(Event->ta1()->mva1WP_);
+    tauDM = Event->ta1()->decaymode_;
     for (int i = 0; i < reg.size(); ++i) {
-      tauPt = Event->ta1()->pt_;
-      tauEta = Event->ta1()->eta_;
-      tauWP = char_to_int(Event->ta1()->mva1WP_);
-      tauDM = Event->ta1()->decaymode_;
-
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
-      // if (Event->lfvch() != 2) {
-      //   Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "elLeptonMVAv1")]->Fill(Event->el1()->mva1_, wgt[i]);
-      //   Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "elLeptonMVAv2")]->Fill(Event->el1()->mva2_, wgt[i]);
-      // }
-      // if (Event->lfvch() != 1) {
-      //   Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "muLeptonMVAv1")]->Fill(Event->mu1()->mva1_, wgt[i]);
-      //   Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "muLeptonMVAv2")]->Fill(Event->mu1()->mva2_, wgt[i]);
-      // }
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEta")]->Fill(tauEta, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetWP")]->Fill(tauWP, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsElMVA")]->Fill(Event->ta1()->mva2_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsMuMVA")]->Fill(Event->ta1()->mva3_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDecayMode")]->Fill(tauDM, wgt[i]);
-      // if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
-      // if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jetbtagDeepFlavB")]->Fill(Event->jet1()->bt_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "njet")]->Fill(Event->njet(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "nbjet")]->Fill(Event->nbjet(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "MET")]->Fill(Event->MET()->Pt(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "subSR")]->Fill(Event->SRindex(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVemuM")+Event->lfvch()]->Fill(Event->LFVllM(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVemuDr")+Event->lfvch()]->Fill(Event->LFVllDr(), wgt[i]);
-      // if (Event->lfvch() != 2) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVePt")]->Fill(Event->LFVe()->pt_, wgt[i]);
-      // if (Event->lfvch() != 1) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVmuPt")]->Fill(Event->LFVmu()->pt_, wgt[i]);
-      // if (Event->lfvch() != 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVtaPt")]->Fill(Event->LFVta()->pt_, wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "balepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
-      // if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "topmass")]->Fill(Event->Topmass(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
-      // Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
-
-      Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZ")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-      if (Event->ta1()->truth_ == 0) {
-        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, "TauIdvsOnZHadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-      }
-      for (int j = 0; j < ptBins.size() - 1; j++) {
-        if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
-          snprintf(text, 500, "TauIdvsOnZ_pt%.1fto%.1f", ptBins[j], ptBins[j + 1]);
-          Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-          snprintf(text, 500, "TauIdvsOnZ_pt%.1fto%.1f_dm%d", ptBins[j], ptBins[j + 1], tauDM);
-          Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-          break;
+      for (TString var : vars) {
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, var)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+        for (int j = 0; j < ptBins.size() - 1; j++) {
+          if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
+            snprintf(text, 500, var + "_pt%.1fto%.1f", ptBins[j], ptBins[j + 1]);
+            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+            snprintf(text, 500, var + "_pt%.1fto%.1f_dm%d", ptBins[j], ptBins[j + 1], tauDM);
+            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+            break;
+          }
         }
-      }
-      for (int j = 0; j < etaBins.size() - 1; j++) {
-        if (tauEta > etaBins[j] && tauEta < etaBins[j + 1]) {
-          snprintf(text, 500, "TauIdvsOnZ_eta%.1fto%.1f", etaBins[j], etaBins[j + 1]);
-          Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-          snprintf(text, 500, "TauIdvsOnZ_eta%.1fto%.1f_dm%d", etaBins[j], etaBins[j + 1], tauDM);
-          Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-          break;
+        for (int j = 0; j < etaBins.size() - 1; j++) {
+          if (tauEta > etaBins[j] && tauEta < etaBins[j + 1]) {
+            snprintf(text, 500, var + "_eta%.1fto%.1f", etaBins[j], etaBins[j + 1]);
+            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+            snprintf(text, 500, var + "_eta%.1fto%.1f_dm%d", etaBins[j], etaBins[j + 1], tauDM);
+            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+            break;
+          }
+        }
+        for (int j = 0; j < ptBins.size() - 1; j++) {
+          if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
+            for (int k = 0; k < etaBins.size() - 1; k++) {
+              if (tauEta > etaBins[k] && tauEta < etaBins[k + 1]) {
+                snprintf(text, 500, var + "_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[j], ptBins[j + 1], etaBins[k], etaBins[k + 1]);
+                Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+                break;
+              }
+            }
+            break;
+          }
+        }
+
+        if (Event->ta1()->truth_ == 0) {
+          Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, var + "Hadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+          for (int j = 0; j < ptBins.size() - 1; j++) {
+            if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
+              snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f", ptBins[j], ptBins[j + 1]);
+              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+              snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_dm%d", ptBins[j], ptBins[j + 1], tauDM);
+              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+            }
+          }
+          for (int j = 0; j < etaBins.size() - 1; j++) {
+            if (tauEta > etaBins[j] && tauEta < etaBins[j + 1]) {
+              snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f", etaBins[j], etaBins[j + 1]);
+              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+              snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f_dm%d", etaBins[j], etaBins[j + 1], tauDM);
+              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+            }
+          }
+          for (int j = 0; j < ptBins.size() - 1; j++) {
+            if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
+              for (int k = 0; k < etaBins.size() - 1; k++) {
+                if (tauEta > etaBins[k] && tauEta < etaBins[k + 1]) {
+                  snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[j], ptBins[j + 1], etaBins[k], etaBins[k + 1]);
+                  Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
+                  break;
+                }
+              }
+              break;
+            }
+          }
         }
       }
     }
@@ -557,17 +521,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
-
-        // Write 1D histograms
-        // for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
-        //   name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first;
-        //   Hists[i][j][k][it->second.at(0)]->SetName((name.str()).c_str());
-        //   Hists[i][j][k][it->second.at(0)]->Write("", TObject::kOverwrite);
-        //   delete Hists[i][j][k][it->second.at(0)];
-        //   name.str("");
-        // }
-
-        // Write 2D histograms
         for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
           name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first;
           Hists2D[i][j][k][it->second.at(0)]->SetName((name.str()).c_str());
@@ -575,16 +528,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           delete Hists2D[i][j][k][it->second.at(0)];
           name.str("");
         }
-
       }
     }
   }
 
-  // h_2D_woBtagSF->Write("", TObject::kOverwrite);
-  // h_2D_wBtagSF->Write("", TObject::kOverwrite);
-
   file_out.Close();
-  // Hists.clear();
   Hists2D.clear();
 
   // Writing summary
