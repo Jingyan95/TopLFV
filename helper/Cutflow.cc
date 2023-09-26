@@ -173,7 +173,7 @@ void Cutflow() {
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(e\\mu)<150$GeV & $m(e\\mu)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
       for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
-        if (s == 5 || s == 6) {
+        if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f \\\\\n",
@@ -209,7 +209,7 @@ void Cutflow() {
       fout << "        Region & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
       for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
-        if (s == 5 || s == 6) {
+        if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f \\\\\n",
@@ -245,7 +245,7 @@ void Cutflow() {
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
       for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
-        if (s == 5 || s == 6) {
+        if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f \\\\\n",

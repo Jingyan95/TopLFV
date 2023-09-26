@@ -366,20 +366,22 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Jet to tau fake factor weight calculated here for specific charges/channels
     tauPt = Event->ta1()->pt_;
     tauEta = Event->ta1()->eta_;
-    for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
-      if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
-        for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
-          if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
-            weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
-            weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
-            weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1));
-            weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1));
-            weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
-            weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
-            break;
+    if (!(data == "mc")) { // Apply fake factors to data only
+      for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
+        if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
+          for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
+            if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
+              weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
+              weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
+              weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1));
+              weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1));
+              weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
+              weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
+              break;
+            }
           }
+          break;
         }
-        break;
       }
     }
 
