@@ -1,5 +1,5 @@
 const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
-const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT", "StScalarU", "TtScalarU"};
+const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT", "LFVStScalarU", "LFVTtScalarU"};
 const TString CHARGES[2] = {"OS", "SS"};
 const TString CHANNELS[3] = {"ee", "emu", "mumu"};
 const std::vector<TString> REGIONS{"ll", "llStl300", "llbtagg1p3", "llMetg20Jetgeq1B1",
@@ -173,20 +173,33 @@ void Cutflow() {
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(e\\mu)<150$GeV & $m(e\\mu)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
       for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
-        snprintf(text, 1000, "        " + TABLE_LATEX[s]
-          + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f"
-          + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f \\\\\n",
-          cutflow.at(0).at(s), cutflowErr.at(0).at(s),
-          cutflow.at(1).at(s), cutflowErr.at(1).at(s),
-          cutflow.at(2).at(s), cutflowErr.at(2).at(s),
-          cutflow.at(3).at(s), cutflowErr.at(3).at(s),
-          cutflow.at(4).at(s), cutflowErr.at(4).at(s),
-          cutflow.at(5).at(s), cutflowErr.at(5).at(s));
-        fout << text;
+        if (s == 5 || s == 6) {
+          snprintf(text, 1000, "        " + TABLE_LATEX[s]
+            + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
+            + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f \\\\\n",
+            cutflow.at(0).at(s), cutflowErr.at(0).at(s),
+            cutflow.at(1).at(s), cutflowErr.at(1).at(s),
+            cutflow.at(2).at(s), cutflowErr.at(2).at(s),
+            cutflow.at(3).at(s), cutflowErr.at(3).at(s),
+            cutflow.at(4).at(s), cutflowErr.at(4).at(s),
+            cutflow.at(5).at(s), cutflowErr.at(5).at(s));
+          fout << text;
+        }
+        else {
+          snprintf(text, 1000, "        " + TABLE_LATEX[s]
+            + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f"
+            + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f \\\\\n",
+            cutflow.at(0).at(s), cutflowErr.at(0).at(s),
+            cutflow.at(1).at(s), cutflowErr.at(1).at(s),
+            cutflow.at(2).at(s), cutflowErr.at(2).at(s),
+            cutflow.at(3).at(s), cutflowErr.at(3).at(s),
+            cutflow.at(4).at(s), cutflowErr.at(4).at(s),
+            cutflow.at(5).at(s), cutflowErr.at(5).at(s));
+          fout << text;
+        }
         if (s == 0 || s == 4 || s == 6 || s == 8) fout << "        \\hline\n";
       }
-      snprintf(text, 1000, "        $S/\\sqrt{B}$"
-        + " & %.2f & %.2f & %.2f & %.2f & %.2f & %.2f \\\\\n",
+      snprintf(text, 1000, "        $S/\\sqrt{B}$ & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f \\\\\n",
         cutflow.at(0).at(9), cutflow.at(1).at(9), cutflow.at(2).at(9),
         cutflow.at(3).at(9), cutflow.at(4).at(9), cutflow.at(5).at(9));
       fout << text;
@@ -196,20 +209,33 @@ void Cutflow() {
       fout << "        Region & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
       for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
-        snprintf(text, 1000, "        " + TABLE_LATEX[s]
-          + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f"
-          + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f \\\\\n",
-          cutflow.at(6).at(s), cutflowErr.at(6).at(s),
-          cutflow.at(7).at(s), cutflowErr.at(7).at(s),
-          cutflow.at(8).at(s), cutflowErr.at(8).at(s),
-          cutflow.at(9).at(s), cutflowErr.at(9).at(s),
-          cutflow.at(10).at(s), cutflowErr.at(10).at(s),
-          cutflow.at(11).at(s), cutflowErr.at(11).at(s));
-        fout << text;
+        if (s == 5 || s == 6) {
+          snprintf(text, 1000, "        " + TABLE_LATEX[s]
+            + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
+            + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f \\\\\n",
+            cutflow.at(6).at(s), cutflowErr.at(6).at(s),
+            cutflow.at(7).at(s), cutflowErr.at(7).at(s),
+            cutflow.at(8).at(s), cutflowErr.at(8).at(s),
+            cutflow.at(9).at(s), cutflowErr.at(9).at(s),
+            cutflow.at(10).at(s), cutflowErr.at(10).at(s),
+            cutflow.at(11).at(s), cutflowErr.at(11).at(s));
+          fout << text;
+        }
+        else {
+          snprintf(text, 1000, "        " + TABLE_LATEX[s]
+            + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f"
+            + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f \\\\\n",
+            cutflow.at(6).at(s), cutflowErr.at(6).at(s),
+            cutflow.at(7).at(s), cutflowErr.at(7).at(s),
+            cutflow.at(8).at(s), cutflowErr.at(8).at(s),
+            cutflow.at(9).at(s), cutflowErr.at(9).at(s),
+            cutflow.at(10).at(s), cutflowErr.at(10).at(s),
+            cutflow.at(11).at(s), cutflowErr.at(11).at(s));
+          fout << text;
+        }
         if (s == 0 || s == 4 || s == 6 || s == 8) fout << "        \\hline\n";
       }
-      snprintf(text, 1000, "        $S/\\sqrt{B}$"
-        + " & %.2f & %.2f & %.2f & %.2f & %.2f & %.2f \\\\\n",
+      snprintf(text, 1000, "        $S/\\sqrt{B}$ & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f \\\\\n",
         cutflow.at(6).at(9), cutflow.at(7).at(9), cutflow.at(8).at(9),
         cutflow.at(9).at(9), cutflow.at(10).at(9), cutflow.at(11).at(9));
       fout << text;
@@ -219,20 +245,33 @@ void Cutflow() {
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
       for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
-        snprintf(text, 1000, "        " + TABLE_LATEX[s]
-          + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f"
-          + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f \\\\\n",
-          cutflow.at(12).at(s), cutflowErr.at(12).at(s),
-          cutflow.at(13).at(s), cutflowErr.at(13).at(s),
-          cutflow.at(14).at(s), cutflowErr.at(14).at(s),
-          cutflow.at(15).at(s), cutflowErr.at(15).at(s),
-          cutflow.at(16).at(s), cutflowErr.at(16).at(s),
-          cutflow.at(17).at(s), cutflowErr.at(17).at(s));
-        fout << text;
+        if (s == 5 || s == 6) {
+          snprintf(text, 1000, "        " + TABLE_LATEX[s]
+            + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
+            + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f \\\\\n",
+            cutflow.at(12).at(s), cutflowErr.at(12).at(s),
+            cutflow.at(13).at(s), cutflowErr.at(13).at(s),
+            cutflow.at(14).at(s), cutflowErr.at(14).at(s),
+            cutflow.at(15).at(s), cutflowErr.at(15).at(s),
+            cutflow.at(16).at(s), cutflowErr.at(16).at(s),
+            cutflow.at(17).at(s), cutflowErr.at(17).at(s));
+          fout << text;
+        }
+        else {
+          snprintf(text, 1000, "        " + TABLE_LATEX[s]
+            + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f"
+            + " & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f & %.2f$\\pm$%.2f \\\\\n",
+            cutflow.at(12).at(s), cutflowErr.at(12).at(s),
+            cutflow.at(13).at(s), cutflowErr.at(13).at(s),
+            cutflow.at(14).at(s), cutflowErr.at(14).at(s),
+            cutflow.at(15).at(s), cutflowErr.at(15).at(s),
+            cutflow.at(16).at(s), cutflowErr.at(16).at(s),
+            cutflow.at(17).at(s), cutflowErr.at(17).at(s));
+          fout << text;
+        }
         if (s == 0 || s == 4 || s == 6 || s == 8) fout << "        \\hline\n";
       }
-      snprintf(text, 1000, "        $S/\\sqrt{B}$"
-        + " & %.2f & %.2f & %.2f & %.2f & %.2f & %.2f \\\\\n",
+      snprintf(text, 1000, "        $S/\\sqrt{B}$ & %.4f & %.4f & %.4f & %.4f & %.4f & %.4f \\\\\n",
         cutflow.at(12).at(9), cutflow.at(13).at(9), cutflow.at(14).at(9),
         cutflow.at(15).at(9), cutflow.at(16).at(9), cutflow.at(17).at(9));
       fout << text;
