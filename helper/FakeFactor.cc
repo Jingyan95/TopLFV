@@ -1,7 +1,7 @@
 const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
 const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT"};
-const TString CHARGES[1] = {"OS"/*, "SS"*/};
-const TString CHANNELS[2] = {"ee", /*"emu", */"mumu"};
+const TString CHARGES[2] = {"OS", "SS"};
+const TString CHANNELS[3] = {"ee", "emu", "mumu"};
 const std::vector<TString> REGIONS{"ll", "llStl300", "llbtagg1p3", "llMetg20Jetgeq1B1",
   "llMetg20Jetgeq1B0"/*, "llStg300btagl1p3", "llStg300btagl1p3Tight"*/};
 const std::vector<std::vector<TString>> REGIONS_NAME{
