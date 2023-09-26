@@ -30,7 +30,7 @@ const std::vector<TString> WPBinLabels{"VVVLoose", "VVLoose", "VLoose", "Loose",
 // const std::vector<TString> DMBinLabels{"0", "1", "10", "11"};
 
 // --------------------------------- //
-bool doDetailedPlots = false;
+bool doDetailedPlots = true;
 // --------------------------------- //
 
 void Estimate(TH2F* hData, const vector<TH2F*>& hMC, int xCut, int yCut, Double_t results[6],
@@ -578,7 +578,7 @@ void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pNam
 
   h2->GetXaxis()->SetNoExponent();
   h2->GetYaxis()->SetNoExponent();
-  h2->GetZaxis()->SetNoExponent();
+  // h2->GetZaxis()->SetNoExponent();
 
   h2->GetXaxis()->SetTitle(xName);
   h2->GetYaxis()->SetTitle(yName);
