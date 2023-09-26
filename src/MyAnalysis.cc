@@ -157,12 +157,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_Ta_ID_e = *(TH1F*) f_Ta_ID_e->Get("VVLoose");
   const auto sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
   const auto sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
-  const auto ff_Ta_OS_ee_llMetg20Jetgeq1B0 = *(TH1F*) f_Ta_JetFF->Get("OS_ee_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_mumu_llMetg20Jetgeq1B0 = *(TH1F*) f_Ta_JetFF->Get("OS_mumu_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_ee_llStl300 = *(TH1F*) f_Ta_JetFF->Get("OS_ee_llStl300_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_mumu_llStl300 = *(TH1F*) f_Ta_JetFF->Get("OS_mumu_llStl300_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_ee_llbtagg1p3 = *(TH1F*) f_Ta_JetFF->Get("OS_ee_llbtagg1p3_TauIdvsOnZ_ptEstFF");
-  const auto ff_Ta_OS_mumu_llbtagg1p3 = *(TH1F*) f_Ta_JetFF->Get("OS_mumu_llbtagg1p3_TauIdvsOnZ_ptEstFF");
+  const auto ff_Ta_OS_ee_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_ee_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_OS_mumu_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_mumu_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_OS_ee_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_ee_llStl300_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_OS_mumu_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_mumu_llStl300_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_OS_ee_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_ee_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_OS_mumu_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_mumu_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
   const auto sf_Btag_corr = *(TH2F*) f_Btag_corr->Get("2DBtagShapeCorrection");
   f_El_RECO->Close();
   f_El_ID->Close();
