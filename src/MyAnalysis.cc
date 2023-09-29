@@ -51,7 +51,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> regions{
     /*0*/ "ll", // No cuts
     /*1*/ "llOffZMetg20Jetgeq1B1", // SR
-    /*2*/ "llOffZMetg20B2", // ttbar + jets CR
+    /*2*/ "llOffZMetg20Jetgeq1B2", // ttbar + jets CR
     /*3*/ "llOffZStg300btagl1p3", // New SR (Loose)
     /*4*/ "llOffZStg300btagl1p3Tight", // New SR (Tight)
     /*5*/ "llOnZ", // Z + jets CR
@@ -405,14 +405,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
     if (!Event->OnZ()) {
-      if (Event->MET()->Pt() > 20) {
-        if (Event->njet() >= 1 && Event->nbjet() == 1) {
+      if (Event->MET()->Pt() > 20 && Event->njet() >= 1) {
+        if (Event->nbjet() == 1) {
           rIdx = rInd(regions, "llOffZMetg20Jetgeq1B1"); // SR
           reg.push_back(rIdx);
           wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
         }
         if (Event->nbjet() == 2) {
-          rIdx = rInd(regions, "llOffZMetg20B2"); // ttbar + jets CR
+          rIdx = rInd(regions, "llOffZMetg20Jetgeq1B2"); // ttbar + jets CR
           reg.push_back(rIdx);
           wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
         }

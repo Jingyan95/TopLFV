@@ -1,9 +1,9 @@
 import math
 import gc
-import sys
+# import sys
 import ROOT
-import numpy as np
-import copy
+# import numpy as np
+# import copy
 import os
 import array
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
@@ -12,16 +12,17 @@ ROOT.TH1.AddDirectory(ROOT.kFALSE)
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetEndErrorSize(0)
 from array import array
-from ROOT import TColor
+# from ROOT import TColor
 from ROOT import TGaxis
 import gc
-from operator import truediv
-import copy
+# from operator import truediv
+# import copy
 TGaxis.SetMaxDigits(2)
 
 
-def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "region", regName = ["region", "", ""],
-              year = '2016',var = "sample", varname = "v"):
+def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "region",
+              regName = ["region", "", ""], dom = "domain", domName = ["domain", ""],
+              year = '2016', var = "sample", varname = "v"):
 
     folder = 'StackHist'
     hs = ROOT.THStack("hs", "")
@@ -46,7 +47,7 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     else:
         dummy = ROOT.TGraphAsymmErrors()
 
-    canvas = ROOT.TCanvas(year + c + ch + reg + var, year + c + ch + reg + var, 50, 50, 865, 780)
+    canvas = ROOT.TCanvas(year + c + ch + reg + dom + var, year + c + ch + reg + dom + var, 50, 50, 865, 780)
     canvas.SetGrid()
     canvas.SetBottomMargin(0.17)
     canvas.cd()
@@ -279,7 +280,9 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
     if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg):
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg)
-    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + ".pdf")
+    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom):
+        os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom)
+    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom + '/' + var + ".pdf")
     del canvas
     gc.collect()
 
