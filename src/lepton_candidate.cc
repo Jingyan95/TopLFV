@@ -1,7 +1,7 @@
 #include "lepton_candidate.h"
 
 lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, float dxy_in, float dz_in, int charge_in,
-                                   unsigned char mva1WP_in, float mva1_in, float mva2_in, float mva3_in, int index_in,
+                                   int mva1WP_in, float mva1_in, float mva2_in, float mva3_in, int index_in,
                                    int flavor_in, int truth_in, int decaymode_in) {
 
   pt_ = pt_in;

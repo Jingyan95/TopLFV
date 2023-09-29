@@ -278,14 +278,15 @@ public :
   typedef std::vector<Dim1> Dim2;
   typedef std::vector<Dim2> Dim3;
   typedef std::vector<Dim3> Dim4;
+  typedef std::vector<Dim4> Dim5;
 
   // Utility functions
   int rInd(std::vector<TString> R, TString name);
+  int dInd(std::vector<TString> D, bool tightTau);
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
   float scale_factor(const TH2F* h, float X, float Y, TString uncert);
   int char_to_int(UChar_t wp);
-  double getFF(double ff);
 
 private:
   static std::mutex mtx_; // Standard mutex to achieve synchronization
@@ -481,6 +482,11 @@ int MyAnalysis::rInd(std::vector<TString> R, TString name) {
   return iter - R.begin();
 }
 
+int MyAnalysis::dInd(std::vector<TString> D, bool tightTau) {
+  if (tightTau) return 0;
+  else return 1;
+}
+
 int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {
   return V.find(name)->second.at(0);
 }
@@ -529,10 +535,6 @@ int MyAnalysis::char_to_int(UChar_t wp) {
     power++;
   }
   return power;
-}
-
-double MyAnalysis::getFF(double ff) {
-  return ff > 1.0 ? 1.0 : 1.0 - ff;
 }
 
 Bool_t MyAnalysis::Notify() {

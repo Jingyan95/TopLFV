@@ -50,20 +50,21 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
     /*0*/ "ll", // No cuts
-    /*1*/ "llOnZMetg20Jetgeq1", // Z + jets CR
-    /*2*/ "llOffZMetg20B1", // SR
-    /*3*/ "llOffZMetg20B2", // ttbar + jets CR
-    /*4*/ "llStl300", // Generic signal-free region
+    /*1*/ "llOffZMetg20Jetgeq1B1", // SR
+    /*2*/ "llOffZMetg20B2", // ttbar + jets CR
+    /*3*/ "llOffZStg300btagl1p3", // New SR (Loose)
+    /*4*/ "llOffZStg300btagl1p3Tight", // New SR (Tight)
     /*5*/ "llOnZ", // Z + jets CR
-    /*6*/ "llbtagg1p3", // ttbar + jets CR
-    /*7*/ "llStg300OffZbtagl1p3", // New SR (Loose)
-    /*8*/ "llStg300OffZbtagl1p3Tight", // New SR (Tight)
-    /*9*/ "llMetg20Jetgeq1B1", // SR background estimation
-    /*10*/ "llMetg20Jetgeq1B0", // CR background estimation
-    /*11*/ "llStg300btagl1p3", // New SR (Loose) background estimation
-    /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
+    /*6*/ "llOnZMetg20Jetgeq1", // Z + jets CR
+    /*7*/ "llbtagg1p3", // ttbar + jets CR
+    /*8*/ "llbtagg1p3OffZ", // ttbar + jets CR
+    /*9*/ "llStl300", // Generic signal-free region
+    /*10*/ "llStl300OffZ", // Generic signal-free region
+    /*11*/ "llMetg20Jetgeq1B0", // CR background estimation
+    /*12*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
   };
   std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0};
+  std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
   const std::map<TString, std::vector<float>> vars = {
     {"llM",              {0,    10,     0,   180}},
     {"llDr",             {1,    10,     0,   4.5}},
@@ -107,7 +108,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const std::vector<Double_t> ff_eta_bins = {-2.3, -1.4, 1.4, 2.3};
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
-  Dim4 Hists(Dim4(charges.size(), Dim3(channels.size(), Dim2(regions.size(), Dim1(vars.size())))));
+  Dim5 Hists(Dim5(charges.size(), Dim4(channels.size(), Dim3(regions.size(), Dim2(domains.size(), Dim1(vars.size()))))));
   TH1F *h_test;
   std::stringstream name;
 
@@ -115,17 +116,19 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
-        for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
-          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_; // Adding working ID to avoid mem leak
-          if (it->first.Contains("llM") && i == 0 && j != 1) {
-            h_test = new TH1F((name.str()).c_str(), "", 18, llMBin);
-          } else {
-            h_test = new TH1F((name.str()).c_str(), "", it->second.at(1), it->second.at(2), it->second.at(3));
+        for (int m = 0; m < (int) domains.size(); ++m) {
+          for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
+            name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << domains[m] << "_" << it->first << "_" << workerID_; // Adding working ID to avoid mem leak
+            if (it->first.Contains("llM") && i == 0 && j != 1) {
+              h_test = new TH1F((name.str()).c_str(), "", 18, llMBin);
+            } else {
+              h_test = new TH1F((name.str()).c_str(), "", it->second.at(1), it->second.at(2), it->second.at(3));
+            }
+            h_test->StatOverflows(kTRUE);
+            h_test->Sumw2(kTRUE);
+            Hists[i][j][k][m][it->second.at(0)] = h_test;
+            name.str("");
           }
-          h_test->StatOverflows(kTRUE);
-          h_test->Sumw2(kTRUE);
-          Hists[i][j][k][it->second.at(0)] = h_test;
-          name.str("");
         }
       }
     }
@@ -317,7 +320,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (tauPt < 20 || abs(Tau_eta[l]) > 2.3) continue;
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
-      if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 32 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
+      if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 1 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
 
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
@@ -330,8 +333,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
 
       Leptons->push_back(new lepton_candidate(tauPt, Tau_eta[l], Tau_phi[l], Tau_dxy[l], Tau_dz[l], Tau_charge[l],
-        Tau_idDeepTau2017v2p1VSjet[l], Tau_rawDeepTau2017v2p1VSjet[l], Tau_rawDeepTau2017v2p1VSe[l], Tau_rawDeepTau2017v2p1VSmu[l],
-        l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5, Tau_decayMode[l]));
+        char_to_int(Tau_idDeepTau2017v2p1VSjet[l]), Tau_rawDeepTau2017v2p1VSjet[l], Tau_rawDeepTau2017v2p1VSe[l],
+        Tau_rawDeepTau2017v2p1VSmu[l], l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5, Tau_decayMode[l]));
     }
 
     if (Leptons->size() != 3
@@ -371,12 +374,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
           for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
             if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
-              weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
-              weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = getFF(ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1));
-              weight_Ta_ff_OS_ee_llStl300 = getFF(ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1));
-              weight_Ta_ff_OS_mumu_llStl300 = getFF(ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1));
-              weight_Ta_ff_OS_ee_llbtagg1p3 = getFF(ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
-              weight_Ta_ff_OS_mumu_llbtagg1p3 = getFF(ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1));
+              weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
+              weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
+              weight_Ta_ff_OS_ee_llStl300 = ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1);
+              weight_Ta_ff_OS_mumu_llStl300 = ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1);
+              weight_Ta_ff_OS_ee_llbtagg1p3 = ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
+              weight_Ta_ff_OS_mumu_llbtagg1p3 = ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
               break;
             }
           }
@@ -401,27 +404,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     reg.push_back(rIdx);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-    if (Event->MET()->Pt() > 20 && Event->njet() > 0) {
-      if (Event->nbjet() == 0) {
-        rIdx = rInd(regions, "llMetg20Jetgeq1B0"); // CR background estimation
-        reg.push_back(rIdx);
-        if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0;
-        if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0;
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
-      if (Event->nbjet() == 1) {
-        rIdx = rInd(regions, "llMetg20Jetgeq1B1"); // SR background estimation
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
-      if (Event->OnZ()) {
-        rIdx = rInd(regions, "llOnZMetg20Jetgeq1"); // Z + jets CR
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
-      else { // Off Z
-        if (Event->nbjet() == 1) {
-          rIdx = rInd(regions, "llOffZMetg20B1"); // SR
+    if (!Event->OnZ()) {
+      if (Event->MET()->Pt() > 20) {
+        if (Event->njet() >= 1 && Event->nbjet() == 1) {
+          rIdx = rInd(regions, "llOffZMetg20Jetgeq1B1"); // SR
           reg.push_back(rIdx);
           wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
         }
@@ -431,44 +417,70 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
         }
       }
+      if (Event->St() > 300 && Event->btagSum() < 1.3) {
+        rIdx = rInd(regions, "llOffZStg300btagl1p3"); // New SR (Loose)
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+
+        if (Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
+          rIdx = rInd(regions, "llOffZStg300btagl1p3Tight"); // New SR (Tight)
+          reg.push_back(rIdx);
+          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+        }
+      }
     }
-    if (Event->St() < 300) {
-      rIdx = rInd(regions, "llStl300"); // Generic signal-free region
-      reg.push_back(rIdx);
-      if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llStl300;
-      if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llStl300;
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    }
-    if (Event->OnZ()) {
+    else if (Event->OnZ()) {
       rIdx = rInd(regions, "llOnZ"); // Z + jets CR
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    }
-    if (Event->btagSum() > 1.3) {
-      rIdx = rInd(regions, "llbtagg1p3"); // ttbar + jets CR
-      reg.push_back(rIdx);
-      if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llbtagg1p3;
-      if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llbtagg1p3;
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    }
-    if (Event->St() > 300 && !Event->OnZ() && Event->btagSum() < 1.3) {
-      rIdx = rInd(regions, "llStg300OffZbtagl1p3"); // New SR (Loose)
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-      if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
-        rIdx = rInd(regions, "llStg300OffZbtagl1p3Tight"); // New SR (Tight)
+      if (Event->MET()->Pt() > 20 && Event->njet() >= 1) {
+        rIdx = rInd(regions, "llOnZMetg20Jetgeq1"); // Z + jets CR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
     }
-    if (Event->St() > 300 && Event->btagSum() < 1.3) {
-      rIdx = rInd(regions, "llStg300btagl1p3"); // New SR (Loose) background estimation
+    if (Event->btagSum() > 1.3) {
+      rIdx = rInd(regions, "llbtagg1p3"); // ttbar + jets CR
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-      if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
-        rIdx = rInd(regions, "llStg300btagl1p3Tight"); // New SR (Tight) background estimation
+      if (!Event->OnZ()) { // Region D
+        if (!Event->TightTau()) {
+          if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llbtagg1p3;
+          if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llbtagg1p3;
+        }
+        rIdx = rInd(regions, "llbtagg1p3OffZ"); // ttbar + jets CR
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
+    }
+    if (Event->St() < 300) {
+      rIdx = rInd(regions, "llStl300"); // Generic signal-free region
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+
+      if (!Event->OnZ()) { // Region D
+        if (!Event->TightTau()) {
+          if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llStl300;
+          if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llStl300;
+        }
+        rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->nbjet() == 0) {
+      rIdx = rInd(regions, "llMetg20Jetgeq1B0"); // CR background estimation
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+
+      if (!Event->OnZ()) { // Region D
+        if (!Event->TightTau()) {
+          if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0;
+          if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0;
+        }
+        rIdx = rInd(regions, "llMetg20Jetgeq1B0OffZ"); // CR background estimation
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
@@ -477,43 +489,47 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Filling histograms
     for (int i = 0; i < reg.size(); ++i) {
 
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
+      int cIdx = Event->c();
+      int chIdx = Event->ch();
+      int dIdx = dInd(domains, Event->TightTau());
+
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt[i]);
       if (Event->lfvch() != 2) {
-        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "elLeptonMVAv1")]->Fill(Event->el1()->mva1_, wgt[i]);
-        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "elLeptonMVAv2")]->Fill(Event->el1()->mva2_, wgt[i]);
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "elLeptonMVAv1")]->Fill(Event->el1()->mva1_, wgt[i]);
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "elLeptonMVAv2")]->Fill(Event->el1()->mva2_, wgt[i]);
       }
       if (Event->lfvch() != 1) {
-        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "muLeptonMVAv1")]->Fill(Event->mu1()->mva1_, wgt[i]);
-        Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "muLeptonMVAv2")]->Fill(Event->mu1()->mva2_, wgt[i]);
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "muLeptonMVAv1")]->Fill(Event->mu1()->mva1_, wgt[i]);
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "muLeptonMVAv2")]->Fill(Event->mu1()->mva2_, wgt[i]);
       }
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taEta")]->Fill(tauEta, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetWP")]->Fill(char_to_int(Event->ta1()->mva1WP_), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsElMVA")]->Fill(Event->ta1()->mva2_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taVsMuMVA")]->Fill(Event->ta1()->mva3_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "taDecayMode")]->Fill(Event->ta1()->decaymode_, wgt[i]);
-      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
-      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "jetbtagDeepFlavB")]->Fill(Event->jet1()->bt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "njet")]->Fill(Event->njet(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "nbjet")]->Fill(Event->nbjet(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "MET")]->Fill(Event->MET()->Pt(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "subSR")]->Fill(Event->SRindex(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVemuM")+Event->lfvch()]->Fill(Event->LFVllM(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVemuDr")+Event->lfvch()]->Fill(Event->LFVllDr(), wgt[i]);
-      if (Event->lfvch() != 2) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVePt")]->Fill(Event->LFVe()->pt_, wgt[i]);
-      if (Event->lfvch() != 1) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVmuPt")]->Fill(Event->LFVmu()->pt_, wgt[i]);
-      if (Event->lfvch() != 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "LFVtaPt")]->Fill(Event->LFVta()->pt_, wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "balepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
-      if (Event->njet() > 0) Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "topmass")]->Fill(Event->Topmass(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
-      Hists[Event->c()][Event->ch()][reg[i]][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taEta")]->Fill(tauEta, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsJetWP")]->Fill(Event->ta1()->mva1WP_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsElMVA")]->Fill(Event->ta1()->mva2_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsMuMVA")]->Fill(Event->ta1()->mva3_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taDxy")]->Fill(Event->ta1()->dxy_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taDz")]->Fill(Event->ta1()->dz_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taDecayMode")]->Fill(Event->ta1()->decaymode_, wgt[i]);
+      if (Event->njet() > 0) Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "jet1Pt")]->Fill(Event->jet1()->pt_, wgt[i]);
+      if (Event->njet() > 0) Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "jetbtagDeepFlavB")]->Fill(Event->jet1()->bt_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "njet")]->Fill(Event->njet(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "nbjet")]->Fill(Event->nbjet(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "MET")]->Fill(Event->MET()->Pt(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "subSR")]->Fill(Event->SRindex(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "LFVemuM")+Event->lfvch()]->Fill(Event->LFVllM(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "LFVemuDr")+Event->lfvch()]->Fill(Event->LFVllDr(), wgt[i]);
+      if (Event->lfvch() != 2) Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "LFVePt")]->Fill(Event->LFVe()->pt_, wgt[i]);
+      if (Event->lfvch() != 1) Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "LFVmuPt")]->Fill(Event->LFVmu()->pt_, wgt[i]);
+      if (Event->lfvch() != 0) Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "LFVtaPt")]->Fill(Event->LFVta()->pt_, wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "balepPt")]->Fill(Event->Balep()->pt_, wgt[i]);
+      if (Event->njet() > 0) Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "topmass")]->Fill(Event->Topmass(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "Ht")]->Fill(Event->Ht(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "St")]->Fill(Event->St(), wgt[i]);
+      Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "btagSum")]->Fill(Event->btagSum(), wgt[i]);
     }
 
     deleteContainter(Leptons);
@@ -528,12 +544,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
-        for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
-          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first;
-          Hists[i][j][k][it->second.at(0)]->SetName((name.str()).c_str());
-          Hists[i][j][k][it->second.at(0)]->Write("", TObject::kOverwrite);
-          delete Hists[i][j][k][it->second.at(0)];
-          name.str("");
+        for (int m = 0; m < (int) domains.size(); ++m) {
+          for (auto it = vars.cbegin(); it != vars.cend(); ++it) {
+            name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << domains[m] << "_" << it->first;
+            Hists[i][j][k][m][it->second.at(0)]->SetName((name.str()).c_str());
+            Hists[i][j][k][m][it->second.at(0)]->Write("", TObject::kOverwrite);
+            delete Hists[i][j][k][m][it->second.at(0)];
+            name.str("");
+          }
         }
       }
     }
