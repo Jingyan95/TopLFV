@@ -43,24 +43,24 @@ regions = [
     'llMetg20Jetgeq1B0',          #11
     'llMetg20Jetgeq1B0OffZ']      #12
 regionsName = [
-    ['No cuts', '', ''],
-    ['OffZ, p_{T}^{miss}>20GeV', 'njet#geq1, nbjet=1', ', SR'],
-    ['OffZ, p_{T}^{miss}>20GeV', 'njet#geq1, nbjet=2', ', t#bar{t}+jets CR'],
-    ['OffZ, S_{T}>300GeV', 'btag<1.3', ', SR(Alt, Loose)'],
-    ['OffZ, S_{T}>300GeV', 'btag<1.3, njet#geq1 or S_{T}>500GeV', ', SR(Alt, Tight)'],
-    ['OnZ', '', ', Z+jets CR'],
-    ['OnZ', 'p_{T}^{miss}>20GeV, njet#geq1', ', Z+jets CR'],
-    ['btag>1.3', '', ', t#bar{t}+jets CR'],
-    ['btag>1.3', 'OffZ', ', t#bar{t}+jets CR'],
-    ['S_{T}<300GeV', '', ', CR'],
-    ['S_{T}<300GeV', 'OffZ', ', CR'],
-    ['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=0', ', CR'],
-    ['p_{T}^{miss}>20GeV, njet#geq1', 'nbjet=0, OffZ', ', CR']]
+    ['No cuts', ''],
+    ['OffZ, p_{T}^{miss}>20GeV, njet#geq1, nbjet=1', ', SR'],
+    ['OffZ, p_{T}^{miss}>20GeV, njet#geq1, nbjet=2', ', t#bar{t}+jets CR'],
+    ['OffZ, S_{T}>300GeV, btag<1.3', ', SR(Alt, Loose)'],
+    ['OffZ, S_{T}>300GeV, btag<1.3, njet#geq1 or S_{T}>500GeV', ', SR(Alt, Tight)'],
+    ['OnZ', ', Z+jets CR'],
+    ['OnZ, p_{T}^{miss}>20GeV, njet#geq1', ', Z+jets CR'],
+    ['btag>1.3', ', t#bar{t}+jets CR'],
+    ['btag>1.3, OffZ', ', t#bar{t}+jets CR'],
+    ['S_{T}<300GeV, ', ', CR'],
+    ['S_{T}<300GeV, OffZ', ', CR'],
+    ['p_{T}^{miss}>20GeV, njet#geq1, nbjet=0', ', CR'],
+    ['p_{T}^{miss}>20GeV, njet#geq1, nbjet=0, OffZ', ', CR']]
 
 domains = ['geqMedLepgeqTightTa', 'geqMedLeplTightTa']
 domainsName = [
-    ['#geq Medium Top Lepton MVA', '#geq Tight Tau vs Jets WP'],
-    ['#geq Medium Top Lepton MVA', '< Tight Tau vs Jets WP']]
+    '#geq Medium Top Lepton MVA, #geq Tight Tau vs Jets WP',
+    '#geq Medium Top Lepton MVA, < Tight Tau vs Jets WP']
 
 vars = [
     'llM', 'llDr', 'lep1Pt', 'lep2Pt', 'elLeptonMVAv1', 'elLeptonMVAv2',
@@ -85,12 +85,9 @@ varsName = [
     'Bachelor lepton p_{T} [GeV]', 'm(top) [GeV]', 'H_{T} [GeV]',
     'S_{T} [GeV]', 'Sum of btagging scores']
 
-# Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-# SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY', 't#bar{t}', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
-# SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY', 't#bar{t}', 'CLFV top production', 'CLFV top decay']
-Samples = ['test.root']
-SamplesName = ['test']
-SamplesNameStack = ['test']
+Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
+SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY', 't#bar{t}', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
+SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY', 't#bar{t}', 'CLFV top production', 'CLFV top decay']
 
 colors = [ROOT.kBlack, ROOT.kYellow, ROOT.kGreen, ROOT.kOrange - 3, ROOT.kRed - 4, ROOT.kViolet + 1, ROOT.kGray]
 markerStyle = [20, 25, 26, 27, 28, 29, 30]
@@ -181,25 +178,26 @@ for numyear, nameyear in enumerate(year):
                             # h2.SetMarkerStyle(markerStyle[f])
                             # H2.append(h2)
 
-                        StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], namedom, domainsName[numdom] nameyear, namevar, varsName[numvar])
+                        StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear, namevar, varsName[numvar])
                         # CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
 # Make summary histograms
-# for numyear, nameyear in enumerate(year):
-#     for numreg, namereg in enumerate(regions):
-#         H = []
-#         HSignal = []
-#         for f in range(len(Samples)):
-#             h = Hists[numyear][f][0][0][numreg][22].Clone()
-#             h.Reset('ICE')
-#             for numc, namec in enumerate(charges):
-#                 for numch, namech in enumerate(channels):
-#                     h += Hists[numyear][f][numc][numch][numreg][22]
-#             h.SetFillColor(colors[f])
-#             if 'LFV' not in Samples[f]:
-#                 h.SetLineColor(colors[0])
-#                 H.append(h)
-#             else:
-#                 h.SetLineColor(colors[f])
-#                 HSignal.append(h)
-#         SummaryPlot(H, HSignal, SamplesNameStack, namereg, regionsName[numreg], nameyear)
+for numyear, nameyear in enumerate(year):
+    for numreg, namereg in enumerate(regions):
+        for numdom, namedom in enumerate(domains):
+            H = []
+            HSignal = []
+            for f in range(len(Samples)):
+                h = Hists[numyear][f][0][0][numreg][numdom][22].Clone()
+                h.Reset('ICE')
+                for numc, namec in enumerate(charges):
+                    for numch, namech in enumerate(channels):
+                        h += Hists[numyear][f][numc][numch][numreg][numdom][22]
+                h.SetFillColor(colors[f])
+                if 'LFV' not in Samples[f]:
+                    h.SetLineColor(colors[0])
+                    H.append(h)
+                else:
+                    h.SetLineColor(colors[f])
+                    HSignal.append(h)
+            SummaryPlot(H, HSignal, SamplesNameStack, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear)

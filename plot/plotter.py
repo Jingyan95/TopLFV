@@ -21,7 +21,7 @@ TGaxis.SetMaxDigits(2)
 
 
 def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "region",
-              regName = ["region", "", ""], dom = "domain", domName = ["domain", ""],
+              regName = ["region", ""], dom = "domain", domName = "domain name",
               year = '2016', var = "sample", varname = "v"):
 
     folder = 'StackHist'
@@ -194,7 +194,7 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
             ch_plot = '#mu#mu#tau_{h}'
         else:
             ch_plot = '#mu#bar{#mu}#tau_{h}'
-    Label_channel = ROOT.TLatex(0.17, 0.78, ch_plot + regName[2])
+    Label_channel = ROOT.TLatex(0.17, 0.78, ch_plot + regName[1])
     Label_channel.SetNDC()
     Label_channel.SetTextFont(42)
     Label_channel.SetTextSize(0.058)
@@ -204,7 +204,7 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     Label_region.SetTextFont(42)
     Label_region.SetTextSize(0.058)
     Label_region.Draw("same")
-    Label_region2 = ROOT.TLatex(0.17, 0.62, regName[1])
+    Label_region2 = ROOT.TLatex(0.17, 0.62, domName)
     Label_region2.SetNDC()
     Label_region2.SetTextFont(42)
     Label_region2.SetTextSize(0.058)
@@ -392,7 +392,8 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
     gc.collect()
 
 
-def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region", "", ""], year = '2016'):
+def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region", ""],
+    dom = "domain", domName = "domain name", year = '2016'):
 
     folder = 'StackHist'
     ROOT.gStyle.SetErrorX(0) # No horizontal error bar
@@ -418,7 +419,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     else:
         dummy = ROOT.TGraphAsymmErrors()
 
-    canvas = ROOT.TCanvas(year + reg, year + reg, 50, 50, 1865, 780)
+    canvas = ROOT.TCanvas(year + reg + dom, year + reg + dom, 50, 50, 1865, 780)
     canvas.SetGrid()
     canvas.SetBottomMargin(0.17)
     canvas.cd()
@@ -620,7 +621,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     Label_lumi.SetTextFont(42)
     Label_lumi.SetTextSize(0.063)
     Label_lumi.Draw("same")
-    Label_channel = ROOT.TLatex(0.1, 0.81, '2l+#tau_{h}' + regName[2])
+    Label_channel = ROOT.TLatex(0.1, 0.81, '2l+#tau_{h}' + regName[1])
     Label_channel.SetNDC()
     Label_channel.SetTextFont(42)
     Label_channel.SetTextSize(0.058)
@@ -630,7 +631,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
     Label_region.SetTextFont(42)
     Label_region.SetTextSize(0.058)
     Label_region.Draw("same")
-    Label_region2 = ROOT.TLatex(0.1, 0.65, regName[1])
+    Label_region2 = ROOT.TLatex(0.1, 0.65, domName)
     Label_region2.SetNDC()
     Label_region2.SetTextFont(42)
     Label_region2.SetTextSize(0.058)

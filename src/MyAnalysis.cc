@@ -221,9 +221,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (ientry < 0) break;
     fChain->GetEntry(jentry);
     ntotal++; // Thread-private counter
+    std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
     ++counter;
     updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
     if (!verbose_) displayProgress(progress, counter, ntr, 32);
+    mtx_.unlock(); // Releasing mutex
     InitTrigger();
     metFilterPass = false;
     reg.clear();
