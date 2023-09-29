@@ -1,7 +1,7 @@
 const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
 const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT"};
-const TString CHARGES[1] = {"OS"/*, "SS"*/};
-const TString CHANNELS[2] = {"ee", /*"emu", */"mumu"};
+const TString CHARGES[2] = {"OS", "SS"};
+const TString CHANNELS[3] = {"ee", "emu", "mumu"};
 const std::vector<TString> REGIONS{"ll", "llStl300", "llbtagg1p3", "llMetg20Jetgeq1B1",
   "llMetg20Jetgeq1B0"/*, "llStg300btagl1p3", "llStg300btagl1p3Tight"*/};
 const std::vector<std::vector<TString>> REGIONS_NAME{
@@ -19,7 +19,6 @@ const TString VARS[1] = {"TauIdvsOnZ"};
 const std::vector<Double_t> PT_BINS = {20.0, 40.0, 60.0, 100.0, 220.0};
 const std::vector<Double_t> ETA_BINS = {-2.3, -1.4, 1.4, 2.3};
 const std::vector<Int_t> DM = {0, 1, 10, 11};
-const std::vector<Int_t> DM_BINS = {0, 1, 2};
 
 // Plot colors
 const Int_t COLORS[3] = {4, 2};
@@ -28,10 +27,10 @@ const Int_t COLORS[3] = {4, 2};
 const std::vector<TString> ZBinLabels{"On Z", "Off Z"};
 const std::vector<TString> WPBinLabels{"VVVLoose", "VVLoose", "VLoose", "Loose",
   "Medium", "Tight", "VTight", "VVTight"};
-const std::vector<TString> DMBinLabels{"0", "1", "10", "11"};
+// const std::vector<TString> DMBinLabels{"0", "1", "10", "11"};
 
 // --------------------------------- //
-bool doDetailedPlots = false;
+bool doDetailedPlots = true;
 // --------------------------------- //
 
 void Estimate(TH2F* hData, const vector<TH2F*>& hMC, int xCut, int yCut, Double_t results[6],
@@ -127,11 +126,11 @@ void FakeFactor() {
 
   // Set negative event counts due to NLO low statistics to 0
   for (auto it = H2.cbegin(); it != H2.cend(); it++) {
-    for (int j = 1; j <= it->second->GetNbinsX(); j++) {
-      for (int k = 1; k <= it->second->GetNbinsY(); k++) {
-        if (it->second->GetBinContent(j, k) < 0) {
-          it->second->SetBinContent(j, k, 0.0);
-          it->second->SetBinError(j, k, 0.0);
+    for (int i = 1; i <= it->second->GetNbinsX(); i++) {
+      for (int j = 1; j <= it->second->GetNbinsY(); j++) {
+        if (it->second->GetBinContent(i, j) < 0.0) {
+          it->second->SetBinContent(i, j, 0.0);
+          it->second->SetBinError(i, j, 0.0);
         }
       }
     }
@@ -579,7 +578,7 @@ void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pNam
 
   h2->GetXaxis()->SetNoExponent();
   h2->GetYaxis()->SetNoExponent();
-  h2->GetZaxis()->SetNoExponent();
+  // h2->GetZaxis()->SetNoExponent();
 
   h2->GetXaxis()->SetTitle(xName);
   h2->GetYaxis()->SetTitle(yName);
