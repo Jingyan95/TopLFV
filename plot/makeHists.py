@@ -64,7 +64,8 @@ for numyear, nameyear in enumerate(year):
             for numreg, namereg in enumerate(regions):
                 l3 = []
                 for numvar, namevar in enumerate(vars):
-                    h = Files[f].Get(namech + '_' + namereg + '_' + namevar)
+                    # h = Files[f].Get(namech + '_' + namereg + '_' + namevar)
+                    h = Files[f].Get(namech + '_llStg300OffZbtagl1p3Tight_' + namevar)
                     l3.append(h)
                 l2.append(l3)
             l1.append(l2)
