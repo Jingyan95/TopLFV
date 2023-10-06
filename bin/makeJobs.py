@@ -26,14 +26,14 @@ loc = os.path.dirname(sys.path[0]) + '/'
 
 
 SAMPLES = {}
-mc_2016APV = True
-data_2016APV = True
+mc_2016APV = False
+data_2016APV = False
 mc_2016 = True
 data_2016 = True
-mc_2017 = True
-data_2017 = True
-mc_2018 = True
-data_2018 = True
+mc_2017 = False
+data_2017 = False
+mc_2018 = False
+data_2018 = False
 
 if mc_2016APV:
     SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
@@ -57,7 +57,7 @@ rootlib11 = "".join([s for s in rootlib1.strip().splitlines(True) if s.strip()])
 rootlib2 = subprocess.check_output("root-config --libs", shell = True)
 rootlib22 = "".join([s for s in rootlib2.strip().splitlines(True) if s.strip()])
 
-cms = '/afs/cern.ch/work/j/jingyan/public/CMSSW_10_6_4/src/'
+cms = '/eos/user/e/etsai/workspace/TopLFV_CMSSW_10_6_4/src/'
 dire_h = loc + 'hists/'
 
 for key, value in SAMPLES.items():

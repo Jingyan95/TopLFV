@@ -9,15 +9,15 @@ import argparse
 # set up an argument parser
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--v', dest='VERBOSE', default=True)
-parser.add_argument('--n', dest = 'NAMETAG', default= '201' )
-parser.add_argument('--t', dest='NCPUS', default=6) # number of CPUs requested
+parser.add_argument('--v', dest = 'VERBOSE', default = True)
+parser.add_argument('--n', dest = 'NAMETAG', default = '201')
+parser.add_argument('--t', dest = 'NCPUS', default = 6) # number of CPUs requested
 
 ARGS = parser.parse_args()
 
 verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
-ncpus =  ARGS.NCPUS
+ncpus = ARGS.NCPUS
 loc = os.path.dirname(sys.path[0]) + '/'
 dire = loc + 'hists/'
 
@@ -27,14 +27,14 @@ import nano_files_2017
 import nano_files_2018
 
 SAMPLES = {}
-mc_2016APV = True
-data_2016APV = True
+mc_2016APV = False
+data_2016APV = False
 mc_2016 = True
 data_2016 = True
-mc_2017 = True
-data_2017 = True
-mc_2018 = True
-data_2018 = True
+mc_2017 = False
+data_2017 = False
+mc_2018 = False
+data_2018 = False
 
 if mc_2016APV:
     SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
@@ -53,7 +53,7 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-jobruntime = 28800 # 8 hrs
+jobruntime = 86400 # 24 hrs
 
 for key, value in SAMPLES.items():
     if name  not in key:
@@ -65,7 +65,7 @@ for key, value in SAMPLES.items():
         nCPUS = 1
     for idx, S in enumerate(value[0]):
         for subdir, dirs, files in os.walk(S):
-            sequance = [files[i:i+nf] for i in range(0,len(files),nf)]
+            sequance = [files[i:i + nf] for i in range(0, len(files), nf)]
             submit = 'universe = vanilla\n' # writing .sub file
             submit += 'executable = Jobs/' + value[3] + '/' + key + '/' + key + '_' + str(idx) + '.sh' + '\n'
             submit += 'arguments = $(Process)\n'
@@ -86,7 +86,7 @@ for key, value in SAMPLES.items():
             sub1 = open('Jobs/' + value[3] + '/' + key + '/' + submitName, 'wt')
             sub1.write(submit + '\n')
             sub1.close()
-            qsub = "condor_submit Jobs/" + value[3] + '/' + key + '/' + submitName 
-            print "------------------------------------------------------"
-            print qsub
+            qsub = "condor_submit Jobs/" + value[3] + '/' + key + '/' + submitName
+            print("------------------------------------------------------")
+            print(qsub)
             subprocess.call(qsub, shell = True)
