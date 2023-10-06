@@ -63,7 +63,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     /*11*/ "llMetg20Jetgeq1B0", // CR background estimation
     /*12*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
   };
-  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0};
+  std::vector<int> unBlind{0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
   std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
   const std::map<TString, std::vector<float>> vars = {
     {"llM",              {0,    10,     0,   180}},
@@ -339,8 +339,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Tau_rawDeepTau2017v2p1VSmu[l], l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5, Tau_decayMode[l]));
     }
 
-    if (Leptons->size() != 3
-        || abs((*Leptons)[0]->charge_ + (*Leptons)[1]->charge_ + (*Leptons)[2]->charge_) > 1) {
+    if (Leptons->size() != 3 || abs((*Leptons)[0]->charge_ + (*Leptons)[1]->charge_ + (*Leptons)[2]->charge_) > 1) {
       deleteContainter(Leptons);
       continue;
     }
@@ -368,35 +367,35 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Reconstruction of heavy particles
     Event = new event_candidate(Leptons, Jets, data == "mc" ? MET_T1Smear_pt : MET_T1_pt, MET_phi, verbose_);
 
-    // Jet to tau fake factor weight calculated here for specific charges/channels
+    // MC weights
     tauPt = Event->ta1()->pt_;
     tauEta = Event->ta1()->eta_;
-    if (!(data == "mc")) { // Apply fake factors to data only
-      for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
-        if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
-          for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
-            if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
-              weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
-              weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
-              weight_Ta_ff_OS_ee_llStl300 = ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1);
-              weight_Ta_ff_OS_mumu_llStl300 = ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1);
-              weight_Ta_ff_OS_ee_llbtagg1p3 = ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
-              weight_Ta_ff_OS_mumu_llbtagg1p3 = ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
-              break;
-            }
-          }
-          break;
-        }
-      }
-    }
-
-    // MC weights
     if (data == "mc") {
       weight_Lumi = (1000 * xs * lumi * getSign(Generator_weight)) / Nevent; // N.B. Nevent here should be sum of generator weights instead of raw event counts
       weight_PU = wPU.getPUweight(year, int(Pileup_nTrueInt), "nominal");
       weight_L1ECALPreFiring = L1PreFiringWeight_ECAL_Nom;
       weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
       weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
+
+      // Jet to tau fake factors
+      if (!Event->TightTau()) {
+        for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
+          if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
+            for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
+              if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
+                weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_OS_ee_llStl300 = ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_OS_mumu_llStl300 = ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_OS_ee_llbtagg1p3 = ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_OS_mumu_llbtagg1p3 = ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
+                break;
+              }
+            }
+            break;
+          }
+        }
+      }
     }
     weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
     // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
@@ -448,10 +447,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (!Event->TightTau()) {
-          if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llbtagg1p3;
-          if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llbtagg1p3;
-        }
+        if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llbtagg1p3;
+        if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llbtagg1p3;
         rIdx = rInd(regions, "llbtagg1p3OffZ"); // ttbar + jets CR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -463,10 +460,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (!Event->TightTau()) {
-          if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llStl300;
-          if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llStl300;
-        }
+        if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llStl300;
+        if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llStl300;
         rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -478,10 +473,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (!Event->TightTau()) {
-          if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0;
-          if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0;
-        }
+        if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0;
+        if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0;
         rIdx = rInd(regions, "llMetg20Jetgeq1B0OffZ"); // CR background estimation
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -490,7 +483,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
     // Filling histograms
     for (int i = 0; i < reg.size(); ++i) {
-
       int cIdx = Event->c();
       int chIdx = Event->ch();
       int dIdx = dInd(domains, Event->TightTau());

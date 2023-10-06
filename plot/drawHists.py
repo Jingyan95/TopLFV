@@ -151,9 +151,35 @@ for numyear, nameyear in enumerate(year):
     for numc, namec in enumerate(charges):
         for numch, namech in enumerate(channels):
             for numreg, namereg in enumerate(regions):
+
+                # Plots with background estimated with the ABCD method
+                for numvar, namevar in enumerate(vars):
+                    if ('MVA' in namevar) and (not SaveMVA):
+                        continue
+
+                    H1 = []
+                    H1Signal = []
+                    for f in range(len(Samples)):
+                        numdom = 0 # >= Tight tau
+                        if 'DY' in Samples[f] or 'TT' in Samples[f]:
+                            numdom = 1 # < Tight tau
+
+                        h1 = Hists[numyear][f][numc][numch][numreg][numdom][numvar].Clone()
+                        h1.SetFillColor(colors[f])
+                        if 'LFV' not in Samples[f]:
+                            h1.SetLineColor(colors[0])
+                            H1.append(h1)
+                        else:
+                            h1.SetLineColor(colors[f])
+                            H1Signal.append(h1)
+                        if 'Data' in Samples[f]:
+                            continue
+
+                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], "", "", nameyear, namevar, varsName[numvar])
+
+                # Plots with no background estimation
                 for numdom, namedom in enumerate(domains):
                     for numvar, namevar in enumerate(vars):
-
                         if ('MVA' in namevar) and (not SaveMVA):
                             continue
 

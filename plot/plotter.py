@@ -280,9 +280,12 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch)
     if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg):
         os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg)
-    if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom):
-        os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom)
-    canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom + '/' + var + ".pdf")
+    if len(dom) > 0:
+        if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom):
+            os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom)
+        canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom + '/' + var + ".pdf")
+    else:
+        canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + ".pdf")
     del canvas
     gc.collect()
 
@@ -716,7 +719,7 @@ def SummaryPlot(hists, SignalHists, Fnames, reg = "region", regName = ["region",
         os.makedirs(folder)
     if not os.path.exists(folder + '/' + year):
         os.makedirs(folder + '/' + year)
-    canvas.Print(folder + '/' + year + '/Summary_' + reg + ".pdf")
+    canvas.Print(folder + '/' + year + '/Summary_' + reg + '_' + dom + '.pdf')
     del canvas
     gc.collect()
 
