@@ -297,7 +297,7 @@ void FakeFactor() {
                   PlotTH1F(pName + "_ptValFF", "Tau p_{T}", "Fake Factor", {valFF}, {valFFErr},
                     PT_BINS, {"Fake Factor"}, r, GetLumi(year));
                   PlotTH1F(pName + "_ptValEst", "Tau p_{T}", "Background Estimation", valPred,
-                    valPredErr, PT_BINS, {"Estimation", "Actual"}, r, GetLumi(year));
+                    valPredErr, PT_BINS, {"ABCD method", "MC prediction"}, r, GetLumi(year));
                 }
               }
             }
@@ -325,7 +325,7 @@ void FakeFactor() {
                   PlotTH1F(pName + "_etaValFF", "Tau #eta", "Fake Factor", {valFF}, {valFFErr},
                     ETA_BINS, {"Fake Factor"}, r, GetLumi(year));
                   PlotTH1F(pName + "_etaValEst", "Tau #eta", "Background Estimation", valPred,
-                    valPredErr, ETA_BINS, {"Estimation", "Actual"}, r, GetLumi(year));
+                    valPredErr, ETA_BINS, {"ABCD method", "MC prediction"}, r, GetLumi(year));
                 }
               }
             }
@@ -475,7 +475,8 @@ void PlotTH1F(TString name, TString xName, TString yName, std::vector<TH1F*> H1,
   labelWIP->SetNDC();
   labelWIP->SetTextFont(52);
   labelWIP->Draw("SAME");
-  TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+  // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+  TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
   labelLumi->SetTextSize(0.035);
   labelLumi->SetNDC();
   labelLumi->SetTextFont(42);
@@ -561,7 +562,8 @@ void PlotTH1F(TString name, TString xName, TString yName, std::vector<std::vecto
   labelWIP->SetNDC();
   labelWIP->SetTextFont(52);
   labelWIP->Draw("SAME");
-  TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+  // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+  TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
   labelLumi->SetTextSize(0.035);
   labelLumi->SetNDC();
   labelLumi->SetTextFont(42);
@@ -613,7 +615,8 @@ void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pNam
   labelWIP->SetNDC();
   labelWIP->SetTextFont(52);
   labelWIP->Draw();
-  TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+  // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+  TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
   labelLumi->SetTextSize(0.035);
   labelLumi->SetNDC();
   labelLumi->SetTextFont(42);
