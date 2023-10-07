@@ -13,7 +13,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--v', dest = 'VERBOSE', default = True)
-parser.add_argument('--n', dest = 'NAMETAG', default = '2016')
+parser.add_argument('--n', dest = 'NAMETAG', default = '201')
 parser.add_argument('--t', dest = 'NTHREAD', default = 6) # number of threads
 
 ARGS = parser.parse_args()
@@ -64,8 +64,8 @@ for key, value in SAMPLES.items():
     if name  not in key:
         continue
     nf = value[8]
-    if not os.path.exists('Jobs/' + key):
-        os.makedirs('Jobs/' + key)
+    if not os.path.exists('Jobs/' + value[3] + '/' + key):
+        os.makedirs('Jobs/' + value[3] + '/' + key)
     nThread = nthread
     if ('LFV' in key) or ('DYM10' in key) or ('WWW' in key) or ('WWZ' in key) or ('WZZ' in key) or ('ZZZ' in key):
         nThread = 1 # Samples with low stats
@@ -77,17 +77,17 @@ for key, value in SAMPLES.items():
         "cd "+ cms + "\n"+\
         "eval `scramv1 runtime -sh`\n" +\
         "cd " + loc + "\n" +\
-        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./include   ' + rootlib11 + ' -ldl  -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n" +\
+        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./include   ' + rootlib11 + ' -ldl  -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + value[3] + '/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n" +\
         "./" + SHNAME1.split('.')[0] + "\n" +\
         'if [ -f "$FILE" ]; then' + "\n" +\
         '    rm -f ' + SHNAME1.split('.')[0] + "\n" +\
         'fi'
-        subprocess.call('rm -f Jobs/' + key + '/*', shell = True)
-        open('Jobs/' + key + '/' + SHNAME, 'wt').write(SHFILE)
+        subprocess.call('rm -f Jobs/' + value[3] + '/' + key + '/*', shell = True)
+        open('Jobs/' + value[3] + '/' + key + '/' + SHNAME, 'wt').write(SHFILE)
         print "-----------------------------------"
-        print 'Writing Jobs/' + key + '/' + SHNAME
-        os.system("chmod +x " + 'Jobs/' + key + '/' + SHNAME)
-        print "chmod +x " + 'Jobs/' + key + '/' + SHNAME
+        print 'Writing Jobs/' + value[3] + '/' + key + '/' + SHNAME
+        os.system("chmod +x " + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
+        print "chmod +x " + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME
         # delete log files
         os.system("rm -rf " + S + 'log')
         for subdir, dirs, files in os.walk(S):
@@ -130,6 +130,6 @@ for key, value in SAMPLES.items():
                 text +\
                 '    return 0;\n' +\
                 '}'
-                open('Jobs/' + key + '/' + SHNAME1, 'wt').write(SHFILE1)
+                open('Jobs/' + value[3] + '/' + key + '/' + SHNAME1, 'wt').write(SHFILE1)
     if verbose :
         print key + ' jobs are made'
