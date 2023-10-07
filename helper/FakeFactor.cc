@@ -35,10 +35,13 @@ bool doDetailedPlots = true;
 
 void Estimate(TH2F* hData, const vector<TH2F*>& hMC, int xCut, int yCut, Double_t results[6],
   bool plotIntermediate = false, TString key = "", TString lumi = "");
-void PlotTH1F(TString name, TString xName, TString yName, std::vector<TH1F*> H1,
-  std::vector<TString> hNames, Int_t rIdx, TString lumi);
-void PlotTH1F(TString name, TString xName, TString yName, std::vector<std::vector<Double_t>> h,
-  std::vector<std::vector<Double_t>> hErr, const std::vector<Double_t> binEdges,
+TH1F* VectorToTH1F(TString hname, std::vector<Double_t> h,
+  std::vector<Double_t> hErr, const std::vector<Double_t> binEdges);
+TH2F* VectorToTH2F(TString hname,
+  std::vector<std::vector<Double_t>> h, std::vector<std::vector<Double_t>> hErr,
+  const std::vector<Double_t> xBinEdges, const std::vector<Double_t> yBinEdges);
+void PlotTH1F(TString name, TString xName, TString yName,
+  std::vector<TH1F*> H1,
   std::vector<TString> hNames, Int_t rIdx, TString lumi);
 void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pName,
   const std::vector<TString>& xBinLabels = {}, const std::vector<TString>& yBinLabels = {});
@@ -152,27 +155,25 @@ void FakeFactor() {
     std::vector<TH1F*> HFakeFactors{};
     std::vector<TH2F*> HFakeFactors2D{};
     for (TString charge : CHARGES) {
-      for (TString channel : CHANNELS) {
-        for (Int_t r = 0; r < REGIONS.size(); r++) {
-          for (TString var : VARS) {
+      for (Int_t r = 0; r < REGIONS.size(); r++) {
+        for (TString var : VARS) {
+          for (TString channel : CHANNELS) {
 
             // Plot some of the 2D histograms
-            if (doDetailedPlots) {
-              for (TString sample : SAMPLES) {
-                key = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var + "_" + sample;
-                pName = "../plot/" + key + ".pdf";
-                PlotTH2F(H2.at(key), "All Events", "Tau vs Jets WP", GetLumi(year), pName,
-                  ZBinLabels, WPBinLabels);
-              }
-            }
+            // if (doDetailedPlots) {
+            //   for (TString sample : SAMPLES) {
+            //     key = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var + "_" + sample;
+            //     pName = "../plot/" + key + ".pdf";
+            //     PlotTH2F(H2.at(key), "All Events", "Tau vs Jets WP", GetLumi(year), pName,
+            //       ZBinLabels, WPBinLabels);
+            //   }
+            // }
 
             pName = charge + "_" + channel + "_" + REGIONS[r] + "_" + var;
 
             // Do fake factor estimation in pt bins
             std::vector<Double_t> estFF{};
             std::vector<Double_t> estFFErr{};
-            // std::vector<std::vector<Double_t>> estPred{{}, {}};
-            // std::vector<std::vector<Double_t>> estPredErr{{}, {}};
             for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
               std::vector<TH2F*> hMC{};
               for (int s = 1; s < SAMPLES.size(); s++) {
@@ -182,32 +183,21 @@ void FakeFactor() {
               }
               snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                 + var + "_pt%.1fto%.1f_" + SAMPLES[0], PT_BINS[pt], PT_BINS[pt + 1]);
-              Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+              // Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+              Estimate(H2.at(hKey), hMC, 1, 5, results);
               estFF.push_back(results[0]);
               estFFErr.push_back(results[1]);
-              // estPred.at(0).push_back(results[2]);
-              // estPredErr.at(0).push_back(results[3]);
-              // estPred.at(1).push_back(results[4]);
-              // estPredErr.at(1).push_back(results[5]);
             }
-            TH1F* hFFPt = new TH1F(pName + "_ptEstFF", "", PT_BINS.size() - 1, PT_BINS.data());
-            for (int b = 0; b < estFF.size(); b++) {
-              hFFPt->SetBinContent(b + 1, estFF.at(b));
-              hFFPt->SetBinError(b + 1, estFFErr.at(b));
-            }
+            TH1F* hFFPt = VectorToTH1F(pName + "_ptEstFF", estFF, estFFErr, PT_BINS);
             HFakeFactors.push_back(hFFPt);
             if (doDetailedPlots) {
               PlotTH1F(year + "_" + pName + "_ptEstFF", "Tau p_{T}", "Fake Factor", {hFFPt},
                 {"Fake Factor"}, r, GetLumi(year));
-              // PlotTH1F(year + "_" + pName + "_ptEstComp", "Tau p_{T}", "Background Estimation", estPred,
-              //   estPredErr, PT_BINS, {"Fake Taus", "Data Taus"}, r, GetLumi(year));
             }
 
             // Do fake factor estimation in eta bins
             estFF = {};
             estFFErr = {};
-            // estPred = {{}, {}};
-            // estPredErr = {{}, {}};
             for (Int_t eta = 0; eta < ETA_BINS.size() - 1; eta++) {
               std::vector<TH2F*> hMC{};
               for (int s = 1; s < SAMPLES.size(); s++) {
@@ -217,25 +207,16 @@ void FakeFactor() {
               }
               snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                 + var + "_eta%.1fto%.1f_" + SAMPLES[0], ETA_BINS[eta], ETA_BINS[eta + 1]);
-              Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+              // Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+              Estimate(H2.at(hKey), hMC, 1, 5, results);
               estFF.push_back(results[0]);
               estFFErr.push_back(results[1]);
-              // estPred.at(0).push_back(results[2]);
-              // estPredErr.at(0).push_back(results[3]);
-              // estPred.at(1).push_back(results[4]);
-              // estPredErr.at(1).push_back(results[5]);
             }
-            TH1F* hFFEta = new TH1F(pName + "_etaEstFF", "", ETA_BINS.size() - 1, ETA_BINS.data());
-            for (int b = 0; b < estFF.size(); b++) {
-              hFFEta->SetBinContent(b + 1, estFF.at(b));
-              hFFEta->SetBinError(b + 1, estFFErr.at(b));
-            }
+            TH1F* hFFEta = VectorToTH1F(pName + "_etaEstFF", estFF, estFFErr, ETA_BINS);
             HFakeFactors.push_back(hFFEta);
             if (doDetailedPlots) {
               PlotTH1F(year + "_" + pName + "_etaEstFF", "Tau #eta", "Fake Factor", {hFFEta},
                 {"Fake Factor"}, r, GetLumi(year));
-              // PlotTH1F(year + "_" + pName + "_etaEstComp", "Tau #eta", "Background Estimation", estPred,
-              //   estPredErr, ETA_BINS, {"Fake Taus", "All Taus"}, r, GetLumi(year));
             }
 
             // Do fake factor estimate in pt and eta bins
@@ -255,19 +236,13 @@ void FakeFactor() {
                 snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                   + var + "_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[0],
                   PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
-                Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+                // Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+                Estimate(H2.at(hKey), hMC, 1, 5, results);
                 estFF2D.at(pt).push_back(results[0]);
                 estFFErr2D.at(pt).push_back(results[1]);
               }
             }
-            TH2F* hFF2D = new TH2F(pName + "_ptEtaEstFF", "",
-              PT_BINS.size() - 1, PT_BINS.data(), ETA_BINS.size() - 1, ETA_BINS.data());
-            for (int bx = 0; bx < estFF2D.size(); bx++) {
-              for (int by = 0; by < estFF2D.at(bx).size(); by++) {
-                hFF2D->SetBinContent(bx + 1, by + 1, estFF2D.at(bx).at(by));
-                hFF2D->SetBinError(bx + 1, by + 1, estFFErr2D.at(bx).at(by));
-              }
-            }
+            TH2F* hFF2D = VectorToTH2F(pName + "_ptEtaEstFF", estFF2D, estFFErr2D, PT_BINS, ETA_BINS);
             HFakeFactors2D.push_back(hFF2D);
             if (doDetailedPlots) {
               PlotTH2F(hFF2D, "Tau p_{T}", "Tau #eta", GetLumi(year),
@@ -294,10 +269,13 @@ void FakeFactor() {
                 }
                 if (doDetailedPlots) {
                   pName = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var + "_" + sample;
-                  PlotTH1F(pName + "_ptValFF", "Tau p_{T}", "Fake Factor", {valFF}, {valFFErr},
-                    PT_BINS, {"Fake Factor"}, r, GetLumi(year));
-                  PlotTH1F(pName + "_ptValEst", "Tau p_{T}", "Background Estimation", valPred,
-                    valPredErr, PT_BINS, {"ABCD method", "MC prediction"}, r, GetLumi(year));
+                  TH1F* hffPt = VectorToTH1F(pName + "_ptEstFF", valFF, valFFErr, PT_BINS);
+                  PlotTH1F(pName + "_ptEstFF", "Tau p_{T}", "Fake Factor",
+                    {hffPt}, {"Fake Factor"}, r, GetLumi(year));
+                  TH1F* hEstPt = VectorToTH1F(pName + "_ptValFF", valPred.at(0), valPredErr.at(0), PT_BINS);
+                  TH1F* hPredPt = VectorToTH1F(pName + "_ptValEst", valPred.at(1), valPredErr.at(1), PT_BINS);
+                  PlotTH1F(pName + "_ptValEst", "Tau p_{T}", "Background Estimation",
+                    {hEstPt, hPredPt}, {"ABCD method", "MC prediction"}, r, GetLumi(year));
                 }
               }
             }
@@ -322,27 +300,101 @@ void FakeFactor() {
                 }
                 if (doDetailedPlots) {
                   pName = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var + "_" + sample;
-                  PlotTH1F(pName + "_etaValFF", "Tau #eta", "Fake Factor", {valFF}, {valFFErr},
-                    ETA_BINS, {"Fake Factor"}, r, GetLumi(year));
-                  PlotTH1F(pName + "_etaValEst", "Tau #eta", "Background Estimation", valPred,
-                    valPredErr, ETA_BINS, {"ABCD method", "MC prediction"}, r, GetLumi(year));
+                  TH1F* hffEta = VectorToTH1F(pName + "_etaEstFF", valFF, valFFErr, ETA_BINS);
+                  PlotTH1F(pName + "_etaEstFF", "Tau #eta", "Fake Factor",
+                    {hffEta}, {"Fake Factor"}, r, GetLumi(year));
+                  TH1F* hEstEta = VectorToTH1F(pName + "_etaValFF", valPred.at(0), valPredErr.at(0), ETA_BINS);
+                  TH1F* hPredEta = VectorToTH1F(pName + "_etaValEst", valPred.at(1), valPredErr.at(1), ETA_BINS);
+                  PlotTH1F(pName + "_etaValEst", "Tau #eta", "Background Estimation",
+                    {hEstEta, hPredEta}, {"ABCD method", "MC prediction"}, r, GetLumi(year));
                 }
               }
             }
 
             // Validation of fake factor estimation with pt and eta bins
             // TODO
-          }
-        }
-      }
-    }
+          } // Channel
 
+          std::vector<std::vector<Double_t>> estFF2D{};
+          std::vector<std::vector<Double_t>> estFFErr2D{};
+          for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
+            estFF2D.push_back({});
+            estFFErr2D.push_back({});
+            for (Int_t eta = 0; eta < ETA_BINS.size() - 1; eta++) {
+              std::vector<TH2F*> hMC{};
+              for (int s = 1; s < SAMPLES.size(); s++) {
+                snprintf(hKey, 500, year + "_" + charge + "_ee_" + REGIONS[r] + "_"
+                  + var + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[s],
+                  PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
+                TH2F* h2a = (TH2F*) H2.at(hKey)->Clone();
+                snprintf(hKey, 500, year + "_" + charge + "_mumu_" + REGIONS[r] + "_"
+                  + var + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[s],
+                  PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
+                TH2F* h2b = (TH2F*) H2.at(hKey)->Clone();
+                h2a->Add(h2b, 1.0);
+                hMC.push_back(h2a);
+              }
+              snprintf(hKey, 500, year + "_" + charge + "_ee_" + REGIONS[r] + "_"
+                + var + "_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[0],
+                PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
+              TH2F* h2A = (TH2F*) H2.at(hKey)->Clone();
+              snprintf(hKey, 500, year + "_" + charge + "_mumu_" + REGIONS[r] + "_"
+                + var + "_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[0],
+                PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
+              TH2F* h2B = (TH2F*) H2.at(hKey)->Clone();
+              h2A->Add(h2B, 1.0);
+              Estimate(h2A, hMC, 1, 5, results, true, hKey, GetLumi(year));
+              // Estimate(H2.at(hKey), hMC, 1, 5, results);
+              estFF2D.at(pt).push_back(results[0]);
+              estFFErr2D.at(pt).push_back(results[1]);
+            }
+          }
+          pName = charge + "_" + REGIONS[r] + "_" + var;
+          TH2F* hFF2D = VectorToTH2F(pName + "_ptEtaEstFF", estFF2D, estFFErr2D, PT_BINS, ETA_BINS);
+          HFakeFactors2D.push_back(hFF2D);
+          if (doDetailedPlots) {
+            PlotTH2F(hFF2D, "Tau p_{T}", "Tau #eta", GetLumi(year),
+              "../plot/" + year + "_" + pName + "_ptEtaCombinedEstFF.pdf");
+          }
+        } // Variable
+      } // Region
+    } // Charge
+
+    std::cout << "Writing histograms..." << std::endl;
     TString filename = year + "_JetToTauFakeFactors.root";
     TFile fOut (filename, "RECREATE");
     for (TH1F* h : HFakeFactors) h->Write("", TObject::kOverwrite);
     for (TH2F* h2 : HFakeFactors2D) h2->Write("", TObject::kOverwrite);
     fOut.Close();
+  } // Year
+}
+
+
+TH1F* VectorToTH1F(TString hname, std::vector<Double_t> h,
+  std::vector<Double_t> hErr, const std::vector<Double_t> binEdges) {
+
+  TH1F* h1 = new TH1F(hname, "", binEdges.size() - 1, binEdges.data());
+  for (int i = 0; i < h.size(); i++) {
+    h1->SetBinContent(i + 1, h.at(i));
+    h1->SetBinError(i + 1, hErr.at(i));
   }
+  return h1;
+}
+
+
+TH2F* VectorToTH2F(TString hname,
+  std::vector<std::vector<Double_t>> h, std::vector<std::vector<Double_t>> hErr,
+  const std::vector<Double_t> xBinEdges, const std::vector<Double_t> yBinEdges) {
+
+  TH2F* h2 = new TH2F(hname, "",
+    xBinEdges.size() - 1, xBinEdges.data(), yBinEdges.size() - 1, yBinEdges.data());
+  for (int i = 0; i < h.size(); i++) {
+    for (int j = 0; j < h.at(i).size(); j++) {
+      h2->SetBinContent(i + 1, j + 1, h.at(i).at(j));
+      h2->SetBinError(i + 1, j + 1, hErr.at(i).at(j));
+    }
+  }
+  return h2;
 }
 
 
@@ -445,93 +497,6 @@ void PlotTH1F(TString name, TString xName, TString yName, std::vector<TH1F*> H1,
   for(int i = 1; i < H1.size(); i++) {
     H1.at(i)->Draw("HIST E SAME");
     l->AddEntry(H1.at(i), hNames.at(i), "lep");
-  }
-
-  l->Draw("SAME");
-
-  TLatex* labelReg = new TLatex(0.5, 0.81, "2l+#tau_{h}" + REGIONS_NAME.at(rIdx).at(0));
-  labelReg->SetTextSize(0.028);
-  labelReg->SetNDC();
-  labelReg->SetTextFont(42);
-  labelReg->Draw("SAME");
-  TLatex* labelCut1 = new TLatex(0.5, 0.73, REGIONS_NAME.at(rIdx).at(1));
-  labelCut1->SetTextSize(0.028);
-  labelCut1->SetNDC();
-  labelCut1->SetTextFont(42);
-  labelCut1->Draw("SAME");
-  TLatex* labelCut2 = new TLatex(0.5, 0.65, REGIONS_NAME.at(rIdx).at(2));
-  labelCut2->SetTextSize(0.028);
-  labelCut2->SetNDC();
-  labelCut2->SetTextFont(42);
-  labelCut2->Draw("SAME");
-
-  TLatex* labelCMS = new TLatex(0.175, 0.92, "CMS");
-  labelCMS->SetTextSize(0.04);
-  labelCMS->SetNDC();
-  labelCMS->SetTextFont(61);
-  labelCMS->Draw("SAME");
-  TLatex* labelWIP = new TLatex(0.255, 0.92, "Work in Progress");
-  labelWIP->SetTextSize(0.028);
-  labelWIP->SetNDC();
-  labelWIP->SetTextFont(52);
-  labelWIP->Draw("SAME");
-  // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
-  TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
-  labelLumi->SetTextSize(0.035);
-  labelLumi->SetNDC();
-  labelLumi->SetTextFont(42);
-  labelLumi->Draw("SAME");
-
-  c->Print("../plot/" + name + ".pdf");
-
-  delete c;
-}
-
-
-void PlotTH1F(TString name, TString xName, TString yName, std::vector<std::vector<Double_t>> h,
-  std::vector<std::vector<Double_t>> hErr, const std::vector<Double_t> binEdges,
-  std::vector<TString> hNames, Int_t rIdx, TString lumi) {
-
-  Double_t maxi = -1.0;
-  std::vector<TH1F*> hists{};
-  for (int i = 0; i < h.size(); i++) {
-    TString hName = name + "_";
-    hName += std::to_string(i); // Can't add TString and to_string output...
-    TH1F* h1 = new TH1F(hName, "", binEdges.size() - 1, binEdges.data());
-    for (int j = 0; j < h.at(i).size(); j++) {
-      h1->SetBinContent(j + 1, h.at(i).at(j));
-      h1->SetBinError(j + 1, hErr.at(i).at(j));
-    }
-    h1->GetXaxis()->SetNoExponent();
-    h1->GetYaxis()->SetNoExponent();
-    h1->SetLineWidth(2);
-    h1->SetLineColor(COLORS[i]);
-    h1->SetMarkerStyle(20);
-    h1->SetMarkerSize(1.2);
-    h1->SetMarkerColor(COLORS[i]);
-    maxi = maxi > h1->GetMaximum() ? maxi : h1->GetMaximum();
-    hists.push_back(h1);
-  }
-
-  TCanvas* c = new TCanvas("c", "c", 50, 50, 865, 780);
-  c->SetBottomMargin(0.12);
-  c->SetLeftMargin(0.17);
-  c->SetRightMargin(0.07);
-  c->cd();
-
-  TLegend* l = new TLegend(0.25, 0.7, 0.5, 0.88);
-  l->SetBorderSize(0);
-  l->SetTextFont(42);
-  l->SetTextSize(0.028);
-
-  hists.at(0)->GetXaxis()->SetTitle(xName);
-  hists.at(0)->GetYaxis()->SetTitle(yName);
-  hists.at(0)->GetYaxis()->SetRangeUser(0.0, 1.6 * maxi);
-  hists.at(0)->Draw("HIST E");
-  l->AddEntry(hists.at(0), hNames.at(0), "lep");
-  for(int i = 1; i < hists.size(); i++) {
-    hists.at(i)->Draw("HIST E SAME");
-    l->AddEntry(hists.at(i), hNames.at(i), "lep");
   }
 
   l->Draw("SAME");
