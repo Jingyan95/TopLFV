@@ -160,12 +160,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_Ta_ID_e = *(TH1F*) f_Ta_ID_e->Get("VVLoose");
   const auto sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
   const auto sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
-  const auto ff_Ta_OS_ee_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_ee_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
-  const auto ff_Ta_OS_mumu_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_mumu_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
-  const auto ff_Ta_OS_ee_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_ee_llStl300_TauIdvsOnZ_ptEtaEstFF");
-  const auto ff_Ta_OS_mumu_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_mumu_llStl300_TauIdvsOnZ_ptEtaEstFF");
-  const auto ff_Ta_OS_ee_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_ee_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
-  const auto ff_Ta_OS_mumu_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_mumu_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_llStl300_TauIdvsOnZ_ptEtaEstFF");
+  const auto ff_Ta_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
   const auto sf_Btag_corr = *(TH2F*) f_Btag_corr->Get("2DBtagShapeCorrection");
   f_El_RECO->Close();
   f_El_ID->Close();
@@ -199,12 +196,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_jet;
   float weight_Ta_ID_e;
   float weight_Ta_ID_mu;
-  float weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0;
-  float weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0;
-  float weight_Ta_ff_OS_ee_llStl300;
-  float weight_Ta_ff_OS_mumu_llStl300;
-  float weight_Ta_ff_OS_ee_llbtagg1p3;
-  float weight_Ta_ff_OS_mumu_llbtagg1p3;
+  float weight_Ta_ff_llMetg20Jetgeq1B0;
+  float weight_Ta_ff_llStl300;
+  float weight_Ta_ff_llbtagg1p3;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
   TString histname;
@@ -241,12 +235,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     weight_Ta_ID_jet = 1;
     weight_Ta_ID_e = 1;
     weight_Ta_ID_mu = 1;
-    weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = 1;
-    weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = 1;
-    weight_Ta_ff_OS_ee_llStl300 = 1;
-    weight_Ta_ff_OS_mumu_llStl300 = 1;
-    weight_Ta_ff_OS_ee_llbtagg1p3 = 1;
-    weight_Ta_ff_OS_mumu_llbtagg1p3 = 1;
+    weight_Ta_ff_llMetg20Jetgeq1B0 = 1;
+    weight_Ta_ff_llStl300 = 1;
+    weight_Ta_ff_llbtagg1p3 = 1;
     weight_Btag_corr = 1;
     weight_Event = 1;
 
@@ -383,12 +374,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
             for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
               if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
-                weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0 = ff_Ta_OS_ee_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
-                weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0 = ff_Ta_OS_mumu_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
-                weight_Ta_ff_OS_ee_llStl300 = ff_Ta_OS_ee_llStl300.GetBinContent(pt + 1, eta + 1);
-                weight_Ta_ff_OS_mumu_llStl300 = ff_Ta_OS_mumu_llStl300.GetBinContent(pt + 1, eta + 1);
-                weight_Ta_ff_OS_ee_llbtagg1p3 = ff_Ta_OS_ee_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
-                weight_Ta_ff_OS_mumu_llbtagg1p3 = ff_Ta_OS_mumu_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_llMetg20Jetgeq1B0 = ff_Ta_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_llStl300 = ff_Ta_llStl300.GetBinContent(pt + 1, eta + 1);
+                weight_Ta_ff_llbtagg1p3 = ff_Ta_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
                 break;
               }
             }
@@ -447,8 +435,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llbtagg1p3;
-        if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llbtagg1p3;
+        if (Event->ch() != 1) weight_Event *= weight_Ta_ff_llbtagg1p3;
         rIdx = rInd(regions, "llbtagg1p3OffZ"); // ttbar + jets CR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -460,8 +447,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llStl300;
-        if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llStl300;
+        if (Event->ch() != 1) weight_Event *= weight_Ta_ff_llStl300;
         rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -473,8 +459,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (Event->c() == 0 && Event->ch() == 0) weight_Event *= weight_Ta_ff_OS_ee_llMetg20Jetgeq1B0;
-        if (Event->c() == 0 && Event->ch() == 2) weight_Event *= weight_Ta_ff_OS_mumu_llMetg20Jetgeq1B0;
+        if (Event->ch() != 1) weight_Event *= weight_Ta_ff_llMetg20Jetgeq1B0;
         rIdx = rInd(regions, "llMetg20Jetgeq1B0OffZ"); // CR background estimation
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
