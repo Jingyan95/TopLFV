@@ -30,7 +30,7 @@ const std::vector<TString> WPBinLabels{"VVVLoose", "VVLoose", "VLoose", "Loose",
 // const std::vector<TString> DMBinLabels{"0", "1", "10", "11"};
 
 // --------------------------------- //
-bool doDetailedPlots = true;
+bool doDetailedPlots = false;
 // --------------------------------- //
 
 void Estimate(TH2F* hData, const vector<TH2F*>& hMC, int xCut, int yCut, Double_t results[6],
@@ -66,26 +66,26 @@ void FakeFactor() {
             for (TString var : VARS) {
 
               TString name = charge + "_" + channel + "_" + region + "_" + var;
-              TH2F* h = (TH2F*) f->Get<TH2F>(name)->Clone();
+              TH2F* h = (TH2F*) f->Get(name)->Clone();
               H2.emplace(std::make_pair(year + "_" + name + "_" + sample, h));
-              TH2F* hHad = (TH2F*) f->Get<TH2F>(name + "Hadronic")->Clone();
+              TH2F* hHad = (TH2F*) f->Get(name + "Hadronic")->Clone();
               H2.emplace(std::make_pair(year + "_" + name + "Hadronic_" + sample, hHad));
 
               // Read in pt binned histograms
               for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
                 snprintf(nameBin, 500, name + "_pt%.1fto%.1f", PT_BINS[pt], PT_BINS[pt + 1]);
-                TH2F* hBin = (TH2F*) f->Get<TH2F>(nameBin)->Clone();
+                TH2F* hBin = (TH2F*) f->Get(nameBin)->Clone();
                 H2.emplace(std::make_pair(year + "_" + nameBin + "_" + sample, hBin));
                 snprintf(nameBin, 500, name + "Hadronic_pt%.1fto%.1f", PT_BINS[pt], PT_BINS[pt + 1]);
-                TH2F* hBinHad = (TH2F*) f->Get<TH2F>(nameBin)->Clone();
+                TH2F* hBinHad = (TH2F*) f->Get(nameBin)->Clone();
                 H2.emplace(std::make_pair(year + "_" + nameBin + "_" + sample, hBinHad));
 
                 for (Int_t dm : DM) {
                   snprintf(nameDM, 500, name + "_pt%.1fto%.1f_dm%d", PT_BINS[pt], PT_BINS[pt + 1], dm);
-                  TH2F* hDM = (TH2F*) f->Get<TH2F>(nameDM)->Clone();
+                  TH2F* hDM = (TH2F*) f->Get(nameDM)->Clone();
                   H2.emplace(std::make_pair(year + "_" + nameDM + "_" + sample, hDM));
                   snprintf(nameDM, 500, name + "Hadronic_pt%.1fto%.1f_dm%d", PT_BINS[pt], PT_BINS[pt + 1], dm);
-                  TH2F* hDMHad = (TH2F*) f->Get<TH2F>(nameDM)->Clone();
+                  TH2F* hDMHad = (TH2F*) f->Get(nameDM)->Clone();
                   H2.emplace(std::make_pair(year + "_" + nameDM + "_" + sample, hDMHad));
                 }
               }
@@ -93,18 +93,18 @@ void FakeFactor() {
               // Read in eta binned histograms
               for (Int_t eta = 0; eta < ETA_BINS.size() - 1; eta++) {
                 snprintf(nameBin, 500, name + "_eta%.1fto%.1f", ETA_BINS[eta], ETA_BINS[eta + 1]);
-                TH2F* hBin = (TH2F*) f->Get<TH2F>(nameBin)->Clone();
+                TH2F* hBin = (TH2F*) f->Get(nameBin)->Clone();
                 H2.emplace(std::make_pair(year + "_" + nameBin + "_" + sample, hBin));
                 snprintf(nameBin, 500, name + "Hadronic_eta%.1fto%.1f", ETA_BINS[eta], ETA_BINS[eta + 1]);
-                TH2F* hBinHad = (TH2F*) f->Get<TH2F>(nameBin)->Clone();
+                TH2F* hBinHad = (TH2F*) f->Get(nameBin)->Clone();
                 H2.emplace(std::make_pair(year + "_" + nameBin + "_" + sample, hBinHad));
 
                 for (Int_t dm : DM) {
                   snprintf(nameDM, 500, name + "_eta%.1fto%.1f_dm%d", ETA_BINS[eta], ETA_BINS[eta + 1], dm);
-                  TH2F* hDM = (TH2F*) f->Get<TH2F>(nameDM)->Clone();
+                  TH2F* hDM = (TH2F*) f->Get(nameDM)->Clone();
                   H2.emplace(std::make_pair(year + "_" + nameDM + "_" + sample, hDM));
                   snprintf(nameDM, 500, name + "Hadronic_eta%.1fto%.1f_dm%d", ETA_BINS[eta], ETA_BINS[eta + 1], dm);
-                  TH2F* hDMHad = (TH2F*) f->Get<TH2F>(nameDM)->Clone();
+                  TH2F* hDMHad = (TH2F*) f->Get(nameDM)->Clone();
                   H2.emplace(std::make_pair(year + "_" + nameDM + "_" + sample, hDMHad));
                 }
               }
@@ -113,10 +113,10 @@ void FakeFactor() {
               for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
                 for (Int_t eta = 0; eta < ETA_BINS.size() - 1; eta++) {
                   snprintf(nameBin, 500, name + "_pt%.1fto%.1f_eta%.1fto%.1f", PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
-                  TH2F* hBin = (TH2F*) f->Get<TH2F>(nameBin)->Clone();
+                  TH2F* hBin = (TH2F*) f->Get(nameBin)->Clone();
                   H2.emplace(std::make_pair(year + "_" + nameBin + "_" + sample, hBin));
                   snprintf(nameBin, 500, name + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f", PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
-                  TH2F* hBinHad = (TH2F*) f->Get<TH2F>(nameBin)->Clone();
+                  TH2F* hBinHad = (TH2F*) f->Get(nameBin)->Clone();
                   H2.emplace(std::make_pair(year + "_" + nameBin + "_" + sample, hBinHad));
                 }
               }
@@ -151,6 +151,7 @@ void FakeFactor() {
   TString key, pName;
   Double_t results[6];
   std::vector<TH2F*> hEmpty{};
+  std::map<TString, TH1F*> hOverlaid{};
   for (TString year : YEARS) {
     std::vector<TH1F*> HFakeFactors{};
     std::vector<TH2F*> HFakeFactors2D{};
@@ -189,6 +190,10 @@ void FakeFactor() {
               estFFErr.push_back(results[1]);
             }
             TH1F* hFFPt = VectorToTH1F(pName + "_ptEstFF", estFF, estFFErr, PT_BINS);
+            if (charge == "OS" && channel == "ee" && r == 1 && var == "TauIdvsOnZ")
+              hOverlaid.emplace(std::make_pair("hOSeeFFPt", (TH1F*) hFFPt->Clone()));
+            if (charge == "OS" && channel == "mumu" && r == 1 && var == "TauIdvsOnZ")
+              hOverlaid.emplace(std::make_pair("hOSmumuFFPt", (TH1F*) hFFPt->Clone()));
             HFakeFactors.push_back(hFFPt);
             if (doDetailedPlots) {
               PlotTH1F(year + "_" + pName + "_ptEstFF", "Tau p_{T}", "Fake Factor", {hFFPt},
@@ -213,6 +218,10 @@ void FakeFactor() {
               estFFErr.push_back(results[1]);
             }
             TH1F* hFFEta = VectorToTH1F(pName + "_etaEstFF", estFF, estFFErr, ETA_BINS);
+            if (charge == "OS" && channel == "ee" && r == 1 && var == "TauIdvsOnZ")
+              hOverlaid.emplace(std::make_pair("hOSeeFFEta", (TH1F*) hFFEta->Clone()));
+            if (charge == "OS" && channel == "mumu" && r == 1 && var == "TauIdvsOnZ")
+              hOverlaid.emplace(std::make_pair("hOSmumuFFEta", (TH1F*) hFFEta->Clone()));
             HFakeFactors.push_back(hFFEta);
             if (doDetailedPlots) {
               PlotTH1F(year + "_" + pName + "_etaEstFF", "Tau #eta", "Fake Factor", {hFFEta},
@@ -367,6 +376,12 @@ void FakeFactor() {
     for (TH2F* h2 : HFakeFactors2D) h2->Write("", TObject::kOverwrite);
     fOut.Close();
   } // Year
+
+  // Make overlaid histograms
+  PlotTH1F("2016_OS_llStl300_TauIdvsOnZ_FFOverlaidPt", "Tau p_{T}", "Fake Factor",
+    {hOverlaid.at("hOSeeFFPt"), hOverlaid.at("hOSmumuFFPt")}, {"OS-ee", "OS-mumu"}, 1, GetLumi("2016"));
+  PlotTH1F("2016_OS_llStl300_TauIdvsOnZ_FFOverlaidEta", "Tau #eta", "Fake Factor",
+    {hOverlaid.at("hOSeeFFEta"), hOverlaid.at("hOSmumuFFEta")}, {"OS-ee", "OS-mumu"}, 1, GetLumi("2016"));
 }
 
 
