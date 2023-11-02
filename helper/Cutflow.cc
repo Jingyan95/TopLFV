@@ -2,16 +2,36 @@ const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
 const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT", "LFVStScalarU", "LFVTtScalarU"};
 const TString CHARGES[2] = {"OS", "SS"};
 const TString CHANNELS[3] = {"ee", "emu", "mumu"};
-const std::vector<TString> REGIONS{"ll", "llStl300", "llbtagg1p3", "llMetg20Jetgeq1B1",
-  "llMetg20Jetgeq1B0"/*, "llStg300btagl1p3", "llStg300btagl1p3Tight"*/};
+const std::vector<TString> REGIONS{
+  /*0*/ "ll", // No cuts
+  /*1*/ "llOffZMetg20Jetgeq1B1", // SR
+  /*2*/ "llOffZMetg20Jetgeq1B2", // ttbar + jets CR
+  /*3*/ "llOffZStg300btagl1p3", // New SR (Loose)
+  /*4*/ "llOffZStg300btagl1p3Tight", // New SR (Tight)
+  /*5*/ "llOnZ", // Z + jets CR
+  /*6*/ "llOnZMetg20Jetgeq1", // Z + jets CR
+  /*7*/ "llbtagg1p3", // ttbar + jets CR
+  /*8*/ "llbtagg1p3OffZ", // ttbar + jets CR
+  /*9*/ "llStl300", // Generic signal-free region
+  /*10*/ "llStl300OffZ", // Generic signal-free region
+  /*11*/ "llMetg20Jetgeq1B0", // CR background estimation
+  /*12*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
+};
 const std::vector<TString> REGIONS_LATEX{
   "2$l+\\tau_h$, no cuts",
-  "2$l+\\tau_h$, CR, $S_T<300$ GeV",
+  "2$l+\\tau_h$, SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
+  "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
+  "2$l+\\tau_h$, SR (Alt, Loose), Off Z, $S_T>300$ GeV, btag $<1.3$",
+  "2$l+\\tau_h$, SR (Alt, Tight), Off Z, $S_T>300$ GeV, btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
+  "2$l+\\tau_h$, Z + jets CR, On Z",
+  "2$l+\\tau_h$, Z + jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
   "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$",
-  "2$l+\\tau_h$, SR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
-  "2$l+\\tau_h$, CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$"/*,
-  "2$l+\\tau_h$, SR (Alt, Loose), $S_T>300$ GeV, btag $<1.3$",
-  "2$l+\\tau_h$, SR (Alt, Tight), $S_T>300$ GeV, off Z, btag $<1.3$ or $S_T>500$ GeV"*/};
+  "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$, Off Z",
+  "2$l+\\tau_h$, CR, $S_T<300$ GeV",
+  "2$l+\\tau_h$, CR, $S_T<300$ GeV, Off Z",
+  "2$l+\\tau_h$, CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$",
+  "2$l+\\tau_h$, CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$, Off Z"
+};
 const std::vector<TString> TABLE_LATEX{"Data", "$t\\bar{t}X$", "VV", "DY",
   "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"};
 
@@ -33,8 +53,8 @@ void Cutflow() {
         TH1F* hSubSR = new TH1F(key, "", 18, 0, 18);
         for (TString charge : CHARGES) {
           for (TString channel : CHANNELS) {
-            TString histname = charge + "_" + channel + "_" + region + "_subSR";
-            TH1F* h = (TH1F*) f->Get<TH1F>(histname)->Clone();
+            TString histname = charge + "_" + channel + "_" + region + "_geqMedLepgeqTightTa_subSR";
+            TH1F* h = (TH1F*) f->Get(histname)->Clone();
             if (charge == "OS" && channel == "ee") {
               hSubSR->SetBinContent(1, h->GetBinContent(1));
               hSubSR->SetBinError(1, h->GetBinError(1));

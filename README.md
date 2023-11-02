@@ -140,6 +140,6 @@ python drawHists.py
 
 ```sh
 cd ../helper/
-python root -l -b -q Cutflow.cc
+root -l -b -q Cutflow.cc
 ```
 This script will print out cutflow tables in LaTeX format.

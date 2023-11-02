@@ -146,7 +146,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/" + year + "egammaEffi.txt_EGM2D.root");
   TFile *f_Mu_RECO = new TFile("data/MUO/RECO/" + year + "Efficiency_muon_generalTracks_trackerMuon.root");
   TFile *f_Mu_ID = new TFile("data/MUO/TOPMVASF/v1/Medium/" + year + "NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt.root");
-  TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root"); // https://github.com/cms-tau-pog/TauIDSFs/tree/master/data
+  // https://github.com/cms-tau-pog/TauIDSFs/tree/master/data
+  TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root");
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
@@ -160,6 +161,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_Ta_ID_e = *(TH1F*) f_Ta_ID_e->Get("VVLoose");
   const auto sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
   const auto sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
+  // https://github.com/Jingyan95/TopLFV/tree/Emily_faketau
   const auto ff_Ta_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
   const auto ff_Ta_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_llStl300_TauIdvsOnZ_ptEtaEstFF");
   const auto ff_Ta_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
