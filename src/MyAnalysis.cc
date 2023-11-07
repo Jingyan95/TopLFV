@@ -66,7 +66,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const std::vector<TString> vars{"TauIdvsOnZ"};
   std::vector<int> unBlind{0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
   const std::vector<double> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
-  const std::vector<double> etaBins{-2.3, -1.4, 1.4, 2.3};
+  const std::vector<double> etaBins{0.0, 1.4, 2.3};
   const std::vector<int> tauDMs{0, 1, 2, 7, 10, 11};
   char text[500];
   std::map<TString, std::vector<float>> vars2D;
@@ -454,7 +454,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           }
         }
         for (int j = 0; j < etaBins.size() - 1; j++) {
-          if (tauEta > etaBins[j] && tauEta < etaBins[j + 1]) {
+          if (abs(tauEta) > etaBins[j] && abs(tauEta) < etaBins[j + 1]) {
             snprintf(text, 500, var + "_eta%.1fto%.1f", etaBins[j], etaBins[j + 1]);
             Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
             snprintf(text, 500, var + "_eta%.1fto%.1f_dm%d", etaBins[j], etaBins[j + 1], tauDM);
@@ -465,7 +465,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         for (int j = 0; j < ptBins.size() - 1; j++) {
           if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
             for (int k = 0; k < etaBins.size() - 1; k++) {
-              if (tauEta > etaBins[k] && tauEta < etaBins[k + 1]) {
+              if (abs(tauEta) > etaBins[k] && abs(tauEta) < etaBins[k + 1]) {
                 snprintf(text, 500, var + "_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[j], ptBins[j + 1], etaBins[k], etaBins[k + 1]);
                 Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
                 break;
@@ -486,7 +486,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             }
           }
           for (int j = 0; j < etaBins.size() - 1; j++) {
-            if (tauEta > etaBins[j] && tauEta < etaBins[j + 1]) {
+            if (abs(tauEta) > etaBins[j] && abs(tauEta) < etaBins[j + 1]) {
               snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f", etaBins[j], etaBins[j + 1]);
               Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
               snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f_dm%d", etaBins[j], etaBins[j + 1], tauDM);
@@ -496,7 +496,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           for (int j = 0; j < ptBins.size() - 1; j++) {
             if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
               for (int k = 0; k < etaBins.size() - 1; k++) {
-                if (tauEta > etaBins[k] && tauEta < etaBins[k + 1]) {
+                if (abs(tauEta) > etaBins[k] && abs(tauEta) < etaBins[k + 1]) {
                   snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[j], ptBins[j + 1], etaBins[k], etaBins[k + 1]);
                   Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
                   break;

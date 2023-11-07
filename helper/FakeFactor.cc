@@ -17,7 +17,7 @@ const TString VARS[1] = {"TauIdvsOnZ"};
 
 // Fake factor bins
 const std::vector<Double_t> PT_BINS = {20.0, 40.0, 60.0, 100.0, 220.0};
-const std::vector<Double_t> ETA_BINS = {-2.3, -1.4, 1.4, 2.3};
+const std::vector<Double_t> ETA_BINS = {0.0, 1.4, 2.3};
 const std::vector<Int_t> DM = {0, 1, 10, 11};
 
 // Plot colors
@@ -179,21 +179,17 @@ void FakeFactor() {
             std::vector<Double_t> estFFErr{};
             for (Int_t pt = 0; pt < PT_BINS.size() - 1; pt++) {
               std::vector<TH2F*> hMC{};
-              for (int s = 0; s < SAMPLES.size(); s++) {
-                snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
+              for (int s = 1; s < SAMPLES.size(); s++) {
+                if (SAMPLES[s] != "DY" && SAMPLES[s] != "TT") {
+                  snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                     + var + "_pt%.1fto%.1f_" + SAMPLES[s], PT_BINS[pt], PT_BINS[pt + 1]);
-                char thename[500];
-                snprintf(thename, 500, "../plot/" + year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
-                  + var + "_pt%.1fto%.1f_" + SAMPLES[s] + "_ptEtaEstFF.pdf", PT_BINS[pt], PT_BINS[pt + 1]);
-                PlotTH2F(H2.at(hKey), "All Events", "Tau vs Jets WP", GetLumi(year), thename);
-                if (s == 3 || s == 4) {
                   hMC.push_back(H2.at(hKey));
                 }
               }
               snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                 + var + "_pt%.1fto%.1f_" + SAMPLES[0], PT_BINS[pt], PT_BINS[pt + 1]);
-              Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
-              // Estimate(H2.at(hKey), hMC, 1, 5, results);
+              // Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+              Estimate(H2.at(hKey), hMC, 1, 5, results);
               estFF.push_back(results[0]);
               estFFErr.push_back(results[1]);
             }
@@ -214,7 +210,7 @@ void FakeFactor() {
             for (Int_t eta = 0; eta < ETA_BINS.size() - 1; eta++) {
               std::vector<TH2F*> hMC{};
               for (int s = 1; s < SAMPLES.size(); s++) {
-                if (SAMPLES[s] == "DY" || SAMPLES[s] == "TT") {
+                if (SAMPLES[s] != "DY" && SAMPLES[s] != "TT") {
                   snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                     + var + "_eta%.1fto%.1f_" + SAMPLES[s], ETA_BINS[eta], ETA_BINS[eta + 1]);
                   hMC.push_back(H2.at(hKey));
@@ -222,8 +218,8 @@ void FakeFactor() {
               }
               snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                 + var + "_eta%.1fto%.1f_" + SAMPLES[0], ETA_BINS[eta], ETA_BINS[eta + 1]);
-              Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
-              // Estimate(H2.at(hKey), hMC, 1, 5, results);
+              // Estimate(H2.at(hKey), hMC, 1, 5, results, true, hKey, GetLumi(year));
+              Estimate(H2.at(hKey), hMC, 1, 5, results);
               estFF.push_back(results[0]);
               estFFErr.push_back(results[1]);
             }
@@ -247,7 +243,7 @@ void FakeFactor() {
               for (Int_t eta = 0; eta < ETA_BINS.size() - 1; eta++) {
                 std::vector<TH2F*> hMC{};
                 for (int s = 1; s < SAMPLES.size(); s++) {
-                  if (SAMPLES[s] == "DY" || SAMPLES[s] == "TT") {
+                  if (SAMPLES[s] != "DY" && SAMPLES[s] != "TT") {
                     snprintf(hKey, 500, year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_"
                       + var + "_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[s],
                       PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
@@ -345,7 +341,7 @@ void FakeFactor() {
             for (Int_t eta = 0; eta < ETA_BINS.size() - 1; eta++) {
               std::vector<TH2F*> hMC{};
               for (int s = 1; s < SAMPLES.size(); s++) {
-                if (SAMPLES[s] == "DY" || SAMPLES[s] == "TT") {
+                if (SAMPLES[s] != "DY" && SAMPLES[s] != "TT") {
                   snprintf(hKey, 500, year + "_" + charge + "_ee_" + REGIONS[r] + "_"
                     + var + "_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[s],
                     PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
@@ -367,8 +363,11 @@ void FakeFactor() {
                 PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
               TH2F* h2B = (TH2F*) H2.at(hKey)->Clone();
               h2A->Add(h2B, 1.0);
-              Estimate(h2A, hMC, 1, 5, results, true, hKey, GetLumi(year));
-              // Estimate(h2A, hMC, 1, 5, results);
+              snprintf(hKey, 500, year + "_" + charge + "_comb_" + REGIONS[r] + "_"
+                + var + "_pt%.1fto%.1f_eta%.1fto%.1f_" + SAMPLES[0],
+                PT_BINS[pt], PT_BINS[pt + 1], ETA_BINS[eta], ETA_BINS[eta + 1]);
+              // Estimate(h2A, hMC, 1, 5, results, true, hKey, GetLumi(year));
+              Estimate(h2A, hMC, 1, 5, results);
               estFF2D.at(pt).push_back(results[0]);
               estFFErr2D.at(pt).push_back(results[1]);
             }
