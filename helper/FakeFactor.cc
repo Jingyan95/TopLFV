@@ -384,7 +384,7 @@ void FakeFactor() {
     } // Charge
 
     std::cout << "Writing histograms..." << std::endl;
-    TString filename = year + "_JetToTauFakeFactors.root";
+    TString filename = year + "_JetToTau_TrilepFakeFactors.root";
     TFile fOut (filename, "RECREATE");
     for (TH1F* h : HFakeFactors) h->Write("", TObject::kOverwrite);
     for (TH2F* h2 : HFakeFactors2D) h2->Write("", TObject::kOverwrite);
