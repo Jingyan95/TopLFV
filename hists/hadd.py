@@ -35,8 +35,8 @@ if name == 'All' or name == '2018':
 addedFilesData = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesVV = {"2016APV": [], "2016": [], "2017": [], "2018": []}
-addedFilesTT = {"2016APV": [], "2016": [], "2017": [], "2018": []}
-addedFilesDY = {"2016APV": [], "2016": [], "2017": [], "2018": []}
+addedFilesTT = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TT, WWTo2L2Nu
+addedFilesDY = {"2016APV": [], "2016": [], "2017": [], "2018": []} # DY, ZZTo2L2Nu
 
 for key, value in SAMPLES.items():
     year = value[3]
@@ -45,14 +45,16 @@ for key, value in SAMPLES.items():
     hadd = 'hadd ' + year + '/' + key + '.root '
     if value[1] == 'data':
         addedFilesData[year].append(year + '/' + key + '.root ')
+    elif ('TTTo' in key or 'WWTo2L2Nu' in key):
+        print('TT/WW: ' + key)
+        addedFilesTT[year].append(year + '/' + key + '.root ')
+    elif ('DYM' in key or 'ZZTo2L2Nu' in key):
+        print('DY/ZZ: ' + key)
+        addedFilesDY[year].append(year + '/' + key + '.root ')
     elif ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
         addedFilesTX[year].append(year + '/' + key + '.root ')
-    elif ('TTTo' in key or 'To2L2Nu' in key): # TODO: move To2L2Nu somewhere more organized
-        addedFilesTT[year].append(year + '/' + key + '.root ')
     elif ('WW' in key) or ('WZ' in key) or ('ZZ' in key):
         addedFilesVV[year].append(year + '/' + key + '.root ')
-    elif ('DYM' in key):
-        addedFilesDY[year].append(year + '/' + key + '.root ')
     else:
         os.system('rm -f ' + key + '.root')
         hadd = 'hadd ' + key + '.root '
