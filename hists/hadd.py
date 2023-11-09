@@ -45,14 +45,14 @@ for key, value in SAMPLES.items():
     hadd = 'hadd ' + year + '/' + key + '.root '
     if value[1] == 'data':
         addedFilesData[year].append(year + '/' + key + '.root ')
+    elif ('TTTo' in key or 'WWTo2L2Nu' in key):
+        addedFilesTT[year].append(year + '/' + key + '.root ')
+    elif ('DYM' in key or 'ZZTo2L2Nu' in key):
+        addedFilesDY[year].append(year + '/' + key + '.root ')
     elif ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
         addedFilesTX[year].append(year + '/' + key + '.root ')
     elif ('WW' in key) or ('WZ' in key) or ('ZZ' in key):
         addedFilesVV[year].append(year + '/' + key + '.root ')
-    elif ('TTTo' in key):
-        addedFilesTT[year].append(year + '/' + key + '.root ')
-    elif ('DYM' in key):
-        addedFilesDY[year].append(year + '/' + key + '.root ')
     else:
         os.system('rm -f ' + key + '.root')
         hadd = 'hadd ' + key + '.root '
