@@ -46,10 +46,8 @@ for key, value in SAMPLES.items():
     if value[1] == 'data':
         addedFilesData[year].append(year + '/' + key + '.root ')
     elif ('TTTo' in key or 'WWTo2L2Nu' in key):
-        print('TT/WW: ' + key)
         addedFilesTT[year].append(year + '/' + key + '.root ')
     elif ('DYM' in key or 'ZZTo2L2Nu' in key):
-        print('DY/ZZ: ' + key)
         addedFilesDY[year].append(year + '/' + key + '.root ')
     elif ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
         addedFilesTX[year].append(year + '/' + key + '.root ')
