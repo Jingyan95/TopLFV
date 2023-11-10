@@ -33,15 +33,15 @@ mc2016_samples['2016_ZZTo2L2Nu'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016
 
 # Data
 data2016_samples['2016_F_MuonEG'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_F_MuonEG/MuonEG/crab_2016LFVSignalAndData_2016_F_MuonEG/231101_094952/0000/'], 'data', 'MuonEG', '2016', 'F', '1', '1', '1', 3]
-# data2016_samples['2016_G_MuonEG'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_G_MuonEG/MuonEG/crab_Trilep_Inclusive_Apr29_JEC_2016_G_MuonEG/230429_191330/0000/'], 'data', 'MuonEG', '2016', 'G', '1', '1', '1', 15]
-# data2016_samples['2016_H_MuonEG'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_H_MuonEG/MuonEG/crab_Trilep_Inclusive_Apr29_JEC_2016_H_MuonEG/230429_193004/0000/'], 'data', 'MuonEG', '2016', 'H', '1', '1', '1', 10]
+data2016_samples['2016_G_MuonEG'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_G_MuonEG/MuonEG/crab_2016LFVSignalAndData_v6_2016_G_MuonEG/231109_130946/0000/'], 'data', 'MuonEG', '2016', 'G', '1', '1', '1', 15]
+data2016_samples['2016_H_MuonEG'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_H_MuonEG/MuonEG/crab_2016LFVSignalAndData_v6_2016_H_MuonEG/231109_131059/0000/'], 'data', 'MuonEG', '2016', 'H', '1', '1', '1', 10]
 
 data2016_samples['2016_F_DoubleEG'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_F_DoubleEG/DoubleEG/crab_2016LFVSignalAndData_2016_F_DoubleEG/231101_094047/0000/'], 'data', 'DoubleEG', '2016', 'F', '1', '1', '1', 5]
 data2016_samples['2016_G_DoubleEG'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_G_DoubleEG/DoubleEG/crab_Dilepton2016Data_2016_G_DoubleEG/231101_163437/0000/'], 'data', 'DoubleEG', '2016', 'G', '1', '1', '1', 8]
 data2016_samples['2016_H_DoubleEG'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_H_DoubleEG/DoubleEG/crab_Dilepton2016Data_2016_H_DoubleEG/231101_163534/0000/'], 'data', 'DoubleEG', '2016', 'H', '1', '1', '1', 11]
 
 data2016_samples['2016_F_DoubleMuon'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_F_DoubleMuon/DoubleMuon/crab_2016LFVSignalAndData_2016_F_DoubleMuon/231101_095323/0000/'], 'data', 'DoubleMuon', '2016', 'F', '1', '1', '1', 1]
-# data2016_samples['2016_G_DoubleMuon'] = [['/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive/2016/2016_G_DoubleMuon/DoubleMuon/crab_Trilep_Inclusive_Apr29_JEC_2016_G_DoubleMuon/230429_192148/0000/'], 'data', 'DoubleMuon', '2016', 'G', '1', '1', '1', 29]
+data2016_samples['2016_G_DoubleMuon'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_G_DoubleMuon/DoubleMuon/crab_2016LFVSignalAndData_v6_2016_G_DoubleMuon/231109_131202/0000/'], 'data', 'DoubleMuon', '2016', 'G', '1', '1', '1', 29]
 data2016_samples['2016_H_DoubleMuon'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_H_DoubleMuon/DoubleMuon/crab_2016LFVSignalAndData_2016_H_DoubleMuon/231101_095415/0000/'], 'data', 'DoubleMuon', '2016', 'H', '1', '1', '1', 28]
 
 data2016_samples['2016_F_SingleElectron'] = [['/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_F_SingleElectron/SingleElectron/crab_2016LFVSignalAndData_2016_F_SingleElectron/231101_093953/0000/'], 'data', 'SingleElectron', '2016', 'F', '1', '1', '1', 5]
