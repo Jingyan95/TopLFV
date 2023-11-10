@@ -105,7 +105,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"btagSum",          {36,   25,     0,   2.5}}
   };
   const std::vector<Double_t> ff_pt_bins = {20.0, 40.0, 60.0, 100.0, 220.0};
-  const std::vector<Double_t> ff_eta_bins = {-2.3, -1.4, 1.4, 2.3};
+  const std::vector<Double_t> ff_eta_bins = {0,0, 1.4, 2.3};
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
   Dim5 Hists(Dim5(charges.size(), Dim4(channels.size(), Dim3(regions.size(), Dim2(domains.size(), Dim1(vars.size()))))));
@@ -151,7 +151,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
-  TFile *f_Ta_JetFF = new TFile("data/TAU/" + year + "_JetToTauFakeFactors.root");
+  TFile *f_Ta_JetFF = new TFile("data/TAU/" + year + "_JetToTau_TrilepFakeFactors.root");
   TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   const auto sf_El_RECO = *(TH2F*) f_El_RECO->Get("EGamma_SF2D");
   const auto sf_El_ID = *(TH2F*) f_El_ID->Get("EGamma_SF2D");
@@ -375,7 +375,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
           if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
             for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
-              if (tauEta > ff_eta_bins[eta] && tauEta < ff_eta_bins[eta + 1]) {
+              if (abs(tauEta) > ff_eta_bins[eta] && abs(tauEta) < ff_eta_bins[eta + 1]) {
                 weight_Ta_ff_llMetg20Jetgeq1B0 = ff_Ta_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
                 weight_Ta_ff_llStl300 = ff_Ta_llStl300.GetBinContent(pt + 1, eta + 1);
                 weight_Ta_ff_llbtagg1p3 = ff_Ta_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
@@ -437,7 +437,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (Event->ch() != 1) weight_Event *= weight_Ta_ff_llbtagg1p3;
+        // if (Event->ch() != 1)
+        weight_Event *= weight_Ta_ff_llbtagg1p3;
         rIdx = rInd(regions, "llbtagg1p3OffZ"); // ttbar + jets CR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -449,7 +450,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (Event->ch() != 1) weight_Event *= weight_Ta_ff_llStl300;
+        // if (Event->ch() != 1)
+        weight_Event *= weight_Ta_ff_llStl300;
         rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -461,7 +463,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        if (Event->ch() != 1) weight_Event *= weight_Ta_ff_llMetg20Jetgeq1B0;
+        // if (Event->ch() != 1)
+        weight_Event *= weight_Ta_ff_llMetg20Jetgeq1B0;
         rIdx = rInd(regions, "llMetg20Jetgeq1B0OffZ"); // CR background estimation
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);

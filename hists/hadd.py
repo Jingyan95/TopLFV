@@ -35,8 +35,8 @@ if name == 'All' or name == '2018':
 addedFilesData = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesVV = {"2016APV": [], "2016": [], "2017": [], "2018": []}
-addedFilesTT = {"2016APV": [], "2016": [], "2017": [], "2018": []}
-addedFilesDY = {"2016APV": [], "2016": [], "2017": [], "2018": []}
+addedFilesTT = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TT, WWTo2L2Nu
+addedFilesDY = {"2016APV": [], "2016": [], "2017": [], "2018": []} # DY, ZZTo2L2Nu
 
 for key, value in SAMPLES.items():
     year = value[3]

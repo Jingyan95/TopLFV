@@ -86,8 +86,8 @@ varsName = [
     'S_{T} [GeV]', 'Sum of btagging scores']
 
 Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY', 't#bar{t}', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
-SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY', 't#bar{t}', 'CLFV top production', 'CLFV top decay']
+SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY/ZZ', 't#bar{t}/WW', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
+SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY/ZZ', 't#bar{t}/WW', 'CLFV top production', 'CLFV top decay']
 
 colors = [ROOT.kBlack, ROOT.kYellow, ROOT.kGreen, ROOT.kOrange - 3, ROOT.kRed - 4, ROOT.kViolet + 1, ROOT.kGray]
 markerStyle = [20, 25, 26, 27, 28, 29, 30]
