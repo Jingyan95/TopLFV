@@ -47,7 +47,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   auto begin = std::chrono::high_resolution_clock::now();
 
   std::vector<TString> charges{"OS", "SS"}; // Same-Sign, Opposite-Sign
-  std::vector<TString> channels{"ee", "emu", "mumu"};
+  std::vector<TString> channels{"e", "mu"}; // e+tau, mu+tau
   std::vector<TString> regions{
     /*0*/ "ll", // No cuts
     // /*1*/ "llOnZMetg20Jetgeq1", // Z + jets CR
@@ -61,81 +61,71 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     /*9*/ "llMetg20Jetgeq1B1", // SR background estimation
     /*10*/ "llMetg20Jetgeq1B0", // CR background estimation
     /*11*/ "llStg300btagl1p3", // New SR (Loose) background estimation
-    /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
+    // /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
   };
-  const std::vector<TString> vars{"TauIdvsOnZ"};
   std::vector<int> unBlind{0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
-  const std::vector<double> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
-  const std::vector<double> etaBins{0.0, 1.4, 2.3};
+  const std::vector<TString> vars{"Ta", "FakeTa", "geqTightTa", "lTightTa"};
+  std::map<TString, Pair1> vars1D;
+  std::map<TString, Pair2> vars2D;
+  std::vector<float> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
+  std::vector<float> etaBins{0.0, 1.4, 2.3};
   const std::vector<int> tauDMs{0, 1, 2, 7, 10, 11};
   char text[500];
-  std::map<TString, std::vector<float>> vars2D;
-  float hist2DIdx = 0;
+  int hist1DIdx = 0;
   for (TString var : vars) {
-    vars2D.insert(std::pair<TString, std::vector<float>>(var, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-    hist2DIdx++;
-    vars2D.insert(std::pair<TString, std::vector<float>>(var + "Hadronic", {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-    hist2DIdx++;
-    for (int i = 0; i < ptBins.size() - 1; i++) { // Fake tau estimate vs. pt
-      snprintf(text, 500, var + "_pt%.1fto%.1f", ptBins[i], ptBins[i + 1]);
-      vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-      hist2DIdx++;
-      snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f", ptBins[i], ptBins[i + 1]);
-      vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-      hist2DIdx++;
-      for (int tauDM : tauDMs) { // Fake tau estimate vs. pt and tau decay mode
-        snprintf(text, 500, var + "_pt%.1fto%.1f_dm%d", ptBins[i], ptBins[i + 1], tauDM);
-        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-        hist2DIdx++;
-        snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_dm%d", ptBins[i], ptBins[i + 1], tauDM);
-        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-        hist2DIdx++;
-      }
+    vars1D.insert(make_pair(var + "_vsPt", Pair1(hist1DIdx, ptBins))); // Fake tau estimate vs. pt
+    hist1DIdx++;
+    for (int tauDM : tauDMs) { // Fake tau estimate vs. pt and tau decay mode
+      snprintf(text, 500, var + "_vsPt_dm%d", tauDM);
+      vars1D.insert(make_pair(text, Pair1(hist1DIdx, ptBins)));
+      hist1DIdx++;
     }
-    for (int i = 0; i < etaBins.size() - 1; i++) { // Fake tau estimate vs. eta
-      snprintf(text, 500, var + "_eta%.1fto%.1f", etaBins[i], etaBins[i + 1]);
-      vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-      hist2DIdx++;
-      snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f", etaBins[i], etaBins[i + 1]);
-      vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-      hist2DIdx++;
-      for (int tauDM : tauDMs) { // Fake tau estimate vs. eta and tau decay mode
-        snprintf(text, 500, var + "_eta%.1fto%.1f_dm%d", etaBins[i], etaBins[i + 1], tauDM);
-        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-        hist2DIdx++;
-        snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f_dm%d", etaBins[i], etaBins[i + 1], tauDM);
-        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-        hist2DIdx++;
-      }
+    vars1D.insert(make_pair(var + "_vsEta", Pair1(hist1DIdx, etaBins))); // Fake tau estimate vs. eta
+    hist1DIdx++;
+    for (int tauDM : tauDMs) { // Fake tau estimate vs. eta and tau decay mode
+      snprintf(text, 500, var + "_vsEta_dm%d", tauDM);
+      vars1D.insert(make_pair(text, Pair1(hist1DIdx, etaBins)));
+      hist1DIdx++;
     }
-    for (int i = 0; i < ptBins.size() - 1; i++) { // Fake tau estimate vs. pt and eta
-      for (int j = 0; j < etaBins.size() - 1; j++) {
-        snprintf(text, 500, var + "_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[i], ptBins[i + 1], etaBins[j], etaBins[j + 1]);
-        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-        hist2DIdx++;
-        snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[i], ptBins[i + 1], etaBins[j], etaBins[j + 1]);
-        vars2D.insert(std::pair<TString, std::vector<float>>(text, {hist2DIdx, 2, 0, 2, 8, 0, 8}));
-        hist2DIdx++;
+  }
+  int hist2DIdx = 0;
+  for (TString var : vars) {
+    vars2D.insert(make_pair(var + "_vsPt_vsEta", Pair2(hist2DIdx, {ptBins, etaBins}))); // Fake tau estimate vs. pt and eta
+    hist2DIdx++;
+  }
+
+  Dim4_1D Hists1D(Dim4_1D(charges.size(), Dim3_1D(channels.size(), Dim2_1D(regions.size(), Dim1_1D(vars1D.size())))));
+  TH1F* h1_test;
+  Dim4_2D Hists2D(Dim4_2D(charges.size(), Dim3_2D(channels.size(), Dim2_2D(regions.size(), Dim1_2D(vars2D.size())))));
+  TH2F* h2_test;
+  std::stringstream name;
+
+  for (int i = 0; i < (int) charges.size(); ++i) {
+    for (int j = 0; j < (int) channels.size(); ++j) {
+      for (int k = 0; k < (int) regions.size(); ++k) {
+        for (auto it = vars1D.cbegin(); it != vars1D.cend(); ++it) {
+          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_;
+          h1_test = new TH1F((name.str()).c_str(), "", it->second.second.size() - 1, it->second.second.data());
+          h1_test->StatOverflows(kTRUE);
+          h1_test->Sumw2(kTRUE);
+          Hists1D[i][j][k][it->second.first] = h1_test;
+          name.str("");
+        }
       }
     }
   }
 
-  Dim4 Hists2D(Dim4(charges.size(), Dim3(channels.size(), Dim2(regions.size(), Dim1(vars2D.size())))));
-  TH2F* h2_test;
-  std::stringstream name;
-
-  // Create 2D histograms for background estimation
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
         for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
           name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first << "_" << workerID_;
           h2_test = new TH2F((name.str()).c_str(), "",
-            it->second.at(1), it->second.at(2), it->second.at(3),
-            it->second.at(4), it->second.at(5), it->second.at(6));
+            it->second.second[0].size() - 1, it->second.second[0].data(),
+            it->second.second[1].size() - 1, it->second.second[1].data());
           h2_test->StatOverflows(kTRUE);
           h2_test->Sumw2(kTRUE);
-          Hists2D[i][j][k][it->second.at(0)] = h2_test;
+          Hists2D[i][j][k][it->second.first] = h2_test;
           name.str("");
         }
       }
@@ -290,8 +280,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     }
 
     // Applying flavor-dependent trigger requirement
-    if (Leptons->size() != 2 || ((*Leptons)[0]->pt_ < lep1PtCut && (*Leptons)[1]->pt_ < lep1PtCut)
-        || !myTrig->triggerPass((*Leptons)[0]->flavor_ + (*Leptons)[1]->flavor_ - 2)) {
+    if (Leptons->size() != 1 || (*Leptons)[0]->pt_ < lep1PtCut || !myTrig->triggerPass((*Leptons)[0]->flavor_ - 1)) {
       deleteContainter(Leptons);
       continue;
     }
@@ -310,8 +299,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 1 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
 
       // Overlap removal
-      if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
-          || event_candidate::deltaR((*Leptons)[1]->eta_, (*Leptons)[1]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4) continue;
+      if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4) continue;
 
       if (data == "mc") {
         if ((int) Tau_genPartFlav[l] == 5)
@@ -327,7 +315,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Tau_rawDeepTau2017v2p1VSmu[l], l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5, Tau_decayMode[l]));
     }
 
-    if (Leptons->size() != 3 || abs((*Leptons)[0]->charge_ + (*Leptons)[1]->charge_ + (*Leptons)[2]->charge_) > 1) {
+    if (Leptons->size() != 2) { // can do some studies on SS/OS lepton & tau
       deleteContainter(Leptons);
       continue;
     }
@@ -341,8 +329,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Jet_eta[l], Jet_phi[l]) < 0.4
-          || event_candidate::deltaR((*Leptons)[1]->eta_, (*Leptons)[1]->phi_, Jet_eta[l], Jet_phi[l]) < 0.4
-          || event_candidate::deltaR((*Leptons)[2]->eta_, (*Leptons)[2]->phi_, Jet_eta[l], Jet_phi[l]) < 0.4) continue;
+          || event_candidate::deltaR((*Leptons)[1]->eta_, (*Leptons)[1]->phi_, Jet_eta[l], Jet_phi[l]) < 0.4) continue;
       float JetEnergy;
       TLorentzVector* jet_temp = new TLorentzVector();
       jet_temp->SetPtEtaPhiM(Jet_pt_nom[l], Jet_eta[l], Jet_phi[l], Jet_mass_nom[l]);
@@ -429,11 +416,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-      if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
-        rIdx = rInd(regions, "llStg300btagl1p3Tight"); // New SR (Tight) background estimation
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
+      // if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
+      //   rIdx = rInd(regions, "llStg300btagl1p3Tight"); // New SR (Tight) background estimation
+      //   reg.push_back(rIdx);
+      //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      // }
     }
 
     // Filling histograms
@@ -442,70 +429,40 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     tauWP = char_to_int(Event->ta1()->mva1WP_);
     tauDM = Event->ta1()->decaymode_;
     for (int i = 0; i < reg.size(); ++i) {
-      for (TString var : vars) {
-        Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, var)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-        for (int j = 0; j < ptBins.size() - 1; j++) {
-          if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
-            snprintf(text, 500, var + "_pt%.1fto%.1f", ptBins[j], ptBins[j + 1]);
-            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-            snprintf(text, 500, var + "_pt%.1fto%.1f_dm%d", ptBins[j], ptBins[j + 1], tauDM);
-            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-            break;
-          }
-        }
-        for (int j = 0; j < etaBins.size() - 1; j++) {
-          if (abs(tauEta) > etaBins[j] && abs(tauEta) < etaBins[j + 1]) {
-            snprintf(text, 500, var + "_eta%.1fto%.1f", etaBins[j], etaBins[j + 1]);
-            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-            snprintf(text, 500, var + "_eta%.1fto%.1f_dm%d", etaBins[j], etaBins[j + 1], tauDM);
-            Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-            break;
-          }
-        }
-        for (int j = 0; j < ptBins.size() - 1; j++) {
-          if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
-            for (int k = 0; k < etaBins.size() - 1; k++) {
-              if (abs(tauEta) > etaBins[k] && abs(tauEta) < etaBins[k + 1]) {
-                snprintf(text, 500, var + "_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[j], ptBins[j + 1], etaBins[k], etaBins[k + 1]);
-                Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-                break;
-              }
-            }
-            break;
-          }
-        }
+      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "Ta_vsPt")]->Fill(tauPt, wgt[i]);
+      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "Ta_vsEta")]->Fill(tauEta, wgt[i]);
+      snprintf(text, 500, "Ta_vsPt_dm%d", tauDM);
+      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
+      snprintf(text, 500, "Ta_vsEta_dm%d", tauDM);
+      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
+      Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "Ta_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
 
-        if (Event->ta1()->truth_ == 0) {
-          Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, var + "Hadronic")]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-          for (int j = 0; j < ptBins.size() - 1; j++) {
-            if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
-              snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f", ptBins[j], ptBins[j + 1]);
-              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-              snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_dm%d", ptBins[j], ptBins[j + 1], tauDM);
-              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-            }
-          }
-          for (int j = 0; j < etaBins.size() - 1; j++) {
-            if (abs(tauEta) > etaBins[j] && abs(tauEta) < etaBins[j + 1]) {
-              snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f", etaBins[j], etaBins[j + 1]);
-              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-              snprintf(text, 500, var + "Hadronic_eta%.1fto%.1f_dm%d", etaBins[j], etaBins[j + 1], tauDM);
-              Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-            }
-          }
-          for (int j = 0; j < ptBins.size() - 1; j++) {
-            if (tauPt > ptBins[j] && tauPt < ptBins[j + 1]) {
-              for (int k = 0; k < etaBins.size() - 1; k++) {
-                if (abs(tauEta) > etaBins[k] && abs(tauEta) < etaBins[k + 1]) {
-                  snprintf(text, 500, var + "Hadronic_pt%.1fto%.1f_eta%.1fto%.1f", ptBins[j], ptBins[j + 1], etaBins[k], etaBins[k + 1]);
-                  Hists2D[Event->c()][Event->ch()][reg[i]][vInd(vars2D, text)]->Fill(Event->OnZ() ? 0 : 1, tauWP, wgt[i]);
-                  break;
-                }
-              }
-              break;
-            }
-          }
-        }
+      if (Event->ta1()->truth_ > 0) { // Fake tau in MC
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "FakeTa_vsPt")]->Fill(tauPt, wgt[i]);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "FakeTa_vsEta")]->Fill(tauEta, wgt[i]);
+        snprintf(text, 500, "FakeTa_vsPt_dm%d", tauDM);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
+        snprintf(text, 500, "FakeTa_vsEta_dm%d", tauDM);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "FakeTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
+      }
+
+      if (tauWP >= 5) { // >= Tight Tau
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsPt")]->Fill(tauPt, wgt[i]);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsEta")]->Fill(tauEta, wgt[i]);
+        snprintf(text, 500, "geqTightTa_vsPt_dm%d", tauDM);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
+        snprintf(text, 500, "geqTightTa_vsEta_dm%d", tauDM);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "geqTightTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
+      } else { // < Tight Tau
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightTa_vsPt")]->Fill(tauPt, wgt[i]);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightTa_vsEta")]->Fill(tauEta, wgt[i]);
+        snprintf(text, 500, "lTightTa_vsPt_dm%d", tauDM);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
+        snprintf(text, 500, "lTightTa_vsEta_dm%d", tauDM);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
+        Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "lTightTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
       }
     }
 
@@ -521,11 +478,25 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
       for (int k = 0; k < (int) regions.size(); ++k) {
+        for (auto it = vars1D.cbegin(); it != vars1D.cend(); ++it) {
+          name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first;
+          Hists1D[i][j][k][it->second.first]->SetName((name.str()).c_str());
+          Hists1D[i][j][k][it->second.first]->Write("", TObject::kOverwrite);
+          delete Hists1D[i][j][k][it->second.first];
+          name.str("");
+        }
+      }
+    }
+  }
+
+  for (int i = 0; i < (int) charges.size(); ++i) {
+    for (int j = 0; j < (int) channels.size(); ++j) {
+      for (int k = 0; k < (int) regions.size(); ++k) {
         for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
           name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << it->first;
-          Hists2D[i][j][k][it->second.at(0)]->SetName((name.str()).c_str());
-          Hists2D[i][j][k][it->second.at(0)]->Write("", TObject::kOverwrite);
-          delete Hists2D[i][j][k][it->second.at(0)];
+          Hists2D[i][j][k][it->second.first]->SetName((name.str()).c_str());
+          Hists2D[i][j][k][it->second.first]->Write("", TObject::kOverwrite);
+          delete Hists2D[i][j][k][it->second.first];
           name.str("");
         }
       }
@@ -533,6 +504,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   }
 
   file_out.Close();
+  Hists1D.clear();
   Hists2D.clear();
 
   // Writing summary

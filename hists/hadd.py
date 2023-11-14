@@ -13,29 +13,29 @@ parser.add_argument('--n', dest = 'NAMETAG', default = 'All')
 ARGS = parser.parse_args()
 name = ARGS.NAMETAG
 
-import nano_files_2016APV
-import nano_files_2016
-import nano_files_2017
-import nano_files_2018
+import nano_files_2016APV_dilepton
+import nano_files_2016_dilepton
+import nano_files_2017_dilepton
+import nano_files_2018_dilepton
 
 SAMPLES = {}
 if name == 'All' or name == '2016APV':
-    SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
-    SAMPLES.update(nano_files_2016APV.data2016APV_samples)
+    SAMPLES.update(nano_files_2016APV_dilepton.mc2016APV_samples)
+    SAMPLES.update(nano_files_2016APV_dilepton.data2016APV_samples)
 if name == 'All' or name == '2016':
-    SAMPLES.update(nano_files_2016.mc2016_samples)
-    SAMPLES.update(nano_files_2016.data2016_samples)
+    SAMPLES.update(nano_files_2016_dilepton.mc2016_samples)
+    SAMPLES.update(nano_files_2016_dilepton.data2016_samples)
 if name == 'All' or name == '2017':
-    SAMPLES.update(nano_files_2017.mc2017_samples)
-    SAMPLES.update(nano_files_2017.data2017_samples)
+    SAMPLES.update(nano_files_2017_dilepton.mc2017_samples)
+    SAMPLES.update(nano_files_2017_dilepton.data2017_samples)
 if name == 'All' or name == '2018':
-    SAMPLES.update(nano_files_2018.mc2018_samples)
-    SAMPLES.update(nano_files_2018.data2018_samples)
+    SAMPLES.update(nano_files_2018_dilepton.mc2018_samples)
+    SAMPLES.update(nano_files_2018_dilepton.data2018_samples)
 
 addedFilesData = {"2016APV": [], "2016": [], "2017": [], "2018": []}
-addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []}
-addedFilesVV = {"2016APV": [], "2016": [], "2017": [], "2018": []}
-addedFilesTT = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TT, WWTo2L2Nu
+addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TTX, TTTo2L2Nu
+addedFilesVV = {"2016APV": [], "2016": [], "2017": [], "2018": []} # VV, VVV, WWTo2L2Nu
+addedFilesTT = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TTToSemiLeptonic
 addedFilesDY = {"2016APV": [], "2016": [], "2017": [], "2018": []} # DY, ZZTo2L2Nu
 
 for key, value in SAMPLES.items():
@@ -45,13 +45,13 @@ for key, value in SAMPLES.items():
     hadd = 'hadd ' + year + '/' + key + '.root '
     if value[1] == 'data':
         addedFilesData[year].append(year + '/' + key + '.root ')
-    elif ('TTTo' in key or 'WWTo2L2Nu' in key):
+    elif ('TTToSemiLeptonic' in key):
         addedFilesTT[year].append(year + '/' + key + '.root ')
     elif ('DYM' in key or 'ZZTo2L2Nu' in key):
         addedFilesDY[year].append(year + '/' + key + '.root ')
-    elif ('TTW' in key) or ('TTH' in key) or ('TTZ' in key):
+    elif ('TTW' in key) or ('TTH' in key) or ('TTZ' in key) or ('TTTo2L2Nu' in key):
         addedFilesTX[year].append(year + '/' + key + '.root ')
-    elif ('WW' in key) or ('WZ' in key) or ('ZZ' in key):
+    elif ('WW' in key) or ('WZ' in key) or ('ZZ' in key) or ('WWTo2L2Nu' in key):
         addedFilesVV[year].append(year + '/' + key + '.root ')
     else:
         os.system('rm -f ' + key + '.root')
