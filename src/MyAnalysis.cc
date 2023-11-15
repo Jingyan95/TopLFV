@@ -437,7 +437,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        // if (Event->ch() != 1)
         weight_Event *= weight_Ta_ff_llbtagg1p3;
         rIdx = rInd(regions, "llbtagg1p3OffZ"); // ttbar + jets CR
         reg.push_back(rIdx);
@@ -450,7 +449,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        // if (Event->ch() != 1)
         weight_Event *= weight_Ta_ff_llStl300;
         rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
         reg.push_back(rIdx);
@@ -463,7 +461,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        // if (Event->ch() != 1)
         weight_Event *= weight_Ta_ff_llMetg20Jetgeq1B0;
         rIdx = rInd(regions, "llMetg20Jetgeq1B0OffZ"); // CR background estimation
         reg.push_back(rIdx);
