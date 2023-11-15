@@ -105,7 +105,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"btagSum",          {36,   25,     0,   2.5}}
   };
   const std::vector<Double_t> ff_pt_bins = {20.0, 40.0, 60.0, 100.0, 220.0};
-  const std::vector<Double_t> ff_eta_bins = {0,0, 1.4, 2.3};
+  const std::vector<Double_t> ff_eta_bins = {0.0, 1.4, 2.3};
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
   Dim5 Hists(Dim5(charges.size(), Dim4(channels.size(), Dim3(regions.size(), Dim2(domains.size(), Dim1(vars.size()))))));
@@ -361,35 +361,35 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     Event = new event_candidate(Leptons, Jets, data == "mc" ? MET_T1Smear_pt : MET_T1_pt, MET_phi, verbose_);
 
     // MC weights
-    tauPt = Event->ta1()->pt_;
-    tauEta = Event->ta1()->eta_;
     if (data == "mc") {
       weight_Lumi = (1000 * xs * lumi * getSign(Generator_weight)) / Nevent; // N.B. Nevent here should be sum of generator weights instead of raw event counts
       weight_PU = wPU.getPUweight(year, int(Pileup_nTrueInt), "nominal");
       weight_L1ECALPreFiring = L1PreFiringWeight_ECAL_Nom;
       weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
       weight_Btag_corr = scale_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
-
-      // Jet to tau fake factors
-      if (!Event->TightTau()) {
-        for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
-          if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
-            for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
-              if (abs(tauEta) > ff_eta_bins[eta] && abs(tauEta) < ff_eta_bins[eta + 1]) {
-                weight_Ta_ff_llMetg20Jetgeq1B0 = ff_Ta_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
-                weight_Ta_ff_llStl300 = ff_Ta_llStl300.GetBinContent(pt + 1, eta + 1);
-                weight_Ta_ff_llbtagg1p3 = ff_Ta_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
-                break;
-              }
-            }
-            break;
-          }
-        }
-      }
     }
     weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr;
     // h_2D_woBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu);
     // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF());
+
+    // Jet to tau fake factors
+    tauPt = Event->ta1()->pt_;
+    tauEta = Event->ta1()->eta_;
+    if (!Event->TightTau()) {
+      for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
+        if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
+          for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
+            if (abs(tauEta) > ff_eta_bins[eta] && abs(tauEta) < ff_eta_bins[eta + 1]) {
+              weight_Ta_ff_llMetg20Jetgeq1B0 = ff_Ta_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
+              weight_Ta_ff_llStl300 = ff_Ta_llStl300.GetBinContent(pt + 1, eta + 1);
+              weight_Ta_ff_llbtagg1p3 = ff_Ta_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
+              break;
+            }
+          }
+          break;
+        }
+      }
+    }
 
     int rIdx = rInd(regions, "ll"); // No cuts
     reg.push_back(rIdx);
@@ -472,11 +472,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     }
 
     // Filling histograms
+    int cIdx = Event->c();
+    int chIdx = Event->ch();
+    int dIdx = dInd(domains, Event->TightTau());
     for (int i = 0; i < reg.size(); ++i) {
-      int cIdx = Event->c();
-      int chIdx = Event->ch();
-      int dIdx = dInd(domains, Event->TightTau());
-
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "llM")]->Fill(Event->llM(), wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "llDr")]->Fill(Event->llDr(), wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt[i]);

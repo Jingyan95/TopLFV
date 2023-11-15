@@ -86,8 +86,10 @@ varsName = [
     'S_{T} [GeV]', 'Sum of btagging scores']
 
 Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ['Data', 't#bar{t}X', 'VV', 'DY/ZZ', 't#bar{t}/WW', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
+SamplesName = ['Data', 't#bar{t}X', 'VV(V)', 'DY/ZZ', 't#bar{t}/WW', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
 SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY/ZZ', 't#bar{t}/WW', 'CLFV top production', 'CLFV top decay']
+DDName = ['Data', 't#bar{t}X', 'VV(V)', 'Nonprompt', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
+DDNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'Nonprompt', 'CLFV top production', 'CLFV top decay']
 
 colors = [ROOT.kBlack, ROOT.kYellow, ROOT.kGreen, ROOT.kOrange - 3, ROOT.kRed - 4, ROOT.kViolet + 1, ROOT.kGray]
 markerStyle = [20, 25, 26, 27, 28, 29, 30]
@@ -151,20 +153,16 @@ for numyear, nameyear in enumerate(year):
     for numc, namec in enumerate(charges):
         for numch, namech in enumerate(channels):
             for numreg, namereg in enumerate(regions):
-
-                # Plots with background estimated with the ABCD method
                 for numvar, namevar in enumerate(vars):
                     if ('MVA' in namevar) and (not SaveMVA):
                         continue
 
+                    # Plots with background estimated with the ABCD method
                     H1 = []
                     H1Signal = []
                     for f in range(len(Samples)):
-                        numdom = 0 # >= Tight tau
-                        if 'DY' in Samples[f] or 'TT' in Samples[f]:
-                            numdom = 1 # < Tight tau
-
-                        h1 = Hists[numyear][f][numc][numch][numreg][numdom][numvar].Clone()
+                        if 'DY' in Samples[f] or 'TT' in Samples[f]: continue
+                        h1 = Hists[numyear][f][numc][numch][numreg][0][numvar].Clone()
                         h1.SetFillColor(colors[f])
                         if 'LFV' not in Samples[f]:
                             h1.SetLineColor(colors[0])
@@ -172,17 +170,17 @@ for numyear, nameyear in enumerate(year):
                         else:
                             h1.SetLineColor(colors[f])
                             H1Signal.append(h1)
-                        if 'Data' in Samples[f]:
-                            continue
+                    # Nonprompt estimate
+                    hn = Hists[numyear][0][numc][numch][numreg][1][numvar].Clone()
+                    hn.Add(Hists[numyear][1][numc][numch][numreg][1][numvar].Clone(), -1.0) # TTX
+                    hn.Add(Hists[numyear][2][numc][numch][numreg][1][numvar].Clone(), -1.0) # VV(V)
+                    hn.SetFillColor(ROOT.kCyan - 3)
+                    hn.SetLineColor(colors[0])
+                    H1.append(hn)
+                    StackHist(H1, H1Signal, DDNameStack, namec, namech, namereg, regionsName[numreg], "", "", nameyear, namevar, varsName[numvar])
 
-                    StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], "", "", nameyear, namevar, varsName[numvar])
-
-                # Plots with no background estimation
-                for numdom, namedom in enumerate(domains):
-                    for numvar, namevar in enumerate(vars):
-                        if ('MVA' in namevar) and (not SaveMVA):
-                            continue
-
+                    # Plots with no background estimation
+                    for numdom, namedom in enumerate(domains):
                         H1 = []
                         H1Signal = []
                         # H2 = []
@@ -195,15 +193,14 @@ for numyear, nameyear in enumerate(year):
                             else:
                                 h1.SetLineColor(colors[f])
                                 H1Signal.append(h1)
-                            if 'Data' in Samples[f]:
-                                continue
+                            # if 'Data' in Samples[f]:
+                            #     continue
                             # h2 = Hists[numyear][f][numc][numch][numreg][numvar].Clone()
                             # h2.SetLineColor(colors[f])
                             # h2.SetLineWidth(2)
                             # h2.SetMarkerColor(colors[f])
                             # h2.SetMarkerStyle(markerStyle[f])
                             # H2.append(h2)
-
                         StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear, namevar, varsName[numvar])
                         # CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 

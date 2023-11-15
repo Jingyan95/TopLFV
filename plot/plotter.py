@@ -105,7 +105,8 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     x_min = hists[0].GetXaxis().GetBinLowEdge(1)
     x_max = hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins()) + hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
 
-    frame = pad1.DrawFrame(x_min, 0.2, x_max, y_max)
+    # frame = pad1.DrawFrame(x_min, 0.2, x_max, y_max)
+    frame = pad1.DrawFrame(x_min, 0.00001, x_max, y_max)
     frame.SetTitle("")
     frame.GetYaxis().SetTitle('Events')
     frame.GetXaxis().SetLabelSize(0)
@@ -339,9 +340,9 @@ def CompareBackgrounds(hists, year = '2016', c = "OS", ch = "emu", reg = "ll", v
         if hists[n].GetMaximum() > maxi:
             maxi = hists[n].GetMaximum()
         hists[n].SetFillColor(0)
-        #hists[n].SetMinimum(0.00001)
-        #if hists[n].Integral() > 0:
-        #    hists[n].Scale(1.0 / hists[n].Integral())
+        # hists[n].SetMinimum(0.00001)
+        # if hists[n].Integral() > 0:
+        #     hists[n].Scale(1.0 / hists[n].Integral())
         legend.AddEntry(hists[n], SamplesName[n + 1], 'LP')
     hists[0].SetTitle('')
     hists[0].GetYaxis().SetTitle('Events')
