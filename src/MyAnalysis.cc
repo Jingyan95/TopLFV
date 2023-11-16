@@ -59,9 +59,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     /*7*/ "llbtagg1p3", // ttbar + jets CR
     /*8*/ "llbtagg1p3OffZ", // ttbar + jets CR
     /*9*/ "llStl300", // Generic signal-free region
-    /*10*/ "llStl300OffZ", // Generic signal-free region
-    /*11*/ "llMetg20Jetgeq1B0", // CR background estimation
-    /*12*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
+    /*10*/ "llStl300OnZ", // Generic signal-free region
+    /*11*/ "llStl300OffZ", // Generic signal-free region
+    /*12*/ "llMetg20Jetgeq1B0", // CR background estimation
+    /*13*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
   };
   std::vector<int> unBlind{0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
   std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
@@ -75,34 +76,36 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"muLeptonMVAv1",    {6,    50,     0,     1}},
     {"muLeptonMVAv2",    {7,    50,     0,     1}},
     {"taPt",             {8,    20,    20,   220}},
-    {"taEta",            {9,    23,  -2.3,   2.3}},
-    {"taVsJetWP",        {10,    8,     0,     8}},
-    {"taVsJetMVA",       {11,   50,     0,     1}},
-    {"taVsElMVA",        {12,   50,     0,     1}},
-    {"taVsMuMVA",        {13,   50,     0,     1}},
-    {"taDxy",            {14,   16,  -0.1,   0.1}},
-    {"taDz",             {15,   16,  -0.2,   0.2}},
-    {"taDecayMode",      {16,   12,     0,    12}},
-    {"jet1Pt",           {17,   10,    25,   225}},
-    {"jetbtagDeepFlavB", {18,   50,     0,     1}},
-    {"njet",             {19,    6,     0,     6}},
-    {"nbjet",            {20,    4,     0,     4}},
-    {"MET",              {21,   10,     0,   200}},
-    {"subSR",            {22,   18,     0,    18}},
-    {"LFVemuM",          {23,   10,     0,   300}},
-    {"LFVetaM",          {24,   10,     0,   300}},
-    {"LFVmutaM",         {25,   10,     0,   300}},
-    {"LFVemuDr",         {26,   10,     0,   4.5}},
-    {"LFVetaDr",         {27,   10,     0,   4.5}},
-    {"LFVmutaDr",        {28,   10,     0,   4.5}},
-    {"LFVePt",           {29,   10,    20,   300}},
-    {"LFVmuPt",          {30,   10,    20,   300}},
-    {"LFVtaPt",          {31,   10,    20,   300}},
-    {"balepPt",          {32,   10,    20,   180}},
-    {"topmass",          {33,   10,     0,   300}},
-    {"Ht",               {34,   10,     0,   300}},
-    {"St",               {35,   20,    70,   600}},
-    {"btagSum",          {36,   25,     0,   2.5}}
+    {"taPtFake",         {9,    20,    20,   220}},
+    {"taEta",            {10,   23,  -2.3,   2.3}},
+    {"taEtaFake",        {11,   23,  -2.3,   2.3}},
+    {"taVsJetWP",        {12,    8,     0,     8}},
+    {"taVsJetMVA",       {13,   50,     0,     1}},
+    {"taVsElMVA",        {14,   50,     0,     1}},
+    {"taVsMuMVA",        {15,   50,     0,     1}},
+    {"taDxy",            {16,   16,  -0.1,   0.1}},
+    {"taDz",             {17,   16,  -0.2,   0.2}},
+    {"taDecayMode",      {18,   12,     0,    12}},
+    {"jet1Pt",           {19,   10,    25,   225}},
+    {"jetbtagDeepFlavB", {20,   50,     0,     1}},
+    {"njet",             {21,    6,     0,     6}},
+    {"nbjet",            {22,    4,     0,     4}},
+    {"MET",              {23,   10,     0,   200}},
+    {"subSR",            {24,   18,     0,    18}},
+    {"LFVemuM",          {25,   10,     0,   300}},
+    {"LFVetaM",          {26,   10,     0,   300}},
+    {"LFVmutaM",         {27,   10,     0,   300}},
+    {"LFVemuDr",         {28,   10,     0,   4.5}},
+    {"LFVetaDr",         {29,   10,     0,   4.5}},
+    {"LFVmutaDr",        {30,   10,     0,   4.5}},
+    {"LFVePt",           {31,   10,    20,   300}},
+    {"LFVmuPt",          {32,   10,    20,   300}},
+    {"LFVtaPt",          {33,   10,    20,   300}},
+    {"balepPt",          {34,   10,    20,   180}},
+    {"topmass",          {35,   10,     0,   300}},
+    {"Ht",               {36,   10,     0,   300}},
+    {"St",               {37,   20,    70,   600}},
+    {"btagSum",          {38,   25,     0,   2.5}}
   };
   const std::vector<Double_t> ff_pt_bins = {20.0, 40.0, 60.0, 100.0, 220.0};
   const std::vector<Double_t> ff_eta_bins = {0.0, 1.4, 2.3};
@@ -449,8 +452,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        weight_Event *= weight_Ta_ff_llStl300;
+        // weight_Event *= weight_Ta_ff_llStl300;
         rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      } else {
+        rIdx = rInd(regions, "llStl300OnZ"); // Generic signal-free region
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
@@ -487,6 +494,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taEta")]->Fill(tauEta, wgt[i]);
+      if (Event->ta1()->truth_ > 0) {
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taPtFake")]->Fill(tauPt, wgt[i]);
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taEtaFake")]->Fill(tauEta, wgt[i]);
+      }
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsJetWP")]->Fill(Event->ta1()->mva1WP_, wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsElMVA")]->Fill(Event->ta1()->mva2_, wgt[i]);
