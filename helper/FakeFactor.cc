@@ -230,7 +230,7 @@ void FakeFactor() {
               hOverlaid.emplace(std::make_pair("hOSmumuFFEta", (TH1F*) hFFEta->Clone()));
             HFakeFactors.push_back(hFFEta);
             if (doDetailedPlots) {
-              PlotTH1F(year + "_" + pName + "_etaEstFF", "Tau #eta", "Fake Factor", {hFFEta},
+              PlotTH1F(year + "_" + pName + "_etaEstFF", "Tau |#eta|", "Fake Factor", {hFFEta},
                 {"Fake Factor"}, r, GetLumi(year));
             }
 
@@ -262,7 +262,7 @@ void FakeFactor() {
             TH2F* hFF2D = VectorToTH2F(pName + "_ptEtaEstFF", estFF2D, estFFErr2D, PT_BINS, ETA_BINS);
             HFakeFactors2D.push_back(hFF2D);
             if (doDetailedPlots) {
-              PlotTH2F(hFF2D, "Tau p_{T}", "Tau #eta", GetLumi(year),
+              PlotTH2F(hFF2D, "Tau p_{T}", "Tau |#eta|", GetLumi(year),
                 "../plot/" + year + "_" + pName + "_ptEtaEstFF.pdf");
             }
 
@@ -318,11 +318,11 @@ void FakeFactor() {
                 if (doDetailedPlots) {
                   pName = year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_" + var + "_" + sample;
                   TH1F* hffEta = VectorToTH1F(pName + "_etaEstFF", valFF, valFFErr, ETA_BINS);
-                  PlotTH1F(pName + "_etaEstFF", "Tau #eta", "Fake Factor",
+                  PlotTH1F(pName + "_etaEstFF", "Tau |#eta|", "Fake Factor",
                     {hffEta}, {"Fake Factor"}, r, GetLumi(year));
                   TH1F* hEstEta = VectorToTH1F(pName + "_etaValFF", valPred.at(0), valPredErr.at(0), ETA_BINS);
                   TH1F* hPredEta = VectorToTH1F(pName + "_etaValEst", valPred.at(1), valPredErr.at(1), ETA_BINS);
-                  PlotTH1F(pName + "_etaValEst", "Tau #eta", "Background Estimation",
+                  PlotTH1F(pName + "_etaValEst", "Tau |#eta|", "Background Estimation",
                     {hEstEta, hPredEta}, {"ABCD method", "MC prediction"}, r, GetLumi(year));
                 }
               }
@@ -376,7 +376,7 @@ void FakeFactor() {
           TH2F* hFF2D = VectorToTH2F(pName + "_ptEtaEstFF", estFF2D, estFFErr2D, PT_BINS, ETA_BINS);
           HFakeFactors2D.push_back(hFF2D);
           if (doDetailedPlots) {
-            PlotTH2F(hFF2D, "Tau p_{T}", "Tau #eta", GetLumi(year),
+            PlotTH2F(hFF2D, "Tau p_{T}", "Tau |#eta|", GetLumi(year),
               "../plot/" + year + "_" + pName + "_ptEtaCombinedEstFF.pdf");
           }
         } // Variable
@@ -394,7 +394,7 @@ void FakeFactor() {
   // Make overlaid histograms
   PlotTH1F("2016_OS_llStl300_TauIdvsOnZ_FFOverlaidPt", "Tau p_{T}", "Fake Factor",
     {hOverlaid.at("hOSeeFFPt"), hOverlaid.at("hOSmumuFFPt")}, {"OS-ee", "OS-mumu"}, 1, GetLumi("2016"));
-  PlotTH1F("2016_OS_llStl300_TauIdvsOnZ_FFOverlaidEta", "Tau #eta", "Fake Factor",
+  PlotTH1F("2016_OS_llStl300_TauIdvsOnZ_FFOverlaidEta", "Tau |#eta|", "Fake Factor",
     {hOverlaid.at("hOSeeFFEta"), hOverlaid.at("hOSmumuFFEta")}, {"OS-ee", "OS-mumu"}, 1, GetLumi("2016"));
 }
 
