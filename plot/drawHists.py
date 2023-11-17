@@ -154,11 +154,8 @@ for numyear, nameyear in enumerate(year):
 # Make 1D histograms
 for numyear, nameyear in enumerate(year):
     for numc, namec in enumerate(charges):
-        if namec == 'SS': continue
         for numch, namech in enumerate(channels):
-            if namech == 'emu': continue
             for numreg, namereg in enumerate(regions):
-                if 'Stl300' not in namereg: continue
                 for numvar, namevar in enumerate(vars):
                     if ('MVA' in namevar) and (not SaveMVA):
                         continue
@@ -210,15 +207,27 @@ for numyear, nameyear in enumerate(year):
                         StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear, namevar, varsName[numvar])
                         # CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
 
-                        if 'Fake' in var:
+                        if 'Fake' in namevar:
                             he = Hists[numyear][1][numc][numch][numreg][numdom][numvar].Clone() # numerator
                             hd = Hists[numyear][1][numc][numch][numreg][numdom][numvar - 1].Clone() # denominator
                             for iSample in range(2, 5):
-                                he.Add(Hists[numyear][iSample][numc][numch][numreg][numdom][numvar].Clone(), 1.0)
-                                hd.Add(Hists[numyear][iSample][numc][numch][numreg][numdom][numvar - 1].Clone(), 1.0)
+                                temphe = Hists[numyear][iSample][numc][numch][numreg][numdom][numvar].Clone()
+                                temphd = Hists[numyear][iSample][numc][numch][numreg][numdom][numvar - 1].Clone()
+                                for iBin in range(temphe.GetNbinsX()):
+                                    if temphe.GetBinContent(iBin + 1) < 0.0:
+                                        temphe.SetBinContent(iBin + 1, 0.0)
+                                        temphe.SetBinError(iBin + 1, 0.0)
+                                    if temphd.GetBinContent(iBin + 1) < 0.0:
+                                        temphd.SetBinContent(iBin + 1, 0.0)
+                                        temphd.SetBinError(iBin + 1, 0.0)
+                                he.Add(temphe, 1.0)
+                                hd.Add(temphd, 1.0)
+                                print(iSample, temphe.GetBinContent(5), temphd.GetBinContent(5))
+                            for iBin in range(he.GetNbinsX()):
+                                print(he.GetBinContent(iBin + 1), hd.GetBinContent(iBin + 1))
                             he.Divide(hd)
                             Efficiency(he, namec, namech, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear, namevar, varsName[numvar])
-'''
+
 # Make summary histograms
 for numyear, nameyear in enumerate(year):
     for numreg, namereg in enumerate(regions):
@@ -226,11 +235,11 @@ for numyear, nameyear in enumerate(year):
             H = []
             HSignal = []
             for f in range(len(Samples)):
-                h = Hists[numyear][f][0][0][numreg][numdom][22].Clone()
+                h = Hists[numyear][f][0][0][numreg][numdom][24].Clone()
                 h.Reset('ICE')
                 for numc, namec in enumerate(charges):
                     for numch, namech in enumerate(channels):
-                        h += Hists[numyear][f][numc][numch][numreg][numdom][22]
+                        h += Hists[numyear][f][numc][numch][numreg][numdom][24]
                 h.SetFillColor(colors[f])
                 if 'LFV' not in Samples[f]:
                     h.SetLineColor(colors[0])
@@ -239,4 +248,3 @@ for numyear, nameyear in enumerate(year):
                     h.SetLineColor(colors[f])
                     HSignal.append(h)
             SummaryPlot(H, HSignal, SamplesNameStack, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear)
-'''

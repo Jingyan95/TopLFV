@@ -359,7 +359,7 @@ def Efficiency(hist, c = "charge", ch = "channel", reg = "region",
     pad1.cd()
     pad1.SetLogx(ROOT.kFALSE)
     # pad2.SetLogx(ROOT.kFALSE)
-    pad1.SetLogy(ROOT.kTRUE)
+    pad1.SetLogy(ROOT.kFALSE)
 
     # for H in range(len(SignalHists)):
     #     if H > 0:
@@ -367,16 +367,16 @@ def Efficiency(hist, c = "charge", ch = "channel", reg = "region",
     #     else:
     #         SignalHists[H].Scale(0.5)
 
-    y_max = 2000 * hists[0].GetMaximum()
-    if y_max < 2000 * hs.GetStack().Last().GetMaximum():
-        y_max = 2000 * hs.GetStack().Last().GetMaximum()
+    # y_max = 2000 * hist.GetMaximum()
+    # if y_max < 2000 * hs.GetStack().Last().GetMaximum():
+    #     y_max = 2000 * hs.GetStack().Last().GetMaximum()
     dummy.SetMarkerStyle(20)
     dummy.SetMarkerSize(1.2)
     dummy.SetLineWidth(2)
-    x_min = hists[0].GetXaxis().GetBinLowEdge(1)
-    x_max = hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins()) + hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
+    x_min = hist.GetXaxis().GetBinLowEdge(1)
+    x_max = hist.GetXaxis().GetBinLowEdge(hist.GetXaxis().GetNbins()) + hist.GetXaxis().GetBinWidth(hist.GetXaxis().GetNbins())
 
-    frame = pad1.DrawFrame(x_min, 0.01, x_max, y_max)
+    frame = pad1.DrawFrame(x_min, 0.0, x_max, 1.1)
     frame.SetTitle("")
     frame.GetYaxis().SetTitle('Events')
     frame.GetXaxis().SetLabelSize(0)
@@ -387,7 +387,7 @@ def Efficiency(hist, c = "charge", ch = "channel", reg = "region",
     pad1.Update()
     dummy.Draw("P")
     # hs.Draw("histSAME")
-    hist.Draw("histSAME")
+    hist.Draw("SAME")
     # for H in range(len(SignalHists)):
     #     SignalHists[H].SetLineWidth(3)
     #     SignalHists[H].SetFillColor(0)
@@ -398,36 +398,36 @@ def Efficiency(hist, c = "charge", ch = "channel", reg = "region",
     frame.Draw("AXISSAMEX+")
     pad1.Update()
 
-    SumofMC = hs.GetStack().Last()
-    binwidth = array('d')
-    bincenter = array('d')
-    yvalue = array('d')
-    yerrup = array('d')
-    yerrdown = array('d')
-    yvalueRatio = array('d')
-    yerrupRatio = array('d')
-    yerrdownRatio = array('d')
-    for b in range(SumofMC.GetNbinsX()):
-        if SumofMC.GetBinContent(b + 1) > 0:
-            binwidth.append(SumofMC.GetBinWidth(b + 1) / 2)
-            bincenter.append(SumofMC.GetBinCenter(b + 1))
-            yvalue.append(SumofMC.GetBinContent(b + 1))
-            yerrup.append(SumofMC.GetBinError(b + 1))
-            yerrdown.append(SumofMC.GetBinError(b + 1))
-            yvalueRatio.append(1)
-            yerrupRatio.append(SumofMC.GetBinError(b + 1) / SumofMC.GetBinContent(b + 1))
-            yerrdownRatio.append(SumofMC.GetBinError(b + 1) / SumofMC.GetBinContent(b + 1))
-    if len(bincenter) > 0:
-        error = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalue, binwidth, binwidth, yerrdown, yerrup)
-        errorRatio = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalueRatio, binwidth, binwidth, yerrdownRatio, yerrupRatio)
-    else:
-        error = ROOT.TGraphAsymmErrors()
-        errorRatio = ROOT.TGraphAsymmErrors()
-    error.SetFillColor(13)
-    error.SetLineColor(13)
-    error.SetFillStyle(3154)
-    error.SetLineWidth(4)
-    error.Draw("2")
+    # SumofMC = hs.GetStack().Last()
+    # binwidth = array('d')
+    # bincenter = array('d')
+    # yvalue = array('d')
+    # yerrup = array('d')
+    # yerrdown = array('d')
+    # yvalueRatio = array('d')
+    # yerrupRatio = array('d')
+    # yerrdownRatio = array('d')
+    # for b in range(SumofMC.GetNbinsX()):
+    #     if SumofMC.GetBinContent(b + 1) > 0:
+    #         binwidth.append(SumofMC.GetBinWidth(b + 1) / 2)
+    #         bincenter.append(SumofMC.GetBinCenter(b + 1))
+    #         yvalue.append(SumofMC.GetBinContent(b + 1))
+    #         yerrup.append(SumofMC.GetBinError(b + 1))
+    #         yerrdown.append(SumofMC.GetBinError(b + 1))
+    #         yvalueRatio.append(1)
+    #         yerrupRatio.append(SumofMC.GetBinError(b + 1) / SumofMC.GetBinContent(b + 1))
+    #         yerrdownRatio.append(SumofMC.GetBinError(b + 1) / SumofMC.GetBinContent(b + 1))
+    # if len(bincenter) > 0:
+    #     error = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalue, binwidth, binwidth, yerrdown, yerrup)
+    #     errorRatio = ROOT.TGraphAsymmErrors(len(bincenter), bincenter, yvalueRatio, binwidth, binwidth, yerrdownRatio, yerrupRatio)
+    # else:
+    #     error = ROOT.TGraphAsymmErrors()
+    #     errorRatio = ROOT.TGraphAsymmErrors()
+    # error.SetFillColor(13)
+    # error.SetLineColor(13)
+    # error.SetFillStyle(3154)
+    # error.SetLineWidth(4)
+    # error.Draw("2")
 
     Lumi = getLumi(year)
     label_cms = "CMS"
@@ -466,6 +466,7 @@ def Efficiency(hist, c = "charge", ch = "channel", reg = "region",
             ch_plot = '#mu#mu#tau_{h}'
         else:
             ch_plot = '#mu#bar{#mu}#tau_{h}'
+    '''
     Label_channel = ROOT.TLatex(0.17, 0.78, ch_plot + regName[1])
     Label_channel.SetNDC()
     Label_channel.SetTextFont(42)
@@ -481,7 +482,7 @@ def Efficiency(hist, c = "charge", ch = "channel", reg = "region",
     Label_region2.SetTextFont(42)
     Label_region2.SetTextSize(0.058)
     Label_region2.Draw("same")
-
+    '''
     # legend.AddEntry(dummy, Fnames[0], 'ep')
     # for num in range(1, len(hists)):
     #     if num < (len(hists) - 2):
@@ -556,9 +557,9 @@ def Efficiency(hist, c = "charge", ch = "channel", reg = "region",
     if len(dom) > 0:
         if not os.path.exists(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom):
             os.makedirs(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom)
-        canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom + '/' + var + ".pdf")
+        canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + dom + '/' + var + "Eff.pdf")
     else:
-        canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + ".pdf")
+        canvas.Print(folder + '/' + year + '/' + c + '/' + ch + '/' + reg + '/' + var + "Eff.pdf")
     del canvas
     gc.collect()
 

@@ -13,9 +13,10 @@ const std::vector<TString> REGIONS{
   /*7*/ "llbtagg1p3", // ttbar + jets CR
   /*8*/ "llbtagg1p3OffZ", // ttbar + jets CR
   /*9*/ "llStl300", // Generic signal-free region
-  /*10*/ "llStl300OffZ", // Generic signal-free region
-  /*11*/ "llMetg20Jetgeq1B0", // CR background estimation
-  /*12*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
+  /*10*/ "llStl300OnZ", // Generic signal-free region
+  /*11*/ "llStl300OffZ", // Generic signal-free region
+  /*12*/ "llMetg20Jetgeq1B0", // CR background estimation
+  /*13*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
 };
 const std::vector<TString> REGIONS_LATEX{
   "2$l+\\tau_h$, no cuts",
@@ -28,6 +29,7 @@ const std::vector<TString> REGIONS_LATEX{
   "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$",
   "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$, Off Z",
   "2$l+\\tau_h$, CR, $S_T<300$ GeV",
+  "2$l+\\tau_h$, CR, $S_T<300$ GeV, On Z",
   "2$l+\\tau_h$, CR, $S_T<300$ GeV, Off Z",
   "2$l+\\tau_h$, CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$",
   "2$l+\\tau_h$, CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$, Off Z"

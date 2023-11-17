@@ -64,7 +64,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     /*12*/ "llMetg20Jetgeq1B0", // CR background estimation
     /*13*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
   };
-  std::vector<int> unBlind{0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
+  std::vector<int> unBlind{0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1};
   std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
   const std::map<TString, std::vector<float>> vars = {
     {"llM",              {0,    10,     0,   180}},
@@ -206,7 +206,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ff_llbtagg1p3;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
-  TString histname;
   int nAccept = 0;
   PU wPU;
 
@@ -452,7 +451,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
       if (!Event->OnZ()) { // Region D
-        // weight_Event *= weight_Ta_ff_llStl300;
+        weight_Event *= weight_Ta_ff_llStl300;
         rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -494,7 +493,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taEta")]->Fill(tauEta, wgt[i]);
-      if (Event->ta1()->truth_ > 0) {
+      if (Event->ta1()->truth_ == 1) {
         Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taPtFake")]->Fill(tauPt, wgt[i]);
         Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taEtaFake")]->Fill(tauEta, wgt[i]);
       }
