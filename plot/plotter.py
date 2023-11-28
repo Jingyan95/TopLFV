@@ -105,8 +105,7 @@ def StackHist(hists, SignalHists, Fnames, c = "charge", ch = "channel", reg = "r
     x_min = hists[0].GetXaxis().GetBinLowEdge(1)
     x_max = hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins()) + hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
 
-    # frame = pad1.DrawFrame(x_min, 0.2, x_max, y_max)
-    frame = pad1.DrawFrame(x_min, 0.00001, x_max, y_max)
+    frame = pad1.DrawFrame(x_min, 0.01, x_max, y_max)
     frame.SetTitle("")
     frame.GetYaxis().SetTitle('Events')
     frame.GetXaxis().SetLabelSize(0)

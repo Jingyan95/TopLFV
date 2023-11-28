@@ -61,8 +61,10 @@ regionsName = [
 
 domains = ['geqMedLepgeqTightTa', 'geqMedLeplTightTa']
 domainsName = [
-    '#geq Medium Top Lepton MVA, #geq Tight Tau vs Jets WP',
-    '#geq Medium Top Lepton MVA, < Tight Tau vs Jets WP']
+    # '#geqTight Tau vs Jets WP',
+    # '<Tight Tau vs Jets WP'
+    '', ''
+]
 
 vars = [
     'llM', 'llDr', 'lep1Pt', 'lep2Pt', 'elLeptonMVAv1', 'elLeptonMVAv2',
