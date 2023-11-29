@@ -108,6 +108,7 @@ void DileptonFF() {
     for (TString charge : CHARGES) {
       for (TString channel : CHANNELS) {
         for (Int_t r = 0; r < REGIONS.size(); r++) {
+
           // Get data
           name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt";
           TH1F* ff = (TH1F*) H1.at(name)->Clone();
@@ -181,6 +182,62 @@ void DileptonFF() {
           ff->Divide(denom);
 
           PlotTH1F(year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsEta", "Tau |#eta|", "Fake Factor", {ff}, {"Fake Factor"}, r, GetLumi(year));
+
+
+
+
+
+          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
+          TH2F* ff2 = (TH2F*) H2.at(name)->Clone();
+          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
+          TH2F* denom2 = (TH2F*) H2.at(name)->Clone();
+
+          // Subtract "real" taus
+          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
+          ff2->Add(H2.at(name), -1.0);
+          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
+          ff2->Add(H2.at(name), -1.0);
+          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
+          denom2->Add(H2.at(name), -1.0);
+          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
+          denom2->Add(H2.at(name), -1.0);
+
+          // Set negative entries to zero
+          for (int i = 1; i <= ff2->GetNbinsX(); i++) {
+            for (int j = 1; j <= ff2->GetNbinsY(); j++) {
+              if (ff2->GetBinContent(i, j) < 0) {
+                ff2->SetBinContent(i, j, 0.0);
+                ff2->SetBinError(i, j, 0.0);
+              }
+            }
+          }
+          for (int i = 1; i <= denom2->GetNbinsX(); i++) {
+            for (int j = 1; j <= denom2->GetNbinsY(); j++) {
+              if (denom2->GetBinContent(i, j) < 0) {
+                denom2->SetBinContent(i, j, 0.0);
+                denom2->SetBinError(i, j, 0.0);
+              }
+            }
+          }
+
+          // Calculate fake factors
+          ff2->Divide(denom2);
+
+          PlotTH2F(ff2, "Tau p_{T}", "Tau |#eta|", GetLumi(year), year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsPtvsEta");
+
+
+
+
+
+          for (TString sample : SAMPLES) {
+            if (sample == "Data") continue;
+            name = year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FakeTa_vsPt_vsEta";
+            TH2F* fakeTauPurity = (TH2F*) H2.at(name)->Clone();
+            name = year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_Ta_vsPt_vsEta";
+            TH2F* allTau = (TH2F*) H2.at(name)->Clone();
+            fakeTauPurity->Divide(allTau);
+            PlotTH2F(fakeTauPurity, "Tau p_{T}", "Tau |#eta|", GetLumi(year), year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_fakeTauPurity");
+          }
         }
       }
     }
@@ -377,7 +434,7 @@ void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pNam
   labelLumi->SetTextFont(42);
   labelLumi->Draw();
 
-  c->Print(pName);
+  c->Print("../plot/" + pName + ".pdf");
 
   delete c;
 }
