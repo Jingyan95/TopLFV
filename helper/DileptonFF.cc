@@ -180,7 +180,7 @@ void DileptonFF() {
           // Calculate fake factors
           ff->Divide(denom);
 
-          PlotTH1F(year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsEta", "Tau #eta", "Fake Factor", {ff}, {"Fake Factor"}, r, GetLumi(year));
+          PlotTH1F(year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsEta", "Tau |#eta|", "Fake Factor", {ff}, {"Fake Factor"}, r, GetLumi(year));
         }
       }
     }

@@ -34,6 +34,7 @@ public:
   float St() { return St_; }
   float llM() { return llM_; }
   float llDr() { return llDr_; }
+  bool TightTau() { return TightTa_; }
   TLorentzVector* MET() { return MET_; }
 
   static bool ComparePtJet(jet_candidate *a, jet_candidate *b) { return a->pt_ > b->pt_; }
@@ -76,6 +77,7 @@ private:
   float St_;
   float llM_; // Mass of the two leptons
   float llDr_;
+  bool TightTa_; // Events with tau passing Tight tau vs. jets WP
 };
 
 #endif

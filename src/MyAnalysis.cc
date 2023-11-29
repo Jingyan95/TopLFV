@@ -171,7 +171,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float eleEta;
   float tauPt;
   float tauEta;
-  int tauWP;
+  // int tauWP;
   int tauDM;
   float weight_Lumi;
   float weight_PU;
@@ -425,7 +425,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Filling histograms
     tauPt = Event->ta1()->pt_;
     tauEta = Event->ta1()->eta_;
-    tauWP = char_to_int(Event->ta1()->mva1WP_);
+    // tauWP = char_to_int(Event->ta1()->mva1WP_);
     tauDM = Event->ta1()->decaymode_;
     for (int i = 0; i < reg.size(); ++i) {
       Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "Ta_vsPt")]->Fill(tauPt, wgt[i]);
@@ -446,7 +446,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "FakeTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
       }
 
-      if (tauWP >= 5) { // >= Tight Tau
+      if (Event->TightTau()) { // >= Tight Tau
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsPt")]->Fill(tauPt, wgt[i]);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsEta")]->Fill(tauEta, wgt[i]);
         snprintf(text, 500, "geqTightTa_vsPt_dm%d", tauDM);
