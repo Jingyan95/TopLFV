@@ -12,6 +12,7 @@
 #include "trigger.h"
 
 using namespace std;
+
 class MyAnalysis {
 public :
   TTree          *fChain; // !pointer to the analyzed TTree or TChain

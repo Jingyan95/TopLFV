@@ -185,7 +185,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_mu;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
-  TString histname;
   int nAccept = 0;
   PU wPU;
 
