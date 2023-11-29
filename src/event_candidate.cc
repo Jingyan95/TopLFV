@@ -22,7 +22,8 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       Topmass_(0),
                                       llM_(((*Leptons_)[0]->p4_ + (*Leptons_)[1]->p4_).M()),
                                       llDr_(deltaR((*Leptons_)[0]->eta_, (*Leptons_)[0]->phi_, (*Leptons_)[1]->eta_, (*Leptons_)[1]->phi_)),
-                                      OnZ_(false) {
+                                      OnZ_(false),
+                                      TightTa_((*Leptons_)[2]->mva1WP_ < 5 ? false : true) {
   if (c_ == 0 && ch_ != 1 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true;
   if (c_ == 1 && ch_ == 0 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true; // Same-Sign ee
   sort(Jets->begin(), Jets->end(), CompareBtagJet);

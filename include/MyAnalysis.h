@@ -274,14 +274,23 @@ public :
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
 
-  typedef std::vector<TH2F*> Dim1;
-  typedef std::vector<Dim1> Dim2;
-  typedef std::vector<Dim2> Dim3;
-  typedef std::vector<Dim3> Dim4;
+  typedef std::vector<TH1F*> Dim1_1D;
+  typedef std::vector<Dim1_1D> Dim2_1D;
+  typedef std::vector<Dim2_1D> Dim3_1D;
+  typedef std::vector<Dim3_1D> Dim4_1D;
+
+  typedef std::vector<TH2F*> Dim1_2D;
+  typedef std::vector<Dim1_2D> Dim2_2D;
+  typedef std::vector<Dim2_2D> Dim3_2D;
+  typedef std::vector<Dim3_2D> Dim4_2D;
+
+  typedef std::pair<int, std::vector<float>> Pair1;
+  typedef std::pair<int, std::vector<std::vector<float>>> Pair2;
 
   // Utility functions
   int rInd(std::vector<TString> R, TString name);
-  int vInd(std::map<TString, std::vector<float>> V, TString name);
+  int vInd1(std::map<TString, Pair1> V, TString name);
+  int vInd2(std::map<TString, Pair2> V, TString name);
   int getSign(const double& x);
   float scale_factor(const TH2F* h, float X, float Y, TString uncert);
   int char_to_int(UChar_t wp);
@@ -480,8 +489,12 @@ int MyAnalysis::rInd(std::vector<TString> R, TString name) {
   return iter - R.begin();
 }
 
-int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {
-  return V.find(name)->second.at(0);
+int MyAnalysis::vInd1(std::map<TString, Pair1> V, TString name) {
+  return V.find(name)->second.first;
+}
+
+int MyAnalysis::vInd2(std::map<TString, Pair2> V, TString name) {
+  return V.find(name)->second.first;
 }
 
 int MyAnalysis::getSign(const double& x) {

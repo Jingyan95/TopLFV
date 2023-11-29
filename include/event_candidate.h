@@ -39,6 +39,7 @@ public:
   float LFVllM() { return LFVllM_; }
   float LFVllDr() { return LFVllDr_; }
   bool OnZ() { return OnZ_; }
+  bool TightTau() { return TightTa_; }
   TLorentzVector* MET() { return MET_; }
 
   static bool ComparePtJet(jet_candidate *a, jet_candidate *b) { return a->pt_ > b->pt_; }
@@ -126,6 +127,7 @@ private:
   float LFVllM_; // Mass of the LFV lepton pair
   float LFVllDr_;
   bool OnZ_; // Events close to Z peak (incl. Same-Sign ee due to charge flip)
+  bool TightTa_; // Events with tau passing Tight tau vs. jets WP
 
   float mT_ = 172.5;
   float mZ_ = 91.2;
