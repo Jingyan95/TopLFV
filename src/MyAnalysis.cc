@@ -433,7 +433,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
     // Filling histograms
     tauPt = Event->ta1()->pt_;
-    tauEta = Event->ta1()->eta_;
+    tauEta = abs(Event->ta1()->eta_);
     tauDM = Event->ta1()->decaymode_;
     for (int i = 0; i < reg.size(); ++i) {
       Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "Ta_vsPt")]->Fill(tauPt, wgt[i]);
