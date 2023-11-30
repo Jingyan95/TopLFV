@@ -6,14 +6,12 @@ const TString CHANNELS[2] = {"e", "mu"};
 const std::vector<TString> REGIONS{
   "ll",
   "llStl300",
-  "llbtagg1p3",
   "llMetg20Jetgeq1B1",
   "llMetg20Jetgeq1B0",
   "llStg300btagl1p3"};
 const std::vector<std::vector<TString>> REGIONS_NAME{
   {"",                    "No cuts",             ""                  },
   {", CR",                "S_{T}<300GeV",        ""                  },
-  {", t#bar{t}+jets CR",  "btag>1.3",            ""                  },
   {", SR",                "p_{T}^{miss}>20GeV",  "njet#geq1, nbjet=1"},
   {", CR",                "p_{T}^{miss}>20GeV",  "njet#geq1, nbjet=0"},
   {", New SR (Loose)",    "S_{T}>300GeV",        "btag<1.3"          }
