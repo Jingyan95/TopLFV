@@ -14,7 +14,7 @@ using namespace std;
 class lepton_candidate {
 
 public:
-  lepton_candidate(float, float, float, float, float, int, unsigned char, float, float, float, int, int, int, int);
+  lepton_candidate(float, float, float, float, float, int, int, float, float, float, int, int, int, int);
   ~lepton_candidate();
   float pt_;
   float eta_;
@@ -22,7 +22,7 @@ public:
   float dxy_;
   float dz_;
   int charge_;
-  unsigned char mva1WP_;
+  int mva1WP_;
   float mva1_;
   float mva2_;
   float mva3_;
