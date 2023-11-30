@@ -22,7 +22,7 @@ public:
   float dxy_;
   float dz_;
   int charge_;
-  int mva1WP_;
+  int mva1WP_; // currently only used for Tau vs Jet WP
   float mva1_;
   float mva2_;
   float mva3_;
