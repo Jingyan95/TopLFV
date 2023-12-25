@@ -51,10 +51,15 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"lepEta",           {1,   4,   4}}
   };
 
-  Double_t lep1PtBin[8] = {30, 75, 120, 200};
-  Double_t lep2PtBin[8] = {20, 75, 120, 200};
+  Double_t lep1PtBin[4] = {30, 75, 120, 200};
+  Double_t lep2PtBin[4] = {20, 75, 120, 200};
+  // Double_t lep1PtBin[8] = {30, 45, 75, 95, 120, 150, 200, 500};
+  // Double_t lep2PtBin[8] = {20, 45, 75, 95, 120, 150, 200, 500};
+
   Double_t lep1EtaBin[5] = {-2.4, -1.4,  0,  1.4, 2.4};
   Double_t lep2EtaBin[5] = {-2.4, -1.4,  0,  1.4, 2.4};
+  // Double_t lep1EtaBin[7] = {-2.4, -1.4, -0.7, 0,  0.7, 1.4, 2.4};
+  // Double_t lep2EtaBin[7] = {-2.4, -1.4, -0.7, 0,  0.7, 1.4, 2.4};
 
   Dim4 Hists(Dim4(charges.size(),Dim3(channels.size(),Dim2(pass.size(),Dim1(vars.size())))));
   D2im4 HistsD2(D2im4(charges.size(),D2im3(channels.size(),D2im2(pass.size(),D2im1(varsD2.size())))));

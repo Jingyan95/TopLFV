@@ -200,7 +200,8 @@ def PlotSF(hist, ch = "channel", year = '2016', varnames = "v"):
     dummy.GetXaxis().SetTitleOffset(1.3)
     dummy.GetYaxis().SetTitle(varnames[1])
     dummy.GetYaxis().SetNoExponent()
-    dummy.GetZaxis().SetRangeUser(0.96,1)
+    dummy.GetZaxis().SetRangeUser(0.955,1)
+    dummy.SetMarkerSize(2.5)
     dummy.Draw("TEXTE  COL")
     label_cms = "CMS"
     Label_cms = ROOT.TLatex(0.13, 0.912, label_cms)
@@ -232,7 +233,7 @@ def PlotSF(hist, ch = "channel", year = '2016', varnames = "v"):
        label_ch = "e#mu"
     elif ch == 'mue':
        label_ch = "#mue"
-    else:
+    elif ch == 'mumu':
        label_ch = "#mu#mu"
     Label_ch = ROOT.TLatex(0.16, 0.79, label_ch)
     Label_ch.SetNDC()
