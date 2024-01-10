@@ -21,29 +21,29 @@ ncpus = ARGS.NCPUS
 loc = os.path.dirname(sys.path[0]) + '/'
 dire = loc + 'hists/'
 
-import nano_files_2016APV_dilepton
 import nano_files_2016_dilepton
+import nano_files_2016APV_dilepton
 import nano_files_2017_dilepton
 import nano_files_2018_dilepton
 
 SAMPLES = {}
-mc_2016APV = False
-data_2016APV = False
 mc_2016 = True
 data_2016 = True
+mc_2016APV = False
+data_2016APV = False
 mc_2017 = False
 data_2017 = False
 mc_2018 = False
 data_2018 = False
 
-if mc_2016APV:
-    SAMPLES.update(nano_files_2016APV_dilepton.mc2016APV_samples)
-if data_2016APV:
-    SAMPLES.update(nano_files_2016APV_dilepton.data2016APV_samples)
 if mc_2016:
     SAMPLES.update(nano_files_2016_dilepton.mc2016_samples)
 if data_2016:
     SAMPLES.update(nano_files_2016_dilepton.data2016_samples)
+if mc_2016APV:
+    SAMPLES.update(nano_files_2016APV_dilepton.mc2016APV_samples)
+if data_2016APV:
+    SAMPLES.update(nano_files_2016APV_dilepton.data2016APV_samples)
 if mc_2017:
     SAMPLES.update(nano_files_2017_dilepton.mc2017_samples)
 if data_2017:
@@ -56,7 +56,7 @@ if data_2018:
 jobruntime = 3600 # 1 hr
 
 for key, value in SAMPLES.items():
-    if name  not in key:
+    if name not in key:
         continue
     year = value[3]
     nf = value[8]

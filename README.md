@@ -106,6 +106,11 @@ make all
 ./RunAll
 ```
 
+Trying new setup outside of using CMSSW
+```
+. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
+```
+
 ## III. To write & submit jobs 
 
 
@@ -120,6 +125,15 @@ python makeJobs.py
 
 ```sh
 python submitJobs.py
+```
+
+To run a job that was botched on condor:
+- currently dealing with mutex locking issue
+- argument is the job number
+- this will remove the executable in TopLFV
+```
+cd bin/Jobs/2016/2016_DYM50/
+./2016_DYM50_0.sh 0
 ```
 
 ## IV. To merge files & make plots

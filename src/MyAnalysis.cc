@@ -64,11 +64,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
   };
   std::vector<int> unBlind{0, 1, 1, 1, 1};
-  const std::vector<TString> vars{"Ta", "FakeTa", "geqTightTa", "lTightTa"};
+  const std::vector<TString> vars{"geqTightTa", "geqTightFakeTa", "lTightTa", "lTightFakeTa"};
   std::map<TString, Pair1> vars1D;
   std::map<TString, Pair2> vars2D;
-  std::vector<float> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
-  std::vector<float> etaBins{0.0, 1.4, 2.3};
+  // std::vector<float> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
+  std::vector<float> ptBins{20.0, 30.0, 40.0, 50.0, 60.0, 80.0, 100.0, 140.0, 180.0, 220.0};
+  // std::vector<float> etaBins{0.0, 1.4, 2.3};
+  std::vector<float> etaBins{0.0, 1.0, 1.3, 1.5, 1.7, 2.0, 2.3};
   const std::vector<int> tauDMs{0, 1, 2, 7, 10, 11};
   char text[500];
   int hist1DIdx = 0;
@@ -198,11 +200,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (ientry < 0) break;
     fChain->GetEntry(jentry);
     ntotal++; // Thread-private counter
-    std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
-    ++counter;
-    updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
-    if (!verbose_) displayProgress(progress, counter, ntr, 32);
-    mtx_.unlock(); // Releasing mutex
+    { // Making a scope to solve mutex locking issue
+      const std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
+      ++counter;
+      updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
+      if (!verbose_) displayProgress(progress, counter, ntr, 32);
+      // Don't need line below because mutex is automatically released when exiting the scope
+      // mtx_.unlock(); // Releasing mutex
+    }
     InitTrigger();
     metFilterPass = false;
     reg.clear();
@@ -426,24 +431,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     tauEta = abs(Event->ta1()->eta_);
     tauDM = Event->ta1()->decaymode_;
     for (int i = 0; i < reg.size(); ++i) {
-      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "Ta_vsPt")]->Fill(tauPt, wgt[i]);
-      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "Ta_vsEta")]->Fill(tauEta, wgt[i]);
-      snprintf(text, 500, "Ta_vsPt_dm%d", tauDM);
-      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
-      snprintf(text, 500, "Ta_vsEta_dm%d", tauDM);
-      Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
-      Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "Ta_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
-
-      if (Event->ta1()->truth_ > 0) { // Fake tau in MC
-        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "FakeTa_vsPt")]->Fill(tauPt, wgt[i]);
-        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "FakeTa_vsEta")]->Fill(tauEta, wgt[i]);
-        snprintf(text, 500, "FakeTa_vsPt_dm%d", tauDM);
-        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
-        snprintf(text, 500, "FakeTa_vsEta_dm%d", tauDM);
-        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
-        Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "FakeTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
-      }
-
       if (Event->TightTau()) { // >= Tight Tau
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsPt")]->Fill(tauPt, wgt[i]);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsEta")]->Fill(tauEta, wgt[i]);
@@ -452,6 +439,16 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         snprintf(text, 500, "geqTightTa_vsEta_dm%d", tauDM);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "geqTightTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
+
+        if (Event->ta1()->truth_ > 0) { // Fake tau in MC
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightFakeTa_vsPt")]->Fill(tauPt, wgt[i]);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightFakeTa_vsEta")]->Fill(tauEta, wgt[i]);
+          snprintf(text, 500, "geqTightFakeTa_vsPt_dm%d", tauDM);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
+          snprintf(text, 500, "geqTightFakeTa_vsEta_dm%d", tauDM);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
+          Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "geqTightFakeTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
+        }
       } else { // < Tight Tau
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightTa_vsPt")]->Fill(tauPt, wgt[i]);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightTa_vsEta")]->Fill(tauEta, wgt[i]);
@@ -460,6 +457,16 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         snprintf(text, 500, "lTightTa_vsEta_dm%d", tauDM);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
         Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "lTightTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
+
+        if (Event->ta1()->truth_ > 0) { // Fake tau in MC
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightFakeTa_vsPt")]->Fill(tauPt, wgt[i]);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightFakeTa_vsEta")]->Fill(tauEta, wgt[i]);
+          snprintf(text, 500, "lTightFakeTa_vsPt_dm%d", tauDM);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
+          snprintf(text, 500, "lTightFakeTa_vsEta_dm%d", tauDM);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauEta, wgt[i]);
+          Hists2D[Event->c()][Event->ch()][reg[i]][vInd2(vars2D, "lTightFakeTa_vsPt_vsEta")]->Fill(tauPt, tauEta, wgt[i]);
+        }
       }
     }
 
