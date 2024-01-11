@@ -6,17 +6,18 @@ const TString CHANNELS[3] = {"ee", "emu", "mumu"};
 const std::vector<TString> REGIONS{
   "ll",
   "llStl300",
-  "llStl300OnZ",
-  "llMetg20Jetgeq1B1",
+  // "llStl300OnZ",
+  // "llMetg20Jetgeq1B1",
   "llMetg20Jetgeq1B0",
-  "llStg300btagl1p3"};
+  // "llStg300btagl1p3"
+};
 const std::vector<std::vector<TString>> REGIONS_NAME{
   {"",                    "No cuts",             ""                  },
   {", CR",                "S_{T}<300GeV",        ""                  },
-  {", CR",                "S_{T}<300GeV",        "OnZ"               },
-  {", SR",                "p_{T}^{miss}>20GeV",  "njet#geq1, nbjet=1"},
+  // {", CR",                "S_{T}<300GeV",        "OnZ"               },
+  // {", SR",                "p_{T}^{miss}>20GeV",  "njet#geq1, nbjet=1"},
   {", CR",                "p_{T}^{miss}>20GeV",  "njet#geq1, nbjet=0"},
-  {", New SR (Loose)",    "S_{T}>300GeV",        "btag<1.3"          }
+  // {", New SR (Loose)",    "S_{T}>300GeV",        "btag<1.3"          }
 };
 const TString VARS[4] = {"Ta", "FakeTa", "geqTightTa", "lTightTa"};
 

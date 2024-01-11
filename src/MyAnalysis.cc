@@ -54,17 +54,17 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // /*2*/ "llOffZMetg20B1", // SR
     // /*3*/ "llOffZMetg20B2", // ttbar + jets CR
     /*4*/ "llStl300", // Generic signal-free region
-    /*4*/ "llStl300OnZ", // Generic signal-free region
+    // /*4*/ "llStl300OnZ", // Generic signal-free region
     // /*5*/ "llOnZ", // Z + jets CR
     // /*6*/ "llbtagg1p3", // ttbar + jets CR
-    /*7*/ "llStg300OffZbtagl1p3", // New SR (Loose)
-    /*8*/ "llStg300OffZbtagl1p3Tight", // New SR (Tight)
-    /*9*/ "llMetg20Jetgeq1B1", // SR background estimation
+    // /*7*/ "llStg300OffZbtagl1p3", // New SR (Loose)
+    // /*8*/ "llStg300OffZbtagl1p3Tight", // New SR (Tight)
+    // /*9*/ "llMetg20Jetgeq1B1", // SR background estimation
     /*10*/ "llMetg20Jetgeq1B0", // CR background estimation
-    /*11*/ "llStg300btagl1p3", // New SR (Loose) background estimation
-    /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
+    // /*11*/ "llStg300btagl1p3", // New SR (Loose) background estimation
+    // /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
   };
-  std::vector<int> unBlind{0, 1, 1, 0, 0, 1, 1, 1, 1};
+  std::vector<int> unBlind{0, 1, 1, 0, 0, 0, 0, 0, 0};
   const std::vector<TString> vars{"Ta", "FakeTa", "geqTightTa", "lTightTa"};
   std::map<TString, Pair1> vars1D;
   std::map<TString, Pair2> vars2D;
@@ -199,11 +199,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (ientry < 0) break;
     fChain->GetEntry(jentry);
     ntotal++; // Thread-private counter
-    std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
-    ++counter;
-    updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
-    if (!verbose_) displayProgress(progress, counter, ntr, 32);
-    mtx_.unlock(); // Releasing mutex
+    {
+      std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
+      ++counter;
+      updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
+      if (!verbose_) displayProgress(progress, counter, ntr, 32);
+      // mtx_.unlock(); // Releasing mutex
+    }
     InitTrigger();
     metFilterPass = false;
     reg.clear();
@@ -364,11 +366,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
-      if (Event->nbjet() == 1) {
-        rIdx = rInd(regions, "llMetg20Jetgeq1B1"); // SR background estimation
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
+      // if (Event->nbjet() == 1) {
+      //   rIdx = rInd(regions, "llMetg20Jetgeq1B1"); // SR background estimation
+      //   reg.push_back(rIdx);
+      //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      // }
       // if (Event->OnZ()) {
       //   rIdx = rInd(regions, "llOnZMetg20Jetgeq1"); // Z + jets CR
       //   reg.push_back(rIdx);
@@ -392,11 +394,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-      if (Event->OnZ()) {
-        rIdx = rInd(regions, "llStl300OnZ"); // Generic signal-free region
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
+      // if (Event->OnZ()) {
+      //   rIdx = rInd(regions, "llStl300OnZ"); // Generic signal-free region
+      //   reg.push_back(rIdx);
+      //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      // }
     }
     // if (Event->OnZ()) {
     //   rIdx = rInd(regions, "llOnZ"); // Z + jets CR
@@ -408,28 +410,28 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     //   reg.push_back(rIdx);
     //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     // }
-    if (Event->St() > 300 && !Event->OnZ() && Event->btagSum() < 1.3) {
-      rIdx = rInd(regions, "llStg300OffZbtagl1p3"); // New SR (Loose)
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    // if (Event->St() > 300 && !Event->OnZ() && Event->btagSum() < 1.3) {
+    //   rIdx = rInd(regions, "llStg300OffZbtagl1p3"); // New SR (Loose)
+    //   reg.push_back(rIdx);
+    //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-      if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
-        rIdx = rInd(regions, "llStg300OffZbtagl1p3Tight"); // New SR (Tight)
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
-    }
-    if (Event->St() > 300 && Event->btagSum() < 1.3) {
-      rIdx = rInd(regions, "llStg300btagl1p3"); // New SR (Loose) background estimation
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    //   if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
+    //     rIdx = rInd(regions, "llStg300OffZbtagl1p3Tight"); // New SR (Tight)
+    //     reg.push_back(rIdx);
+    //     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    //   }
+    // }
+    // if (Event->St() > 300 && Event->btagSum() < 1.3) {
+    //   rIdx = rInd(regions, "llStg300btagl1p3"); // New SR (Loose) background estimation
+    //   reg.push_back(rIdx);
+    //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-      if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
-        rIdx = rInd(regions, "llStg300btagl1p3Tight"); // New SR (Tight) background estimation
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
-    }
+    //   if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
+    //     rIdx = rInd(regions, "llStg300btagl1p3Tight"); // New SR (Tight) background estimation
+    //     reg.push_back(rIdx);
+    //     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    //   }
+    // }
 
     // Filling histograms
     tauPt = Event->ta1()->pt_;
