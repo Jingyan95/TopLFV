@@ -116,23 +116,6 @@ public :
   Bool_t          Flag_ecalBadCalibFilter; 
   Bool_t          Flag_BadPFMuonDzFilter;
 
-  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL; // 2016APV
-  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL; // 2016APV, 2017, 2018
-  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017, 2018
-  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016
-
-  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL; // 2017, 2018
-  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016APV, 2016
-  Bool_t          HLT_DoubleEle33_CaloIdL_MW; // 2016APV, 2016, 2017, 2018
-  Bool_t          HLT_DoubleEle33_CaloIdL_GsfTrkIdVL; // 2016APV, 2016
-
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL; // 2016APV
-  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL; // 2016APV
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ; // 2016
-  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ; // 2016
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8; // 2017
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8; // 2018
-
   Bool_t          HLT_Ele27_WPTight_Gsf; // 2016APV, 2016
   Bool_t          HLT_Ele32_WPTight_Gsf; // 2018
   Bool_t          HLT_Ele35_WPTight_Gsf; // 2017
@@ -233,23 +216,6 @@ public :
   TBranch         *b_Flag_eeBadScFilter;
   TBranch         *b_Flag_ecalBadCalibFilter; 
   TBranch         *b_Flag_BadPFMuonDzFilter;
-
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL; // 2016APV
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL; // 2016APV, 2017, 2018
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017, 2018
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016
-
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL; // 2017, 2018
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016APV, 2016
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_MW; // 2016APV, 2016, 2017, 2018
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL; // 2016APV, 2016
-
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL; // 2016APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL; // 2016APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ; // 2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ; // 2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8; // 2017
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8; // 2018
 
   TBranch         *b_HLT_Ele27_WPTight_Gsf; // 2016APV, 2016
   TBranch         *b_HLT_Ele32_WPTight_Gsf; // 2018
@@ -436,23 +402,6 @@ void MyAnalysis::Init(TTree *tree) {
   if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("Flag_ecalBadCalibFilter", &Flag_ecalBadCalibFilter, &b_Flag_ecalBadCalibFilter);
   fChain->SetBranchAddress("Flag_BadPFMuonDzFilter", &Flag_BadPFMuonDzFilter, &b_Flag_BadPFMuonDzFilter);
 
-  if (year_ == "2016APV") fChain->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL, &b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL);
-  if (year_ != "2016") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL);
-  if (year_ != "2016APV") fChain->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ);
-  if (year_ == "2016") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-
-  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL, &b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
-  if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-  fChain->SetBranchAddress("HLT_DoubleEle33_CaloIdL_MW", &HLT_DoubleEle33_CaloIdL_MW, &b_HLT_DoubleEle33_CaloIdL_MW);
-  if ((year_ == "2016APV" || year_ == "2016") && run_!="H") fChain->SetBranchAddress("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL", &HLT_DoubleEle33_CaloIdL_GsfTrkIdVL, &b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL);
-
-  if (year_ == "2016APV") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
-  if (year_ == "2016APV") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, &b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL);
-  if (year_ == "2016") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ);
-  if (year_ == "2016") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, &b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ);
-  if (year_ == "2017") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8);
-  if (year_ == "2018") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8);
-
   if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_Ele27_WPTight_Gsf", &HLT_Ele27_WPTight_Gsf, &b_HLT_Ele27_WPTight_Gsf);
   if (year_ == "2018") fChain->SetBranchAddress("HLT_Ele32_WPTight_Gsf", &HLT_Ele32_WPTight_Gsf, &b_HLT_Ele32_WPTight_Gsf);
   if (year_ == "2017") fChain->SetBranchAddress("HLT_Ele35_WPTight_Gsf", &HLT_Ele35_WPTight_Gsf, &b_HLT_Ele35_WPTight_Gsf);
@@ -469,12 +418,10 @@ void MyAnalysis::Init(TTree *tree) {
 }
 
 void MyAnalysis::InitTrigger() {
-  myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,
-    HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,
-    HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_DoubleEle33_CaloIdL_MW, HLT_DoubleEle33_CaloIdL_GsfTrkIdVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,
-    HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,
-    HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, HLT_Ele27_WPTight_Gsf, HLT_Ele32_WPTight_Gsf,
-    HLT_Ele35_WPTight_Gsf, HLT_IsoMu24, HLT_IsoTkMu24, HLT_IsoMu27);
+  myTrig->Init(
+    HLT_Ele27_WPTight_Gsf, HLT_Ele32_WPTight_Gsf, HLT_Ele35_WPTight_Gsf,
+    HLT_IsoMu24, HLT_IsoTkMu24, HLT_IsoMu27
+  );
 }
 
 int MyAnalysis::rInd(std::vector<TString> R, TString name) {

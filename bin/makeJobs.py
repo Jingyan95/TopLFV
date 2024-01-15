@@ -3,10 +3,11 @@ import os
 import subprocess
 import readline
 import string
-import nano_files_2016APV
-import nano_files_2016
-import nano_files_2017
-import nano_files_2018
+
+import nano_files_2016APV_dilepton
+import nano_files_2016_dilepton
+import nano_files_2017_dilepton
+import nano_files_2018_dilepton
 
 import argparse
 # set up an argument parser
@@ -26,42 +27,42 @@ loc = os.path.dirname(sys.path[0]) + '/'
 
 
 SAMPLES = {}
-mc_2016APV = True
-data_2016APV = True
+mc_2016APV = False
+data_2016APV = False
 mc_2016 = True
 data_2016 = True
-mc_2017 = True
-data_2017 = True
-mc_2018 = True
-data_2018 = True
+mc_2017 = False
+data_2017 = False
+mc_2018 = False
+data_2018 = False
 
 if mc_2016APV:
-    SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
+    SAMPLES.update(nano_files_2016APV_dilepton.mc2016APV_samples)
 if data_2016APV:
-    SAMPLES.update(nano_files_2016APV.data2016APV_samples)
+    SAMPLES.update(nano_files_2016APV_dilepton.data2016APV_samples)
 if mc_2016:
-    SAMPLES.update(nano_files_2016.mc2016_samples)
+    SAMPLES.update(nano_files_2016_dilepton.mc2016_samples)
 if data_2016:
-    SAMPLES.update(nano_files_2016.data2016_samples)
+    SAMPLES.update(nano_files_2016_dilepton.data2016_samples)
 if mc_2017:
-    SAMPLES.update(nano_files_2017.mc2017_samples)
+    SAMPLES.update(nano_files_2017_dilepton.mc2017_samples)
 if data_2017:
-    SAMPLES.update(nano_files_2017.data2017_samples)
+    SAMPLES.update(nano_files_2017_dilepton.data2017_samples)
 if mc_2018:
-    SAMPLES.update(nano_files_2018.mc2018_samples)
+    SAMPLES.update(nano_files_2018_dilepton.mc2018_samples)
 if data_2018:
-    SAMPLES.update(nano_files_2018.data2018_samples)
+    SAMPLES.update(nano_files_2018_dilepton.data2018_samples)
 
 rootlib1 = subprocess.check_output("root-config --cflags", shell = True)
-rootlib11 = "".join([s for s in rootlib1.strip().splitlines(True) if s.strip()])
+rootlib11 = "".join([str(s, encoding='utf-8') for s in rootlib1.strip().splitlines(True) if s.strip()])
 rootlib2 = subprocess.check_output("root-config --libs", shell = True)
-rootlib22 = "".join([s for s in rootlib2.strip().splitlines(True) if s.strip()])
+rootlib22 = "".join([str(s, encoding='utf-8') for s in rootlib2.strip().splitlines(True) if s.strip()])
 
-cms = '/afs/cern.ch/work/j/jingyan/public/CMSSW_10_6_4/src/'
+# cms = '/afs/cern.ch/work/j/jingyan/public/CMSSW_10_6_4/src/'
 dire_h = loc + 'hists/'
 
 for key, value in SAMPLES.items():
-    if name  not in key:
+    if name not in key:
         continue
     nf = value[8]
     if not os.path.exists('Jobs/' + value[3] + '/' + key):
@@ -72,10 +73,9 @@ for key, value in SAMPLES.items():
     for idx, S in enumerate(value[0]):
         SHNAME = key + '_' + str(idx) + '.sh'
         SHNAME1 = key + '_' + str(idx) + '_$1.C'
-        SHFILE="#!/bin/bash\n" +\
-        'FILE=' + dire_h + value[3] + '/' + key +'_' + str(idx) + '_$1.root' + "\n" +\
-        "cd "+ cms + "\n"+\
-        "eval `scramv1 runtime -sh`\n" +\
+        SHFILE = "#!/bin/bash\n" +\
+        'FILE=' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_$1.root' + "\n" +\
+        "source /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh\n" +\
         "cd " + loc + "\n" +\
         'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./include   ' + rootlib11 + ' -ldl  -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + value[3] + '/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n" +\
         "./" + SHNAME1.split('.')[0] + "\n" +\
@@ -84,10 +84,10 @@ for key, value in SAMPLES.items():
         'fi'
         subprocess.call('rm -f Jobs/' + value[3] + '/' + key + '/*', shell = True)
         open('Jobs/' + value[3] + '/' + key + '/' + SHNAME, 'wt').write(SHFILE)
-        print "-----------------------------------"
-        print 'Writing Jobs/' + value[3] + '/' + key + '/' + SHNAME
+        print("-----------------------------------")
+        print('Writing Jobs/' + value[3] + '/' + key + '/' + SHNAME)
         os.system("chmod +x " + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
-        print "chmod +x " + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME
+        print("chmod +x " + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
         # delete log files
         os.system("rm -rf " + S + 'log')
         for subdir, dirs, files in os.walk(S):
@@ -132,4 +132,4 @@ for key, value in SAMPLES.items():
                 '}'
                 open('Jobs/' + value[3] + '/' + key + '/' + SHNAME1, 'wt').write(SHFILE1)
     if verbose :
-        print key + ' jobs are made'
+        print(key + ' jobs are made')

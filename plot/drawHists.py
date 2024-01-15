@@ -1,23 +1,14 @@
-# import math
-# import gc
 import sys
 import ROOT
-# import numpy as np
-# import copy
 import os
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 ROOT.gROOT.ProcessLine('gErrorIgnoreLevel = 1;')
 ROOT.TH1.AddDirectory(ROOT.kFALSE)
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetEndErrorSize(0)
-# from array import array
-# from ROOT import TColor
 from ROOT import TGaxis
-# import gc
-# from operator import truediv
-# import copy
 import argparse
-from plotter import StackHist, Efficiency, SummaryPlot#, CompareBackgrounds
+from plotter import StackHist
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'helper'))
 TGaxis.SetMaxDigits(2)
 
@@ -26,75 +17,64 @@ year_RunII = ['2016APV', '2016', '2017', '2018', 'All']
 
 charges = ['OS', 'SS']
 
-channels = ['ee', 'emu', 'mumu']
+channels = ['e', 'mu']
 
 regions = [
     'll',                         #0
-    'llOffZMetg20Jetgeq1B1',      #1
-    'llOffZMetg20Jetgeq1B2',      #2
-    'llOffZStg300btagl1p3',       #3
-    'llOffZStg300btagl1p3Tight',  #4
-    'llOnZ',                      #5
-    'llOnZMetg20Jetgeq1',         #6
-    'llbtagg1p3',                 #7
-    'llbtagg1p3OffZ',             #8
+    # 'llOffZMetg20Jetgeq1B1',      #1
+    # 'llOffZMetg20Jetgeq1B2',      #2
+    # 'llOffZStg300btagl1p3',       #3
+    # 'llOffZStg300btagl1p3Tight',  #4
+    # 'llOnZ',                      #5
+    # 'llOnZMetg20Jetgeq1',         #6
+    # 'llbtagg1p3',                 #7
+    # 'llbtagg1p3OffZ',             #8
     'llStl300',                   #9
-    'llStl300OnZ',                #10
-    'llStl300OffZ',               #11
-    'llMetg20Jetgeq1B0',          #12
-    'llMetg20Jetgeq1B0OffZ']      #13
+    # 'llStl300OffZ',               #10
+    'llMetg20Jetgeq1B0',          #11
+    # 'llMetg20Jetgeq1B0OffZ'       #12
+]
 regionsName = [
-    ['No cuts',                                                  ''                    ],
-    ['OffZ, p_{T}^{miss}>20GeV, njet#geq1, nbjet=1',             ', SR'                ],
-    ['OffZ, p_{T}^{miss}>20GeV, njet#geq1, nbjet=2',             ', t#bar{t}+jets CR'  ],
-    ['OffZ, S_{T}>300GeV, btag<1.3',                             ', SR(Alt, Loose)'    ],
-    ['OffZ, S_{T}>300GeV, btag<1.3, njet#geq1 or S_{T}>500GeV',  ', SR(Alt, Tight)'    ],
-    ['OnZ',                                                      ', Z+jets CR'         ],
-    ['OnZ, p_{T}^{miss}>20GeV, njet#geq1',                       ', Z+jets CR'         ],
-    ['btag>1.3',                                                 ', t#bar{t}+jets CR'  ],
-    ['btag>1.3, OffZ',                                           ', t#bar{t}+jets CR'  ],
-    ['S_{T}<300GeV, ',                                           ', CR'                ],
-    ['S_{T}<300GeV, OnZ',                                        ', CR'                ],
-    ['S_{T}<300GeV, OffZ',                                       ', CR'                ],
-    ['p_{T}^{miss}>20GeV, njet#geq1, nbjet=0',                   ', CR'                ],
-    ['p_{T}^{miss}>20GeV, njet#geq1, nbjet=0, OffZ',             ', CR'                ]]
+    ['No cuts', ''],
+    # ['OffZ, p_{T}^{miss}>20GeV, njet#geq1, nbjet=1', ', SR'],
+    # ['OffZ, p_{T}^{miss}>20GeV, njet#geq1, nbjet=2', ', t#bar{t}+jets CR'],
+    # ['OffZ, S_{T}>300GeV, btag<1.3', ', SR(Alt, Loose)'],
+    # ['OffZ, S_{T}>300GeV, btag<1.3, njet#geq1 or S_{T}>500GeV', ', SR(Alt, Tight)'],
+    # ['OnZ', ', Z+jets CR'],
+    # ['OnZ, p_{T}^{miss}>20GeV, njet#geq1', ', Z+jets CR'],
+    # ['btag>1.3', ', t#bar{t}+jets CR'],
+    # ['btag>1.3, OffZ', ', t#bar{t}+jets CR'],
+    ['S_{T}<300GeV, ', ', CR'],
+    # ['S_{T}<300GeV, OffZ', ', CR'],
+    ['p_{T}^{miss}>20GeV, njet#geq1, nbjet=0', ', CR'],
+    # ['p_{T}^{miss}>20GeV, njet#geq1, nbjet=0, OffZ', ', CR']
+]
 
 domains = ['geqMedLepgeqTightTa', 'geqMedLeplTightTa']
 domainsName = [
-    # '#geqTight Tau vs Jets WP',
-    # '<Tight Tau vs Jets WP'
-    '', ''
+    '#geq M #ell, #geq T #tau',
+    '#geq M #ell, < T #tau'
 ]
 
 vars = [
-    'llM', 'llDr', 'lep1Pt', 'lep2Pt', 'elLeptonMVAv1', 'elLeptonMVAv2',
-    'muLeptonMVAv1', 'muLeptonMVAv2', 'taPt', 'taPtFake', 'taEta', 'taEtaFake',
+    'llM', 'llDr', 'lep1Pt', 'elLeptonMVAv1', 'elLeptonMVAv2',
+    'muLeptonMVAv1', 'muLeptonMVAv2', 'taPt', 'taEta',
     'taVsJetWP', 'taVsJetMVA', 'taVsElMVA', 'taVsMuMVA', 'taDxy', 'taDz',
     'taDecayMode', 'jet1Pt', 'jetbtagDeepFlavB', 'njet', 'nbjet', 'MET',
-    'subSR', 'LFVemuM', 'LFVetaM', 'LFVmutaM', 'LFVemuDr', 'LFVetaDr',
-    'LFVmutaDr', 'LFVePt', 'LFVmuPt', 'LFVtaPt', 'balepPt', 'topmass', 'Ht',
-    'St', 'btagSum']
+    'Ht', 'St', 'btagSum']
 varsName = [
     'm(l#bar{l}) [GeV]', '#DeltaR(l#bar{l})', 'Leading lepton p_{T} [GeV]',
-    'Sub-leading lepton p_{T} [GeV]', 'Electron Top Lepton MVA (v1)',
+    'Electron Top Lepton MVA (v1)',
     'Electron Top Lepton MVA (v2)', 'Muon Top Lepton MVA (v1)',
-    'Muon Top Lepton MVA (v2)', '#tau p_{T} [GeV]', 'Fake #tau p_{T} [GeV]',
-    '#tau #eta', 'Fake #tau #eta', '#tau vs Jet WP', '#tau vs Jet MVA',
+    'Muon Top Lepton MVA (v2)', '#tau p_{T} [GeV]',
+    '#tau #eta', '#tau vs Jet WP', '#tau vs Jet MVA',
     '#tau vs Electron MVA', '#tau vs Muon MVA', '#tau d_{xy} [cm]',
     '#tau d_{z} [cm]', '#tau Decay Mode', 'Leading jet p_{T} [GeV]', 'btag',
-    'njet', 'nbjet (Loose WP)', 'MET [GeV]', 'SR subdivided',
-    'm(e#bar{#mu}) [GeV]', 'm(e#bar{#tau}) [GeV]', 'm(#mu#bar{#tau}) [GeV]',
-    '#DeltaR(e,#bar{#mu}) [GeV]', '#DeltaR(e,#bar{#tau}) [GeV]',
-    '#DeltaR(#mu,#bar{#tau}) [GeV]', 'LFV electron p_{T} [GeV]',
-    'LFV muon p_{T} [GeV]', 'LFV tau p_{T} [GeV]',
-    'Bachelor lepton p_{T} [GeV]', 'm(top) [GeV]', 'H_{T} [GeV]',
+    'njet', 'nbjet (Loose WP)', 'MET [GeV]', 'H_{T} [GeV]',
     'S_{T} [GeV]', 'Sum of btagging scores']
 
-Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root', 'LFVStScalarU.root', 'LFVTtScalarU.root']
-SamplesName = ['Data', 't#bar{t}X', 'VV(V)', 'DY/ZZ', 't#bar{t}/WW', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
-SamplesNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'DY/ZZ', 't#bar{t}/WW', 'CLFV top production', 'CLFV top decay']
-DDName = ['Data', 't#bar{t}X', 'VV(V)', 'Nonprompt', 'C_{ll`tu}^{ST}', 'C_{ll`tu}^{TT}']
-DDNameStack = ['Data', 't#bar{t}+X', 'VV(V)', 'Nonprompt', 'CLFV top production', 'CLFV top decay']
+Samples = ['Data.root', 'TX.root', 'VV.root', 'DY.root', 'TT.root']
+SamplesNameStack = ['Data', 't#bar{t}(+X)', 'VV(V)', 'DY/ZZ', 't#bar{t}']
 
 colors = [ROOT.kBlack, ROOT.kYellow, ROOT.kGreen, ROOT.kOrange - 3, ROOT.kRed - 4, ROOT.kViolet + 1, ROOT.kGray]
 markerStyle = [20, 25, 26, 27, 28, 29, 30]
@@ -162,33 +142,9 @@ for numyear, nameyear in enumerate(year):
                     if ('MVA' in namevar) and (not SaveMVA):
                         continue
 
-                    # Plots with background estimated with the ABCD method
-                    H1 = []
-                    H1Signal = []
-                    for f in range(len(Samples)):
-                        if 'DY' in Samples[f] or 'TT' in Samples[f]: continue
-                        h1 = Hists[numyear][f][numc][numch][numreg][0][numvar].Clone()
-                        h1.SetFillColor(colors[f])
-                        if 'LFV' not in Samples[f]:
-                            h1.SetLineColor(colors[0])
-                            H1.append(h1)
-                        else:
-                            h1.SetLineColor(colors[f])
-                            H1Signal.append(h1)
-                    # Nonprompt estimate
-                    hn = Hists[numyear][0][numc][numch][numreg][1][numvar].Clone()
-                    hn.Add(Hists[numyear][1][numc][numch][numreg][1][numvar].Clone(), -1.0) # TTX
-                    hn.Add(Hists[numyear][2][numc][numch][numreg][1][numvar].Clone(), -1.0) # VV(V)
-                    hn.SetFillColor(ROOT.kCyan - 3)
-                    hn.SetLineColor(colors[0])
-                    H1.append(hn)
-                    StackHist(H1, H1Signal, DDNameStack, namec, namech, namereg, regionsName[numreg], "", "", nameyear, namevar, varsName[numvar])
-
-                    # Plots with no background estimation
                     for numdom, namedom in enumerate(domains):
                         H1 = []
                         H1Signal = []
-                        # H2 = []
                         for f in range(len(Samples)):
                             h1 = Hists[numyear][f][numc][numch][numreg][numdom][numvar].Clone()
                             h1.SetFillColor(colors[f])
@@ -198,55 +154,4 @@ for numyear, nameyear in enumerate(year):
                             else:
                                 h1.SetLineColor(colors[f])
                                 H1Signal.append(h1)
-                            # if 'Data' in Samples[f]:
-                            #     continue
-                            # h2 = Hists[numyear][f][numc][numch][numreg][numvar].Clone()
-                            # h2.SetLineColor(colors[f])
-                            # h2.SetLineWidth(2)
-                            # h2.SetMarkerColor(colors[f])
-                            # h2.SetMarkerStyle(markerStyle[f])
-                            # H2.append(h2)
                         StackHist(H1, H1Signal, SamplesNameStack, namec, namech, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear, namevar, varsName[numvar])
-                        # CompareBackgrounds(H2, nameyear, namec, namech, namereg, namevar, varsName[numvar], SamplesName)
-
-                        if 'Fake' in namevar:
-                            he = Hists[numyear][1][numc][numch][numreg][numdom][numvar].Clone() # numerator
-                            hd = Hists[numyear][1][numc][numch][numreg][numdom][numvar - 1].Clone() # denominator
-                            for iSample in range(2, 5):
-                                temphe = Hists[numyear][iSample][numc][numch][numreg][numdom][numvar].Clone()
-                                temphd = Hists[numyear][iSample][numc][numch][numreg][numdom][numvar - 1].Clone()
-                                for iBin in range(temphe.GetNbinsX()):
-                                    if temphe.GetBinContent(iBin + 1) < 0.0:
-                                        temphe.SetBinContent(iBin + 1, 0.0)
-                                        temphe.SetBinError(iBin + 1, 0.0)
-                                    if temphd.GetBinContent(iBin + 1) < 0.0:
-                                        temphd.SetBinContent(iBin + 1, 0.0)
-                                        temphd.SetBinError(iBin + 1, 0.0)
-                                he.Add(temphe, 1.0)
-                                hd.Add(temphd, 1.0)
-                                print(iSample, temphe.GetBinContent(5), temphd.GetBinContent(5))
-                            for iBin in range(he.GetNbinsX()):
-                                print(he.GetBinContent(iBin + 1), hd.GetBinContent(iBin + 1))
-                            he.Divide(hd)
-                            Efficiency(he, namec, namech, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear, namevar, varsName[numvar])
-
-# Make summary histograms
-for numyear, nameyear in enumerate(year):
-    for numreg, namereg in enumerate(regions):
-        for numdom, namedom in enumerate(domains):
-            H = []
-            HSignal = []
-            for f in range(len(Samples)):
-                h = Hists[numyear][f][0][0][numreg][numdom][24].Clone()
-                h.Reset('ICE')
-                for numc, namec in enumerate(charges):
-                    for numch, namech in enumerate(channels):
-                        h += Hists[numyear][f][numc][numch][numreg][numdom][24]
-                h.SetFillColor(colors[f])
-                if 'LFV' not in Samples[f]:
-                    h.SetLineColor(colors[0])
-                    H.append(h)
-                else:
-                    h.SetLineColor(colors[f])
-                    HSignal.append(h)
-            SummaryPlot(H, HSignal, SamplesNameStack, namereg, regionsName[numreg], namedom, domainsName[numdom], nameyear)

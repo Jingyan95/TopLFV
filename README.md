@@ -1,6 +1,7 @@
-# Top LFV Analysis  
+# Top LFV Analysis
 
 This framework depends on ROOT libraries 
+
 
 ## I. File Lists
 
@@ -91,23 +92,19 @@ This framework depends on ROOT libraries
  </tr>
 </table>
 
+
 ## II. To compile & run 
 
-```sh
-cmsrel CMSSW_10_6_4
-cd CMSSW_10_6_4/src/
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-cmsenv
-cd-
+```
+. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
 git clone https://github.com/jingyan95/TopLFV.git 
 cd TopLFV
 make all
 ./RunAll
 ```
 
-## III. To write & submit jobs 
 
+## III. To write & submit jobs 
 
 ### makeJobs.py
 
@@ -121,6 +118,15 @@ python makeJobs.py
 ```sh
 python submitJobs.py
 ```
+
+To run a job that was botched on condor:
+- argument is the job number
+- this will remove the executable in TopLFV
+```
+cd bin/Jobs/2016/2016_DYM50/
+./2016_DYM50_0.sh 0
+```
+
 
 ## IV. To merge files & make plots
 
@@ -136,10 +142,11 @@ cd ../plot/
 python drawHists.py 
 ```
 
+
 ## IV.a To make cutflow tables
 
 ```sh
 cd ../helper/
-root -l -b -q Cutflow.cc
+python cutflow.py
 ```
 This script will print out cutflow tables in LaTeX format.

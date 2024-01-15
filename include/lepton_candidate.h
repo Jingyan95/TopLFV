@@ -1,11 +1,11 @@
 #ifndef MY_lepton_candidate
 #define MY_lepton_candidate
 
-#include<cmath>
-#include<string>
-#include<iostream>
-#include<vector>
-#include<complex>
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <complex>
 #include <TLorentzVector.h>
 
 using namespace std;
@@ -21,7 +21,7 @@ public:
   float dxy_;
   float dz_;
   int charge_;
-  int mva1WP_; // For taus, this is the tau vs jets WP
+  int mva1WP_; // currently only used for Tau vs Jet WP
   float mva1_;
   float mva2_;
   float mva3_;
