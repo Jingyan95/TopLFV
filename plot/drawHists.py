@@ -204,9 +204,12 @@ def makePlot(hists, year, charge, iChannel, channel, iRegion, region, iVar, var,
     dicanv.cd(2)
     CMS.cmsDraw(MCRelError, "E2", fstyle=3004, fcolor=COLORS[0])
     CMS.cmsDraw(ratioHist, "P EX0", fcolor=COLORS[0], lwidth=2)
-    CMS.cmsDrawLine(ROOT.TLine(x_min, 1, x_max, 1), lcolor=COLORS[0], lstyle=ROOT.kDotted)
-    CMS.cmsDrawLine(ROOT.TLine(x_min, 1.5, x_max, 1.5), lcolor=COLORS[0], lstyle=ROOT.kDotted)
-    CMS.cmsDrawLine(ROOT.TLine(x_min, 0.5, x_max, 0.5), lcolor=COLORS[0], lstyle=ROOT.kDotted)
+    upLine = ROOT.TLine(x_min, 1.5, x_max, 1.5)
+    midLine = ROOT.TLine(x_min, 1, x_max, 1)
+    downLine = ROOT.TLine(x_min, 0.5, x_max, 0.5)
+    CMS.cmsDrawLine(upLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
+    CMS.cmsDrawLine(midLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
+    CMS.cmsDrawLine(downLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
 
     if not os.path.exists(ARGS.FOLDER):
         os.makedirs(ARGS.FOLDER)
