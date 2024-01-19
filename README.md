@@ -1,105 +1,111 @@
-# Top LFV Analysis  
-
-This framework depends on ROOT libraries 
-
-## I. File Lists
-
+# Top LFV Analysis
+This framework depends on ROOT libraries.
 <table border="0">
- <tr>
+  <tr>
     <td><b style="font-size:30px">Files</b></td>
     <td><b style="font-size:30px">Description</b></td>
- </tr>
+  </tr>
   <tr>
     <td>bin/nano_files_2016APV.py</td>
-    <td>Python file to store addresses of 2016-preVFP samples</td>
- </tr>
- <tr>
+    <td>Python file to store addresses of 2016preVFP samples with trilepton events</td>
+  </tr>
+  <tr>
     <td>bin/nano_files_2016.py</td>
-    <td>Python file to store addresses of 2016-postVFP samples</td>
- </tr>
- <tr>
+    <td>Python file to store addresses of 2016postVFP samples with trilepton events</td>
+  </tr>
+  <tr>
     <td>bin/nano_files_2017.py</td>
-    <td>Python file to store addresses of 2017 samples</td>
- </tr>
- <tr>
+    <td>Python file to store addresses of 2017 samples with trilepton events</td>
+  </tr>
+  <tr>
     <td>bin/nano_files_2018.py</td>
-    <td>Python file to store addresses of 2018 samples</td>
- </tr>
- <tr>
+    <td>Python file to store addresses of 2018 samples with trilepton events</td>
+  </tr>
+  <tr>
     <td>bin/makeJobs.py</td>
-    <td>Python function for writing condor jobs</td>
- </tr>
- <tr>
+    <td>Python script for writing condor jobs</td>
+  </tr>
+  <tr>
     <td>bin/submitJobs.py</td>
-    <td>Python function for submitting condor jobs</td>
- </tr>
- <tr>
+    <td>Python script for submitting condor jobs</td>
+  </tr>
+  <tr>
     <td>bin/Jobs/</td>
     <td>Directory where condor job files live</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
+    <td>data/</td>
+    <td>Directory where scale factors, efficiencies, and corrections live</td>
+  </tr>
+  <tr>
     <td>helper/</td>
-    <td>Directory where utility functions live</td>
- </tr>
- <tr>
+    <td>Directory where utility scripts live</td>
+  </tr>
+  <tr>
+    <td>helper/eventYields.py</td>
+    <td>Python script for making table of event yields</td>
+  </tr>
+  <tr>
+    <td>hists/</td>
+    <td>Directory where histograms are saved</td>
+  </tr>
+  <tr>
     <td>hists/hadd.py</td>
     <td>Utility function for merging root files</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
     <td>include/</td>
     <td>Directory where header files live</td>
- </tr>
- <tr>
-    <td>input/</td>
-    <td>Directory where input files live</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
     <td>plot/</td>
-    <td>Directory where plotting functions live</td>
- </tr>
- <tr>
+    <td>Directory where plots are saved</td>
+  </tr>
+  <tr>
+    <td>plot/drawHists.py</td>
+    <td>Python script for plotting histograms</td>
+  </tr>
+  <tr>
     <td>src/MyAnalysis.cc</td>
     <td>Main analysis file</td>
- </tr>
+  </tr>
   <tr>
     <td>src/event_candidate.cc</td>
     <td>Object class for events</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
     <td>src/jet_candidate.cc</td>
     <td>Object class for jets</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
     <td>src/lepton_candidate.cc</td>
     <td>Object class for leptons</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
     <td>src/trigger.cc</td>
     <td>HLT trigger logic</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
     <td>src/main.cc</td>
     <td>Testing file</td>
- </tr>
- <tr>
+  </tr>
+  <tr>
     <td>src/PU_reWeighting.cc</td>
     <td>Reweight MC pile up distribution</td>
- </tr>
- <tr>
-    <td>src/common_details.cc,fastforest_functions,fastforest.cc</td>
+  </tr>
+  <tr>
+    <td>src/common_details.cc, src/fastforest_functions.cc, src/fastforest.cc</td>
     <td>Standalone C++ interface of XGBoost</td>
- </tr>
+  </tr>
 </table>
 
-## II. To compile & run 
+## I. Setup
+```
+. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
+```
 
-```sh
-cmsrel CMSSW_10_6_4
-cd CMSSW_10_6_4/src/
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-cmsenv
-cd-
+## II. To compile & run 
+```
 git clone https://github.com/jingyan95/TopLFV.git 
 cd TopLFV
 make all
@@ -107,39 +113,28 @@ make all
 ```
 
 ## III. To write & submit jobs 
-
-
-### makeJobs.py
-
-```sh
+```
 cd bin/
 python makeJobs.py
-```
-
-### submitJobs.py
-
-```sh
 python submitJobs.py
 ```
 
-## IV. To merge files & make plots
-
-```sh
-cd ../hists/
+## IV. To merge output ROOT files
+```
+cd hists/
 python hadd.py
 ```
-Make sure all the necessary output files are there under TopLFV/hists/2016/, otherwise, this function might run into problems. 
-We use the function under TopLFV/plot/ to make plots:
+Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
 
-```sh
-cd ../plot/
+## V. To make plots
+```
+cd plot/
 python drawHists.py 
 ```
 
-## IV.a To make cutflow tables
-
-```sh
-cd ../helper/
-root -l -b -q Cutflow.cc
+## VI. To get event yields
 ```
-This script will print out cutflow tables in LaTeX format.
+cd helper/
+python eventYields.py
+```
+This script will produce a table of event yields in a LaTeX file.
