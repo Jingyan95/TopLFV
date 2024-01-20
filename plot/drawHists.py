@@ -103,9 +103,8 @@ for year in YEARS:
                             os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge)
                         if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel):
                             os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel)
-                        if diff=="vsPt_vsEta":
-                            if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar]):
-                                os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar])
+                        if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar]):
+                            os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar])
 
 
 def make1DPlot(hists, histLabels, pname, yLabel, year, iRegion, iDiff, topLabel, saveDir, yMax=0.0):
@@ -290,3 +289,26 @@ for iYear, year in enumerate(YEARS):
                         make1DPlot(hists, labels, "1DPurity", "Fake Tau Purity", year,
                             iRegion, iDiff, charge+", "+CHANNELS_NAME[iChannel],
                             ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel, yMax=1.6)
+
+# 1D fake tau purity, separated by sample
+for iYear, year in enumerate(YEARS):
+    for iDiff, diff in enumerate(DIFFS):
+        if diff=="vsPt_vsEta": continue # 1D
+        for iRegion, region in enumerate(REGIONS):
+            for charge in CHARGES:
+                for iChannel, channel in enumerate(CHANNELS):
+                    for iVar in range(0, len(VARS), 2):
+                        hists = []
+                        labels = []
+                        for iSample, sample in enumerate(SAMPLES):
+                            if sample=="Data": continue
+                            hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar+1]+"_"+diff
+                            purity = h[hkey].Clone()
+                            hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar]+"_"+diff
+                            denominator = h[hkey].Clone()
+                            purity.Divide(denominator)
+                            hists.append(purity)
+                            labels.append(SAMPLES_NAME[iSample])
+                        make1DPlot(hists, labels, "1DPurity", "Fake Tau Purity", year,
+                            iRegion, iDiff, "3l, "+charge+", "+CHANNELS_NAME[iChannel]+", "+VARS_NAME[iVar],
+                            ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar], yMax=1.6)
