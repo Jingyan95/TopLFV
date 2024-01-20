@@ -103,11 +103,12 @@ for year in YEARS:
                             os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge)
                         if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel):
                             os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel)
-                        if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar]):
-                            os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar])
+                        if diff=="vsPt_vsEta":
+                            if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar]):
+                                os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar])
 
 
-def make1DPlot(hists, histLabels, pname, yLabel, year, iRegion, iDiff, saveDir, iVar=-1, yMax=0.0):
+def make1DPlot(hists, histLabels, pname, yLabel, year, iRegion, iDiff, topLabel, saveDir, yMax=0.0):
     CMS.SetLumi(getLumi(year))
     CMS.SetEnergy("13") # Run 2
     CMS.SetExtraText(PLOT_LABEL)
@@ -157,7 +158,7 @@ def make1DPlot(hists, histLabels, pname, yLabel, year, iRegion, iDiff, saveDir, 
         legLabelTop = CMS.cmsLeg(0.15, 0.82, 0.5, 0.88, textSize=0.05)
         legLabelMiddle = CMS.cmsLeg(0.15, 0.76, 0.5, 0.82, textSize=0.05)
         legLabelBottom = CMS.cmsLeg(0.15, 0.7, 0.5, 0.76, textSize=0.05)
-    if iVar>=0: CMS.cmsHeader(legLabelTop, VARS_NAME[iVar], textSize=0.04)
+    CMS.cmsHeader(legLabelTop, topLabel, textSize=0.04)
     CMS.cmsHeader(legLabelMiddle, REGIONS_NAME[iRegion][0], textSize=0.04)
     CMS.cmsHeader(legLabelBottom, REGIONS_NAME[iRegion][1], textSize=0.04)
 
@@ -207,20 +208,20 @@ for year in YEARS:
                     for iChannel, channel in enumerate(CHANNELS):
                         hname = year + "_Data_" + charge + "_" + channel + "_" + region + "_geqTightTa_" + diff
                         fakeFactor = h[hname].Clone()
+                        hname = year + "_Data_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
+                        denominator = h[hname].Clone()
                         hname = year + "_TX_" + charge + "_" + channel + "_" + region + "_geqTightTa_" + diff
                         fakeFactor.Add(h[hname].Clone(), -1.0)
+                        hname = year + "_TX_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
+                        denominator.Add(h[hname].Clone(), -1.0)
                         hname = year + "_VV_" + charge + "_" + channel + "_" + region + "_geqTightTa_" + diff
                         fakeFactor.Add(h[hname].Clone(), -1.0)
+                        hname = year + "_VV_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
+                        denominator.Add(h[hname].Clone(), -1.0)
                         for i in range(1, fakeFactor.GetNbinsX() + 1): # Set negative event counts to 0
                             if fakeFactor.GetBinContent(i) < 0.0:
                                 fakeFactor.SetBinContent(i, 0.0)
                                 fakeFactor.SetBinError(i, 0.0)
-                        hname = year + "_Data_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
-                        denominator = h[hname].Clone()
-                        hname = year + "_TX_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
-                        denominator.Add(h[hname].Clone(), -1.0)
-                        hname = year + "_VV_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
-                        denominator.Add(h[hname].Clone(), -1.0)
                         for i in range(1, denominator.GetNbinsX() + 1): # Set negative event counts to 0
                             if denominator.GetBinContent(i) < 0.0:
                                 denominator.SetBinContent(i, 0.0)
@@ -229,27 +230,27 @@ for year in YEARS:
                         hists.append(fakeFactor)
                         labels.append(charge+", "+CHANNELS_NAME[iChannel])
                 make1DPlot(hists, labels, "1DFakeFactors", "Fake Factors", year, iRegion, iDiff,
-                    ARGS.FOLDER+"/"+year+"/"+region+"/"+diff)
+                    "", ARGS.FOLDER+"/"+year+"/"+region+"/"+diff)
             else: # 2D
                 for charge in CHARGES:
                     for iChannel, channel in enumerate(CHANNELS):
                         hname = year + "_Data_" + charge + "_" + channel + "_" + region + "_geqTightTa_" + diff
                         fakeFactor = h[hname].Clone()
+                        hname = year + "_Data_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
+                        denominator = h[hname].Clone()
                         hname = year + "_TX_" + charge + "_" + channel + "_" + region + "_geqTightTa_" + diff
                         fakeFactor.Add(h[hname].Clone(), -1.0)
+                        hname = year + "_TX_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
+                        denominator.Add(h[hname].Clone(), -1.0)
                         hname = year + "_VV_" + charge + "_" + channel + "_" + region + "_geqTightTa_" + diff
                         fakeFactor.Add(h[hname].Clone(), -1.0)
+                        hname = year + "_VV_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
+                        denominator.Add(h[hname].Clone(), -1.0)
                         for i in range(1, fakeFactor.GetNbinsX()+1):
                             for j in range(1, fakeFactor.GetNbinsY()+1):
                                 if fakeFactor.GetBinContent(i, j)<0.0:
                                     fakeFactor.SetBinContent(i, j, 0.0)
                                     fakeFactor.SetBinError(i, j, 0.0)
-                        hname = year + "_Data_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
-                        denominator = h[hname].Clone()
-                        hname = year + "_TX_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
-                        denominator.Add(h[hname].Clone(), -1.0)
-                        hname = year + "_VV_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
-                        denominator.Add(h[hname].Clone(), -1.0)
                         for i in range(1, denominator.GetNbinsX()+1):
                             for j in range(1, denominator.GetNbinsY()+1):
                                 if denominator.GetBinContent(i, j)<0.0:
@@ -265,28 +266,27 @@ for iYear, year in enumerate(YEARS):
         for iRegion, region in enumerate(REGIONS):
             for charge in CHARGES:
                 for iChannel, channel in enumerate(CHANNELS):
+                    if diff!="vsPt_vsEta": # 1D
+                        hists = []
+                        labels = []
                     for iVar in range(0, len(VARS), 2):
+                        hkey = year+"_"+SAMPLES[1+0]+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar+1]+"_"+diff
+                        purity = h[hkey].Clone()
+                        hkey = year+"_"+SAMPLES[1+0]+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar]+"_"+diff
+                        denominator = h[hkey].Clone()
+                        for iSample in range(1+1, len(SAMPLES)):
+                            hkey = year+"_"+SAMPLES[iSample]+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar+1]+"_"+diff
+                            purity.Add(h[hkey].Clone(), 1.0)
+                            hkey = year+"_"+SAMPLES[iSample]+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar]+"_"+diff
+                            denominator.Add(h[hkey].Clone(), 1.0)
+                        purity.Divide(denominator)
                         if diff!="vsPt_vsEta": # 1D
-                            hists = []
-                            labels = []
-                            for iSample, sample in enumerate(SAMPLES):
-                                if sample=="Data": continue
-                                hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar+1]+"_"+diff
-                                purity = h[hkey].Clone()
-                                hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar]+"_"+diff
-                                denominator = h[hkey].Clone()
-                                purity.Divide(denominator)
-                                hists.append(purity)
-                                labels.append(SAMPLES_NAME[iSample]+", "+charge+", "+CHANNELS_NAME[iChannel])
-                            make1DPlot(hists, labels, "1DPurity", "Fake Tau Purity", year, iRegion, iDiff,
-                                ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar], iVar, 1.6)
+                            hists.append(purity)
+                            labels.append("Trilepton, "+VARS_NAME[iVar])
                         else: # 2D
-                            for iSample, sample in enumerate(SAMPLES):
-                                if sample=="Data": continue
-                                hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar+1]+"_"+diff
-                                purity = h[hkey].Clone()
-                                hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+VARS[iVar]+"_"+diff
-                                denominator = h[hkey].Clone()
-                                purity.Divide(denominator)
-                                make2DPlot(purity, "2DPurity"+sample, year, iDiff-len(DIFFS_NAME_1D),
-                                    ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar])
+                            make2DPlot(purity, "2DPurity", year, iDiff-len(DIFFS_NAME_1D),
+                                ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar])
+                    if diff!="vsPt_vsEta": # 1D
+                        make1DPlot(hists, labels, "1DPurity", "Fake Tau Purity", year,
+                            iRegion, iDiff, charge+", "+CHANNELS_NAME[iChannel],
+                            ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel, yMax=1.6)
