@@ -35,8 +35,9 @@ void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& c
 }
 
 
-std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi,
-                                   float Nevent, std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& counter) {
+std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run,
+                                   float xs, float lumi, float Nevent, std::atomic<ULong64_t>& progress,
+                                   std::atomic<ULong64_t>& counter) {
 
   std::stringstream summary;
   if (fChain == 0) {

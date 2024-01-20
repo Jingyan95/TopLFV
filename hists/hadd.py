@@ -5,19 +5,18 @@ import readline
 import string
 import argparse
 
-# set up an argument parser
-parser = argparse.ArgumentParser()
-
-sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'bin'))
-parser.add_argument('--n', dest = 'NAMETAG', default = 'All')
-ARGS = parser.parse_args()
-name = ARGS.NAMETAG
-
 import nano_files_2016APV_dilepton
 import nano_files_2016_dilepton
 import nano_files_2017_dilepton
 import nano_files_2018_dilepton
 
+
+# set up an argument parser
+parser = argparse.ArgumentParser()
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'bin'))
+parser.add_argument('--n', dest = 'NAMETAG', default = 'All')
+ARGS = parser.parse_args()
+name = ARGS.NAMETAG
 SAMPLES = {}
 if name == 'All' or name == '2016APV':
     SAMPLES.update(nano_files_2016APV_dilepton.mc2016APV_samples)
@@ -32,12 +31,12 @@ if name == 'All' or name == '2018':
     SAMPLES.update(nano_files_2018_dilepton.mc2018_samples)
     SAMPLES.update(nano_files_2018_dilepton.data2018_samples)
 
+
 addedFilesData = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TTX, TTTo2L2Nu
 addedFilesVV = {"2016APV": [], "2016": [], "2017": [], "2018": []} # VV, VVV, WWTo2L2Nu
 addedFilesTT = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TTToSemiLeptonic
 addedFilesDY = {"2016APV": [], "2016": [], "2017": [], "2018": []} # DY, ZZTo2L2Nu
-
 for key, value in SAMPLES.items():
     year = value[3]
     os.system('rm -f ' + year + '/' + key + '.root ')
@@ -65,11 +64,11 @@ for key, value in SAMPLES.items():
     os.system(hadd)
 
 if (name == 'All') or (name == '2016APV'):
-    haddData_2016APV = 'hadd 2016APV_Data' + '.root ' + ' '.join(addedFilesData['2016APV'])
-    haddTX_2016APV = 'hadd 2016APV_TX' + '.root ' + ' '.join(addedFilesTX['2016APV'])
-    haddVV_2016APV = 'hadd 2016APV_VV' + '.root ' + ' '.join(addedFilesVV['2016APV'])
-    haddTT_2016APV = 'hadd 2016APV_TT' + '.root ' + ' '.join(addedFilesTT['2016APV'])
-    haddDY_2016APV = 'hadd 2016APV_DY' + '.root ' + ' '.join(addedFilesDY['2016APV'])
+    haddData_2016APV = 'hadd 2016APV_Data.root ' + ' '.join(addedFilesData['2016APV'])
+    haddTX_2016APV = 'hadd 2016APV_TX.root ' + ' '.join(addedFilesTX['2016APV'])
+    haddVV_2016APV = 'hadd 2016APV_VV.root ' + ' '.join(addedFilesVV['2016APV'])
+    haddTT_2016APV = 'hadd 2016APV_TT.root ' + ' '.join(addedFilesTT['2016APV'])
+    haddDY_2016APV = 'hadd 2016APV_DY.root ' + ' '.join(addedFilesDY['2016APV'])
     os.system('rm -f 2016APV_Data.root')
     os.system('rm -f 2016APV_TX.root')
     os.system('rm -f 2016APV_VV.root')
