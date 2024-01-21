@@ -251,6 +251,8 @@ for year in YEARS:
                         labels.append(charge+", "+CHANNELS_NAME[iChannel])
                 make1DPlot(hists, labels, "1DFakeFactors", "Fake Factors", year, iRegion, iDiff,
                     "", ARGS.FOLDER+"/"+year+"/"+region+"/"+diff)
+                make1DPlot(hists, labels, "1DFakeFactors_zoom", "Fake Factors", year, iRegion, iDiff,
+                    "", ARGS.FOLDER+"/"+year+"/"+region+"/"+diff, yMax=0.25)
             else: # 2D
                 for charge in CHARGES:
                     for iChannel, channel in enumerate(CHANNELS):
