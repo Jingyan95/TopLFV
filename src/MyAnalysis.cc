@@ -35,8 +35,9 @@ void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& c
 }
 
 
-std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi,
-                                   float Nevent, std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& counter) {
+std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run,
+                                   float xs, float lumi, float Nevent, std::atomic<ULong64_t>& progress,
+                                   std::atomic<ULong64_t>& counter) {
 
   std::stringstream summary;
   if (fChain == 0) {
@@ -49,22 +50,19 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> charges{"OS", "SS"}; // Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
-    /*0*/ "ll", // No cuts
-    /*1*/ "llOffZMetg20Jetgeq1B1", // SR
-    /*2*/ "llOffZMetg20Jetgeq1B2", // ttbar + jets CR
-    /*3*/ "llOffZStg300btagl1p3", // New SR (Loose)
-    /*4*/ "llOffZStg300btagl1p3Tight", // New SR (Tight)
-    /*5*/ "llOnZ", // Z + jets CR
-    /*6*/ "llOnZMetg20Jetgeq1", // Z + jets CR
-    /*7*/ "llbtagg1p3", // ttbar + jets CR
-    /*8*/ "llbtagg1p3OffZ", // ttbar + jets CR
-    /*9*/ "llStl300", // Generic signal-free region
-    /*10*/ "llStl300OnZ", // Generic signal-free region
-    /*11*/ "llStl300OffZ", // Generic signal-free region
-    /*12*/ "llMetg20Jetgeq1B0", // CR background estimation
-    /*13*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
+    "ll", // No cuts
+    "llStg300",
+    "llOffZ",
+    "llbtagl1p3",
+    "llMetg20",
+    "llJetgeq1",
+    "llB1",
+    "llStg300OffZbtagl1p3Metg20Jetgeq1", // SR
+    "llStg300OnZMetg20Jetgeq1", // DY/ZZ + jets CR
+    "llStg300OffZbtagg1p3Metg20Jetgeq1", // ttbar + jets CR
+    "llStl300" // for comparison to previous results
   };
-  std::vector<int> unBlind{0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+  std::vector<int> unBlind{0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1};
   std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
   const std::map<TString, std::vector<float>> vars = {
     {"llM",              {0,    10,     0,   180}},
@@ -107,8 +105,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"St",               {37,   20,    70,   600}},
     {"btagSum",          {38,   25,     0,   2.5}}
   };
-  const std::vector<Double_t> ff_pt_bins = {20.0, 40.0, 60.0, 100.0, 220.0};
-  const std::vector<Double_t> ff_eta_bins = {0.0, 1.4, 2.3};
+  // const std::vector<Double_t> ff_pt_bins = {20.0, 40.0, 60.0, 100.0, 220.0};
+  // const std::vector<Double_t> ff_eta_bins = {0.0, 1.4, 2.3};
 
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
   Dim5 Hists(Dim5(charges.size(), Dim4(channels.size(), Dim3(regions.size(), Dim2(domains.size(), Dim1(vars.size()))))));
@@ -154,7 +152,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
-  TFile *f_Ta_JetFF = new TFile("data/TAU/" + year + "_JetToTau_TrilepFakeFactors.root");
+  // TFile *f_Ta_JetFF = new TFile("data/TAU/" + year + "_JetToTau_TrilepFakeFactors.root");
   TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   const auto sf_El_RECO = *(TH2F*) f_El_RECO->Get("EGamma_SF2D");
   const auto sf_El_ID = *(TH2F*) f_El_ID->Get("EGamma_SF2D");
@@ -165,9 +163,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const auto sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
   const auto sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
   // https://github.com/Jingyan95/TopLFV/tree/Emily_faketau
-  const auto ff_Ta_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
-  const auto ff_Ta_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_llStl300_TauIdvsOnZ_ptEtaEstFF");
-  const auto ff_Ta_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
+  // const auto ff_Ta_llMetg20Jetgeq1B0 = *(TH2F*) f_Ta_JetFF->Get("OS_llMetg20Jetgeq1B0_TauIdvsOnZ_ptEtaEstFF");
+  // const auto ff_Ta_llStl300 = *(TH2F*) f_Ta_JetFF->Get("OS_llStl300_TauIdvsOnZ_ptEtaEstFF");
+  // const auto ff_Ta_llbtagg1p3 = *(TH2F*) f_Ta_JetFF->Get("OS_llbtagg1p3_TauIdvsOnZ_ptEtaEstFF");
   const auto sf_Btag_corr = *(TH2F*) f_Btag_corr->Get("2DBtagShapeCorrection");
   f_El_RECO->Close();
   f_El_ID->Close();
@@ -177,7 +175,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   f_Ta_ID_e->Close();
   f_Ta_ID_mu->Close();
   f_Ta_ES_jet->Close();
-  f_Ta_JetFF->Close();
+  // f_Ta_JetFF->Close();
   f_Btag_corr->Close();
 
   std::vector<lepton_candidate*> *Leptons;
@@ -201,9 +199,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_jet;
   float weight_Ta_ID_e;
   float weight_Ta_ID_mu;
-  float weight_Ta_ff_llMetg20Jetgeq1B0;
-  float weight_Ta_ff_llStl300;
-  float weight_Ta_ff_llbtagg1p3;
+  // float weight_Ta_ff_llMetg20Jetgeq1B0;
+  // float weight_Ta_ff_llStl300;
+  // float weight_Ta_ff_llbtagg1p3;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
   int nAccept = 0;
@@ -219,11 +217,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (ientry < 0) break;
     fChain->GetEntry(jentry);
     ntotal++; // Thread-private counter
-    std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
-    ++counter;
-    updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
-    if (!verbose_) displayProgress(progress, counter, ntr, 32);
-    mtx_.unlock(); // Releasing mutex
+    {
+      std::lock_guard<std::mutex> lock(mtx_); // Locking mutex before accessing atomic variables
+      ++counter;
+      updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
+      if (!verbose_) displayProgress(progress, counter, ntr, 32);
+    }
     InitTrigger();
     metFilterPass = false;
     reg.clear();
@@ -239,9 +238,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     weight_Ta_ID_jet = 1;
     weight_Ta_ID_e = 1;
     weight_Ta_ID_mu = 1;
-    weight_Ta_ff_llMetg20Jetgeq1B0 = 1;
-    weight_Ta_ff_llStl300 = 1;
-    weight_Ta_ff_llbtagg1p3 = 1;
+    // weight_Ta_ff_llMetg20Jetgeq1B0 = 1;
+    // weight_Ta_ff_llStl300 = 1;
+    // weight_Ta_ff_llbtagg1p3 = 1;
     weight_Btag_corr = 1;
     weight_Event = 1;
 
@@ -377,101 +376,77 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Jet to tau fake factors
     tauPt = Event->ta1()->pt_;
     tauEta = Event->ta1()->eta_;
-    if (!Event->TightTau()) {
-      for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
-        if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
-          for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
-            if (abs(tauEta) > ff_eta_bins[eta] && abs(tauEta) < ff_eta_bins[eta + 1]) {
-              weight_Ta_ff_llMetg20Jetgeq1B0 = ff_Ta_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
-              weight_Ta_ff_llStl300 = ff_Ta_llStl300.GetBinContent(pt + 1, eta + 1);
-              weight_Ta_ff_llbtagg1p3 = ff_Ta_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
-              break;
-            }
-          }
-          break;
-        }
-      }
-    }
+    // if (!Event->TightTau()) {
+    //   for (int pt = 0; pt < ff_pt_bins.size() - 1; pt++) {
+    //     if (tauPt > ff_pt_bins[pt] && tauPt < ff_pt_bins[pt + 1]) {
+    //       for (int eta = 0; eta < ff_eta_bins.size() - 1; eta++) {
+    //         if (abs(tauEta) > ff_eta_bins[eta] && abs(tauEta) < ff_eta_bins[eta + 1]) {
+    //           weight_Ta_ff_llMetg20Jetgeq1B0 = ff_Ta_llMetg20Jetgeq1B0.GetBinContent(pt + 1, eta + 1);
+    //           weight_Ta_ff_llStl300 = ff_Ta_llStl300.GetBinContent(pt + 1, eta + 1);
+    //           weight_Ta_ff_llbtagg1p3 = ff_Ta_llbtagg1p3.GetBinContent(pt + 1, eta + 1);
+    //           break;
+    //         }
+    //       }
+    //       break;
+    //     }
+    //   }
+    // }
 
     int rIdx = rInd(regions, "ll"); // No cuts
     reg.push_back(rIdx);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
+    if (Event->St() > 300) {
+      rIdx = rInd(regions, "llStg300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
     if (!Event->OnZ()) {
-      if (Event->MET()->Pt() > 20 && Event->njet() >= 1) {
-        if (Event->nbjet() == 1) {
-          rIdx = rInd(regions, "llOffZMetg20Jetgeq1B1"); // SR
-          reg.push_back(rIdx);
-          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-        }
-        if (Event->nbjet() == 2) {
-          rIdx = rInd(regions, "llOffZMetg20Jetgeq1B2"); // ttbar + jets CR
-          reg.push_back(rIdx);
-          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-        }
-      }
-      if (Event->St() > 300 && Event->btagSum() < 1.3) {
-        rIdx = rInd(regions, "llOffZStg300btagl1p3"); // New SR (Loose)
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-        if (Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
-          rIdx = rInd(regions, "llOffZStg300btagl1p3Tight"); // New SR (Tight)
-          reg.push_back(rIdx);
-          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-        }
-      }
-    }
-    else if (Event->OnZ()) {
-      rIdx = rInd(regions, "llOnZ"); // Z + jets CR
+      rIdx = rInd(regions, "llOffZ");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-      if (Event->MET()->Pt() > 20 && Event->njet() >= 1) {
-        rIdx = rInd(regions, "llOnZMetg20Jetgeq1"); // Z + jets CR
+    }
+    if (Event->btagSum() < 1.3) {
+      rIdx = rInd(regions, "llbtagl1p3");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20) {
+      rIdx = rInd(regions, "llMetg20");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->njet() >= 1) {
+      rIdx = rInd(regions, "llJetgeq1");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->nbjet() == 1) {
+      rIdx = rInd(regions, "llB1");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->St() > 300 && Event->MET()->Pt() > 20 && Event->njet() >= 1) {
+      if (Event->btagSum() < 1.3 && !Event->OnZ()) {
+        rIdx = rInd(regions, "llStg300OffZbtagl1p3Metg20Jetgeq1"); // SR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
-    }
-    if (Event->btagSum() > 1.3) {
-      rIdx = rInd(regions, "llbtagg1p3"); // ttbar + jets CR
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-      if (!Event->OnZ()) { // Region D
-        weight_Event *= weight_Ta_ff_llbtagg1p3;
-        rIdx = rInd(regions, "llbtagg1p3OffZ"); // ttbar + jets CR
+      if (Event->OnZ()) {
+        rIdx = rInd(regions, "llStg300OnZMetg20Jetgeq1"); // DY/ZZ + jets CR
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
+      if (Event->btagSum() > 1.3 && !Event->OnZ()) {
+        rIdx = rInd(regions, "llStg300OffZbtagg1p3Metg20Jetgeq1"); // ttbar + jets CR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
     }
     if (Event->St() < 300) {
-      rIdx = rInd(regions, "llStl300"); // Generic signal-free region
+      rIdx = rInd(regions, "llStl300"); // for comparison to previous results
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-      if (!Event->OnZ()) { // Region D
-        weight_Event *= weight_Ta_ff_llStl300;
-        rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      } else {
-        rIdx = rInd(regions, "llStl300OnZ"); // Generic signal-free region
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
-    }
-    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->nbjet() == 0) {
-      rIdx = rInd(regions, "llMetg20Jetgeq1B0"); // CR background estimation
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-      if (!Event->OnZ()) { // Region D
-        weight_Event *= weight_Ta_ff_llMetg20Jetgeq1B0;
-        rIdx = rInd(regions, "llMetg20Jetgeq1B0OffZ"); // CR background estimation
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
     }
 
     // Filling histograms
