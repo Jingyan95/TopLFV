@@ -10,28 +10,51 @@ import gc
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018"]
 SAMPLES = ["Data", "TX", "VV", "DY", "TT"]
-SAMPLES_NAME = ["Data", r"t\bar{t}(+X)", "VV(V)", "DY/ZZ", r"t\bar{t}"]
+SAMPLES_NAME = ["Data", "t#bar{t}(+X)", "VV(V)", "DY/ZZ", "t#bar{t}"]
 CHARGES = ["OS", "SS"]
 CHANNELS = ["e", "mu"]
-CHANNELS_NAME = [r"e\tau_{h}", r"\mu\tau_{h}"]
-REGIONS = ["ll", "llStl300", "llMetg20Jetgeq1B0"]
+CHANNELS_NAME = ["e#tau_{h}", "#mu#tau_{h}"]
+REGIONS = [
+    "ll", # no cuts
+    "llStg300",
+    "llOffZ",
+    "llbtagl1p3",
+    "llMetg20",
+    "llJetgeq1",
+    "llB1",
+    "llStg300OffZbtagl1p3Metg20Jetgeq1", # SR
+    "llStg300OnZMetg20Jetgeq1", # DY/ZZ + jets CR
+    "llStg300OffZbtagg1p3Metg20Jetgeq1", # ttbar + jets CR
+    "llStl300" # for comparison to previous results
+]
 REGIONS_NAME = [
     ("No cuts", ""),
-    (r"S_{T} < 300 GeV (CR)", ""),
-    (r"p_{T}^{miss} > 20 GeV, njet #geq 1,", "nbjet = 0 (CR)")]
+    ("S_{T}>300GeV", ""),
+    ("OffZ", ""),
+    ("#sumbtag<1.3", ""),
+    ("p_{T}^{miss}>20GeV", ""),
+    ("njet#geq1", ""),
+    ("nbjet=1", ""),
+    ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
+    ("S_{T}>300GeV, OnZ,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
+    ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
+    ("S_{T}<300GeV", ""),
+]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
-DOMAINS_NAME = [r"#geq Tight Tau", r"< Tight Tau"]
+DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
 VARS = [
-    "llM", "llDr", "lep1Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2", "taPt",
-    "taEta", "taVsJetWP", "taVsJetMVA", "taVsElMVA", "taVsMuMVA", "taDxy", "taDz", "taDecayMode", "jet1Pt",
-    "jetbtagDeepFlavB", "njet", "nbjet", "MET", "Ht", "St", "btagSum"]
+    "llM", "llD", "lep1Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2", "taPt",
+    "taPtFake", "taEta", "taEtaFake", "taVsJetWP", "taVsJetMVA", "taVsElMVA", "taVsMuMVA", "taDxy",
+    "taDz", "taDecayMode", "jet1Pt", "jetbtagDeepFlavB", "njet", "nbjet", "MET", "Ht", "St", "btagSum"]
 VARS_NAME = [
     "m(l#bar{l}) [GeV]", "#DeltaR(l#bar{l})", "Leading lepton p_{T} [GeV]", "Electron Top Lepton MVA (v1)",
     "Electron Top Lepton MVA (v2)", "Muon Top Lepton MVA (v1)", "Muon Top Lepton MVA (v2)", "#tau p_{T} [GeV]",
-    "#tau #eta", "#tau vs Jet WP", "#tau vs Jet MVA", "#tau vs Electron MVA", "#tau vs Muon MVA",
-    "#tau d_{xy} [cm]", "#tau d_{z} [cm]", "#tau Decay Mode", "Leading jet p_{T} [GeV]", "btag", "njet",
-    "nbjet (Loose WP)", "MET [GeV]", "H_{T} [GeV]", "S_{T} [GeV]", "Sum of btagging scores"]
-COLORS = [ROOT.kBlack, ROOT.kRed - 4, ROOT.kOrange - 3, ROOT.kGreen, ROOT.kYellow]
+    "Fake #tau p_{T} [GeV]", "#tau #eta", "Fake #tau #eta", "#tau vs Jet WP", "#tau vs Jet MVA",
+    "#tau vs Electron MVA", "#tau vs Muon MVA", "#tau d_{xy} [cm]", "#tau d_{z} [cm]", "#tau Decay Mode",
+    "Leading jet p_{T} [GeV]", "btag", "njet", "nbjet (Loose WP)", "MET [GeV]", "H_{T} [GeV]",
+    "S_{T} [GeV]", "Sum of btagging scores"]
+COLORS = [ROOT.kRed-4, ROOT.kOrange-3, ROOT.kGreen, ROOT.kYellow+2]
+PLOT_LABEL = "Work in Progress"
 
 def getLumi(year):
     if year=="2016APV": return "19.5"
@@ -80,9 +103,30 @@ for year in YEARS:
         file.close()
 
 
-def makePlot(hists, year, charge, iChannel, channel, iRegion, region, iVar, var, iDomain=-1, domain=""):
+# create save folders
+for year in YEARS:
+    for region in REGIONS:
+        for domain in DOMAINS:
+            for charge in CHARGES:
+                for channel in CHANNELS:
+                    if not os.path.exists(ARGS.FOLDER):
+                        os.makedirs(ARGS.FOLDER)
+                    if not os.path.exists(ARGS.FOLDER+"/"+year):
+                        os.makedirs(ARGS.FOLDER+"/"+year)
+                    if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region):
+                        os.makedirs(ARGS.FOLDER+"/"+year+"/"+region)
+                    if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain):
+                        os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain)
+                    if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge):
+                        os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge)
+                    if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel):
+                        os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
+
+
+def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, saveDir):
     CMS.SetLumi(getLumi(year))
     CMS.SetEnergy("13") # Run 2
+    CMS.SetExtraText(PLOT_LABEL)
 
     # make MC and signal histograms
     MCHists = []
@@ -148,7 +192,7 @@ def makePlot(hists, year, charge, iChannel, channel, iRegion, region, iVar, var,
 
     dicanv = CMS.cmsDiCanvas(var,
         x_min, x_max, y_min, y_max, 0.2, 1.8,
-        VARS_NAME[iVar], "Events", "Data/Pred.",
+        varName, "Events", "Data/Pred.",
         square=square, extraSpace=0.1, iPos=0)
     dicanv.cd(1).SetLogy(True)
 
@@ -188,7 +232,7 @@ def makePlot(hists, year, charge, iChannel, channel, iRegion, region, iVar, var,
         legLabelTop = CMS.cmsLeg(0.15, 0.82, 0.5, 0.88, textSize=0.05)
         legLabelMiddle = CMS.cmsLeg(0.15, 0.76, 0.5, 0.82, textSize=0.05)
         legLabelBottom = CMS.cmsLeg(0.15, 0.7, 0.5, 0.76, textSize=0.05)
-    CMS.cmsHeader(legLabelTop, charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain], textSize=0.04)
+    CMS.cmsHeader(legLabelTop, topLabel, textSize=0.04)
     CMS.cmsHeader(legLabelMiddle, REGIONS_NAME[iRegion][0], textSize=0.04)
     CMS.cmsHeader(legLabelBottom, REGIONS_NAME[iRegion][1], textSize=0.04)
 
@@ -203,26 +247,12 @@ def makePlot(hists, year, charge, iChannel, channel, iRegion, region, iVar, var,
     CMS.cmsDrawLine(midLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
     CMS.cmsDrawLine(downLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
 
-    if not os.path.exists(ARGS.FOLDER):
-        os.makedirs(ARGS.FOLDER)
-    if not os.path.exists(ARGS.FOLDER+"/"+year):
-        os.makedirs(ARGS.FOLDER+"/"+year)
-    if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+charge):
-        os.makedirs(ARGS.FOLDER+"/"+year+"/"+charge)
-    if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel):
-        os.makedirs(ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel)
-    if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel+"/"+region):
-        os.makedirs(ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel+"/"+region)
-    if iDomain>=0:
-        if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel+"/"+region+"/"+domain):
-            os.makedirs(ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel+"/"+region+"/"+domain)
-        CMS.SaveCanvas(dicanv, ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel+"/"+region+"/"+domain+"/"+var+".pdf")
-    else:
-        CMS.SaveCanvas(dicanv, ARGS.FOLDER+"/"+year+"/"+charge+"/"+channel+"/"+region+"/"+var+".pdf")
+    CMS.SaveCanvas(dicanv, saveDir+"/"+var+".pdf")
     del dicanv
     gc.collect()
 
 
+# make 1D variable plots
 for year in YEARS:
     for charge in CHARGES:
         for iChannel, channel in enumerate(CHANNELS):
@@ -233,4 +263,6 @@ for year in YEARS:
                         for iSample, sample in enumerate(SAMPLES):
                             hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+domain+"_"+var
                             hists.append(h[hkey])
-                        makePlot(hists, year, charge, iChannel, channel, iRegion, region, iVar, var, iDomain, domain)
+                        makePlot(hists, year, charge, iChannel, iRegion, VARS_NAME[iVar], var,
+                            charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain],
+                            ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
