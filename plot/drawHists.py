@@ -23,7 +23,7 @@ REGIONS = [
     "llJetgeq1",
     "llB1",
     "llStg300OffZbtagl1p3Metg20Jetgeq1", # SR
-    "llStg300OnZMetg20Jetgeq1", # DY/ZZ + jets CR
+    "llStl300OnZMetg20Jetl2B0", # DY/ZZ + jets CR
     "llStg300OffZbtagg1p3Metg20Jetgeq1", # ttbar + jets CR
     "llStl300" # for comparison to previous results
 ]
@@ -36,7 +36,7 @@ REGIONS_NAME = [
     ("njet#geq1", ""),
     ("nbjet=1", ""),
     ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
-    ("S_{T}>300GeV, OnZ,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
+    ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet<2, nbjet=0 (CR)"),
     ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
     ("S_{T}<300GeV", ""),
 ]
@@ -251,6 +251,8 @@ for year in YEARS:
                         labels.append(charge+", "+CHANNELS_NAME[iChannel])
                 make1DPlot(hists, labels, "1DFakeFactors", "Fake Factors", year, iRegion, iDiff,
                     "", ARGS.FOLDER+"/"+year+"/"+region+"/"+diff)
+                make1DPlot(hists, labels, "1DFakeFactors_zoom", "Fake Factors", year, iRegion, iDiff,
+                    "", ARGS.FOLDER+"/"+year+"/"+region+"/"+diff, yMax=0.25)
             else: # 2D
                 for charge in CHARGES:
                     for iChannel, channel in enumerate(CHANNELS):
