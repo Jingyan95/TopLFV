@@ -22,8 +22,6 @@ verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
 nthread =  ARGS.NTHREAD
 
-loc = os.path.dirname(sys.path[0]) + '/'
-
 
 SAMPLES = {}
 mc_2016APV = False
@@ -57,7 +55,7 @@ rootlib11 = "".join([str(s, encoding='utf-8') for s in rootlib1.strip().splitlin
 rootlib2 = subprocess.check_output("root-config --libs", shell = True)
 rootlib22 = "".join([str(s, encoding='utf-8') for s in rootlib2.strip().splitlines(True) if s.strip()])
 
-cms = '/eos/user/e/etsai/workspace/TopLFV_CMSSW_10_6_4/src/'
+loc = os.path.dirname(sys.path[0]) + '/'
 dire_h = loc + 'hists/'
 
 for key, value in SAMPLES.items():

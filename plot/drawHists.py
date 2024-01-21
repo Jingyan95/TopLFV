@@ -10,22 +10,43 @@ import gc
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018"]
 SAMPLES = ["Data", "TX", "VV", "DY", "TT"]
-SAMPLES_NAME = ["Data", r"t\bar{t}+X", "VV(V)", "DY/ZZ", r"t\bar{t}/WW"]
+SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "DY/ZZ", "t#bar{t}/WW"]
 CHARGES = ["OS", "SS"]
 CHANNELS = ["ee", "emu", "mumu"]
-CHANNELS_NAME = [r"ee\tau_{h}", r"e\mu\tau_{h}", r"\mu\mu\tau_{h}"]
-REGIONS = ["ll", "llStl300", "llMetg20Jetgeq1B0"]
+CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
+REGIONS = [
+    "ll", # no cuts
+    "llStg300",
+    "llOffZ",
+    "llbtagl1p3",
+    "llMetg20",
+    "llJetgeq1",
+    "llB1",
+    "llStg300OffZbtagl1p3Metg20Jetgeq1", # SR
+    "llStg300OnZMetg20Jetgeq1", # DY/ZZ + jets CR
+    "llStg300OffZbtagg1p3Metg20Jetgeq1", # ttbar + jets CR
+    "llStl300" # for comparison to previous results
+]
 REGIONS_NAME = [
     ("No cuts", ""),
-    (r"S_{T} < 300 GeV (CR)", ""),
-    (r"p_{T}^{miss} > 20 GeV, njet #geq 1,", "nbjet = 0 (CR)")]
+    ("S_{T}>300GeV", ""),
+    ("OffZ", ""),
+    ("#sumbtag<1.3", ""),
+    ("p_{T}^{miss}>20GeV", ""),
+    ("njet#geq1", ""),
+    ("nbjet=1", ""),
+    ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
+    ("S_{T}>300GeV, OnZ,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
+    ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
+    ("S_{T}<300GeV", ""),
+]
 VARS = ["geqTightTa", "geqTightFakeTa", "lTightTa", "lTightFakeTa"]
-VARS_NAME = [r"\geq Tight Tau", r"\geq Tight Tau", r"< Tight Tau", r"< Tight Tau"]
+VARS_NAME = ["#geq Tight Tau", "#geq Tight Tau", "< Tight Tau", "< Tight Tau"]
 DIFFS = ["vsPt", "vsEta", "vsPt_vsEta"]
-DIFFS_NAME_1D = [r"Tau p_{T}", r"Tau \eta"]
-DIFFS_NAME_2D = [(r"Tau p_{T}", r"Tau \eta")]
+DIFFS_NAME_1D = ["Tau p_{T}", "Tau #eta"]
+DIFFS_NAME_2D = [("Tau p_{T}", "Tau #eta")]
 MARKERS = [8, 23, 22, 21, 34, 33]
-COLORS = [ROOT.kRed, ROOT.kBlue, ROOT.kGreen, ROOT.kOrange, ROOT.kViolet, ROOT.kOrange+3]
+COLORS = [ROOT.kRed-4, ROOT.kOrange-3, ROOT.kGreen, ROOT.kYellow+2, ROOT.kViolet+1, ROOT.kGray+1]
 PLOT_LABEL = "Work in Progress"
 
 def getLumi(year):

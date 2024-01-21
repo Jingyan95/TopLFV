@@ -15,11 +15,11 @@ parser.add_argument('--t', dest = 'NCPUS', default = 6) # number of CPUs request
 
 ARGS = parser.parse_args()
 
-verbose = ARGS.VERBOSE
+# verbose = ARGS.VERBOSE
 name = ARGS.NAMETAG
 ncpus = ARGS.NCPUS
-loc = os.path.dirname(sys.path[0]) + '/'
-dire = loc + 'hists/'
+# loc = os.path.dirname(sys.path[0]) + '/'
+# dire = loc + 'hists/'
 
 import nano_files_2016APV
 import nano_files_2016
@@ -53,7 +53,7 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-jobruntime = 86400 # 24 hrs
+jobruntime = 14400 # 4 hrs
 
 for key, value in SAMPLES.items():
     if name  not in key:
