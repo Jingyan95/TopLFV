@@ -1,26 +1,12 @@
 import sys
 import os
 import subprocess
-import readline
-import string
+import argparse
+
 import nano_files_2016APV
 import nano_files_2016
 import nano_files_2017
 import nano_files_2018
-
-import argparse
-# set up an argument parser
-parser = argparse.ArgumentParser()
-
-parser.add_argument('--v', dest = 'VERBOSE', default = True)
-parser.add_argument('--n', dest = 'NAMETAG', default = '201')
-parser.add_argument('--t', dest = 'NTHREAD', default = 6) # number of threads
-
-ARGS = parser.parse_args()
-
-verbose = ARGS.VERBOSE
-name = ARGS.NAMETAG
-nthread =  ARGS.NTHREAD
 
 
 SAMPLES = {}
@@ -32,7 +18,6 @@ mc_2017 = False
 data_2017 = False
 mc_2018 = False
 data_2018 = False
-
 if mc_2016APV:
     SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
 if data_2016APV:
@@ -50,47 +35,55 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-rootlib1 = subprocess.check_output("root-config --cflags", shell = True)
+
+# set up an argument parser
+parser = argparse.ArgumentParser()
+parser.add_argument('--v', dest='VERBOSE', default=True)
+parser.add_argument('--n', dest='NAMETAG', default='201')
+parser.add_argument('--t', dest='NTHREAD', default=6) # number of threads
+ARGS = parser.parse_args()
+
+
+rootlib1 = subprocess.check_output("root-config --cflags", shell=True)
 rootlib11 = "".join([str(s, encoding='utf-8') for s in rootlib1.strip().splitlines(True) if s.strip()])
-rootlib2 = subprocess.check_output("root-config --libs", shell = True)
+rootlib2 = subprocess.check_output("root-config --libs", shell=True)
 rootlib22 = "".join([str(s, encoding='utf-8') for s in rootlib2.strip().splitlines(True) if s.strip()])
 
 loc = os.path.dirname(sys.path[0]) + '/'
 dire_h = loc + 'hists/'
+
 for key, value in SAMPLES.items():
-    if name  not in key:
+    if ARGS.NAMETAG not in key:
         continue
     nf = value[8]
     if not os.path.exists('Jobs/' + value[3] + '/' + key):
         os.makedirs('Jobs/' + value[3] + '/' + key)
-    nThread = nthread
+    nThread = ARGS.NTHREAD
     if ('LFV' in key) or ('DYM10' in key) or ('WWW' in key) or ('WWZ' in key) or ('WZZ' in key) or ('ZZZ' in key):
-        nThread = 1 # Samples with low stats
+        nThread = 1 # samples with low stats
     for idx, S in enumerate(value[0]):
         SHNAME = key + '_' + str(idx) + '.sh'
         SHNAME1 = key + '_' + str(idx) + '_$1.C'
-        SHFILE="#!/bin/bash\n" +\
-        'FILE=' + dire_h + value[3] + '/' + key +'_' + str(idx) + '_$1.root' + "\n" +\
-        "source /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh\n" +\
-        "cd " + loc + "\n" +\
-        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2  -I./include   ' + rootlib11 + ' -ldl  -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + value[3] + '/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + '  -lMinuit -lTreePlayer' + "\n" +\
-        "./" + SHNAME1.split('.')[0] + "\n" +\
-        'if [ -f "$FILE" ]; then' + "\n" +\
-        '    rm -f ' + SHNAME1.split('.')[0] + "\n" +\
+        SHFILE = "#!/bin/bash\n" +\
+        'FILE=' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_$1.root' + '\n' +\
+        'source /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh\n' +\
+        'cd ' + loc + '\n' +\
+        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2 -I./include ' + rootlib11 + ' -ldl -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + value[3] + '/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + ' -lMinuit -lTreePlayer' + '\n' +\
+        './' + SHNAME1.split('.')[0] + '\n' +\
+        'if [ -f "$FILE" ]; then' + '\n' +\
+        '    rm -f ' + SHNAME1.split('.')[0] + '\n' +\
         'fi'
-        subprocess.call('rm -f Jobs/' + value[3] + '/' + key + '/*', shell = True)
+        subprocess.call('rm -f Jobs/' + value[3] + '/' + key + '/*', shell=True)
         open('Jobs/' + value[3] + '/' + key + '/' + SHNAME, 'wt').write(SHFILE)
         print("-----------------------------------")
         print('Writing Jobs/' + value[3] + '/' + key + '/' + SHNAME)
-        os.system("chmod +x " + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
-        print("chmod +x " + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
+        os.system('chmod +x ' + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
+        print('chmod +x ' + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
         # delete log files
-        os.system("rm -rf " + S + 'log')
+        os.system('rm -rf ' + S + 'log')
         for subdir, dirs, files in os.walk(S):
-            sequance = [files[i:i+nf] for i in range(0, len(files), nf)]
-            # print value[0]
-            # print sequance
-            for num, seq in enumerate(sequance):
+            sequence = [files[i:i + nf] for i in range(0, len(files), nf)]
+            for num, seq in enumerate(sequence):
                 text = ''
                 text += '    system("rm -f ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '*.root");\n'
                 text += '    ROOT::EnableThreadSafety();\n'
@@ -114,7 +107,7 @@ for key, value in SAMPLES.items():
                 text += '    }\n'
                 text += '    for (auto&& worker : workers) worker.join();\n'
                 text += '    std::cout<<Summary.str();\n'
-                text += '    system("hadd ' + dire_h+ value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '.root ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
+                text += '    system("hadd ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '.root ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
                 text += '    system("rm -f ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
                 SHNAME1 = key + '_' + str(idx) + '_' + str(num) + '.C'
                 SHFILE1 = '#include "MyAnalysis.h"\n' +\
@@ -127,5 +120,5 @@ for key, value in SAMPLES.items():
                 '    return 0;\n' +\
                 '}'
                 open('Jobs/' + value[3] + '/' + key + '/' + SHNAME1, 'wt').write(SHFILE1)
-    if verbose :
+    if ARGS.VERBOSE:
         print(key + ' jobs are made')

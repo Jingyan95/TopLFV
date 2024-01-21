@@ -58,7 +58,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     "llJetgeq1",
     "llB1",
     "llStg300OffZbtagl1p3Metg20Jetgeq1", // SR
-    "llStg300OnZMetg20Jetgeq1", // DY/ZZ + jets CR
+    "llStl300OnZMetg20Jetl2B0", // DY/ZZ + jets CR
     "llStg300OffZbtagg1p3Metg20Jetgeq1", // ttbar + jets CR
     "llStl300" // for comparison to previous results
   };
@@ -432,11 +432,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
-      if (Event->OnZ()) {
-        rIdx = rInd(regions, "llStg300OnZMetg20Jetgeq1"); // DY/ZZ + jets CR
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
       if (Event->btagSum() > 1.3 && !Event->OnZ()) {
         rIdx = rInd(regions, "llStg300OffZbtagg1p3Metg20Jetgeq1"); // ttbar + jets CR
         reg.push_back(rIdx);
@@ -444,6 +439,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
     }
     if (Event->St() < 300) {
+      if (Event->OnZ() && Event->MET()->Pt() > 20 && Event->njet() < 2 & Event->nbjet() == 0) {
+        rIdx = rInd(regions, "llStl300OnZMetg20Jetl2B0"); // DY/ZZ + jets CR
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
       rIdx = rInd(regions, "llStl300"); // for comparison to previous results
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
