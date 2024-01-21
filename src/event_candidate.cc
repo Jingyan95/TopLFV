@@ -19,7 +19,9 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       St_(0),
                                       llM_(((*Leptons_)[0]->p4_ + (*Leptons_)[1]->p4_).M()),
                                       llDr_(deltaR((*Leptons_)[0]->eta_, (*Leptons_)[0]->phi_, (*Leptons_)[1]->eta_, (*Leptons_)[1]->phi_)),
+                                      OnZ_(false),
                                       TightTa_((*Leptons_)[1]->mva1WP_ < 5 ? false : true) {
+  if (llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true;
   sort(Jets->begin(), Jets->end(), CompareBtagJet);
   if (Jets->size()) bjet_ = (*Jets_)[0];
   sort(Jets->begin(), Jets->end(), ComparePtJet);

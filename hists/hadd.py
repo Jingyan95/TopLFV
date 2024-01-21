@@ -5,6 +5,7 @@ import readline
 import string
 import argparse
 
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'bin'))
 import nano_files_2016APV_dilepton
 import nano_files_2016_dilepton
 import nano_files_2017_dilepton
@@ -13,7 +14,6 @@ import nano_files_2018_dilepton
 
 # set up an argument parser
 parser = argparse.ArgumentParser()
-sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'bin'))
 parser.add_argument('--n', dest = 'NAMETAG', default = 'All')
 ARGS = parser.parse_args()
 name = ARGS.NAMETAG

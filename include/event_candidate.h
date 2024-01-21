@@ -12,7 +12,6 @@
 #include "lepton_candidate.h"
 
 using namespace std;
-// using namespace math;
 
 class event_candidate {
 
@@ -34,6 +33,7 @@ public:
   float St() { return St_; }
   float llM() { return llM_; }
   float llDr() { return llDr_; }
+  bool OnZ() { return OnZ_; }
   bool TightTau() { return TightTa_; }
   TLorentzVector* MET() { return MET_; }
 
@@ -77,7 +77,10 @@ private:
   float St_;
   float llM_; // Mass of the two leptons
   float llDr_;
+  bool OnZ_; // Events close to Z peak (incl. Same-Sign ee due to charge flip) (should be sensitive to leptonic tau?)
   bool TightTa_; // Events with tau passing Tight tau vs. jets WP
+
+  float mZ_ = 91.2;
 };
 
 #endif
