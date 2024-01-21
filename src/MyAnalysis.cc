@@ -35,8 +35,9 @@ void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& c
 }
 
 
-std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run, float xs, float lumi,
-                                   float Nevent, std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& counter) {
+std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run,
+                                   float xs, float lumi, float Nevent, std::atomic<ULong64_t>& progress,
+                                   std::atomic<ULong64_t>& counter) {
 
   std::stringstream summary;
   if (fChain == 0) {
@@ -49,21 +50,19 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> charges{"OS", "SS"}; // Same-Sign, Opposite-Sign
   std::vector<TString> channels{"e", "mu"}; // e+tau, mu+tau
   std::vector<TString> regions{
-    /*0*/ "ll", // No cuts
-    // /*1*/ "llOnZMetg20Jetgeq1", // Z + jets CR
-    // /*2*/ "llOffZMetg20B1", // SR
-    // /*3*/ "llOffZMetg20B2", // ttbar + jets CR
-    /*4*/ "llStl300", // Generic signal-free region
-    // /*5*/ "llOnZ", // Z + jets CR
-    // /*6*/ "llbtagg1p3", // ttbar + jets CR
-    // /*7*/ "llStg300OffZbtagl1p3", // New SR (Loose)
-    // /*8*/ "llStg300OffZbtagl1p3Tight", // New SR (Tight)
-    // /*9*/ "llMetg20Jetgeq1B1", // SR background estimation
-    /*10*/ "llMetg20Jetgeq1B0", // CR background estimation
-    // /*11*/ "llStg300btagl1p3", // New SR (Loose) background estimation
-    // /*12*/ "llStg300btagl1p3Tight" // New SR (Tight) background estimation
+    "ll", // No cuts
+    "llStg300",
+    "llOffZ",
+    "llbtagl1p3",
+    "llMetg20",
+    "llJetgeq1",
+    "llB1",
+    "llStg300OffZbtagl1p3Metg20Jetgeq1", // SR
+    "llStl300OnZMetg20Jetl2B0", // DY/ZZ + jets CR
+    "llStg300OffZbtagg1p3Metg20Jetgeq1", // ttbar + jets CR
+    "llStl300" // for comparison to previous results
   };
-  std::vector<int> unBlind{0, 1, 1};
+  std::vector<int> unBlind{0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1};
   std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
   const std::map<TString, std::vector<float>> vars = {
     {"llM",              {0,    10,     0,   180}},
@@ -74,22 +73,24 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"muLeptonMVAv1",    {5,    50,     0,     1}},
     {"muLeptonMVAv2",    {6,    50,     0,     1}},
     {"taPt",             {7,    20,    20,   220}},
-    {"taEta",            {8,    23,  -2.3,   2.3}},
-    {"taVsJetWP",        {9,     8,     0,     8}},
-    {"taVsJetMVA",       {10,   50,     0,     1}},
-    {"taVsElMVA",        {11,   50,     0,     1}},
-    {"taVsMuMVA",        {12,   50,     0,     1}},
-    {"taDxy",            {13,   16,  -0.1,   0.1}},
-    {"taDz",             {14,   16,  -0.2,   0.2}},
-    {"taDecayMode",      {15,   12,     0,    12}},
-    {"jet1Pt",           {16,   10,    25,   225}},
-    {"jetbtagDeepFlavB", {17,   50,     0,     1}},
-    {"njet",             {18,    6,     0,     6}},
-    {"nbjet",            {19,    4,     0,     4}},
-    {"MET",              {20,   10,     0,   200}},
-    {"Ht",               {21,   10,     0,   300}},
-    {"St",               {22,   20,    70,   600}},
-    {"btagSum",          {23,   25,     0,   2.5}}
+    {"taPtFake",         {8,    20,    20,   220}},
+    {"taEta",            {9,    23,  -2.3,   2.3}},
+    {"taEtaFake",        {10,   23,  -2.3,   2.3}},
+    {"taVsJetWP",        {11,    8,     0,     8}},
+    {"taVsJetMVA",       {12,   50,     0,     1}},
+    {"taVsElMVA",        {13,   50,     0,     1}},
+    {"taVsMuMVA",        {14,   50,     0,     1}},
+    {"taDxy",            {15,   16,  -0.1,   0.1}},
+    {"taDz",             {16,   16,  -0.2,   0.2}},
+    {"taDecayMode",      {17,   12,     0,    12}},
+    {"jet1Pt",           {18,   10,    25,   225}},
+    {"jetbtagDeepFlavB", {19,   50,     0,     1}},
+    {"njet",             {20,    6,     0,     6}},
+    {"nbjet",            {21,    4,     0,     4}},
+    {"MET",              {22,   10,     0,   200}},
+    {"Ht",               {23,   10,     0,   300}},
+    {"St",               {24,   20,    70,   600}},
+    {"btagSum",          {25,   25,     0,   2.5}}
   };
   // const std::vector<Double_t> ff_pt_bins = {20.0, 40.0, 60.0, 100.0, 220.0};
   // const std::vector<Double_t> ff_eta_bins = {0.0, 1.4, 2.3};
@@ -208,7 +209,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       ++counter;
       updateProgress(progress, (float) jentry / ntr, nThread_, workerID_, 32);
       if (!verbose_) displayProgress(progress, counter, ntr, 32);
-      // mtx_.unlock(); // Releasing mutex
     }
     InitTrigger();
     metFilterPass = false;
@@ -385,81 +385,57 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     reg.push_back(rIdx);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
 
-    // if (!Event->OnZ()) {
-    //   if (Event->MET()->Pt() > 20 && Event->njet() >= 1) {
-    //     if (Event->nbjet() == 1) {
-    //       rIdx = rInd(regions, "llOffZMetg20Jetgeq1B1"); // SR
-    //       reg.push_back(rIdx);
-    //       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    //     }
-    //     if (Event->nbjet() == 2) {
-    //       rIdx = rInd(regions, "llOffZMetg20Jetgeq1B2"); // ttbar + jets CR
-    //       reg.push_back(rIdx);
-    //       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    //     }
-    //   }
-    //   if (Event->St() > 300 && Event->btagSum() < 1.3) {
-    //     rIdx = rInd(regions, "llOffZStg300btagl1p3"); // New SR (Loose)
-    //     reg.push_back(rIdx);
-    //     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-    //     if (Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) {
-    //       rIdx = rInd(regions, "llOffZStg300btagl1p3Tight"); // New SR (Tight)
-    //       reg.push_back(rIdx);
-    //       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    //     }
-    //   }
-    // }
-    // else if (Event->OnZ()) {
-    //   rIdx = rInd(regions, "llOnZ"); // Z + jets CR
-    //   reg.push_back(rIdx);
-    //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-    //   if (Event->MET()->Pt() > 20 && Event->njet() >= 1) {
-    //     rIdx = rInd(regions, "llOnZMetg20Jetgeq1"); // Z + jets CR
-    //     reg.push_back(rIdx);
-    //     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    //   }
-    // }
-    // if (Event->btagSum() > 1.3) {
-    //   rIdx = rInd(regions, "llbtagg1p3"); // ttbar + jets CR
-    //   reg.push_back(rIdx);
-    //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-    //   if (!Event->OnZ()) { // Region D
-    //     weight_Event *= weight_Ta_ff_llbtagg1p3;
-    //     rIdx = rInd(regions, "llbtagg1p3OffZ"); // ttbar + jets CR
-    //     reg.push_back(rIdx);
-    //     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    //   }
-    // }
-    if (Event->St() < 300) {
-      rIdx = rInd(regions, "llStl300"); // Generic signal-free region
+    if (Event->St() > 300) {
+      rIdx = rInd(regions, "llStg300");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-      // if (!Event->OnZ()) { // Region D
-      //   weight_Event *= weight_Ta_ff_llStl300;
-      //   rIdx = rInd(regions, "llStl300OffZ"); // Generic signal-free region
-      //   reg.push_back(rIdx);
-      //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      // } else {
-      //   rIdx = rInd(regions, "llStl300OnZ"); // Generic signal-free region
-      //   reg.push_back(rIdx);
-      //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      // }
     }
-    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->nbjet() == 0) {
-      rIdx = rInd(regions, "llMetg20Jetgeq1B0"); // CR background estimation
+    if (!Event->OnZ()) {
+      rIdx = rInd(regions, "llOffZ");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-
-      // if (!Event->OnZ()) { // Region D
-      //   weight_Event *= weight_Ta_ff_llMetg20Jetgeq1B0;
-      //   rIdx = rInd(regions, "llMetg20Jetgeq1B0OffZ"); // CR background estimation
-      //   reg.push_back(rIdx);
-      //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      // }
+    }
+    if (Event->btagSum() < 1.3) {
+      rIdx = rInd(regions, "llbtagl1p3");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20) {
+      rIdx = rInd(regions, "llMetg20");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->njet() >= 1) {
+      rIdx = rInd(regions, "llJetgeq1");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->nbjet() == 1) {
+      rIdx = rInd(regions, "llB1");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->St() > 300 && Event->MET()->Pt() > 20 && Event->njet() >= 1) {
+      if (Event->btagSum() < 1.3 && !Event->OnZ()) {
+        rIdx = rInd(regions, "llStg300OffZbtagl1p3Metg20Jetgeq1"); // SR
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
+      if (Event->btagSum() > 1.3 && !Event->OnZ()) {
+        rIdx = rInd(regions, "llStg300OffZbtagg1p3Metg20Jetgeq1"); // ttbar + jets CR
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
+    }
+    if (Event->St() < 300) {
+      if (Event->OnZ() && Event->MET()->Pt() > 20 && Event->njet() < 2 & Event->nbjet() == 0) {
+        rIdx = rInd(regions, "llStl300OnZMetg20Jetl2B0"); // DY/ZZ + jets CR
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+      }
+      rIdx = rInd(regions, "llStl300"); // for comparison to previous results
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
 
     // Filling histograms
@@ -480,6 +456,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taPt")]->Fill(tauPt, wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taEta")]->Fill(tauEta, wgt[i]);
+      if (Event->ta1()->truth_ == 1) {
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taPtFake")]->Fill(tauPt, wgt[i]);
+        Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taEtaFake")]->Fill(tauEta, wgt[i]);
+      }
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsJetWP")]->Fill(Event->ta1()->mva1WP_, wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt[i]);
       Hists[cIdx][chIdx][reg[i]][dIdx][vInd(vars, "taVsElMVA")]->Fill(Event->ta1()->mva2_, wgt[i]);

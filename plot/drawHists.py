@@ -23,7 +23,7 @@ REGIONS = [
     "llJetgeq1",
     "llB1",
     "llStg300OffZbtagl1p3Metg20Jetgeq1", # SR
-    "llStg300OnZMetg20Jetgeq1", # DY/ZZ + jets CR
+    "llStl300OnZMetg20Jetl2B0", # DY/ZZ + jets CR
     "llStg300OffZbtagg1p3Metg20Jetgeq1", # ttbar + jets CR
     "llStl300" # for comparison to previous results
 ]
@@ -36,14 +36,14 @@ REGIONS_NAME = [
     ("njet#geq1", ""),
     ("nbjet=1", ""),
     ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
-    ("S_{T}>300GeV, OnZ,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
+    ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet<2, nbjet=0 (CR)"),
     ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
     ("S_{T}<300GeV", ""),
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
 DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
 VARS = [
-    "llM", "llD", "lep1Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2", "taPt",
+    "llM", "llDr", "lep1Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2", "taPt",
     "taPtFake", "taEta", "taEtaFake", "taVsJetWP", "taVsJetMVA", "taVsElMVA", "taVsMuMVA", "taDxy",
     "taDz", "taDecayMode", "jet1Pt", "jetbtagDeepFlavB", "njet", "nbjet", "MET", "Ht", "St", "btagSum"]
 VARS_NAME = [
@@ -53,7 +53,7 @@ VARS_NAME = [
     "#tau vs Electron MVA", "#tau vs Muon MVA", "#tau d_{xy} [cm]", "#tau d_{z} [cm]", "#tau Decay Mode",
     "Leading jet p_{T} [GeV]", "btag", "njet", "nbjet (Loose WP)", "MET [GeV]", "H_{T} [GeV]",
     "S_{T} [GeV]", "Sum of btagging scores"]
-COLORS = [ROOT.kRed-4, ROOT.kOrange-3, ROOT.kGreen, ROOT.kYellow+2]
+COLORS = [ROOT.kBlack, ROOT.kRed-4, ROOT.kOrange-3, ROOT.kGreen, ROOT.kYellow]
 PLOT_LABEL = "Work in Progress"
 
 def getLumi(year):
