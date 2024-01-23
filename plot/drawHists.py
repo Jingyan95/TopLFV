@@ -11,11 +11,12 @@ import gc
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018"]
 SAMPLES = ["Data", "TX", "VV", "DY", "TT"]
 SAMPLES_NAME = ["Data", "t#bar{t}(+X)", "VV(V)", "DY/ZZ", "t#bar{t}"]
+SAMPLE_VAL = "TT"
 CHARGES = ["OS", "SS"]
 CHANNELS = ["e", "mu"]
 CHANNELS_NAME = ["e#tau_{h}", "#mu#tau_{h}"]
 REGIONS = [
-    "ll", # no cuts
+    "ll", # No cuts
     "llStg300",
     "llOffZ",
     "llbtagl1p3",
@@ -23,8 +24,10 @@ REGIONS = [
     "llJetgeq1",
     "llB1",
     "llStg300OffZbtagl1p3Metg20Jetgeq1", # SR
-    "llStl300OnZMetg20Jetl2B0", # DY/ZZ + jets CR
     "llStg300OffZbtagg1p3Metg20Jetgeq1", # ttbar + jets CR
+    # "llStl300OnZMetg20", # DY/Z + jets CR
+    "llStl300OnZMetg20Jetl2B0", # DY/Z CR
+    # "llStl300OnZMetg20Jetgeq1", # Z + jets CR
     "llStl300" # for comparison to previous results
 ]
 REGIONS_NAME = [
@@ -36,14 +39,16 @@ REGIONS_NAME = [
     ("njet#geq1", ""),
     ("nbjet=1", ""),
     ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
-    ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet<2, nbjet=0 (CR)"),
-    ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
-    ("S_{T}<300GeV", ""),
+    ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (t$bar{t} CR)"),
+    # ("S_{T}<300GeV, OnZ", "p_{T}^{miss}>20GeV (DY/Z CR)"),
+    ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet<2, nbjet=0 (DY/Z CR)"),
+    # ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet#geq1 (DY/Z CR)"),
+    ("S_{T}<300GeV", "")
 ]
 VARS = ["geqTightTa", "geqTightFakeTa", "lTightTa", "lTightFakeTa"]
 VARS_NAME = ["#geq Tight Tau", "#geq Tight Tau", "< Tight Tau", "< Tight Tau"]
-DIFFS = ["vsPt", "vsEta", "vsPt_vsEta"]
-DIFFS_NAME_1D = ["Tau p_{T}", "Tau #eta"]
+DIFFS = ["vsPt", "vsEta", "vsDm", "vsPt_vsEta"]
+DIFFS_NAME_1D = ["Tau p_{T}", "Tau #eta", "Tau Decay Mode"]
 DIFFS_NAME_2D = [("Tau p_{T}", "Tau #eta")]
 MARKERS = [8, 23, 22, 21]
 COLORS = [ROOT.kRed-4, ROOT.kOrange-3, ROOT.kGreen, ROOT.kYellow+2]
@@ -63,6 +68,7 @@ parser.add_argument("--y", dest="YEAR", default="2016")
 parser.add_argument("--p", dest="HISTPATH", default="")
 parser.add_argument("--s", dest="SQUARE", default=True)
 parser.add_argument("--f", dest="FOLDER", default="StackHist")
+parser.add_argument("--v", dest="VALPATH", default="") # path to more histograms for validation
 ARGS = parser.parse_args()
 YEARS = []
 for iYear, year in enumerate(YEARS_RUN2):
@@ -215,7 +221,7 @@ def make2DPlot(hist, pname, year, iDiff, saveDir):
     del canv
     gc.collect()
 
-
+'''
 # fake factors
 for year in YEARS:
     for iRegion, region in enumerate(REGIONS):
@@ -335,3 +341,69 @@ for iYear, year in enumerate(YEARS):
                         make1DPlot(hists, labels, "1DPurity", "Fake Tau Purity", year,
                             iRegion, iDiff, "2l, "+charge+", "+CHANNELS_NAME[iChannel]+", "+VARS_NAME[iVar],
                             ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+"/"+charge+"/"+channel+"/"+VARS[iVar], yMax=1.6)
+'''
+# validation of fake factor method
+if len(ARGS.VALPATH)>0:
+    # read in other ROOT files
+    HistAddress = os.path.dirname(sys.path[0])+"/hists/"+ARGS.VALPATH
+    hVal = {}
+    for year in YEARS:
+        fname = HistAddress + "/" + year + "_" + SAMPLE_VAL + ".root"
+        print("Opening " + fname + " for validation")
+        file = uproot.open(fname)
+        for region in REGIONS:
+            for diff in DIFFS:
+                for charge in CHARGES:
+                    for channel in CHANNELS:
+                        if channel=="e": channel_val = "ee"
+                        elif channel=="mu": channel_val = "mumu"
+                        for var in VARS:
+                            hname = charge+"_"+channel_val+"_"+region+"_"+var+"_"+diff
+                            temp = file[hname].to_pyroot().Clone() # TODO: what to do about overflow bin?
+                            # Set negative event counts due to NLO low statistics to 0 in 1D histograms
+                            if diff!="vsPt_vsEta":
+                                for i in range(1, temp.GetNbinsX()+1):
+                                    if temp.GetBinContent(i)<0.0:
+                                        temp.SetBinContent(i, 0.0)
+                                        temp.SetBinError(i, 0.0)
+                            # Set negative event counts due to NLO low statistics to 0 in 2D histograms
+                            else:
+                                for i in range(1, temp.GetNbinsX()+1):
+                                    for j in range(1, temp.GetNbinsY()+1):
+                                        if temp.GetBinContent(i, j)<0.0:
+                                            temp.SetBinContent(i, j, 0.0)
+                                            temp.SetBinError(i, j, 0.0)
+                            hVal[year+"_"+SAMPLE_VAL+"_"+hname] = temp
+            file.close()
+    for iYear, year in enumerate(YEARS):
+        for iRegion, region in enumerate(REGIONS):
+            for iDiff, diff in enumerate(DIFFS):
+                if diff=="vsPt_vsEta": continue # 1D
+                for charge in CHARGES:
+                    for iChannel, channel in enumerate(CHANNELS):
+                        hname = year + "_" + SAMPLE_VAL + "_" + charge + "_" + channel + "_" + region + "_geqTightTa_" + diff
+                        fakeFactor = h[hname].Clone()
+                        hname = year + "_" + SAMPLE_VAL + "_" + charge + "_" + channel + "_" + region + "_lTightTa_" + diff
+                        denominator = h[hname].Clone()
+                        fakeFactor.Divide(denominator)
+
+                        if channel=="e":
+                            channel_val = "ee"
+                            channel_val_name = "ee#tau_{h}"
+                        elif channel=="mu":
+                            channel_val = "mumu"
+                            channel_val_name = "#mu#mu#tau_{h}"
+
+                        hname = year + "_" + SAMPLE_VAL + "_" + charge + "_" + channel_val + "_" + region + "_lTightTa_" + diff
+                        estimateABCD = hVal[hname].Clone()
+                        estimateABCD.Multiply(fakeFactor)
+                        hists.append(estimateABCD)
+                        labels.append(charge+", "+channel_val_name+", ABCD")
+
+                        hname = year + "_" + SAMPLE_VAL + "_" + charge + "_" + channel_val + "_" + region + "_geqTightTa_" + diff
+                        predMC = hVal[hname].Clone()
+                        hists.append(predMC)
+                        labels.append(charge+", "+channel_val_name+", MC")
+
+                        make1DPlot(hists, labels, "1DValidation", "Background Estimation", year, iRegion, iDiff,
+                            "", ARGS.FOLDER+"/"+year+"/"+region+"/"+diff+charge+"/"+channel)

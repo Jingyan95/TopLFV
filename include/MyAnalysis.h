@@ -261,6 +261,7 @@ public :
   int getSign(const double& x);
   float scale_factor(const TH2F* h, float X, float Y, TString uncert);
   int char_to_int(UChar_t wp);
+  int getDMBin(int dm);
 
 private:
   static std::mutex mtx_; // Standard mutex to achieve synchronization
@@ -489,6 +490,17 @@ int MyAnalysis::char_to_int(UChar_t wp) {
     power++;
   }
   return power;
+}
+
+int MyAnalysis::getDMBin(Int_t dm) {
+  int dmIdx = -1;
+  if (dm == 0) dmIdx = 0;
+  if (dm == 1) dmIdx = 1;
+  if (dm == 2) dmIdx = 2;
+  if (dm == 7) dmIdx = 3;
+  if (dm == 10) dmIdx = 4;
+  if (dm == 11) dmIdx = 5;
+  return dmIdx;
 }
 
 Bool_t MyAnalysis::Notify() {
