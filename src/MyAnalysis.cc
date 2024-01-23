@@ -58,16 +58,19 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     "llJetgeq1",
     "llB1",
     "llStg300OffZbtagl1p3Metg20Jetgeq1", // SR
-    "llStl300OnZMetg20Jetl2B0", // DY/ZZ + jets CR
     "llStg300OffZbtagg1p3Metg20Jetgeq1", // ttbar + jets CR
+    "llStl300OnZMetg20", // DY/Z + jets CR
+    "llStl300OnZMetg20Jetl2B0", // DY/Z CR
+    "llStl300OnZMetg20Jetgeq1", // Z + jets CR
     "llStl300" // for comparison to previous results
   };
-  std::vector<int> unBlind{0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1};
+  std::vector<int> unBlind{0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1};
   const std::vector<TString> vars{"geqTightTa", "geqTightFakeTa", "lTightTa", "lTightFakeTa"};
   std::map<TString, Pair1> vars1D;
   std::map<TString, Pair2> vars2D;
   std::vector<float> ptBins{20.0, 40.0, 60.0, 100.0, 220.0};
-  std::vector<float> etaBins{0.0, 1.4, 2.3};
+  std::vector<float> etaBins{0.0, 1.2, 2.1, 2.3};
+  std::vector<float> dmBins{0, 1, 2, 3, 4, 5, 6};
   const std::vector<int> tauDMs{0, 1, 2, 7, 10, 11};
   char text[500];
   int hist1DIdx = 0;
@@ -86,6 +89,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       vars1D.insert(make_pair(text, Pair1(hist1DIdx, etaBins)));
       hist1DIdx++;
     }
+    vars1D.insert(make_pair(var + "_vsDm", Pair1(hist1DIdx, dmBins))); // Fake tau estimate vs. decay mode
+    hist1DIdx++;
   }
   int hist2DIdx = 0;
   for (TString var : vars) {
@@ -387,23 +392,34 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
-    if (Event->St() > 300 && Event->MET()->Pt() > 20 && Event->njet() >= 1) {
-      if (Event->btagSum() < 1.3 && !Event->OnZ()) {
+    if (Event->St() > 300 && !Event->OnZ() && Event->MET()->Pt() > 20 && Event->njet() >= 1) {
+      if (Event->btagSum() < 1.3) {
         rIdx = rInd(regions, "llStg300OffZbtagl1p3Metg20Jetgeq1"); // SR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
-      if (Event->btagSum() > 1.3 && !Event->OnZ()) {
+      if (Event->btagSum() > 1.3) {
         rIdx = rInd(regions, "llStg300OffZbtagg1p3Metg20Jetgeq1"); // ttbar + jets CR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
     }
     if (Event->St() < 300) {
-      if (Event->OnZ() && Event->MET()->Pt() > 20 && Event->njet() < 2 & Event->nbjet() == 0) {
-        rIdx = rInd(regions, "llStl300OnZMetg20Jetl2B0"); // DY/ZZ + jets CR
+      if (Event->OnZ() && Event->MET()->Pt() > 20) {
+        rIdx = rInd(regions, "llStl300OnZMetg20"); // DY/ZZ + jets CR
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+
+        if (Event->njet() < 2 & Event->nbjet() == 0) {
+          rIdx = rInd(regions, "llStl300OnZMetg20Jetl2B0"); // DY/ZZ CR
+          reg.push_back(rIdx);
+          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+        }
+        if (Event->njet() >= 1) {
+          rIdx = rInd(regions, "llStl300OnZMetg20Jetgeq1"); // Z + jets CR
+          reg.push_back(rIdx);
+          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+        }
       }
       rIdx = rInd(regions, "llStl300"); // for comparison to previous results
       reg.push_back(rIdx);
@@ -418,6 +434,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Event->TightTau()) { // >= Tight Tau
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsPt")]->Fill(tauPt, wgt[i]);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsEta")]->Fill(tauEta, wgt[i]);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightTa_vsDm")]->Fill(getDMBin(tauDM), wgt[i]);
         snprintf(text, 500, "geqTightTa_vsPt_dm%d", tauDM);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
         snprintf(text, 500, "geqTightTa_vsEta_dm%d", tauDM);
@@ -427,6 +444,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         if (Event->ta1()->truth_ > 0) { // Fake tau in MC
           Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightFakeTa_vsPt")]->Fill(tauPt, wgt[i]);
           Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightFakeTa_vsEta")]->Fill(tauEta, wgt[i]);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "geqTightFakeTa_vsDm")]->Fill(getDMBin(tauDM), wgt[i]);
           snprintf(text, 500, "geqTightFakeTa_vsPt_dm%d", tauDM);
           Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
           snprintf(text, 500, "geqTightFakeTa_vsEta_dm%d", tauDM);
@@ -436,6 +454,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       } else { // < Tight Tau
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightTa_vsPt")]->Fill(tauPt, wgt[i]);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightTa_vsEta")]->Fill(tauEta, wgt[i]);
+        Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightTa_vsDm")]->Fill(getDMBin(tauDM), wgt[i]);
         snprintf(text, 500, "lTightTa_vsPt_dm%d", tauDM);
         Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
         snprintf(text, 500, "lTightTa_vsEta_dm%d", tauDM);
@@ -445,6 +464,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         if (Event->ta1()->truth_ > 0) { // Fake tau in MC
           Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightFakeTa_vsPt")]->Fill(tauPt, wgt[i]);
           Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightFakeTa_vsEta")]->Fill(tauEta, wgt[i]);
+          Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, "lTightFakeTa_vsDm")]->Fill(getDMBin(tauDM), wgt[i]);
           snprintf(text, 500, "lTightFakeTa_vsPt_dm%d", tauDM);
           Hists1D[Event->c()][Event->ch()][reg[i]][vInd1(vars1D, text)]->Fill(tauPt, wgt[i]);
           snprintf(text, 500, "lTightFakeTa_vsEta_dm%d", tauDM);
