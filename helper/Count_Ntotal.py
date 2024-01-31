@@ -3,7 +3,7 @@ import ROOT
 import sys
 dataset = {}
 
-sys.path.append(os.path.join(os.path.dirname(sys.path[0]),'bin'))
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'bin'))
 
 import nano_files_2016APV
 import nano_files_2016
@@ -37,8 +37,8 @@ if data_2018:
     dataset.update(nano_files_2018.data2018_samples)
 
 for key, value in dataset.items():
-    print '-----------------------'
-    print key
+    print('-----------------------')
+    print(key)
     nEventsraw = 0
     nFiles = 0
     list = value[0]
@@ -57,5 +57,5 @@ for key, value in dataset.items():
             nFiles += 1
             nEventsraw += tree_events.GetEntries()
             f.Close()
-    print 'nEventsraw = %d'%(nEventsraw)
-    print 'nFiles = %d'%(nFiles)
+    print('nEventsraw = %d' % nEventsraw)
+    print('nFiles = %d' % nFiles)

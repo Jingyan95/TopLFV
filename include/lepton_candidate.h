@@ -9,11 +9,11 @@
 #include <TLorentzVector.h>
 
 using namespace std;
-//using namespace math;
+
 class lepton_candidate {
 
 public:
-  lepton_candidate(float, float, float, float, float, int, float, float, float, int, int, int);
+  lepton_candidate(float, float, float, float, float, int, int, float, float, float, int, int, int, int);
   ~lepton_candidate();
   float pt_;
   float eta_;
@@ -21,12 +21,14 @@ public:
   float dxy_;
   float dz_;
   int charge_;
+  int mva1WP_; // For taus, this is the tau vs jets WP
   float mva1_;
   float mva2_;
   float mva3_;
   int index_;
   int flavor_;
   int truth_;
+  int decaymode_;
   TLorentzVector p4_;
 
 private:
