@@ -7,10 +7,13 @@ import cmsstyle as CMS
 import ROOT
 import gc
 
+from eventYields import getEventYields
+
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018"]
 SAMPLES = ["Data", "TX", "VV", "DY", "TT"]
 SAMPLES_NAME = ["Data", "t#bar{t}(+X)", "VV(V)", "DY/ZZ", "t#bar{t}"]
+SAMPLES_LATEX = ["Data", "$t\\bar{t}(+X)$", "VV(V)", "DY/ZZ", "$t\\bar{t}$"]
 CHARGES = ["OS", "SS"]
 CHANNELS = ["e", "mu"]
 CHANNELS_NAME = ["e#tau_{h}", "#mu#tau_{h}"]
@@ -38,10 +41,24 @@ REGIONS_NAME = [
     ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
     ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet<2, nbjet=0 (CR)"),
     ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
-    ("S_{T}<300GeV", ""),
+    ("S_{T}<300GeV", "")
+]
+REGIONS_LATEX = [
+    "No cuts",
+    "$S_{T}>$300GeV",
+    "OffZ",
+    "$\\sum$btag$<$1.3",
+    "$p_{T}^{miss}>$20GeV",
+    "njet$\\geq$1",
+    "nbjet=1",
+    "$S_{T}>$300GeV, OffZ, $\\sum$btag$<$1.3, $p_{T}^{miss}>$20GeV, njet$\\geq$1 (SR)",
+    "$S_{T}<$300GeV, OnZ, $p_{T}^{miss}>$20GeV, njet$<$2, nbjet=0 (CR)",
+    "$S_{T}>$300GeV, OffZ, $\\sum$btag$>$1.3, $p_{T}^{miss}>$20GeV, njet$\\geq$1 (CR)",
+    "$S_{T}<$300GeV"
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
-DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
+DOMAINS_NAME = ["#geqTight Tau", "<Tight Tau"]
+DOMAINS_LATEX = ["$\\geq$Tight Tau", "$<$Tight Tau"]
 VARS = [
     "llM", "llDr", "lep1Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2", "taPt",
     "taPtFake", "taEta", "taEtaFake", "taVsJetWP", "taVsJetMVA", "taVsElMVA", "taVsMuMVA", "taDxy",
@@ -252,13 +269,15 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     gc.collect()
 
 
-# make 1D variable plots
+# get event yields and make 1D variable plots
 for year in YEARS:
-    for charge in CHARGES:
-        for iChannel, channel in enumerate(CHANNELS):
-            for iRegion, region in enumerate(REGIONS):
-                for iVar, var in enumerate(VARS):
-                    for iDomain, domain in enumerate(DOMAINS):
+    getEventYields(h, SAMPLES, SAMPLES_LATEX, DOMAINS, DOMAINS_LATEX, CHARGES, CHANNELS, year, REGIONS, REGIONS_LATEX)
+
+    for iRegion, region in enumerate(REGIONS):
+        for iDomain, domain in enumerate(DOMAINS):
+            for charge in CHARGES:
+                for iChannel, channel in enumerate(CHANNELS):
+                    for iVar, var in enumerate(VARS):
                         hists = []
                         for iSample, sample in enumerate(SAMPLES):
                             hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+domain+"_"+var
