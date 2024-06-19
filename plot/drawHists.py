@@ -88,6 +88,7 @@ for iYear, year in enumerate(YEARS_RUN2):
         YEARS.append(YEARS_RUN2[iYear])
 square = CMS.kSquare
 if not ARGS.SQUARE: square = CMS.kRectangular
+ARGS.FOLDER = "/eos/user/e/etsai/www/TopLFV/" + ARGS.FOLDER
 
 
 # read in histograms
@@ -258,6 +259,7 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     CMS.cmsDrawLine(midLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
     CMS.cmsDrawLine(downLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
 
+    CMS.SaveCanvas(dicanv, saveDir+"/"+var+".png", close=False)
     CMS.SaveCanvas(dicanv, saveDir+"/"+var+".pdf")
     del dicanv
     gc.collect()
@@ -573,6 +575,7 @@ def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     errorRatio.SetFillStyle(3154)
     errorRatio.SetLineWidth(4)
     errorRatio.Draw("2")
+    canvas.Print(saveDir+"/subSR.png")
     canvas.Print(saveDir+"/subSR.pdf")
     del canvas
     gc.collect()

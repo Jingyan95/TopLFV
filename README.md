@@ -115,26 +115,26 @@ make all
 ## III. To write & submit jobs 
 ```
 cd bin/
-python makeJobs.py
-python submitJobs.py
+python3 makeJobs.py
+python3 submitJobs.py
 ```
 
 ## IV. To merge output ROOT files
 ```
 cd hists/
-python hadd.py
+python3 hadd.py
 ```
 Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
 
 ## V. To make plots
 ```
 cd plot/
-python drawHists.py 
+python3 drawHists.py 
 ```
 
 ## VI. To get event yields
 ```
 cd helper/
-python eventYields.py
+python3 eventYields.py
 ```
 This script will produce a table of event yields in a LaTeX file.
