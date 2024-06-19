@@ -1,3 +1,9 @@
+#include "TFile.h"
+#include "TString.h"
+#include "TH1F.h"
+#include <fstream>
+#include <iostream>
+
 const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
 const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT", "LFVStScalarU", "LFVTtScalarU"};
 const TString CHARGES[2] = {"OS", "SS"};
@@ -40,14 +46,14 @@ const std::vector<TString> TABLE_LATEX{"Data", "$t\\bar{t}X$", "VV", "DY",
 void Fill(TH1F* h, std::vector<std::vector<Double_t>>& cutflow, 
   std::vector<std::vector<Double_t>>& cutflowErr, Int_t idx);
 
-void Cutflow() {
+void Cutflow(TString inputFolder) {
 
   // Open files and save histograms
   std::map<TString, TH1F*> H{};
   for (TString year : YEARS) {
     for (TString sample : SAMPLES) {
 
-      TString filename = "../hists/" + year + "_" + sample + ".root";
+      TString filename = "../hists/" + inputFolder + "/" + year + "_" + sample + ".root";
       TFile* f = TFile::Open(filename);
 
       for (TString region : REGIONS) {
@@ -123,7 +129,7 @@ void Cutflow() {
 
   // Get counts
   for (TString year : YEARS) {
-    for (Int_t r = 0; r < REGIONS.size(); r++) {
+    for (unsigned int r = 0; r < REGIONS.size(); r++) {
 
       // Initialize containers for cutflow table
       std::vector<std::vector<Double_t>> cutflow = {
@@ -148,7 +154,7 @@ void Cutflow() {
       Fill(H.at(year + "_" + REGIONS[r] + "_subSR_" + SAMPLES[5]), cutflow, cutflowErr, 5);
       Fill(H.at(year + "_" + REGIONS[r] + "_subSR_" + SAMPLES[6]), cutflow, cutflowErr, 6);
       // Calculating background
-      for (int b = 0; b < cutflow.size(); b++) {
+      for (unsigned int b = 0; b < cutflow.size(); b++) {
         cutflow.at(b).at(7) += cutflow.at(b).at(1) + cutflow.at(b).at(2)
           + cutflow.at(b).at(3) + cutflow.at(b).at(4);
         cutflowErr.at(b).at(7) += sqrt(cutflowErr.at(b).at(1) * cutflowErr.at(b).at(1)
@@ -157,13 +163,13 @@ void Cutflow() {
           + cutflowErr.at(b).at(4) * cutflowErr.at(b).at(4));
       }
       // Calculating signal
-      for (int b = 0; b < cutflow.size(); b++) {
+      for (unsigned int b = 0; b < cutflow.size(); b++) {
         cutflow.at(b).at(8) += cutflow.at(b).at(5) + cutflow.at(b).at(6);
         cutflowErr.at(b).at(8) += sqrt(cutflowErr.at(b).at(5) * cutflowErr.at(b).at(5)
           + cutflowErr.at(b).at(6) * cutflowErr.at(b).at(6));
       }
       // Calculating S/sqrt(B)
-      for (int b = 0; b < cutflow.size(); b++) {
+      for (unsigned int b = 0; b < cutflow.size(); b++) {
         cutflow.at(b).at(9) += cutflow.at(b).at(8) / sqrt(cutflow.at(b).at(7));
       }
 
@@ -194,7 +200,7 @@ void Cutflow() {
       fout << "        Mass & OS-$ee$ & OS-$ee$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ \\\\\n";
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(e\\mu)<150$GeV & $m(e\\mu)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
-      for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
+      for (unsigned int s = 0; s < TABLE_LATEX.size(); s++) {
         if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
@@ -230,7 +236,7 @@ void Cutflow() {
       fout << "        Mass & OS-$e\\mu$ & OS-$e\\mu$ & OS-$\\mu\\mu$ & OS-$\\mu\\mu$ & SS-$ee$ & SS-$ee$ \\\\\n";
       fout << "        Region & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
-      for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
+      for (unsigned int s = 0; s < TABLE_LATEX.size(); s++) {
         if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
@@ -266,7 +272,7 @@ void Cutflow() {
       fout << "        Mass & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$\\mu\\mu$ & SS-$\\mu\\mu$ \\\\\n";
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
-      for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
+      for (unsigned int s = 0; s < TABLE_LATEX.size(); s++) {
         if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"

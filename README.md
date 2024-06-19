@@ -131,10 +131,14 @@ Make sure all the necessary output files are there under TopLFV/hists/\<year\>/.
 cd plot/
 python3 drawHists.py 
 ```
+The plots will be written out to https://etsai.web.cern.ch/TopLFV/. 
 
 ## VI. To get event yields
 ```
-cd helper/
-python3 eventYields.py
+cd latex/
+root -l -b -q 'Cutflow.cc+("<folder name>")'
 ```
-This script will produce a table of event yields in a LaTeX file.
+This script will produce a table of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in `pdf` format with
+```
+pdflatex <file name>.tex
+```
