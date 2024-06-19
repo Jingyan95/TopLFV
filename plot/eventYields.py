@@ -92,8 +92,12 @@ def getEventYields(Hists, samples, samplesName, domains, domainsName, charges, c
                 for iCharge, charge in enumerate(charges):
                     for iChannel, channel in enumerate(channels):
                         b = len(charges)*iCharge+iChannel
-                        tex += " & %.0f" % counts[f+"_"+region+"_"+domain+"_"+str(b)][0]
-                        tex += "$\\pm$%.0f" % counts[f+"_"+region+"_"+domain+"_"+str(b)][1]
+                        nEvt = counts[f+"_"+region+"_"+domain+"_"+str(b)][0]
+                        err = counts[f+"_"+region+"_"+domain+"_"+str(b)][1]
+                        if (nEvt > 0) and (nEvt < 10):
+                            tex += (" & %.2f" % nEvt)+("$\\pm$%.2f" % err)
+                        else:
+                            tex += (" & %.0f" % nEvt)+("$\\pm$%.0f" % err)
                         if f != "Data" and f != "total":
                             tex += " [%.2f\\%%]" % counts[f+"_"+region+"_"+domain+"_"+str(b)][2]
                 tex += " \\\\\n"

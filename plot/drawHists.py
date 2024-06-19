@@ -116,6 +116,12 @@ for year in YEARS:
                             temp.SetBinContent(1, temp.GetBinContent(0)+temp.GetBinContent(1))
                             temp.SetBinContent(temp.GetXaxis().GetNbins(),
                                 temp.GetBinContent(temp.GetXaxis().GetNbins())+temp.GetBinContent(temp.GetXaxis().GetNbins()+1))
+                            # set negative event counts due to NLO low statistics to 0
+                            for i in range(1, temp.GetNbinsX()+1):
+                                if temp.GetBinContent(i)<0.0:
+                                    temp.SetBinContent(i, 0.0)
+                                    temp.SetBinError(i, 0.0)
+                            # save histogram
                             h[year+"_"+sample+"_"+hname] = temp
         file.close()
 
@@ -150,19 +156,12 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     SigHists = []
     for iSample, sample in enumerate(SAMPLES):
         if sample=="Data": continue
-        if "LFV" not in sample: # MC
-            if len(MCHists)>0:
-                loopHist = MCHists[-1].Clone()
-                loopHist.Add(hists[iSample].Clone())
-                MCHists.append(loopHist)
-            else:
-                MCHists.append(hists[iSample].Clone())
+        if len(MCHists)>0:
+            loopHist = MCHists[-1].Clone()
+            loopHist.Add(hists[iSample].Clone())
+            MCHists.append(loopHist)
         else:
-            loopHist = hists[iSample].Clone()
-            if sample=="LFVStScalarU": loopHist.Scale(0.5)
-            elif sample=="LFVTtScalarU": loopHist.Scale(20)
-            loopHist.SetFillColor(0)
-            SigHists.append(loopHist)
+            MCHists.append(hists[iSample].Clone())
 
     # calculate data/pred. ratio
     ratioHist = hists[0].Clone()
@@ -273,15 +272,15 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
 for year in YEARS:
     getEventYields(h, SAMPLES, SAMPLES_LATEX, DOMAINS, DOMAINS_LATEX, CHARGES, CHANNELS, year, REGIONS, REGIONS_LATEX)
 
-    for iRegion, region in enumerate(REGIONS):
-        for iDomain, domain in enumerate(DOMAINS):
-            for charge in CHARGES:
-                for iChannel, channel in enumerate(CHANNELS):
-                    for iVar, var in enumerate(VARS):
-                        hists = []
-                        for iSample, sample in enumerate(SAMPLES):
-                            hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+domain+"_"+var
-                            hists.append(h[hkey])
-                        makePlot(hists, year, charge, iChannel, iRegion, VARS_NAME[iVar], var,
-                            charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain],
-                            ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
+    # for iRegion, region in enumerate(REGIONS):
+    #     for iDomain, domain in enumerate(DOMAINS):
+    #         for charge in CHARGES:
+    #             for iChannel, channel in enumerate(CHANNELS):
+    #                 for iVar, var in enumerate(VARS):
+    #                     hists = []
+    #                     for iSample, sample in enumerate(SAMPLES):
+    #                         hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+domain+"_"+var
+    #                         hists.append(h[hkey])
+    #                     makePlot(hists, year, charge, iChannel, iRegion, VARS_NAME[iVar], var,
+    #                         charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain],
+    #                         ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
