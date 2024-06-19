@@ -1,5 +1,5 @@
 # Top LFV Analysis
-This framework depends on ROOT libraries.
+This framework depends on ROOT libraries. The setup has only been texted on lxplus.
 <table border="0">
   <tr>
     <td><b style="font-size:30px">Files</b></td>
@@ -41,9 +41,21 @@ This framework depends on ROOT libraries.
     <td>helper/</td>
     <td>Directory where utility scripts live</td>
   </tr>
-  <tr>
+  <!-- <tr>
     <td>helper/eventYields.py</td>
     <td>Python script for making table of event yields</td>
+  </tr> -->
+  <tr>
+    <td>helper/Count_Ntotal.py</td>
+    <td>Python script for counting the total number of events and number of files</td>
+  </tr>
+  <tr>
+    <td>helper/gen_files_2016.py</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>helper/getSumOfGenWeights.py</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td>hists/</td>
@@ -58,12 +70,28 @@ This framework depends on ROOT libraries.
     <td>Directory where header files live</td>
   </tr>
   <tr>
+    <td>latex/</td>
+    <td>Directory where latex files live</td>
+  </tr>
+  <tr>
+    <td>latex/Cutflow.cc</td>
+    <td>Utility file for creating event yield tables in LaTeX format</td>
+  </tr>
+  <tr>
+    <td>latex/beamerposter.sty</td>
+    <td>Beamer style file for compiling LaTeX event yield tables</td>
+  </tr>
+  <tr>
     <td>plot/</td>
     <td>Directory where plots are saved</td>
   </tr>
   <tr>
     <td>plot/drawHists.py</td>
     <td>Python script for plotting histograms</td>
+  </tr>
+  <tr>
+    <td>src</td>
+    <td>Directory where source files live</td>
   </tr>
   <tr>
     <td>src/MyAnalysis.cc</td>
@@ -138,7 +166,7 @@ The plots will be written out to https://etsai.web.cern.ch/TopLFV/.
 cd latex/
 root -l -b -q 'Cutflow.cc+("<folder name>")'
 ```
-This script will produce a table of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in `pdf` format with
+This script will produce a table of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
 ```
 pdflatex <file name>.tex
 ```
