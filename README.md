@@ -1,10 +1,52 @@
 # Top LFV Analysis
 This framework depends on ROOT libraries. The setup has only been texted on lxplus.
+
+## I. Setup
+```
+. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
+```
+
+## II. To compile & run 
+```
+git clone https://github.com/jingyan95/TopLFV.git 
+cd TopLFV
+make all
+./RunAll
+```
+
+## III. To write & submit jobs 
+```
+cd bin/
+python3 makeJobs.py
+python3 submitJobs.py
+```
+
+## IV. To merge output ROOT files
+```
+cd hists/
+python3 hadd.py
+```
+Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
+
+## V. To make plots
+```
+cd plot/
+python3 drawHists.py 
+```
+The plots will be written out to https://etsai.web.cern.ch/TopLFV/. 
+
+## VI. To get event yields
+```
+cd latex/
+root -l -b -q 'Cutflow.cc+("<folder name>")'
+```
+This script will produce a table of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
+```
+pdflatex <file name>.tex
+```
+
+## File descriptions
 <table border="0">
-  <tr>
-    <td><b style="font-size:30px">Files</b></td>
-    <td><b style="font-size:30px">Description</b></td>
-  </tr>
   <tr>
     <td>bin/nano_files_2016APV.py</td>
     <td>Python file to store addresses of 2016preVFP samples with trilepton events</td>
@@ -41,10 +83,6 @@ This framework depends on ROOT libraries. The setup has only been texted on lxpl
     <td>helper/</td>
     <td>Directory where utility scripts live</td>
   </tr>
-  <!-- <tr>
-    <td>helper/eventYields.py</td>
-    <td>Python script for making table of event yields</td>
-  </tr> -->
   <tr>
     <td>helper/Count_Ntotal.py</td>
     <td>Python script for counting the total number of events and number of files</td>
@@ -126,47 +164,3 @@ This framework depends on ROOT libraries. The setup has only been texted on lxpl
     <td>Standalone C++ interface of XGBoost</td>
   </tr>
 </table>
-
-## I. Setup
-```
-. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
-```
-
-## II. To compile & run 
-```
-git clone https://github.com/jingyan95/TopLFV.git 
-cd TopLFV
-make all
-./RunAll
-```
-
-## III. To write & submit jobs 
-```
-cd bin/
-python3 makeJobs.py
-python3 submitJobs.py
-```
-
-## IV. To merge output ROOT files
-```
-cd hists/
-python3 hadd.py
-```
-Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
-
-## V. To make plots
-```
-cd plot/
-python3 drawHists.py 
-```
-The plots will be written out to https://etsai.web.cern.ch/TopLFV/. 
-
-## VI. To get event yields
-```
-cd latex/
-root -l -b -q 'Cutflow.cc+("<folder name>")'
-```
-This script will produce a table of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
-```
-pdflatex <file name>.tex
-```
