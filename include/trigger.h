@@ -1,16 +1,18 @@
 #ifndef MY_trigger
 #define MY_trigger
 
-#include<cmath>
-#include<string>
-#include<iostream>
+#include <cmath>
+#include <string>
+#include <iostream>
 #include <TROOT.h>
 
 using namespace std;
 // using namespace math;
+
 class trigger {
 
 public:
+
   trigger(TString, TString);
   void Init(Bool_t, Bool_t, Bool_t, Bool_t,
             Bool_t, Bool_t, Bool_t, Bool_t,
@@ -54,7 +56,6 @@ private:
   Bool_t IsoMu24_; // 2016 APV, 2016, 2018
   Bool_t IsoTkMu24_; // 2016 APV, 2016
   Bool_t IsoMu27_; // 2017
-
 };
 
 #endif
