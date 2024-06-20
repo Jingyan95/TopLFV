@@ -37,13 +37,19 @@ python3 drawHists.py
 ## VI. To get event yields
 ```
 cd latex/
-root -l -b -q 'Cutflow.cc+("<folder where histograms are stored>")'
+root -l -b -q 'Cutflow.C+("<folder where histograms are stored>")'
 ```
 This script will produce tables of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
 ```
 pdflatex Cutflow_Tables.tex
 ```
 *NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
+
+## To calculate jet to tau fake factors
+```
+cd helper/
+root -l -b -q JetToTauFakeFactors.C
+```
 
 ## File descriptions
 <table border="0">
