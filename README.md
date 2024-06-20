@@ -96,6 +96,10 @@ pdflatex Cutflow_Tables.tex
     <td>N/A</td>
   </tr>
   <tr>
+    <td>helper/JetToTauFakeFactors.cc</td>
+    <td>ROOT macro for calculating the jet to tau fake factors</td>
+  </tr>
+  <tr>
     <td>hists/</td>
     <td>Directory where histograms are saved</td>
   </tr>
