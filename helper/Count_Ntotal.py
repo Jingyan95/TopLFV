@@ -13,7 +13,7 @@ import nano_files_2018
 mc_2016APV = False
 data_2016APV = False
 mc_2016 = True
-data_2016 = False
+data_2016 = True
 mc_2017 = False
 data_2017 = False
 mc_2018 = False
