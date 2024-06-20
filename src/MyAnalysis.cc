@@ -321,7 +321,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Tau_rawDeepTau2017v2p1VSmu[l], l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5, Tau_decayMode[l]));
     }
 
-    if (Leptons->size() != 2) { // can do some studies on SS/OS lepton & tau
+    if (Leptons->size() != 2) { // Can do some studies on SS/OS lepton & tau
       deleteContainter(Leptons);
       continue;
     }

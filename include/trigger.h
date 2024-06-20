@@ -41,7 +41,7 @@ private:
   // Bool_t Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_; // 2017, 2018
   // Bool_t Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_; // 2016 APV, 2016
   // Bool_t DoubleEle33_CaloIdL_MW_; // 2016APV, 2016, 2017, 2018
-  // Bool_t DoubleEle33_CaloIdL_GsfTrkIdVL_; // 2016APV, 2016 
+  // Bool_t DoubleEle33_CaloIdL_GsfTrkIdVL_; // 2016APV, 2016
 
   // Bool_t Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_; // 2016 APV
   // Bool_t Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_; // 2016 APV
