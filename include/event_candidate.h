@@ -132,7 +132,7 @@ private:
   float mT_ = 172.5;
   float mZ_ = 91.2;
   float mW_ = 80.2;
-  float lfvmCut_ = 150; // mass cut to separate top production and decay signals
+  float lfvmCut_ = 150; // Mass cut to separate top production and decay signals
 };
 
 #endif
