@@ -110,7 +110,7 @@ private:
   lepton_candidate* LFVe_;
   lepton_candidate* LFVmu_;
   lepton_candidate* LFVta_;
-  lepton_candidate* Balep_; // SM lepton, a.k.a. bachelor lepton 
+  lepton_candidate* Balep_; // SM lepton, a.k.a. bachelor lepton
   jet_candidate* bjet_; // Jet with the highest b-tagging score
   int c_; // Charges: 0->Opposite-Sign, 1->Same-Sign
   int ch_; // Channel: 0->ee+tau, 1->emu+ta, 2->mumu+ta

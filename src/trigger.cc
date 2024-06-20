@@ -106,7 +106,7 @@ Bool_t trigger::triggerLogic(TString dataset) {
       }
       if (dataset_ == "SingleMuon") {
         if (!(Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_ || Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_) && (IsoMu24_ || IsoTkMu24_)) triggerPassMuMu_ = true;
-        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele27_WPTight_Gsf_) && (IsoMu24_ || IsoTkMu24_)) triggerPassEMu_ = true; 
+        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele27_WPTight_Gsf_) && (IsoMu24_ || IsoTkMu24_)) triggerPassEMu_ = true;
       }
       if (dataset_ == "DoubleEG") {
         if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || DoubleEle33_CaloIdL_MW_ || DoubleEle33_CaloIdL_GsfTrkIdVL_) triggerPassEE_ = true;
@@ -125,7 +125,7 @@ Bool_t trigger::triggerLogic(TString dataset) {
       }
       if (dataset_ == "SingleMuon") {
         if (!(Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_ || Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_) && (IsoMu24_ || IsoTkMu24_)) triggerPassMuMu_ = true;
-        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || Ele27_WPTight_Gsf_) && (IsoMu24_ || IsoTkMu24_)) triggerPassEMu_ = true; 
+        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || Ele27_WPTight_Gsf_) && (IsoMu24_ || IsoTkMu24_)) triggerPassEMu_ = true;
       }
       if (dataset_ == "DoubleEG") {
         if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || DoubleEle33_CaloIdL_MW_ || DoubleEle33_CaloIdL_GsfTrkIdVL_) triggerPassEE_ = true;
@@ -144,7 +144,7 @@ Bool_t trigger::triggerLogic(TString dataset) {
       }
       if (dataset_ == "SingleMuon") {
         if (!(Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_) && IsoMu27_) triggerPassMuMu_ = true;
-        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele35_WPTight_Gsf_) && IsoMu27_) triggerPassEMu_ = true; 
+        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele35_WPTight_Gsf_) && IsoMu27_) triggerPassEMu_ = true;
       }
       if (dataset_ == "DoubleEG") {
         if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_ || DoubleEle33_CaloIdL_MW_) triggerPassEE_ = true;
@@ -159,7 +159,7 @@ Bool_t trigger::triggerLogic(TString dataset) {
       }
       if (dataset_ == "SingleMuon") {
         if (!(Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_) && IsoMu24_) triggerPassMuMu_ = true;
-        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele32_WPTight_Gsf_) && IsoMu24_) triggerPassEMu_ = true; 
+        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele32_WPTight_Gsf_) && IsoMu24_) triggerPassEMu_ = true;
       }
       if (dataset_ == "EGamma") {
         if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_ || DoubleEle33_CaloIdL_MW_ || Ele32_WPTight_Gsf_) triggerPassEE_ = true;
