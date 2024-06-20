@@ -314,6 +314,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (tauPt < 20 || abs(Tau_eta[l]) > 2.3) continue;
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
+      // The Loosest possible DeepTau Working Point
       if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 1 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
 
       // Overlap removal
