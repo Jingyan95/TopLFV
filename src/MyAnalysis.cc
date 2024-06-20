@@ -110,6 +110,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   };
   const std::map<TString, std::vector<float>> vars2D = {
     {"taPtVsEta",          {0, 20, 20, 220, 23, -2.3, 2.3}},
+    {"taPtVsEtaFake",      {0, 20, 20, 220, 23, -2.3, 2.3}}
   };
   Double_t tauPtBin[5] = {20.0, 40.0, 60.0, 100.0, 220.0};
   Double_t tauEtaBin[3] = {0.0, 1.4, 2.3};
@@ -487,8 +488,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "muLeptonMVAv2")]->Fill(Event->mu1()->mva2_, wgt_final);
       }
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPt")]->Fill(tauPt, wgt_final);
-      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFFBin")]->Fill(tauPt, wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEta")]->Fill(tauEta, wgt_final);
+      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFFBin")]->Fill(tauPt, wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFFBin")]->Fill(tauEta, wgt_final);
       if (Event->ta1()->truth_ == 1) {
         Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFake")]->Fill(tauPt, wgt_final);
@@ -519,6 +520,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "btagSum")]->Fill(Event->btagSum(), wgt_final);
 
       Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEta")]->Fill(tauPt, tauEta, wgt_final);
+      if (Event->ta1()->truth_ == 1) {
+        Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEtaFake")]->Fill(tauPt, tauEta, wgt_final);
+      }
     }
 
     deleteContainter(Leptons);

@@ -46,22 +46,26 @@ REGIONS_NAME = [
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
 DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
-VARS = [
+# DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa", "geqMedLepgeqTightTaJetTaFF"]
+# DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau", "#geq Tight Tau"]
+VARS1D = [
     "llM", "llDr", "lep1Pt", "lep2Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2",
-    "taPt", "taPtFake", "taEta", "taEtaFake", "taVsJetWP", "taVsJetMVA", "taVsElMVA", "taVsMuMVA", "taDxy",
-    "taDz", "taDecayMode", "jet1Pt", "jetbtagDeepFlavB", "njet", "nbjet", "MET", "subSR", "LFVemuM",
-    "LFVetaM", "LFVmutaM", "LFVemuDr", "LFVetaDr", "LFVmutaDr", "LFVePt", "LFVmuPt", "LFVtaPt", "balepPt",
-    "topmass", "Ht", "St", "btagSum"]
-VARS_NAME = [
+    "taPt", "taPtFFBin", "taPtFake", "taEta", "taEtaFFBin", "taEtaFake", "taVsJetWP", "taVsJetMVA",
+    "taVsElMVA", "taVsMuMVA", "taDxy", "taDz", "taDecayMode", "jet1Pt", "jetbtagDeepFlavB", "njet",
+    "nbjet", "MET", "subSR", "LFVemuM", "LFVetaM", "LFVmutaM", "LFVemuDr", "LFVetaDr", "LFVmutaDr",
+    "LFVePt", "LFVmuPt", "LFVtaPt", "balepPt", "topmass", "Ht", "St", "btagSum"]
+VARS1D_NAME = [
     "m(l#bar{l}) [GeV]", "#DeltaR(l#bar{l})", "Leading lepton p_{T} [GeV]", "Sub-leading lepton p_{T} [GeV]",
     "Electron Top Lepton MVA (v1)", "Electron Top Lepton MVA (v2)", "Muon Top Lepton MVA (v1)",
-    "Muon Top Lepton MVA (v2)", "#tau p_{T} [GeV]", "Fake #tau p_{T} [GeV]", "#tau #eta", "Fake #tau #eta",
-    "#tau vs Jet WP", "#tau vs Jet MVA", "#tau vs Electron MVA", "#tau vs Muon MVA", "#tau d_{xy} [cm]",
-    "#tau d_{z} [cm]", "#tau Decay Mode", "Leading jet p_{T} [GeV]", "btag", "njet", "nbjet (Loose WP)",
-    "MET [GeV]", "SR subdivided", "m(e#bar{#mu}) [GeV]", "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]",
-    "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]", "#DeltaR(#mu,#bar{#tau}) [GeV]",
-    "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]", "Bachelor lepton p_{T} [GeV]",
-    "m(top) [GeV]", "H_{T} [GeV]", "S_{T} [GeV]", "Sum of btagging scores"]
+    "Muon Top Lepton MVA (v2)", "#tau p_{T} [GeV]", "#tau p_{T} [GeV]", "Fake #tau p_{T} [GeV]", "#tau #eta",
+    "#tau #eta", "Fake #tau #eta", "#tau vs Jet WP", "#tau vs Jet MVA", "#tau vs Electron MVA",
+    "#tau vs Muon MVA", "#tau d_{xy} [cm]", "#tau d_{z} [cm]", "#tau Decay Mode", "Leading jet p_{T} [GeV]",
+    "btag", "njet", "nbjet (Loose WP)", "MET [GeV]", "SR subdivided", "m(e#bar{#mu}) [GeV]",
+    "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]", "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]",
+    "#DeltaR(#mu,#bar{#tau}) [GeV]", "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
+    "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]", "H_{T} [GeV]", "S_{T} [GeV]", "Sum of btagging scores"]
+VARS2D = ["taPtVsEta", "taPtVsEtaFake"]
+VARS2D_NAME = [("#tau p_{T} [GeV]", "#tau #eta"), ("Fake #tau p_{T} [GeV]", "Fake #tau #eta")]
 COLORS = [ROOT.kBlack, ROOT.kRed - 4, ROOT.kOrange - 3, ROOT.kGreen, ROOT.kYellow, ROOT.kViolet + 1, ROOT.kGray]
 PLOT_LABEL = "Work in Progress"
 
@@ -90,6 +94,9 @@ if not ARGS.SQUARE: square = CMS.kRectangular
 if len(ARGS.OUTPATH)>0: ARGS.FOLDER = ARGS.OUTPATH + "/" + ARGS.FOLDER
 
 
+# TODO: add 2D plots
+# TODO: add tau purity plots (1D and 2D)
+
 # Read in histograms
 HistAddress = os.path.dirname(sys.path[0])+"/hists"
 if len(ARGS.HISTPATH)>0: HistAddress += "/"+ARGS.HISTPATH
@@ -103,7 +110,7 @@ for year in YEARS:
             for channel in CHANNELS:
                 for region in REGIONS:
                     for domain in DOMAINS:
-                        for var in VARS:
+                        for var in VARS1D:
                             hname = charge+"_"+channel+"_"+region+"_"+domain+"_"+var
                             temp = file[hname].to_pyroot().Clone()
                             # Underflow and overflow
@@ -591,14 +598,14 @@ for year in YEARS:
     for charge in CHARGES:
         for iChannel, channel in enumerate(CHANNELS):
             for iRegion, region in enumerate(REGIONS):
-                for iVar, var in enumerate(VARS):
+                for iVar, var in enumerate(VARS1D):
                     if var=="subSR": continue
                     for iDomain, domain in enumerate(DOMAINS):
                         hists = []
                         for iSample, sample in enumerate(SAMPLES):
                             hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+domain+"_"+var
                             hists.append(h[hkey])
-                        makePlot(hists, year, charge, iChannel, iRegion, VARS_NAME[iVar], var,
+                        makePlot(hists, year, charge, iChannel, iRegion, VARS1D_NAME[iVar], var,
                             charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain],
                             ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
 
