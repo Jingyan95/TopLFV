@@ -108,6 +108,12 @@ for year in YEARS:
                             temp.SetBinContent(1, temp.GetBinContent(0)+temp.GetBinContent(1))
                             temp.SetBinContent(temp.GetXaxis().GetNbins(),
                                 temp.GetBinContent(temp.GetXaxis().GetNbins())+temp.GetBinContent(temp.GetXaxis().GetNbins()+1))
+                            # set negative event counts due to NLO low statistics to 0
+                            for i in range(1, temp.GetNbinsX()+1):
+                                if temp.GetBinContent(i)<0.0:
+                                    temp.SetBinContent(i, 0.0)
+                                    temp.SetBinError(i, 0.0)
+                            # save histogram
                             h[year+"_"+sample+"_"+hname] = temp
         file.close()
 
