@@ -297,8 +297,7 @@ private:
 #ifdef MyAnalysis_cxx
 MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool verbose)
     : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_, data_)), nThread_(nThread), workerID_(workerID), verbose_(verbose) {
-  // if parameter tree is not specified (or zero), connect the file
-  // used to generate this class and read the Tree.
+  // If parameter tree is not specified (or zero), connect the file used to generate this class and read the Tree.
   if (tree == 0) {
     TFile *f = (TFile*) gROOT->GetListOfFiles()->FindObject("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");
     if (!f || !f->IsOpen()) {
@@ -332,13 +331,13 @@ Long64_t MyAnalysis::LoadTree(Long64_t entry) {
 }
 
 void MyAnalysis::Init(TTree *tree) {
-  // The Init() function is called when the selector needs to initialize
-  // a new tree or chain. Typically here the branch addresses and branch
-  // pointers of the tree will be set.
-  // It is normally not necessary to make changes to the generated
-  // code, but the routine can be extended by the user if needed.
-  // Init() will be called many times when running on PROOF
-  // (once per file to be processed).
+  // The Init() function is called when the selector needs to initialize a new
+  // tree or chain. Typically here the branch addresses and branch pointers of
+  // the tree will be set.
+  // It is normally not necessary to make changes to the generated code, but
+  // the routine can be extended by the user if needed.
+  // Init() will be called many times when running on PROOF (once per file to
+  // be processed).
 
   // Set object pointer
 

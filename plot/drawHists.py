@@ -21,30 +21,26 @@ CHARGES = ["OS", "SS"]
 CHANNELS = ["ee", "emu", "mumu"]
 CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
 REGIONS = [
-    "ll", # no cuts
-    "llStg300",
-    "llOffZ",
-    "llbtagl1p3",
-    "llMetg20",
-    "llJetgeq1",
-    "llB1",
-    "llStg300OffZbtagl1p3Metg20Jetgeq1", # SR
-    "llStl300OnZMetg20Jetl2B0", # DY/ZZ + jets CR
-    "llStg300OffZbtagg1p3Metg20Jetgeq1", # ttbar + jets CR
-    "llStl300" # for comparison to previous results
+    "ll",
+    "llOnZMetg20Jetgeq1",
+    "llOffZMetg20B1",
+    "llOffZMetg20B2",
+    "llStl300",
+    "llOnZ",
+    "llbtagg1p3",
+    "llStg300OffZbtagl1p3",
+    "llStg300OffZbtagl1p3Tight"
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("S_{T}>300GeV", ""),
-    ("OffZ", ""),
-    ("#sumbtag<1.3", ""),
-    ("p_{T}^{miss}>20GeV", ""),
-    ("njet#geq1", ""),
-    ("nbjet=1", ""),
-    ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
-    ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet<2, nbjet=0 (CR)"),
-    ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
-    ("S_{T}<300GeV", ""),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
+    ("S_{T}<300GeV", "(CR)"),
+    ("OnZ", "(Z+jets CR)"),
+    ("btag>1.3", "(t#bar{t}+jets CR)"),
+    ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))"),
+    ("S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))")
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
 DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
