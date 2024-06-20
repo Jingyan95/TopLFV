@@ -80,6 +80,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--y", dest="YEAR", default="2016")
 parser.add_argument("--p", dest="HISTPATH", default="")
 parser.add_argument("--s", dest="SQUARE", default=True)
+parser.add_argument("--o", dest="OUTPATH", default="")
 parser.add_argument("--f", dest="FOLDER", default="StackHist")
 ARGS = parser.parse_args()
 YEARS = []
@@ -88,7 +89,7 @@ for iYear, year in enumerate(YEARS_RUN2):
         YEARS.append(YEARS_RUN2[iYear])
 square = CMS.kSquare
 if not ARGS.SQUARE: square = CMS.kRectangular
-ARGS.FOLDER = "/eos/user/e/etsai/www/TopLFV/" + ARGS.FOLDER
+if len(ARGS.OUTPATH)>0: ARGS.FOLDER = ARGS.OUTPATH + "/" + ARGS.FOLDER
 
 
 # read in histograms
@@ -466,7 +467,7 @@ def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
         errorRatio = ROOT.TGraphAsymmErrors()
     error.SetFillColor(13)
     error.SetLineColor(13)
-    error.SetFillStyle(3154)
+    error.SetFillStyle(3004)
     error.SetLineWidth(4)
     error.Draw("2")
 
@@ -572,7 +573,7 @@ def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     dummy_ratio.Draw("AXISSAMEX+")
     errorRatio.SetFillColor(13)
     errorRatio.SetLineColor(13)
-    errorRatio.SetFillStyle(3154)
+    errorRatio.SetFillStyle(3004)
     errorRatio.SetLineWidth(4)
     errorRatio.Draw("2")
     canvas.Print(saveDir+"/subSR.png")

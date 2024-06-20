@@ -6,15 +6,15 @@ This framework depends on ROOT libraries. The setup has only been texted on lxpl
 . /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
 ```
 
-## II. To compile & run 
+## II. To compile & run
 ```
-git clone https://github.com/jingyan95/TopLFV.git 
+git clone https://github.com/jingyan95/TopLFV.git
 cd TopLFV
 make all
 ./RunAll
 ```
 
-## III. To write & submit jobs 
+## III. To write & submit jobs
 ```
 cd bin/
 python3 makeJobs.py
@@ -31,9 +31,8 @@ Make sure all the necessary output files are there under TopLFV/hists/\<year\>/.
 ## V. To make plots
 ```
 cd plot/
-python3 drawHists.py 
+python3 drawHists.py
 ```
-The plots will be written out to https://etsai.web.cern.ch/TopLFV/. 
 
 ## VI. To get event yields
 ```
