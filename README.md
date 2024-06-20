@@ -164,3 +164,13 @@ pdflatex Cutflow_Tables.tex
     <td>Standalone C++ interface of XGBoost</td>
   </tr>
 </table>
+
+## CMSSW warning
+You might see this warning if `cmsenv` is not set. So far it doesn't seem to affect the results.
+```
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::Hash<1> is available
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::ProcessHistory is available
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::ProcessConfiguration is available
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::ParameterSetBlob is available
+TClass::Init:0: RuntimeWarning: no dictionary for class pair<edm::Hash<1>,edm::ParameterSetBlob> is available
+```
