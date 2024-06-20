@@ -1,3 +1,10 @@
+#include "TFile.h"
+#include "TString.h"
+#include "TH1F.h"
+#include "TH2F.h"
+// #include <fstream>
+// #include <iostream>
+
 const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
 const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT"};
 const std::vector<TString> SAMPLES_NAME{"Data", "TT(X)", "VV(V)", "DY/ZZ", "TT"};
@@ -5,20 +12,30 @@ const TString CHARGES[2] = {"OS", "SS"};
 const TString CHANNELS[3] = {"ee", "emu", "mumu"};
 const std::vector<TString> REGIONS{
   "ll",
+  "llOnZMetg20Jetgeq1",
+  "llOffZMetg20B1",
+  "llOffZMetg20B2",
   "llStl300",
-  // "llStl300OnZ",
-  // "llMetg20Jetgeq1B1",
-  "llMetg20Jetgeq1B0",
-  // "llStg300btagl1p3"
+  "llOnZ",
+  "llbtagg1p3",
+  "llStg300OffZbtagl1p3",
+  "llStg300OffZbtagl1p3Tight",
+  "llOffZ"
 };
 const std::vector<std::vector<TString>> REGIONS_NAME{
-  {"",                    "No cuts",             ""                  },
-  {", CR",                "S_{T}<300GeV",        ""                  },
-  // {", CR",                "S_{T}<300GeV",        "OnZ"               },
-  // {", SR",                "p_{T}^{miss}>20GeV",  "njet#geq1, nbjet=1"},
-  {", CR",                "p_{T}^{miss}>20GeV",  "njet#geq1, nbjet=0"},
-  // {", New SR (Loose)",    "S_{T}>300GeV",        "btag<1.3"          }
-};
+    {"No cuts", ""},
+    {"p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"},
+    {"p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"},
+    {"p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"},
+    {"S_{T}<300GeV", "(CR)"},
+    {"OnZ", "(Z+jets CR)"},
+    {"btag>1.3", "(t#bar{t}+jets CR)"},
+    {"S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))"},
+    {"S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))"},
+    {"OffZ", "(Close to SR CR)"}
+}
+const TString DOMAINS[2] = {"geqMedLepgeqTightTa", "geqMedLeplTightTa"}
+const TString DOMAINS_NAME[2] = {"#geq Tight Tau", "< Tight Tau"}
 const TString VARS[4] = {"Ta", "FakeTa", "geqTightTa", "lTightTa"};
 
 // Fake factor bins

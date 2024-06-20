@@ -17,7 +17,8 @@ const std::vector<TString> REGIONS{
   "llOnZ",
   "llbtagg1p3",
   "llStg300OffZbtagl1p3",
-  "llStg300OffZbtagl1p3Tight"
+  "llStg300OffZbtagl1p3Tight",
+  "llOffZ"
 };
 const std::vector<TString> REGIONS_LATEX{
   "2$l+\\tau_h$, no cuts",
@@ -28,7 +29,8 @@ const std::vector<TString> REGIONS_LATEX{
   "2$l+\\tau_h$, Z+jets CR, On Z",
   "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$",
   "2$l+\\tau_h$, SR(Alt, Loose), btag $<1.3$",
-  "2$l+\\tau_h$, SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV"
+  "2$l+\\tau_h$, SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
+  "2$l+\\tau_h$, Close to SR CR, Off Z"
 };
 const std::vector<TString> TABLE_LATEX{"Data", "$t\\bar{t}X$", "VV", "DY",
   "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"};
@@ -36,6 +38,7 @@ const std::vector<TString> TABLE_LATEX{"Data", "$t\\bar{t}X$", "VV", "DY",
 void Fill(TH1F* h, std::vector<std::vector<Double_t>>& cutflow, 
   std::vector<std::vector<Double_t>>& cutflowErr, Int_t idx);
 
+// TODO: ADD DOMAIN AS INPUT
 void Cutflow(TString inputFolder) {
 
   // Open files and save histograms

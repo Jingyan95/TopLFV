@@ -274,11 +274,17 @@ public :
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
 
-  typedef std::vector<TH1F*> Dim1;
-  typedef std::vector<Dim1> Dim2;
-  typedef std::vector<Dim2> Dim3;
-  typedef std::vector<Dim3> Dim4;
-  typedef std::vector<Dim4> Dim5;
+  typedef std::vector<TH1F*> Dim1_1;
+  typedef std::vector<Dim1_1> Dim2_1;
+  typedef std::vector<Dim2_1> Dim3_1;
+  typedef std::vector<Dim3_1> Dim4_1;
+  typedef std::vector<Dim4_1> Dim5_1;
+
+  typedef std::vector<TH2F*> Dim1_2;
+  typedef std::vector<Dim1_2> Dim2_2;
+  typedef std::vector<Dim2_2> Dim3_2;
+  typedef std::vector<Dim3_2> Dim4_2;
+  typedef std::vector<Dim4_2> Dim5_2;
 
   // Utility functions
   int rInd(std::vector<TString> R, TString name);

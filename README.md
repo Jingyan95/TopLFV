@@ -8,7 +8,7 @@ This framework depends on ROOT libraries. The setup has only been texted on lxpl
 
 ## II. To compile & run
 ```
-git clone https://github.com/jingyan95/TopLFV.git
+git clone git@github.com:Jingyan95/TopLFV.git # First time only
 cd TopLFV
 make all
 ./RunAll
@@ -102,7 +102,7 @@ root -l -b -q JetToTauFakeFactors.C
     <td>N/A</td>
   </tr>
   <tr>
-    <td>helper/JetToTauFakeFactors.cc</td>
+    <td>helper/JetToTauFakeFactors.C</td>
     <td>ROOT macro for calculating the jet to tau fake factors</td>
   </tr>
   <tr>
@@ -122,7 +122,7 @@ root -l -b -q JetToTauFakeFactors.C
     <td>Directory where latex files live</td>
   </tr>
   <tr>
-    <td>latex/Cutflow.cc</td>
+    <td>latex/Cutflow.C</td>
     <td>Utility file for creating event yield tables in LaTeX format</td>
   </tr>
   <tr>
@@ -176,7 +176,7 @@ root -l -b -q JetToTauFakeFactors.C
 </table>
 
 ## CMSSW warning
-You might see this warning if `cmsenv` is not set. So far it doesn't seem to affect the results.
+You might see this warning when running `RunAll` if `cmsenv` is not set. So far it this can be ignored.
 ```
 TClass::Init:0: RuntimeWarning: no dictionary for class edm::Hash<1> is available
 TClass::Init:0: RuntimeWarning: no dictionary for class edm::ProcessHistory is available

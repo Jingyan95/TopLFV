@@ -29,7 +29,8 @@ REGIONS = [
     "llOnZ",
     "llbtagg1p3",
     "llStg300OffZbtagl1p3",
-    "llStg300OffZbtagl1p3Tight"
+    "llStg300OffZbtagl1p3Tight",
+    "llOffZ"
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
@@ -40,7 +41,8 @@ REGIONS_NAME = [
     ("OnZ", "(Z+jets CR)"),
     ("btag>1.3", "(t#bar{t}+jets CR)"),
     ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))"),
-    ("S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))")
+    ("S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))"),
+    ("OffZ", "(Close to SR CR)")
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
 DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
@@ -71,7 +73,7 @@ def getLumi(year):
     return "138"
 
 
-# set up an argument parser
+# Set up an argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument("--y", dest="YEAR", default="2016")
 parser.add_argument("--p", dest="HISTPATH", default="")
@@ -88,7 +90,7 @@ if not ARGS.SQUARE: square = CMS.kRectangular
 if len(ARGS.OUTPATH)>0: ARGS.FOLDER = ARGS.OUTPATH + "/" + ARGS.FOLDER
 
 
-# read in histograms
+# Read in histograms
 HistAddress = os.path.dirname(sys.path[0])+"/hists"
 if len(ARGS.HISTPATH)>0: HistAddress += "/"+ARGS.HISTPATH
 h = {}
@@ -104,21 +106,21 @@ for year in YEARS:
                         for var in VARS:
                             hname = charge+"_"+channel+"_"+region+"_"+domain+"_"+var
                             temp = file[hname].to_pyroot().Clone()
-                            # underflow and overflow
+                            # Underflow and overflow
                             temp.SetBinContent(1, temp.GetBinContent(0)+temp.GetBinContent(1))
                             temp.SetBinContent(temp.GetXaxis().GetNbins(),
                                 temp.GetBinContent(temp.GetXaxis().GetNbins())+temp.GetBinContent(temp.GetXaxis().GetNbins()+1))
-                            # set negative event counts due to NLO low statistics to 0
+                            # Set negative event counts due to NLO low statistics to 0
                             for i in range(1, temp.GetNbinsX()+1):
                                 if temp.GetBinContent(i)<0.0:
                                     temp.SetBinContent(i, 0.0)
                                     temp.SetBinError(i, 0.0)
-                            # save histogram
+                            # Save histogram
                             h[year+"_"+sample+"_"+hname] = temp
         file.close()
 
 
-# create save folders
+# Create save folders
 for year in YEARS:
     for region in REGIONS:
         for domain in DOMAINS:
@@ -143,7 +145,7 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     CMS.SetEnergy("13") # Run 2
     CMS.SetExtraText(PLOT_LABEL)
 
-    # make MC and signal histograms
+    # Make MC and signal histograms
     MCHists = []
     SigHists = []
     for iSample, sample in enumerate(SAMPLES):
@@ -162,11 +164,11 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
             loopHist.SetFillColor(0)
             SigHists.append(loopHist)
 
-    # calculate data/pred. ratio
+    # Calculate data/pred. ratio
     ratioHist = hists[0].Clone()
     ratioHist.Divide(MCHists[-1].Clone())
 
-    # get error on MC and ratio
+    # Get error on MC and ratio
     xpos = []
     xerr = []
     ypos = []
@@ -194,10 +196,10 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
         MCErrorHist = ROOT.TGraphAsymmErrors()
         MCRelError = ROOT.TGraphAsymmErrors()
 
-    # get x_min and x_max
+    # Get x_min and x_max
     x_min = hists[0].GetBinLowEdge(1)
     x_max = hists[0].GetBinLowEdge(hists[0].GetNbinsX())+hists[0].GetBinWidth(hists[0].GetNbinsX())
-    # get y_min and y_max
+    # Get y_min and y_max
     y_max = hists[0].GetMaximum()
     true_y_min = 1e10
     for hist in hists:
@@ -211,7 +213,7 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
         square=square, extraSpace=0.1, iPos=0)
     dicanv.cd(1).SetLogy(True)
 
-    # draw histograms
+    # Draw histograms
     for iHist, loopHist in enumerate(reversed(MCHists)):
         CMS.cmsDraw(loopHist, "hist", fcolor=COLORS[1+iHist])
     CMS.cmsDraw(MCErrorHist, "E2", fstyle=3004, fcolor=COLORS[0])
@@ -219,7 +221,7 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     for iHist, loopHist in enumerate(SigHists):
         CMS.cmsDraw(loopHist, "hist", lcolor=COLORS[1+len(MCHists)+iHist], fcolor=0, lwidth=3, lstyle=iHist+1)
 
-    # draw legend
+    # Draw legend
     if square:
         legLeft = CMS.cmsLeg(0.59, 0.71, 0.74, 0.89, textSize=0.04)
         legRight = CMS.cmsLeg(0.74, 0.71, 0.89, 0.89, textSize=0.04)
@@ -238,7 +240,7 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     for iHist, loopHist in enumerate(SigHists):
         legBottom.AddEntry(loopHist, SAMPLES_NAME[1+len(MCHists)+iHist], "l")
 
-    # add charge, channel, region labels
+    # Add charge, channel, region labels
     if square:
         legLabelTop = CMS.cmsLeg(0.18, 0.83, 0.5, 0.89, textSize=0.04)
         legLabelMiddle = CMS.cmsLeg(0.18, 0.77, 0.5, 0.83, textSize=0.04)
@@ -251,7 +253,7 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     CMS.cmsHeader(legLabelMiddle, REGIONS_NAME[iRegion][0], textSize=0.04)
     CMS.cmsHeader(legLabelBottom, REGIONS_NAME[iRegion][1], textSize=0.04)
 
-    # draw MC relative error and ratio plot + reference lines
+    # Draw MC relative error and ratio plot + reference lines
     dicanv.cd(2)
     CMS.cmsDraw(MCRelError, "E2", fstyle=3004, fcolor=COLORS[0])
     CMS.cmsDraw(ratioHist, "P EX0", fcolor=COLORS[0], lwidth=2)
@@ -269,7 +271,7 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
 
 
 def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, saveDir):
-    ROOT.gStyle.SetErrorX(0) # no horizontal error bar
+    ROOT.gStyle.SetErrorX(0) # No horizontal error bar
     hs = ROOT.THStack("hs", "")
     for num in range(1, len(hists)):
         hs.Add(hists[num])
@@ -296,7 +298,7 @@ def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     canvas.SetGrid()
     canvas.SetBottomMargin(0.17)
     canvas.cd()
-    # calculating S/sqrt(B)
+    # Calculating S/sqrt(B)
     Label_sig = ROOT.TLatex(0.051, 0.29, r"#frac{S}{#sqrt{B}}")
     Label_sig.SetNDC()
     Label_sig.SetTextFont(42)
@@ -329,8 +331,8 @@ def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     legend3.SetTextFont(42)
     legend3.SetTextSize(0.05)
 
-    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # used for the hist plot
-    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # used for the ratio plot
+    pad1 = ROOT.TPad("pad1", "pad1", 0, 0.315, 1, 0.99, 0) # Used for the hist plot
+    pad2 = ROOT.TPad("pad2", "pad2", 0, 0.0, 1, 0.305, 0) # Used for the ratio plot
     pad1.Draw()
     pad2.Draw()
     pad2.SetGridy()
@@ -385,7 +387,7 @@ def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     frame.Draw("AXISSAMEY+")
     frame.Draw("AXISSAMEX+")
     pad1.Update()
-    # sub-SR boundries and legends
+    # Sub-SR boundries and legends
     line = ROOT.TLine(2, 0, 2, y_max*15)
     line.SetLineColor(ROOT.kBlack)
     line.SetLineWidth(1)
@@ -584,7 +586,7 @@ def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     gc.collect()
 
 
-# make 1D variable plots
+# Make 1D variable plots
 for year in YEARS:
     for charge in CHARGES:
         for iChannel, channel in enumerate(CHANNELS):
@@ -600,7 +602,7 @@ for year in YEARS:
                             charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain],
                             ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
 
-# make summary plots
+# Make summary plots
 for year in YEARS:
     for iRegion, region in enumerate(REGIONS):
         for iDomain, domain in enumerate(DOMAINS):
