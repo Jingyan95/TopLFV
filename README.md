@@ -102,7 +102,7 @@ root -l -b -q JetToTauFakeFactors.C
     <td>N/A</td>
   </tr>
   <tr>
-    <td>helper/JetToTauFakeFactors.cc</td>
+    <td>helper/JetToTauFakeFactors.C</td>
     <td>ROOT macro for calculating the jet to tau fake factors</td>
   </tr>
   <tr>
@@ -122,7 +122,7 @@ root -l -b -q JetToTauFakeFactors.C
     <td>Directory where latex files live</td>
   </tr>
   <tr>
-    <td>latex/Cutflow.cc</td>
+    <td>latex/Cutflow.C</td>
     <td>Utility file for creating event yield tables in LaTeX format</td>
   </tr>
   <tr>
