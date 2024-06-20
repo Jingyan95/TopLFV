@@ -11,7 +11,7 @@ CXXFLAGS       += $(ROOTCFLAGS)
 LD             = g++
 LDFLAGS        =
 
-SOFLAGS        = -O -shared -fPIC #-flat_namespace
+SOFLAGS        = -O -shared -fPIC # -flat_namespace
 LIBS           = $(ROOTLIBS)
 
 GLIBS          = $(ROOTGLIBS) -lMinuit -lTreePlayer
@@ -20,7 +20,6 @@ SRCS           = src/lepton_candidate.cc src/jet_candidate.cc src/event_candidat
 OBJS           = $(patsubst %.C,%.o,$(SRCS:.cc=.o))
 
 LIB            = lib/main.so
-
 
 .SUFFIXES: .cc, .C, .hh, .h
 
@@ -34,7 +33,7 @@ $(LIB): $(OBJS)
 	$(LD) $(LDFLAGS) $(GLIBS) $(SOFLAGS) $(OBJS) -o $(LIB)
 	@echo "$(LIB) successfully compiled!"
 
-RunAll : src/main.cc $(LIB)	
+RunAll : src/main.cc $(LIB)
 	mkdir -p bin
 	$(CXX) $(CXXFLAGS) -ldl $(LDFLAGS) -o $@ $^ $(GLIBS)
 
