@@ -38,12 +38,13 @@ The plots will be written out to https://etsai.web.cern.ch/TopLFV/.
 ## VI. To get event yields
 ```
 cd latex/
-root -l -b -q 'Cutflow.cc+("<folder name>")'
+root -l -b -q 'Cutflow.cc+("<folder where histograms are stored>")'
 ```
-This script will produce a table of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
+This script will produce tables of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
 ```
-pdflatex <file name>.tex
+pdflatex Cutflow_Tables.tex
 ```
+*NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
 
 ## File descriptions
 <table border="0">
