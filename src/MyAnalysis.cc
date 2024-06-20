@@ -298,8 +298,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         data == "mc" ? (int) Muon_genPartFlav[l] : 1, -1));
     }
 
+    // Applying flavor-dependent trigger requirement
     if (Leptons->size() != 2 || ((*Leptons)[0]->pt_ < lep1PtCut && (*Leptons)[1]->pt_ < lep1PtCut)
-        || !myTrig->triggerPass((*Leptons)[0]->flavor_ + (*Leptons)[1]->flavor_ - 2)) { // Applying flavor-dependent trigger requirement
+        || !myTrig->triggerPass((*Leptons)[0]->flavor_ + (*Leptons)[1]->flavor_ - 2)) {
       deleteContainter(Leptons);
       continue;
     }
