@@ -49,7 +49,7 @@ void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pNam
 TString GetLumi(TString year);
 
 
-void TrileptonFF() {
+void JetToTauFakeFactors() {
   // Open files and save histograms
   std::map<TString, TH1F*> H1{};
   std::map<TString, TH2F*> H2{};
