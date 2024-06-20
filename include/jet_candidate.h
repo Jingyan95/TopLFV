@@ -11,9 +11,11 @@
 
 using namespace std;
 // using namespace math;
+
 class jet_candidate {
 
 public:
+
   jet_candidate(float, float, float, float, float, float, TString, int);
   ~jet_candidate();
   float pt_;
