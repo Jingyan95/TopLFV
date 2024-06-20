@@ -82,15 +82,15 @@ public:
     float A = 4 * (El * El - plz * plz);
     float B = -4 * x * plz;
     float C = 4 * El * El * MET->Pt() * MET->Pt() - x * x;
-    float delta = B * B - 4 * A * C; // quadratic formula
+    float delta = B * B - 4 * A * C; // Quadratic formula
     if (delta < 0) {
-      pz = -B / (2 * A); // take the real part of the complex solution
+      pz = -B / (2 * A); // Take the real part of the complex solution
     }
     else {
       float sol1 = (-B - sqrt(delta)) / (2 * A);
       float sol2 = (-B + sqrt(delta)) / (2 * A);
       if (abs(sol1 - plz) < abs(sol2 - plz)) {
-        pz = sol1; // pick the one closest to lepton pz
+        pz = sol1; // Pick the one closest to lepton pz
       }
       else {
         pz = sol2;
@@ -110,7 +110,7 @@ private:
   lepton_candidate* LFVmu_;
   lepton_candidate* LFVta_;
   lepton_candidate* Balep_; // SM lepton, a.k.a. bachelor lepton 
-  jet_candidate* bjet_; // jet with the highest b-tagging score
+  jet_candidate* bjet_; // Jet with the highest b-tagging score
   int c_; // Charges: 0->Opposite-Sign, 1->Same-Sign
   int ch_; // Channel: 0->ee+tau, 1->emu+ta, 2->mumu+ta
   int lfvch_; // LFV channel: 0->LFV-emu, 1->LFV-eta, 2->LFV-muta
