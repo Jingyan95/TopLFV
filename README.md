@@ -1,4 +1,4 @@
-# Top LFV Analysis
+# Top LFV extension analysis
 This framework depends on ROOT libraries. The setup has only been texted on lxplus.
 
 ## I. Setup
