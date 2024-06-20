@@ -49,19 +49,19 @@ pdflatex Cutflow_Tables.tex
 <table border="0">
   <tr>
     <td>bin/nano_files_2016APV.py</td>
-    <td>Python file to store addresses of 2016preVFP samples with trilepton events</td>
+    <td>Python file to store addresses of 2016preVFP samples</td>
   </tr>
   <tr>
     <td>bin/nano_files_2016.py</td>
-    <td>Python file to store addresses of 2016postVFP samples with trilepton events</td>
+    <td>Python file to store addresses of 2016postVFP samples</td>
   </tr>
   <tr>
     <td>bin/nano_files_2017.py</td>
-    <td>Python file to store addresses of 2017 samples with trilepton events</td>
+    <td>Python file to store addresses of 2017 samples</td>
   </tr>
   <tr>
     <td>bin/nano_files_2018.py</td>
-    <td>Python file to store addresses of 2018 samples with trilepton events</td>
+    <td>Python file to store addresses of 2018 samples</td>
   </tr>
   <tr>
     <td>bin/makeJobs.py</td>
