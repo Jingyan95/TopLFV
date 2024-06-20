@@ -8,9 +8,11 @@
 
 using namespace std;
 // using namespace math;
+
 class trigger {
 
 public:
+
   trigger(TString, TString);
   void Init(Bool_t, Bool_t, Bool_t, Bool_t, Bool_t, Bool_t);
   ~trigger();

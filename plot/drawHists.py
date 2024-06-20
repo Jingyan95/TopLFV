@@ -6,59 +6,40 @@ import numpy as np
 import cmsstyle as CMS
 import ROOT
 import gc
-
-from eventYields import getEventYields
-
+from math import sqrt
+from array import array
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018"]
 SAMPLES = ["Data", "TX", "VV", "DY", "TT"]
 SAMPLES_NAME = ["Data", "t#bar{t}(+X)", "VV(V)", "DY/ZZ", "t#bar{t}"]
-SAMPLES_LATEX = ["Data", "$t\\bar{t}(+X)$", "VV(V)", "DY/ZZ", "$t\\bar{t}$"]
+SAMPLES_NAME_SUMMARY = ["Data", "$t\\bar{t}(+X)$", "VV(V)", "DY/ZZ", "$t\\bar{t}$"]
 CHARGES = ["OS", "SS"]
 CHANNELS = ["e", "mu"]
 CHANNELS_NAME = ["e#tau_{h}", "#mu#tau_{h}"]
 REGIONS = [
-    "ll", # no cuts
-    "llStg300",
-    "llOffZ",
-    "llbtagl1p3",
-    "llMetg20",
-    "llJetgeq1",
-    "llB1",
-    "llStg300OffZbtagl1p3Metg20Jetgeq1", # SR
-    "llStl300OnZMetg20Jetl2B0", # DY/ZZ + jets CR
-    "llStg300OffZbtagg1p3Metg20Jetgeq1", # ttbar + jets CR
-    "llStl300" # for comparison to previous results
+    "ll",
+    "llOnZMetg20Jetgeq1",
+    "llOffZMetg20B1",
+    "llOffZMetg20B2",
+    "llStl300",
+    "llOnZ",
+    "llbtagg1p3",
+    "llStg300OffZbtagl1p3",
+    "llStg300OffZbtagl1p3Tight"
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("S_{T}>300GeV", ""),
-    ("OffZ", ""),
-    ("#sumbtag<1.3", ""),
-    ("p_{T}^{miss}>20GeV", ""),
-    ("njet#geq1", ""),
-    ("nbjet=1", ""),
-    ("S_{T}>300GeV, OffZ, #sumbtag<1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (SR)"),
-    ("S_{T}<300GeV, OnZ, p_{T}^{miss}>20GeV,", "njet<2, nbjet=0 (CR)"),
-    ("S_{T}>300GeV, OffZ, #sumbtag>1.3,", "p_{T}^{miss}>20GeV, njet#geq1 (CR)"),
-    ("S_{T}<300GeV", "")
-]
-REGIONS_LATEX = [
-    "No cuts",
-    "$S_{T}>$300GeV",
-    "OffZ",
-    "$\\sum$btag$<$1.3",
-    "$p_{T}^{miss}>$20GeV",
-    "njet$\\geq$1",
-    "nbjet=1",
-    "$S_{T}>$300GeV, OffZ, $\\sum$btag$<$1.3, $p_{T}^{miss}>$20GeV, njet$\\geq$1 (SR)",
-    "$S_{T}<$300GeV, OnZ, $p_{T}^{miss}>$20GeV, njet$<$2, nbjet=0 (CR)",
-    "$S_{T}>$300GeV, OffZ, $\\sum$btag$>$1.3, $p_{T}^{miss}>$20GeV, njet$\\geq$1 (CR)",
-    "$S_{T}<$300GeV"
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
+    ("S_{T}<300GeV", "(CR)"),
+    ("OnZ", "(Z+jets CR)"),
+    ("btag>1.3", "(t#bar{t}+jets CR)"),
+    ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))"),
+    ("S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))")
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
-DOMAINS_NAME = ["#geqTight Tau", "<Tight Tau"]
-DOMAINS_LATEX = ["$\\geq$Tight Tau", "$<$Tight Tau"]
+DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
 VARS = [
     "llM", "llDr", "lep1Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2", "taPt",
     "taPtFake", "taEta", "taEtaFake", "taVsJetWP", "taVsJetMVA", "taVsElMVA", "taVsMuMVA", "taDxy",
@@ -86,6 +67,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--y", dest="YEAR", default="2016")
 parser.add_argument("--p", dest="HISTPATH", default="")
 parser.add_argument("--s", dest="SQUARE", default=True)
+parser.add_argument("--o", dest="OUTPATH", default="")
 parser.add_argument("--f", dest="FOLDER", default="StackHist")
 ARGS = parser.parse_args()
 YEARS = []
@@ -94,6 +76,7 @@ for iYear, year in enumerate(YEARS_RUN2):
         YEARS.append(YEARS_RUN2[iYear])
 square = CMS.kSquare
 if not ARGS.SQUARE: square = CMS.kRectangular
+if len(ARGS.OUTPATH)>0: ARGS.FOLDER = ARGS.OUTPATH + "/" + ARGS.FOLDER
 
 
 # read in histograms
@@ -263,24 +246,34 @@ def makePlot(hists, year, charge, iChannel, iRegion, varName, var, topLabel, sav
     CMS.cmsDrawLine(midLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
     CMS.cmsDrawLine(downLine, lcolor=COLORS[0], lstyle=ROOT.kDotted)
 
+    CMS.SaveCanvas(dicanv, saveDir+"/"+var+".png", close=False)
     CMS.SaveCanvas(dicanv, saveDir+"/"+var+".pdf")
     del dicanv
     gc.collect()
 
 
-# get event yields and make 1D variable plots
-for year in YEARS:
-    getEventYields(h, SAMPLES, SAMPLES_LATEX, DOMAINS, DOMAINS_LATEX, CHARGES, CHANNELS, year, REGIONS, REGIONS_LATEX)
+# def SummaryPlot(hists, SignalHists, Fnames, year, iRegion, region, iDomain, saveDir):
+#     TODO
 
-    # for iRegion, region in enumerate(REGIONS):
-    #     for iDomain, domain in enumerate(DOMAINS):
-    #         for charge in CHARGES:
-    #             for iChannel, channel in enumerate(CHANNELS):
-    #                 for iVar, var in enumerate(VARS):
-    #                     hists = []
-    #                     for iSample, sample in enumerate(SAMPLES):
-    #                         hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+domain+"_"+var
-    #                         hists.append(h[hkey])
-    #                     makePlot(hists, year, charge, iChannel, iRegion, VARS_NAME[iVar], var,
-    #                         charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain],
-    #                         ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
+
+# make 1D variable plots
+for year in YEARS:
+    for charge in CHARGES:
+        for iChannel, channel in enumerate(CHANNELS):
+            for iRegion, region in enumerate(REGIONS):
+                for iVar, var in enumerate(VARS):
+                    if var=="subSR": continue
+                    for iDomain, domain in enumerate(DOMAINS):
+                        hists = []
+                        for iSample, sample in enumerate(SAMPLES):
+                            hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+domain+"_"+var
+                            hists.append(h[hkey])
+                        makePlot(hists, year, charge, iChannel, iRegion, VARS_NAME[iVar], var,
+                            charge+", "+CHANNELS_NAME[iChannel]+", "+DOMAINS_NAME[iDomain],
+                            ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
+
+# make summary plots
+# for year in YEARS:
+#     for iRegion, region in enumerate(REGIONS):
+#         for iDomain, domain in enumerate(DOMAINS):
+#             TODO

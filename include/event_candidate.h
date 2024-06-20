@@ -16,6 +16,7 @@ using namespace std;
 class event_candidate {
 
 public:
+
   event_candidate(std::vector<lepton_candidate*>* Leptons,
                   std::vector<jet_candidate*>* Jets,
                   float MET_pt,

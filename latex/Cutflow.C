@@ -1,38 +1,34 @@
+#include "TFile.h"
+#include "TString.h"
+#include "TH1F.h"
+#include <fstream>
+#include <iostream>
+
 const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
 const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT", "LFVStScalarU", "LFVTtScalarU"};
 const TString CHARGES[2] = {"OS", "SS"};
 const TString CHANNELS[3] = {"ee", "emu", "mumu"};
 const std::vector<TString> REGIONS{
-  /*0*/ "ll", // No cuts
-  /*1*/ "llOffZMetg20Jetgeq1B1", // SR
-  /*2*/ "llOffZMetg20Jetgeq1B2", // ttbar + jets CR
-  /*3*/ "llOffZStg300btagl1p3", // New SR (Loose)
-  /*4*/ "llOffZStg300btagl1p3Tight", // New SR (Tight)
-  /*5*/ "llOnZ", // Z + jets CR
-  /*6*/ "llOnZMetg20Jetgeq1", // Z + jets CR
-  /*7*/ "llbtagg1p3", // ttbar + jets CR
-  /*8*/ "llbtagg1p3OffZ", // ttbar + jets CR
-  /*9*/ "llStl300", // Generic signal-free region
-  /*10*/ "llStl300OnZ", // Generic signal-free region
-  /*11*/ "llStl300OffZ", // Generic signal-free region
-  /*12*/ "llMetg20Jetgeq1B0", // CR background estimation
-  /*13*/ "llMetg20Jetgeq1B0OffZ" // CR background estimation
+  "ll",
+  "llOnZMetg20Jetgeq1",
+  "llOffZMetg20B1",
+  "llOffZMetg20B2",
+  "llStl300",
+  "llOnZ",
+  "llbtagg1p3",
+  "llStg300OffZbtagl1p3",
+  "llStg300OffZbtagl1p3Tight"
 };
 const std::vector<TString> REGIONS_LATEX{
   "2$l+\\tau_h$, no cuts",
+  "2$l+\\tau_h$, Z+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
   "2$l+\\tau_h$, SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
   "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
-  "2$l+\\tau_h$, SR (Alt, Loose), Off Z, $S_T>300$ GeV, btag $<1.3$",
-  "2$l+\\tau_h$, SR (Alt, Tight), Off Z, $S_T>300$ GeV, btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
-  "2$l+\\tau_h$, Z + jets CR, On Z",
-  "2$l+\\tau_h$, Z + jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
-  "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$",
-  "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$, Off Z",
   "2$l+\\tau_h$, CR, $S_T<300$ GeV",
-  "2$l+\\tau_h$, CR, $S_T<300$ GeV, On Z",
-  "2$l+\\tau_h$, CR, $S_T<300$ GeV, Off Z",
-  "2$l+\\tau_h$, CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$",
-  "2$l+\\tau_h$, CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=0$, Off Z"
+  "2$l+\\tau_h$, Z+jets CR, On Z",
+  "2$l+\\tau_h$, $t\\bar{t}$ + jets CR, btag $>1.3$",
+  "2$l+\\tau_h$, SR(Alt, Loose), btag $<1.3$",
+  "2$l+\\tau_h$, SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV"
 };
 const std::vector<TString> TABLE_LATEX{"Data", "$t\\bar{t}X$", "VV", "DY",
   "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"};
@@ -40,14 +36,14 @@ const std::vector<TString> TABLE_LATEX{"Data", "$t\\bar{t}X$", "VV", "DY",
 void Fill(TH1F* h, std::vector<std::vector<Double_t>>& cutflow, 
   std::vector<std::vector<Double_t>>& cutflowErr, Int_t idx);
 
-void Cutflow() {
+void Cutflow(TString inputFolder) {
 
   // Open files and save histograms
   std::map<TString, TH1F*> H{};
   for (TString year : YEARS) {
     for (TString sample : SAMPLES) {
 
-      TString filename = "../hists/" + year + "_" + sample + ".root";
+      TString filename = "../hists/" + inputFolder + "/" + year + "_" + sample + ".root";
       TFile* f = TFile::Open(filename);
 
       for (TString region : REGIONS) {
@@ -121,9 +117,31 @@ void Cutflow() {
     }
   }
 
+  // Start LaTeX document
+  char text[1000];
+  ofstream fout;
+  fout.open("Cutflow_Tables.tex");
+  fout << "\\documentclass{beamer}\n";
+  fout << "\\usepackage[orientation = landscape, size = custom, width = 16, height = 12, scale = 0.5]{beamerposter}\n";
+  fout << "\n";
+  fout << "\\title{\\textbf{Cutflow Tables}}\n";
+  fout << "\\author{Author}\n";
+  fout << "\n";
+  fout << "\\begin{document}\n";
+  fout << "\n";
+  fout << "  \\begin{frame}\n";
+  fout << "    \\maketitle\n";
+  fout << "  \\end{frame}\n";
+  fout << "\n";
+  fout << "  \\begin{frame}{\\textbf{Table of contents}}\n";
+  fout << "    \\tableofcontents\n";
+  fout << "  \\end{frame}\n";
+  fout << "\n";
+
   // Get counts
   for (TString year : YEARS) {
-    for (Int_t r = 0; r < REGIONS.size(); r++) {
+    bool firstOfYear = true;
+    for (unsigned int r = 0; r < REGIONS.size(); r++) {
 
       // Initialize containers for cutflow table
       std::vector<std::vector<Double_t>> cutflow = {
@@ -148,7 +166,7 @@ void Cutflow() {
       Fill(H.at(year + "_" + REGIONS[r] + "_subSR_" + SAMPLES[5]), cutflow, cutflowErr, 5);
       Fill(H.at(year + "_" + REGIONS[r] + "_subSR_" + SAMPLES[6]), cutflow, cutflowErr, 6);
       // Calculating background
-      for (int b = 0; b < cutflow.size(); b++) {
+      for (unsigned int b = 0; b < cutflow.size(); b++) {
         cutflow.at(b).at(7) += cutflow.at(b).at(1) + cutflow.at(b).at(2)
           + cutflow.at(b).at(3) + cutflow.at(b).at(4);
         cutflowErr.at(b).at(7) += sqrt(cutflowErr.at(b).at(1) * cutflowErr.at(b).at(1)
@@ -157,33 +175,24 @@ void Cutflow() {
           + cutflowErr.at(b).at(4) * cutflowErr.at(b).at(4));
       }
       // Calculating signal
-      for (int b = 0; b < cutflow.size(); b++) {
+      for (unsigned int b = 0; b < cutflow.size(); b++) {
         cutflow.at(b).at(8) += cutflow.at(b).at(5) + cutflow.at(b).at(6);
         cutflowErr.at(b).at(8) += sqrt(cutflowErr.at(b).at(5) * cutflowErr.at(b).at(5)
           + cutflowErr.at(b).at(6) * cutflowErr.at(b).at(6));
       }
       // Calculating S/sqrt(B)
-      for (int b = 0; b < cutflow.size(); b++) {
+      for (unsigned int b = 0; b < cutflow.size(); b++) {
         cutflow.at(b).at(9) += cutflow.at(b).at(8) / sqrt(cutflow.at(b).at(7));
       }
 
-      // Writing cutflow table to LaTeX table format
-      char text[1000];
-      ofstream fout;
-      fout.open(year + "_" + REGIONS[r] + "_cutflow.tex");
-      fout << "\\documentclass{beamer}\n";
-      fout << "\\usepackage[orientation = landscape, size = custom, width = 16, height = 12, scale = 0.5, debug]{beamerposter}\n";
-      fout << "\n";
-      fout << "\\title{\\textbf{Cutflow Table}}\n";
-      fout << "\\author{Your Name Here}\n";
-      fout << "\n";
-      fout << "\\begin{document}\n";
-      fout << "\n";
-      fout << "  \\begin{frame}\n";
-      fout << "    \\maketitle\n";
-      fout << "  \\end{frame}\n";
-      fout << "\n";
-      fout << "  \\begin{frame}{\\textbf{Cutflow}}\n";
+      // Writing cutflow table to LaTeX format
+      if (firstOfYear) {
+        fout << "  \\section{" + year + "}\n";
+        fout << "\n";
+        firstOfYear = false;
+      }
+      fout << "  \\subsection{" + REGIONS_LATEX[r] + "}\n";
+      fout << "  \\begin{frame}{\\textbf{" + year + "}}\n";
       fout << "    \\begin{itemize}\n";
       fout << "      \\item " + REGIONS_LATEX[r] + "\n";
       fout << "    \\end{itemize}\n";
@@ -194,7 +203,7 @@ void Cutflow() {
       fout << "        Mass & OS-$ee$ & OS-$ee$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ & OS-$e\\mu$ \\\\\n";
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(e\\mu)<150$GeV & $m(e\\mu)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
-      for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
+      for (unsigned int s = 0; s < TABLE_LATEX.size(); s++) {
         if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
@@ -230,7 +239,7 @@ void Cutflow() {
       fout << "        Mass & OS-$e\\mu$ & OS-$e\\mu$ & OS-$\\mu\\mu$ & OS-$\\mu\\mu$ & SS-$ee$ & SS-$ee$ \\\\\n";
       fout << "        Region & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
-      for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
+      for (unsigned int s = 0; s < TABLE_LATEX.size(); s++) {
         if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
@@ -266,7 +275,7 @@ void Cutflow() {
       fout << "        Mass & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$e\\mu$ & SS-$\\mu\\mu$ & SS-$\\mu\\mu$ \\\\\n";
       fout << "        Region & $m(e\\tau_h)<150$GeV & $m(e\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV & $m(\\mu\\tau_h)<150$GeV & $m(\\mu\\tau_h)>150$GeV \\\\\n";
       fout << "        \\hline\n";
-      for (Int_t s = 0; s < TABLE_LATEX.size(); s++) {
+      for (unsigned int s = 0; s < TABLE_LATEX.size(); s++) {
         if (s == 5 || s == 6 || s == 8) {
           snprintf(text, 1000, "        " + TABLE_LATEX[s]
             + " & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f & %.4f$\\pm$%.4f"
@@ -302,10 +311,12 @@ void Cutflow() {
       fout << "    }\n";
       fout << "  \\end{frame}\n";
       fout << "\n";
-      fout << "\\end{document}\n";
-      fout.close();
     }
   }
+
+  // End LaTeX document
+  fout << "\\end{document}\n";
+  fout.close();
 }
 
 void Fill(TH1F* h, std::vector<std::vector<Double_t>>& cutflow, 
