@@ -291,7 +291,7 @@ public :
   int dInd(std::vector<TString> D, bool tightTau);
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
-  float scale_factor(const TH2F* h, float X, float Y, TString uncert);
+  float get_factor(const TH2F* h, float X, float Y, TString uncert);
   int char_to_int(UChar_t wp);
 
 private:
@@ -512,7 +512,7 @@ void deleteContainter(std::vector<T>* v) {
   delete v;
 }
 
-float MyAnalysis::scale_factor(const TH2F* h, float X, float Y, TString uncert) {
+float MyAnalysis::get_factor(const TH2F* h, float X, float Y, TString uncert) {
   int NbinsX = h->GetXaxis()->GetNbins();
   int NbinsY = h->GetYaxis()->GetNbins();
   float x_min = h->GetXaxis()->GetBinLowEdge(1);

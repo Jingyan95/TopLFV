@@ -176,7 +176,7 @@ root -l -b -q JetToTauFakeFactors.C
 </table>
 
 ## CMSSW warning
-You might see this warning when running `RunAll` if `cmsenv` is not set. So far it this can be ignored.
+This warning will appear when running `RunAll` if `cmsenv` is not set. So far it can be ignored.
 ```
 TClass::Init:0: RuntimeWarning: no dictionary for class edm::Hash<1> is available
 TClass::Init:0: RuntimeWarning: no dictionary for class edm::ProcessHistory is available
