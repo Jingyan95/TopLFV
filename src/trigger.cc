@@ -94,6 +94,7 @@ Bool_t trigger::triggerLogic(TString dataset) {
       if (Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele32_WPTight_Gsf_ || IsoMu24_) triggerPassEMu_ = true;
       if (Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_ || IsoMu24_) triggerPassMuMu_ = true;
     }
+  // Data
   } else {
     if (year_ == "2016APV") {
       if (dataset_ == "MuonEG") {
