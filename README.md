@@ -1,25 +1,73 @@
-# Top LFV Analysis
-This framework depends on ROOT libraries.
+# Top LFV extension analysis
+This framework depends on ROOT libraries. The setup has only been texted on lxplus.
+
+## I. Setup
+```
+. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
+```
+
+## II. To compile & run
+```
+git clone https://github.com/jingyan95/TopLFV.git
+cd TopLFV
+make all
+./RunAll
+```
+
+## III. To write & submit jobs
+```
+cd bin/
+python3 makeJobs.py
+python3 submitJobs.py
+```
+
+## IV. To merge output ROOT files
+```
+cd hists/
+python3 hadd.py
+```
+Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
+
+## V. To make plots
+```
+cd plot/
+python3 drawHists.py
+```
+
+## VI. To get event yields
+```
+cd latex/
+root -l -b -q 'Cutflow.C+("<folder where histograms are stored>")'
+```
+This script will produce tables of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
+```
+pdflatex Cutflow_Tables.tex
+```
+*NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
+
+## To calculate jet to tau fake factors
+```
+cd helper/
+root -l -b -q JetToTauFakeFactors.C
+```
+
+## File descriptions
 <table border="0">
   <tr>
-    <td><b style="font-size:30px">Files</b></td>
-    <td><b style="font-size:30px">Description</b></td>
+    <td>bin/nano_files_2016APV.py</td>
+    <td>Python file to store addresses of 2016preVFP samples</td>
   </tr>
   <tr>
-    <td>bin/nano_files_2016APV_dilepton.py</td>
-    <td>Python file to store addresses of 2016preVFP samples with dilepton events</td>
+    <td>bin/nano_files_2016.py</td>
+    <td>Python file to store addresses of 2016postVFP samples</td>
   </tr>
   <tr>
-    <td>bin/nano_files_2016.py_dilepton</td>
-    <td>Python file to store addresses of 2016postVFP samples with dilepton events</td>
+    <td>bin/nano_files_2017.py</td>
+    <td>Python file to store addresses of 2017 samples</td>
   </tr>
   <tr>
-    <td>bin/nano_files_2017.py_dilepton</td>
-    <td>Python file to store addresses of 2017 samples with dilepton events</td>
-  </tr>
-  <tr>
-    <td>bin/nano_files_2018.py_dilepton</td>
-    <td>Python file to store addresses of 2018 samples with dilepton events</td>
+    <td>bin/nano_files_2018.py</td>
+    <td>Python file to store addresses of 2018 samples</td>
   </tr>
   <tr>
     <td>bin/makeJobs.py</td>
@@ -42,8 +90,20 @@ This framework depends on ROOT libraries.
     <td>Directory where utility scripts live</td>
   </tr>
   <tr>
-    <td>helper/eventYields.py</td>
-    <td>Python script for making table of event yields</td>
+    <td>helper/Count_Ntotal.py</td>
+    <td>Python script for counting the total number of events and number of files</td>
+  </tr>
+  <tr>
+    <td>helper/gen_files_2016.py</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>helper/getSumOfGenWeights.py</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>helper/JetToTauFakeFactors.cc</td>
+    <td>ROOT macro for calculating the jet to tau fake factors</td>
   </tr>
   <tr>
     <td>hists/</td>
@@ -58,12 +118,28 @@ This framework depends on ROOT libraries.
     <td>Directory where header files live</td>
   </tr>
   <tr>
+    <td>latex/</td>
+    <td>Directory where latex files live</td>
+  </tr>
+  <tr>
+    <td>latex/Cutflow.cc</td>
+    <td>Utility file for creating event yield tables in LaTeX format</td>
+  </tr>
+  <tr>
+    <td>latex/beamerposter.sty</td>
+    <td>Beamer style file for compiling LaTeX event yield tables</td>
+  </tr>
+  <tr>
     <td>plot/</td>
     <td>Directory where plots are saved</td>
   </tr>
   <tr>
     <td>plot/drawHists.py</td>
     <td>Python script for plotting histograms</td>
+  </tr>
+  <tr>
+    <td>src</td>
+    <td>Directory where source files live</td>
   </tr>
   <tr>
     <td>src/MyAnalysis.cc</td>
@@ -99,42 +175,12 @@ This framework depends on ROOT libraries.
   </tr>
 </table>
 
-## I. Setup
+## CMSSW warning
+You might see this warning if `cmsenv` is not set. So far it doesn't seem to affect the results.
 ```
-. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::Hash<1> is available
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::ProcessHistory is available
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::ProcessConfiguration is available
+TClass::Init:0: RuntimeWarning: no dictionary for class edm::ParameterSetBlob is available
+TClass::Init:0: RuntimeWarning: no dictionary for class pair<edm::Hash<1>,edm::ParameterSetBlob> is available
 ```
-
-## II. To compile & run 
-```
-git clone https://github.com/jingyan95/TopLFV.git 
-cd TopLFV
-make all
-./RunAll
-```
-
-## III. To write & submit jobs 
-```
-cd bin/
-python makeJobs.py
-python submitJobs.py
-```
-
-## IV. To merge output ROOT files
-```
-cd hists/
-python hadd.py
-```
-Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
-
-## V. To make plots
-```
-cd plot/
-python drawHists.py 
-```
-
-## VI. To get event yields
-```
-cd helper/
-python eventYields.py
-```
-This script will produce a table of event yields in a LaTeX file.

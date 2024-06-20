@@ -3,10 +3,10 @@ import os
 import subprocess
 import argparse
 
-import nano_files_2016APV_dilepton
-import nano_files_2016_dilepton
-import nano_files_2017_dilepton
-import nano_files_2018_dilepton
+import nano_files_2016APV
+import nano_files_2016
+import nano_files_2017
+import nano_files_2018
 
 
 SAMPLES = {}
@@ -19,21 +19,21 @@ data_2017 = False
 mc_2018 = False
 data_2018 = False
 if mc_2016APV:
-    SAMPLES.update(nano_files_2016APV_dilepton.mc2016APV_samples)
+    SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
 if data_2016APV:
-    SAMPLES.update(nano_files_2016APV_dilepton.data2016APV_samples)
+    SAMPLES.update(nano_files_2016APV.data2016APV_samples)
 if mc_2016:
-    SAMPLES.update(nano_files_2016_dilepton.mc2016_samples)
+    SAMPLES.update(nano_files_2016.mc2016_samples)
 if data_2016:
-    SAMPLES.update(nano_files_2016_dilepton.data2016_samples)
+    SAMPLES.update(nano_files_2016.data2016_samples)
 if mc_2017:
-    SAMPLES.update(nano_files_2017_dilepton.mc2017_samples)
+    SAMPLES.update(nano_files_2017.mc2017_samples)
 if data_2017:
-    SAMPLES.update(nano_files_2017_dilepton.data2017_samples)
+    SAMPLES.update(nano_files_2017.data2017_samples)
 if mc_2018:
-    SAMPLES.update(nano_files_2018_dilepton.mc2018_samples)
+    SAMPLES.update(nano_files_2018.mc2018_samples)
 if data_2018:
-    SAMPLES.update(nano_files_2018_dilepton.data2018_samples)
+    SAMPLES.update(nano_files_2018.data2018_samples)
 
 jobruntime = 14400 # 4 hrs
 

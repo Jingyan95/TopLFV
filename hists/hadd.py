@@ -13,24 +13,24 @@ parser.add_argument('--n', dest = 'NAMETAG', default = 'All')
 ARGS = parser.parse_args()
 name = ARGS.NAMETAG
 
-import nano_files_2016APV_dilepton
-import nano_files_2016_dilepton
-import nano_files_2017_dilepton
-import nano_files_2018_dilepton
+import nano_files_2016APV
+import nano_files_2016
+import nano_files_2017
+import nano_files_2018
 
 SAMPLES = {}
 if name == 'All' or name == '2016APV':
-    SAMPLES.update(nano_files_2016APV_dilepton.mc2016APV_samples)
-    SAMPLES.update(nano_files_2016APV_dilepton.data2016APV_samples)
+    SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
+    SAMPLES.update(nano_files_2016APV.data2016APV_samples)
 if name == 'All' or name == '2016':
-    SAMPLES.update(nano_files_2016_dilepton.mc2016_samples)
-    SAMPLES.update(nano_files_2016_dilepton.data2016_samples)
+    SAMPLES.update(nano_files_2016.mc2016_samples)
+    SAMPLES.update(nano_files_2016.data2016_samples)
 if name == 'All' or name == '2017':
-    SAMPLES.update(nano_files_2017_dilepton.mc2017_samples)
-    SAMPLES.update(nano_files_2017_dilepton.data2017_samples)
+    SAMPLES.update(nano_files_2017.mc2017_samples)
+    SAMPLES.update(nano_files_2017.data2017_samples)
 if name == 'All' or name == '2018':
-    SAMPLES.update(nano_files_2018_dilepton.mc2018_samples)
-    SAMPLES.update(nano_files_2018_dilepton.data2018_samples)
+    SAMPLES.update(nano_files_2018.mc2018_samples)
+    SAMPLES.update(nano_files_2018.data2018_samples)
 
 addedFilesData = {"2016APV": [], "2016": [], "2017": [], "2018": []}
 addedFilesTX = {"2016APV": [], "2016": [], "2017": [], "2018": []} # TTX, TTTo2L2Nu
@@ -65,11 +65,11 @@ for key, value in SAMPLES.items():
     os.system(hadd)
 
 if (name == 'All') or (name == '2016APV'):
-    haddData_2016APV = 'hadd 2016APV_Data' + '.root ' + ' '.join(addedFilesData['2016APV'])
-    haddTX_2016APV = 'hadd 2016APV_TX' + '.root ' + ' '.join(addedFilesTX['2016APV'])
-    haddVV_2016APV = 'hadd 2016APV_VV' + '.root ' + ' '.join(addedFilesVV['2016APV'])
-    haddTT_2016APV = 'hadd 2016APV_TT' + '.root ' + ' '.join(addedFilesTT['2016APV'])
-    haddDY_2016APV = 'hadd 2016APV_DY' + '.root ' + ' '.join(addedFilesDY['2016APV'])
+    haddData_2016APV = 'hadd 2016APV_Data.root ' + ' '.join(addedFilesData['2016APV'])
+    haddTX_2016APV = 'hadd 2016APV_TX.root ' + ' '.join(addedFilesTX['2016APV'])
+    haddVV_2016APV = 'hadd 2016APV_VV.root ' + ' '.join(addedFilesVV['2016APV'])
+    haddTT_2016APV = 'hadd 2016APV_TT.root ' + ' '.join(addedFilesTT['2016APV'])
+    haddDY_2016APV = 'hadd 2016APV_DY.root ' + ' '.join(addedFilesDY['2016APV'])
     os.system('rm -f 2016APV_Data.root')
     os.system('rm -f 2016APV_TX.root')
     os.system('rm -f 2016APV_VV.root')
@@ -82,11 +82,11 @@ if (name == 'All') or (name == '2016APV'):
     os.system(haddDY_2016APV)
 
 if (name == 'All') or (name == '2016'):
-    haddData_2016 = 'hadd 2016_Data' + '.root ' + ' '.join(addedFilesData['2016'])
-    haddTX_2016 = 'hadd 2016_TX' + '.root ' + ' '.join(addedFilesTX['2016'])
-    haddVV_2016 = 'hadd 2016_VV' + '.root ' + ' '.join(addedFilesVV['2016'])
-    haddTT_2016 = 'hadd 2016_TT' + '.root ' + ' '.join(addedFilesTT['2016'])
-    haddDY_2016 = 'hadd 2016_DY' + '.root ' + ' '.join(addedFilesDY['2016'])
+    haddData_2016 = 'hadd 2016_Data.root ' + ' '.join(addedFilesData['2016'])
+    haddTX_2016 = 'hadd 2016_TX.root ' + ' '.join(addedFilesTX['2016'])
+    haddVV_2016 = 'hadd 2016_VV.root ' + ' '.join(addedFilesVV['2016'])
+    haddTT_2016 = 'hadd 2016_TT.root ' + ' '.join(addedFilesTT['2016'])
+    haddDY_2016 = 'hadd 2016_DY.root ' + ' '.join(addedFilesDY['2016'])
     os.system('rm -f 2016_Data.root')
     os.system('rm -f 2016_TX.root')
     os.system('rm -f 2016_VV.root')
@@ -99,11 +99,11 @@ if (name == 'All') or (name == '2016'):
     os.system(haddDY_2016)
 
 if (name == 'All') or (name == '2017'):
-    haddData_2017 = 'hadd 2017_Data' + '.root ' + ' '.join(addedFilesData['2017'])
-    haddTX_2017 = 'hadd 2017_TX' + '.root ' + ' '.join(addedFilesTX['2017'])
-    haddVV_2017 = 'hadd 2017_VV' + '.root ' + ' '.join(addedFilesVV['2017'])
-    haddTT_2017 = 'hadd 2017_TT' + '.root ' + ' '.join(addedFilesTT['2017'])
-    haddDY_2017 = 'hadd 2017_DY' + '.root ' + ' '.join(addedFilesDY['2017'])
+    haddData_2017 = 'hadd 2017_Data.root ' + ' '.join(addedFilesData['2017'])
+    haddTX_2017 = 'hadd 2017_TX.root ' + ' '.join(addedFilesTX['2017'])
+    haddVV_2017 = 'hadd 2017_VV.root ' + ' '.join(addedFilesVV['2017'])
+    haddTT_2017 = 'hadd 2017_TT.root ' + ' '.join(addedFilesTT['2017'])
+    haddDY_2017 = 'hadd 2017_DY.root ' + ' '.join(addedFilesDY['2017'])
     os.system('rm -f 2017_Data.root')
     os.system('rm -f 2017_TX.root')
     os.system('rm -f 2017_VV.root')
@@ -116,11 +116,11 @@ if (name == 'All') or (name == '2017'):
     os.system(haddDY_2017)
 
 if (name == 'All') or (name == '2018'):
-    haddData_2018 = 'hadd 2018_Data' + '.root ' + ' '.join(addedFilesData['2018'])
-    haddTX_2018 = 'hadd 2018_TX' + '.root ' + ' '.join(addedFilesTX['2018'])
-    haddVV_2018 = 'hadd 2018_VV' + '.root ' + ' '.join(addedFilesVV['2018'])
-    haddTT_2018 = 'hadd 2018_TT' + '.root ' + ' '.join(addedFilesTT['2018'])
-    haddDY_2018 = 'hadd 2018_DY' + '.root ' + ' '.join(addedFilesDY['2018'])
+    haddData_2018 = 'hadd 2018_Data.root ' + ' '.join(addedFilesData['2018'])
+    haddTX_2018 = 'hadd 2018_TX.root ' + ' '.join(addedFilesTX['2018'])
+    haddVV_2018 = 'hadd 2018_VV.root ' + ' '.join(addedFilesVV['2018'])
+    haddTT_2018 = 'hadd 2018_TT.root ' + ' '.join(addedFilesTT['2018'])
+    haddDY_2018 = 'hadd 2018_DY.root ' + ' '.join(addedFilesDY['2018'])
     os.system('rm -f 2018_Data.root')
     os.system('rm -f 2018_TX.root')
     os.system('rm -f 2018_VV.root')
