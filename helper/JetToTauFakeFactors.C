@@ -2,10 +2,14 @@
 #include "TString.h"
 #include "TH1F.h"
 #include "TH2F.h"
-// #include <fstream>
-// #include <iostream>
+#include "TStyle.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TLatex.h"
+#include <fstream>
+#include <iostream>
 
-const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018"*/};
+const TString YEARS[1] = {"2016"/*, "2016APV", "2017", "2018", "All"*/};
 const std::vector<TString> SAMPLES{"Data", "TX", "VV", "DY", "TT"};
 const std::vector<TString> SAMPLES_NAME{"Data", "TT(X)", "VV(V)", "DY/ZZ", "TT"};
 const TString CHARGES[2] = {"OS", "SS"};
@@ -33,10 +37,20 @@ const std::vector<std::vector<TString>> REGIONS_NAME{
     {"S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))"},
     {"S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))"},
     {"OffZ", "(Close to SR CR)"}
-}
-const TString DOMAINS[2] = {"geqMedLepgeqTightTa", "geqMedLeplTightTa"}
-const TString DOMAINS_NAME[2] = {"#geq Tight Tau", "< Tight Tau"}
-const TString VARS[4] = {"Ta", "FakeTa", "geqTightTa", "lTightTa"};
+};
+const std::vector<TString> DOMAINS{
+  "geqMedLepgeqTightTa",
+  "geqMedLeplTightTa",
+  // "geqMedLepgeqTightTaJetTaFF"
+};
+const std::vector<TString> DOMAINS_NAME{
+  "#geq Tight Tau",
+  "< Tight Tau",
+  // "#geq Tight #tau, jet#rightarrow#tau FF"
+};
+const TString VARS1D[2] = {"taPtFFBin", "taEtaFFBin"};
+const TString VARS2D[1] = {"taPtVsEta"};
+// const TString VARS[4] = {"Ta", "FakeTa", "geqTightTa", "lTightTa"};
 
 // Fake factor bins
 // const std::vector<Double_t> PT_BINS = {20.0, 40.0, 60.0, 100.0, 220.0};
@@ -58,41 +72,44 @@ bool doDetailedPlots = true;
 
 // void Estimate(TH2F* hReal, const vector<TH2F*>& hFake, int xCut, int yCut, Double_t results[6],
 //   bool doDebugPlots = false, TString key = "", TString lumi = "");
-void PlotTH1F(TString name, TString xName, TString yName,
-  std::vector<TH1F*> H1,
-  std::vector<TString> hNames, Int_t rIdx, TString lumi);
-void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pName,
-  const std::vector<TString>& xBinLabels = {}, const std::vector<TString>& yBinLabels = {});
-TString GetLumi(TString year);
+// void PlotTH1F(TString name, TString xName, TString yName,
+//   std::vector<TH1F*> H1,
+//   std::vector<TString> hNames, Int_t rIdx, TString lumi);
+// void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pName,
+//   const std::vector<TString>& xBinLabels = {}, const std::vector<TString>& yBinLabels = {});
+// TString GetLumi(TString year);
 
+void JetToTauFakeFactors(TString inputFolder) {
 
-void JetToTauFakeFactors() {
   // Open files and save histograms
   std::map<TString, TH1F*> H1{};
   std::map<TString, TH2F*> H2{};
-  TString name;
-  char text[500];
   for (TString year : YEARS) {
     for (TString sample : SAMPLES) {
-      TString fName = "../hists/" + year + "_" + sample + ".root";
+      TString fName = "../hists/" + inputFolder + "/" + year + "_" + sample + ".root";
+      std::cout << "Opening " << fName << std::endl;
       TFile* f = TFile::Open(fName);
+
       for (TString charge : CHARGES) {
         for (TString channel : CHANNELS) {
           for (TString region : REGIONS) {
-            for (TString var : VARS) {
-              name = charge + "_" + channel + "_" + region + "_" + var;
-              TH1F* h1a = (TH1F*) f->Get(name + "_vsPt")->Clone();
-              H1.emplace(make_pair(year + "_" + sample + "_" + name + "_vsPt", h1a));
-              TH1F* h1b = (TH1F*) f->Get(name + "_vsEta")->Clone();
-              H1.emplace(make_pair(year + "_" + sample + "_" + name + "_vsEta", h1b));
-              TH2F* h2 = (TH2F*) f->Get(name + "_vsPt_vsEta")->Clone();
-              H2.emplace(make_pair(year + "_" + sample + "_" + name + "_vsPt_vsEta", h2));
-            }
-          }
-        }
-      }
-    }
-  }
+            for (TString domain : DOMAINS) {
+              for (TString var : VARS1D) {
+                TString name = charge + "_" + channel + "_" + region + "_" + domain + "_" + var;
+                TH1F* h1 = (TH1F*) f->Get(name)->Clone();
+                H1.emplace(make_pair(year + "_" + sample + "_" + name, h1));
+              } // End loop over 1D vars
+              for (TString var : VARS1D) {
+                TString name = charge + "_" + channel + "_" + region + "_" + domain + "_" + var;
+                TH2F* h2 = (TH2F*) f->Get(name)->Clone();
+                H2.emplace(make_pair(year + "_" + sample + "_" + name, h2));
+              } // End loop over 2D vars
+            } // End loop over domains
+          } // End loop over regions
+        } // End loop over channels
+      } // End loop over charges
+    } // End loop over samples
+  } // End loop over years
 
   // Set negative event counts due to NLO low statistics to 0
   for (auto it = H1.cbegin(); it != H1.cend(); it++) {
@@ -122,144 +139,144 @@ void JetToTauFakeFactors() {
   gStyle->SetTitleYOffset(1.4);
 
   // Do fake factor estimation
-  for (TString year : YEARS) {
-    for (TString charge : CHARGES) {
-      for (TString channel : CHANNELS) {
-        for (Int_t r = 0; r < REGIONS.size(); r++) {
+  // for (TString year : YEARS) {
+  //   for (TString charge : CHARGES) {
+  //     for (TString channel : CHANNELS) {
+  //       for (Int_t r = 0; r < REGIONS.size(); r++) {
 
-          // Get data
-          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt";
-          TH1F* ff = (TH1F*) H1.at(name)->Clone();
-          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt";
-          TH1F* denom = (TH1F*) H1.at(name)->Clone();
+  //         // Get data
+  //         name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt";
+  //         TH1F* ff = (TH1F*) H1.at(name)->Clone();
+  //         name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt";
+  //         TH1F* denom = (TH1F*) H1.at(name)->Clone();
 
-          // Subtract "real" taus
-          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt";
-          ff->Add(H1.at(name), -1.0);
-          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt";
-          ff->Add(H1.at(name), -1.0);
-          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt";
-          denom->Add(H1.at(name), -1.0);
-          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt";
-          denom->Add(H1.at(name), -1.0);
+  //         // Subtract "real" taus
+  //         name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt";
+  //         ff->Add(H1.at(name), -1.0);
+  //         name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt";
+  //         ff->Add(H1.at(name), -1.0);
+  //         name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt";
+  //         denom->Add(H1.at(name), -1.0);
+  //         name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt";
+  //         denom->Add(H1.at(name), -1.0);
 
-          // Set negative entries to zero
-          for (int i = 1; i <= ff->GetNbinsX(); i++) {
-            if (ff->GetBinContent(i) < 0) {
-              ff->SetBinContent(i, 0.0);
-              ff->SetBinError(i, 0.0);
-            }
-          }
-          for (int i = 1; i <= denom->GetNbinsX(); i++) {
-            if (denom->GetBinContent(i) < 0) {
-              denom->SetBinContent(i, 0.0);
-              denom->SetBinError(i, 0.0);
-            }
-          }
+  //         // Set negative entries to zero
+  //         for (int i = 1; i <= ff->GetNbinsX(); i++) {
+  //           if (ff->GetBinContent(i) < 0) {
+  //             ff->SetBinContent(i, 0.0);
+  //             ff->SetBinError(i, 0.0);
+  //           }
+  //         }
+  //         for (int i = 1; i <= denom->GetNbinsX(); i++) {
+  //           if (denom->GetBinContent(i) < 0) {
+  //             denom->SetBinContent(i, 0.0);
+  //             denom->SetBinError(i, 0.0);
+  //           }
+  //         }
 
-          // Calculate fake factors
-          ff->Divide(denom);
+  //         // Calculate fake factors
+  //         ff->Divide(denom);
 
-          PlotTH1F(year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsPt", "Tau p_{T}", "Fake Factor", {ff}, {"Fake Factor"}, r, GetLumi(year));
-
-
-
-
-
-          // Get data
-          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsEta";
-          ff = (TH1F*) H1.at(name)->Clone();
-          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsEta";
-          denom = (TH1F*) H1.at(name)->Clone();
-
-          // Subtract "real" taus
-          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsEta";
-          ff->Add(H1.at(name), -1.0);
-          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsEta";
-          ff->Add(H1.at(name), -1.0);
-          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsEta";
-          denom->Add(H1.at(name), -1.0);
-          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsEta";
-          denom->Add(H1.at(name), -1.0);
-
-          // Set negative entries to zero
-          for (int i = 1; i <= ff->GetNbinsX(); i++) {
-            if (ff->GetBinContent(i) < 0) {
-              ff->SetBinContent(i, 0.0);
-              ff->SetBinError(i, 0.0);
-            }
-          }
-          for (int i = 1; i <= denom->GetNbinsX(); i++) {
-            if (denom->GetBinContent(i) < 0) {
-              denom->SetBinContent(i, 0.0);
-              denom->SetBinError(i, 0.0);
-            }
-          }
-
-          // Calculate fake factors
-          ff->Divide(denom);
-
-          PlotTH1F(year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsEta", "Tau |#eta|", "Fake Factor", {ff}, {"Fake Factor"}, r, GetLumi(year));
+  //         PlotTH1F(year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsPt", "Tau p_{T}", "Fake Factor", {ff}, {"Fake Factor"}, r, GetLumi(year));
 
 
 
 
 
-          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
-          TH2F* ff2 = (TH2F*) H2.at(name)->Clone();
-          name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
-          TH2F* denom2 = (TH2F*) H2.at(name)->Clone();
+  //         // Get data
+  //         name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsEta";
+  //         ff = (TH1F*) H1.at(name)->Clone();
+  //         name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsEta";
+  //         denom = (TH1F*) H1.at(name)->Clone();
 
-          // Subtract "real" taus
-          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
-          ff2->Add(H2.at(name), -1.0);
-          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
-          ff2->Add(H2.at(name), -1.0);
-          name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
-          denom2->Add(H2.at(name), -1.0);
-          name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
-          denom2->Add(H2.at(name), -1.0);
+  //         // Subtract "real" taus
+  //         name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsEta";
+  //         ff->Add(H1.at(name), -1.0);
+  //         name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsEta";
+  //         ff->Add(H1.at(name), -1.0);
+  //         name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsEta";
+  //         denom->Add(H1.at(name), -1.0);
+  //         name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsEta";
+  //         denom->Add(H1.at(name), -1.0);
 
-          // Set negative entries to zero
-          for (int i = 1; i <= ff2->GetNbinsX(); i++) {
-            for (int j = 1; j <= ff2->GetNbinsY(); j++) {
-              if (ff2->GetBinContent(i, j) < 0) {
-                ff2->SetBinContent(i, j, 0.0);
-                ff2->SetBinError(i, j, 0.0);
-              }
-            }
-          }
-          for (int i = 1; i <= denom2->GetNbinsX(); i++) {
-            for (int j = 1; j <= denom2->GetNbinsY(); j++) {
-              if (denom2->GetBinContent(i, j) < 0) {
-                denom2->SetBinContent(i, j, 0.0);
-                denom2->SetBinError(i, j, 0.0);
-              }
-            }
-          }
+  //         // Set negative entries to zero
+  //         for (int i = 1; i <= ff->GetNbinsX(); i++) {
+  //           if (ff->GetBinContent(i) < 0) {
+  //             ff->SetBinContent(i, 0.0);
+  //             ff->SetBinError(i, 0.0);
+  //           }
+  //         }
+  //         for (int i = 1; i <= denom->GetNbinsX(); i++) {
+  //           if (denom->GetBinContent(i) < 0) {
+  //             denom->SetBinContent(i, 0.0);
+  //             denom->SetBinError(i, 0.0);
+  //           }
+  //         }
 
-          // Calculate fake factors
-          ff2->Divide(denom2);
+  //         // Calculate fake factors
+  //         ff->Divide(denom);
 
-          PlotTH2F(ff2, "Tau p_{T}", "Tau |#eta|", GetLumi(year), year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsPtvsEta");
+  //         PlotTH1F(year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsEta", "Tau |#eta|", "Fake Factor", {ff}, {"Fake Factor"}, r, GetLumi(year));
 
 
 
 
 
-          for (TString sample : SAMPLES) {
-            if (sample == "Data") continue;
-            name = year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FakeTa_vsPt_vsEta";
-            TH2F* fakeTauPurity = (TH2F*) H2.at(name)->Clone();
-            name = year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_Ta_vsPt_vsEta";
-            TH2F* allTau = (TH2F*) H2.at(name)->Clone();
-            fakeTauPurity->Divide(allTau);
-            PlotTH2F(fakeTauPurity, "Tau p_{T}", "Tau |#eta|", GetLumi(year), year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_fakeTauPurity");
-          }
-        }
-      }
-    }
-  }
+  //         name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
+  //         TH2F* ff2 = (TH2F*) H2.at(name)->Clone();
+  //         name = year + "_Data_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
+  //         TH2F* denom2 = (TH2F*) H2.at(name)->Clone();
+
+  //         // Subtract "real" taus
+  //         name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
+  //         ff2->Add(H2.at(name), -1.0);
+  //         name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_geqTightTa_vsPt_vsEta";
+  //         ff2->Add(H2.at(name), -1.0);
+  //         name = year + "_TX_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
+  //         denom2->Add(H2.at(name), -1.0);
+  //         name = year + "_VV_" + charge + "_" + channel + "_" + REGIONS[r] + "_lTightTa_vsPt_vsEta";
+  //         denom2->Add(H2.at(name), -1.0);
+
+  //         // Set negative entries to zero
+  //         for (int i = 1; i <= ff2->GetNbinsX(); i++) {
+  //           for (int j = 1; j <= ff2->GetNbinsY(); j++) {
+  //             if (ff2->GetBinContent(i, j) < 0) {
+  //               ff2->SetBinContent(i, j, 0.0);
+  //               ff2->SetBinError(i, j, 0.0);
+  //             }
+  //           }
+  //         }
+  //         for (int i = 1; i <= denom2->GetNbinsX(); i++) {
+  //           for (int j = 1; j <= denom2->GetNbinsY(); j++) {
+  //             if (denom2->GetBinContent(i, j) < 0) {
+  //               denom2->SetBinContent(i, j, 0.0);
+  //               denom2->SetBinError(i, j, 0.0);
+  //             }
+  //           }
+  //         }
+
+  //         // Calculate fake factors
+  //         ff2->Divide(denom2);
+
+  //         PlotTH2F(ff2, "Tau p_{T}", "Tau |#eta|", GetLumi(year), year + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FFvsPtvsEta");
+
+
+
+
+
+  //         for (TString sample : SAMPLES) {
+  //           if (sample == "Data") continue;
+  //           name = year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_FakeTa_vsPt_vsEta";
+  //           TH2F* fakeTauPurity = (TH2F*) H2.at(name)->Clone();
+  //           name = year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_Ta_vsPt_vsEta";
+  //           TH2F* allTau = (TH2F*) H2.at(name)->Clone();
+  //           fakeTauPurity->Divide(allTau);
+  //           PlotTH2F(fakeTauPurity, "Tau p_{T}", "Tau |#eta|", GetLumi(year), year + "_" + sample + "_" + charge + "_" + channel + "_" + REGIONS[r] + "_fakeTauPurity");
+  //         }
+  //       } // End loop over regions
+  //     } // End loop over channels
+  //   } // End loop over charges
+  // } // End loop over years
 }
 
 
@@ -328,138 +345,137 @@ void JetToTauFakeFactors() {
 // }
 
 
-void PlotTH1F(TString name, TString xName, TString yName, std::vector<TH1F*> H1,
-  std::vector<TString> hNames, Int_t rIdx, TString lumi) {
+// void PlotTH1F(TString name, TString xName, TString yName, std::vector<TH1F*> H1,
+//   std::vector<TString> hNames, Int_t rIdx, TString lumi) {
 
-  Double_t maxi = -1.0;
-  for (int i = 0; i < H1.size(); i++) {
-    H1.at(i)->GetXaxis()->SetNoExponent();
-    H1.at(i)->GetYaxis()->SetNoExponent();
-    H1.at(i)->SetLineWidth(2);
-    H1.at(i)->SetLineColor(COLORS[i]);
-    H1.at(i)->SetMarkerStyle(20);
-    H1.at(i)->SetMarkerSize(1.2);
-    H1.at(i)->SetMarkerColor(COLORS[i]);
-    maxi = maxi > H1.at(i)->GetMaximum() ? maxi : H1.at(i)->GetMaximum();
-  }
+//   Double_t maxi = -1.0;
+//   for (int i = 0; i < H1.size(); i++) {
+//     H1.at(i)->GetXaxis()->SetNoExponent();
+//     H1.at(i)->GetYaxis()->SetNoExponent();
+//     H1.at(i)->SetLineWidth(2);
+//     H1.at(i)->SetLineColor(COLORS[i]);
+//     H1.at(i)->SetMarkerStyle(20);
+//     H1.at(i)->SetMarkerSize(1.2);
+//     H1.at(i)->SetMarkerColor(COLORS[i]);
+//     maxi = maxi > H1.at(i)->GetMaximum() ? maxi : H1.at(i)->GetMaximum();
+//   }
 
-  TCanvas* c = new TCanvas("c", "c", 50, 50, 865, 780);
-  c->SetBottomMargin(0.12);
-  c->SetLeftMargin(0.17);
-  c->SetRightMargin(0.07);
-  c->cd();
+//   TCanvas* c = new TCanvas("c", "c", 50, 50, 865, 780);
+//   c->SetBottomMargin(0.12);
+//   c->SetLeftMargin(0.17);
+//   c->SetRightMargin(0.07);
+//   c->cd();
 
-  TLegend* l = new TLegend(0.25, 0.7, 0.5, 0.88);
-  l->SetBorderSize(0);
-  l->SetTextFont(42);
-  l->SetTextSize(0.028);
+//   TLegend* l = new TLegend(0.25, 0.7, 0.5, 0.88);
+//   l->SetBorderSize(0);
+//   l->SetTextFont(42);
+//   l->SetTextSize(0.028);
 
-  H1.at(0)->GetXaxis()->SetTitle(xName);
-  H1.at(0)->GetYaxis()->SetTitle(yName);
-  H1.at(0)->GetYaxis()->SetRangeUser(0.0, 1.6 * maxi);
-  H1.at(0)->Draw("HIST E");
-  l->AddEntry(H1.at(0), hNames.at(0), "lep");
-  for(int i = 1; i < H1.size(); i++) {
-    H1.at(i)->Draw("HIST E SAME");
-    l->AddEntry(H1.at(i), hNames.at(i), "lep");
-  }
+//   H1.at(0)->GetXaxis()->SetTitle(xName);
+//   H1.at(0)->GetYaxis()->SetTitle(yName);
+//   H1.at(0)->GetYaxis()->SetRangeUser(0.0, 1.6 * maxi);
+//   H1.at(0)->Draw("HIST E");
+//   l->AddEntry(H1.at(0), hNames.at(0), "lep");
+//   for(int i = 1; i < H1.size(); i++) {
+//     H1.at(i)->Draw("HIST E SAME");
+//     l->AddEntry(H1.at(i), hNames.at(i), "lep");
+//   }
 
-  l->Draw("SAME");
+//   l->Draw("SAME");
 
-  TLatex* labelReg = new TLatex(0.5, 0.81, "l+#tau_{h}" + REGIONS_NAME.at(rIdx).at(0));
-  labelReg->SetTextSize(0.028);
-  labelReg->SetNDC();
-  labelReg->SetTextFont(42);
-  labelReg->Draw("SAME");
-  TLatex* labelCut1 = new TLatex(0.5, 0.73, REGIONS_NAME.at(rIdx).at(1));
-  labelCut1->SetTextSize(0.028);
-  labelCut1->SetNDC();
-  labelCut1->SetTextFont(42);
-  labelCut1->Draw("SAME");
-  TLatex* labelCut2 = new TLatex(0.5, 0.65, REGIONS_NAME.at(rIdx).at(2));
-  labelCut2->SetTextSize(0.028);
-  labelCut2->SetNDC();
-  labelCut2->SetTextFont(42);
-  labelCut2->Draw("SAME");
+//   TLatex* labelReg = new TLatex(0.5, 0.81, "l+#tau_{h}" + REGIONS_NAME.at(rIdx).at(0));
+//   labelReg->SetTextSize(0.028);
+//   labelReg->SetNDC();
+//   labelReg->SetTextFont(42);
+//   labelReg->Draw("SAME");
+//   TLatex* labelCut1 = new TLatex(0.5, 0.73, REGIONS_NAME.at(rIdx).at(1));
+//   labelCut1->SetTextSize(0.028);
+//   labelCut1->SetNDC();
+//   labelCut1->SetTextFont(42);
+//   labelCut1->Draw("SAME");
+//   TLatex* labelCut2 = new TLatex(0.5, 0.65, REGIONS_NAME.at(rIdx).at(2));
+//   labelCut2->SetTextSize(0.028);
+//   labelCut2->SetNDC();
+//   labelCut2->SetTextFont(42);
+//   labelCut2->Draw("SAME");
 
-  TLatex* labelCMS = new TLatex(0.175, 0.92, "CMS");
-  labelCMS->SetTextSize(0.04);
-  labelCMS->SetNDC();
-  labelCMS->SetTextFont(61);
-  labelCMS->Draw("SAME");
-  TLatex* labelWIP = new TLatex(0.255, 0.92, "Work in Progress");
-  labelWIP->SetTextSize(0.028);
-  labelWIP->SetNDC();
-  labelWIP->SetTextFont(52);
-  labelWIP->Draw("SAME");
-  // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
-  TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
-  labelLumi->SetTextSize(0.035);
-  labelLumi->SetNDC();
-  labelLumi->SetTextFont(42);
-  labelLumi->Draw("SAME");
+//   TLatex* labelCMS = new TLatex(0.175, 0.92, "CMS");
+//   labelCMS->SetTextSize(0.04);
+//   labelCMS->SetNDC();
+//   labelCMS->SetTextFont(61);
+//   labelCMS->Draw("SAME");
+//   TLatex* labelWIP = new TLatex(0.255, 0.92, "Work in Progress");
+//   labelWIP->SetTextSize(0.028);
+//   labelWIP->SetNDC();
+//   labelWIP->SetTextFont(52);
+//   labelWIP->Draw("SAME");
+//   // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+//   TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
+//   labelLumi->SetTextSize(0.035);
+//   labelLumi->SetNDC();
+//   labelLumi->SetTextFont(42);
+//   labelLumi->Draw("SAME");
 
-  c->Print("../plot/" + name + ".pdf");
+//   c->Print("../plot/" + name + ".pdf");
 
-  delete c;
-}
+//   delete c;
+// }
 
 
-void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pName,
-  const std::vector<TString>& xBinLabels = {}, const std::vector<TString>& yBinLabels = {}) {
+// void PlotTH2F(TH2F* h2, TString xName, TString yName, TString lumi, TString pName,
+//   const std::vector<TString>& xBinLabels = {}, const std::vector<TString>& yBinLabels = {}) {
 
-  h2->GetXaxis()->SetNoExponent();
-  h2->GetYaxis()->SetNoExponent();
-  // h2->GetZaxis()->SetNoExponent();
+//   h2->GetXaxis()->SetNoExponent();
+//   h2->GetYaxis()->SetNoExponent();
+//   // h2->GetZaxis()->SetNoExponent();
 
-  h2->GetXaxis()->SetTitle(xName);
-  h2->GetYaxis()->SetTitle(yName);
-  h2->GetZaxis()->SetLabelSize(0.03);
+//   h2->GetXaxis()->SetTitle(xName);
+//   h2->GetYaxis()->SetTitle(yName);
+//   h2->GetZaxis()->SetLabelSize(0.03);
 
-  for (int b = 0; b < xBinLabels.size(); b++) {
-    h2->GetXaxis()->SetBinLabel(b + 1, xBinLabels.at(b));
-  }
-  for (int b = 0; b < yBinLabels.size(); b++) {
-    h2->GetYaxis()->SetBinLabel(b + 1, yBinLabels.at(b));
-  }
+//   for (int b = 0; b < xBinLabels.size(); b++) {
+//     h2->GetXaxis()->SetBinLabel(b + 1, xBinLabels.at(b));
+//   }
+//   for (int b = 0; b < yBinLabels.size(); b++) {
+//     h2->GetYaxis()->SetBinLabel(b + 1, yBinLabels.at(b));
+//   }
 
-  TCanvas* c = new TCanvas("c", "c", 50, 50, 865, 780);
-  // c->SetGrid();
-  c->SetBottomMargin(0.12);
-  c->SetLeftMargin(0.17);
-  c->SetRightMargin(0.12);
-  c->cd();
-  c->SetLogz(kTRUE);
+//   TCanvas* c = new TCanvas("c", "c", 50, 50, 865, 780);
+//   // c->SetGrid();
+//   c->SetBottomMargin(0.12);
+//   c->SetLeftMargin(0.17);
+//   c->SetRightMargin(0.12);
+//   c->cd();
+//   c->SetLogz(kTRUE);
 
-  gStyle->SetPaintTextFormat("4.4f");
+//   gStyle->SetPaintTextFormat("4.4f");
 
-  h2->Draw("COLZ TEXT");
+//   h2->Draw("COLZ TEXT");
 
-  TLatex* labelCMS = new TLatex(0.175, 0.92, "CMS");
-  labelCMS->SetTextSize(0.04);
-  labelCMS->SetNDC();
-  labelCMS->SetTextFont(61);
-  labelCMS->Draw();
-  TLatex* labelWIP = new TLatex(0.255, 0.92, "Work in Progress");
-  labelWIP->SetTextSize(0.028);
-  labelWIP->SetNDC();
-  labelWIP->SetTextFont(52);
-  labelWIP->Draw();
-  // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
-  TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
-  labelLumi->SetTextSize(0.035);
-  labelLumi->SetNDC();
-  labelLumi->SetTextFont(42);
-  labelLumi->Draw();
+//   TLatex* labelCMS = new TLatex(0.175, 0.92, "CMS");
+//   labelCMS->SetTextSize(0.04);
+//   labelCMS->SetNDC();
+//   labelCMS->SetTextFont(61);
+//   labelCMS->Draw();
+//   TLatex* labelWIP = new TLatex(0.255, 0.92, "Work in Progress");
+//   labelWIP->SetTextSize(0.028);
+//   labelWIP->SetNDC();
+//   labelWIP->SetTextFont(52);
+//   labelWIP->Draw();
+//   // TLatex* labelLumi = new TLatex(0.705, 0.92, lumi + " fb^{-1} (13 TeV)");
+//   TLatex* labelLumi = new TLatex(0.74, 0.92, "2016 postVFP");
+//   labelLumi->SetTextSize(0.035);
+//   labelLumi->SetNDC();
+//   labelLumi->SetTextFont(42);
+//   labelLumi->Draw();
 
-  c->Print("../plot/" + pName + ".pdf");
+//   c->Print("../plot/" + pName + ".pdf");
 
-  delete c;
-}
+//   delete c;
+// }
 
 
 TString GetLumi(TString year) {
-
   if (year == "2016") return "16.8";
   if (year == "2016APV") return "19.5";
   if (year == "2017") return "41.5";

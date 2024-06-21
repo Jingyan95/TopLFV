@@ -34,7 +34,7 @@ cd plot/
 python3 drawHists.py
 ```
 
-## VI. To get event yields
+## VI. To get tables of event yields
 ```
 cd latex/
 root -l -b -q 'Cutflow.C+("<folder where histograms are stored>")'
@@ -52,7 +52,7 @@ The log can still be checked in `Cutflow_Tables.log`. *NOTE: for some reason the
 ## To calculate jet to tau fake factors
 ```
 cd helper/
-root -l -b -q JetToTauFakeFactors.C
+root -l -b -q 'JetToTauFakeFactors.C+("<folder where histograms are stored>")'
 ```
 
 ## File descriptions
