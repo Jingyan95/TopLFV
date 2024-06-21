@@ -110,7 +110,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   };
   const std::map<TString, std::vector<float>> vars2D = {
     {"taPtVsEta",          {0, 20, 20, 220, 23, -2.3, 2.3}},
-    {"taPtVsEtaFake",      {0, 20, 20, 220, 23, -2.3, 2.3}}
+    {"taPtVsEtaFake",      {1, 20, 20, 220, 23, -2.3, 2.3}}
   };
   Double_t tauPtBin[5] = {20.0, 40.0, 60.0, 100.0, 220.0};
   Double_t tauEtaBin[3] = {0.0, 1.4, 2.3};
@@ -184,16 +184,16 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root");
-  // TFile *f_Ta_ID_jetFF = new TFile("data/TAU/" + year + "TauID_FF_3lepJetFake.root"); // Depends on charge, channel, region
+  // TFile *f_Ta_ID_jetFF = new TFile("data/TAU/" + year + "TauID_FF_3lepJetFake.root"); // Depends on charge, channel, region --> maybe remove dependency?
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
   TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   const TH2F sf_El_RECO = *(TH2F*) f_El_RECO->Get("EGamma_SF2D");
   const TH2F sf_El_ID = *(TH2F*) f_El_ID->Get("EGamma_SF2D");
   const TH2F sf_Mu_RECO = *(TH2F*) f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
   const TH2F sf_Mu_ID = *(TH2F*) f_Mu_ID->Get("NUM_LeptonMvaMedium_DEN_TrackerMuons_abseta_pt");
-  const TH2F sf_Ta_ID_e = *(TH1F*) f_Ta_ID_e->Get("VVLoose");
-  const TH2F sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
-  const TH2F sf_Ta_ID_jet = *(TF1*) f_Ta_ID_jet->Get("Tight_cent");
+  const TH1F sf_Ta_ID_e = *(TH1F*) f_Ta_ID_e->Get("VVLoose");
+  const TH1F sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
+  const TF1 sf_Ta_ID_jet = *(TF1*) f_Ta_ID_jet->Get("Tight_cent");
   // Dim3_1 ff_Ta_ID_jet(Dim3_1(charges.size(), Dim2_1(channels.size(), Dim1_1(regions.size()))));
   // for (int i = 0; i < charges.size(); ++i) {
   //   for (int j = 0; j < (int) channels.size(); ++j) {
@@ -204,7 +204,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   //     }
   //   }
   // }
-  const TH2F sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
+  const TH1F sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
   const TH2F sf_Btag_corr = *(TH2F*) f_Btag_corr->Get("2DBtagShapeCorrection");
   f_El_RECO->Close();
   f_El_ID->Close();
@@ -275,7 +275,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     weight_Ta_ID_e = 1;
     weight_Ta_ID_mu = 1;
     weight_Ta_ID_jet = 1;
-    // weight_Ta_ID_jetFF = 1;
+    // weight_Ta_ID_jetFF = 1; // Use this if dependency on charge/channel/region removed
     weight_Btag_corr = 1;
     weight_Event = 1;
 
@@ -470,10 +470,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     int chIdx = Event->ch();
     int dIdx = dInd(domains, Event->TightTau());
     for (int i = 0; i < reg.size(); ++i) {
+      // weight_Ta_ID_jetFF = 1;
       // if (domains[dIdx].Contains("geqMedLepgeqTightTaJetTaFF")) {
       //   weight_Ta_ID_jetFF = get_factor(&(*(ff_Ta_ID_jet[cIdx][chIdx][reg[i]])), tauPt, tauEta, "");
       // }
-      float wgt_final = wgt[i] * weight_Ta_ID_jetFF;
+      // float wgt_final = wgt[i] * weight_Ta_ID_jetFF;
+      float wgt_final = wgt[i];
 
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "llM")]->Fill(Event->llM(), wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "llDr")]->Fill(Event->llDr(), wgt_final);

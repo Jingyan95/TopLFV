@@ -43,7 +43,11 @@ This script will produce tables of event yields in a LaTeX file. The LaTeX file 
 ```
 pdflatex Cutflow_Tables.tex
 ```
-*NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
+To suppress the log output, use
+```
+pdflatex Cutflow_Tables.tex > /dev/null
+```
+The log can still be checked in `Cutflow_Tables.log`. *NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
 
 ## To calculate jet to tau fake factors
 ```

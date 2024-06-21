@@ -10,7 +10,7 @@ from math import sqrt
 from array import array
 
 
-YEARS_RUN2 = ["2016APV", "2016", "2017", "2018"]
+YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
 SAMPLES = ["Data", "TX", "VV", "DY", "TT", "LFVStScalarU", "LFVTtScalarU"]
 SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "DY/ZZ", "t#bar{t}/WW",
     "CLFV top production (#mu_{ll'tu}^{scalar} = 0.5)",
@@ -79,7 +79,7 @@ def getLumi(year):
 
 # Set up an argument parser
 parser = argparse.ArgumentParser()
-parser.add_argument("--y", dest="YEAR", default="2016")
+parser.add_argument("--y", dest="YEAR", default="RunII")
 parser.add_argument("--p", dest="HISTPATH", default="")
 parser.add_argument("--s", dest="SQUARE", default=True)
 parser.add_argument("--o", dest="OUTPATH", default="")
@@ -91,7 +91,7 @@ for iYear, year in enumerate(YEARS_RUN2):
         YEARS.append(YEARS_RUN2[iYear])
 square = CMS.kSquare
 if not ARGS.SQUARE: square = CMS.kRectangular
-if len(ARGS.OUTPATH)>0: ARGS.FOLDER = ARGS.OUTPATH + "/" + ARGS.FOLDER
+if len(ARGS.OUTPATH)>0: ARGS.FOLDER = ARGS.OUTPATH+"/"+ARGS.FOLDER
 
 
 # TODO: add 2D plots
@@ -103,8 +103,8 @@ if len(ARGS.HISTPATH)>0: HistAddress += "/"+ARGS.HISTPATH
 h = {}
 for year in YEARS:
     for sample in SAMPLES:
-        fname = HistAddress + "/" + year + "_" + sample + ".root"
-        print("Opening " + fname)
+        fname = HistAddress+"/"+year+"_"+sample+".root"
+        print("Opening "+fname)
         file = uproot.open(fname)
         for charge in CHARGES:
             for channel in CHANNELS:
