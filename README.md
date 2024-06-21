@@ -51,8 +51,8 @@ The log can still be checked in `Cutflow_Tables.log`. *NOTE: for some reason the
 
 ## To calculate jet to tau fake factors
 ```
-cd helper/
-root -l -b -q 'JetToTauFakeFactors.C+("<folder where histograms are stored>")'
+cd plot/
+python3 JetToTauFakeFactors.py
 ```
 
 ## File descriptions
