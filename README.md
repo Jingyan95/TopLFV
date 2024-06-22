@@ -30,29 +30,30 @@ Make sure all the necessary output files are there under TopLFV/hists/\<year\>/.
 
 ## V. To make plots
 ```
-cd plot/
+cd postproc/
 python3 drawHists.py
 ```
 
 ## VI. To get tables of event yields
 ```
-cd latex/
-root -l -b -q 'Cutflow.C+("<folder where histograms are stored>")'
+cd postproc/
+python3 cutFlow.py
 ```
 This script will produce tables of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
 ```
-pdflatex Cutflow_Tables.tex
+cd postproc/latex/
+pdflatex CutFlowTables.tex
 ```
 To suppress the log output, use
 ```
-pdflatex Cutflow_Tables.tex > /dev/null
+pdflatex CutFlowTables.tex > /dev/null
 ```
-The log can still be checked in `Cutflow_Tables.log`. *NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
+The log can still be checked in `CutFlowTables.log`. *NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
 
 ## To calculate jet to tau fake factors
 ```
-cd plot/
-python3 JetToTauFakeFactors.py
+cd postproc/
+python3 jetToTauFakeFactors.py
 ```
 
 ## File descriptions
@@ -106,10 +107,6 @@ python3 JetToTauFakeFactors.py
     <td>N/A</td>
   </tr>
   <tr>
-    <td>helper/JetToTauFakeFactors.C</td>
-    <td>ROOT macro for calculating the jet to tau fake factors</td>
-  </tr>
-  <tr>
     <td>hists/</td>
     <td>Directory where histograms are saved</td>
   </tr>
@@ -122,24 +119,36 @@ python3 JetToTauFakeFactors.py
     <td>Directory where header files live</td>
   </tr>
   <tr>
-    <td>latex/</td>
+    <td>postproc/</td>
+    <td>Directory where post-processing scripts live</td>
+  </tr>
+  <tr>
+    <td>postproc/common.py</td>
+    <td>Python script where common variables live</td>
+  </tr>
+  <tr>
+    <td>postproc/plotFunctions.py</td>
+    <td>Python script where plotting functions live</td>
+  </tr>
+  <tr>
+    <td>postproc/drawHists.py</td>
+    <td>Python script for plotting histograms</td>
+  </tr>
+  <tr>
+    <td>postproc/cutFlow.py</td>
+    <td>Python script for creating event yield tables in LaTeX format</td>
+  </tr>
+  <tr>
+    <td>postproc/jetToTauFakeFactors.py</td>
+    <td>Python script for calculating jet to tau fake factors</td>
+  </tr>
+  <tr>
+    <td>postproc/latex/</td>
     <td>Directory where latex files live</td>
   </tr>
   <tr>
-    <td>latex/Cutflow.C</td>
-    <td>Utility file for creating event yield tables in LaTeX format</td>
-  </tr>
-  <tr>
-    <td>latex/beamerposter.sty</td>
+    <td>postproc/latex/beamerposter.sty</td>
     <td>Beamer style file for compiling LaTeX event yield tables</td>
-  </tr>
-  <tr>
-    <td>plot/</td>
-    <td>Directory where plots are saved</td>
-  </tr>
-  <tr>
-    <td>plot/drawHists.py</td>
-    <td>Python script for plotting histograms</td>
   </tr>
   <tr>
     <td>src</td>

@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 import uproot
-from commonConfig import *
+from common import *
 from plotFunctions import plot1D
 # from plotFunctions import plot1D, plot2D
 

@@ -41,10 +41,29 @@ REGIONS_NAME = [
     ("S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))"),
     ("OffZ", "(Close to SR CR)")
 ]
+REGIONS_LATEX = [
+  "no cuts",
+  "Z+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
+  "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
+  "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
+  "CR, $S_T<300$ GeV",
+  "Z+jets CR, On Z",
+  "$t\\bar{t}$ + jets CR, btag $>1.3$",
+  "SR(Alt, Loose), btag $<1.3$",
+  "SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
+  "Close to SR CR, Off Z"
+]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
 DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
 # DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa", "geqMedLepgeqTightTaJetTaFF"]
 # DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau", "#geq Tight Tau"]
+DOMAINS_LATEX = [
+  "$\\geq$ Tight $\\tau$",
+  "$<$ Tight $\\tau$",
+  # "$\\geq$ Tight $\\tau$, jet$\\rightarrow\\tau$ FF"
+]
+TABLE_LATEX = ["Data", "$t\\bar{t}X$", "VV", "DY",
+  "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"]
 
 VARS1D = [
     "llM", "llDr", "lep1Pt", "lep2Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2",

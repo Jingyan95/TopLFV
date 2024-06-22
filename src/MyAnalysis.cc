@@ -62,7 +62,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     "llStg300OffZbtagl1p3Tight",
     "llOffZ"
   };
-  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0};
+  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 0};
   std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
   // std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa", "geqMedLepgeqTightTaJetTaFF"};
   const std::map<TString, std::vector<float>> vars1D = {

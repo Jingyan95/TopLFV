@@ -4,7 +4,7 @@ import ROOT
 import gc
 from math import sqrt
 from array import array
-from commonConfig import *
+from common import *
 
 
 def plot1D(year, hists, labels, xlabel, ylabel, ylabelNorm, ylabelRatio, legHeader, log, saveName):
