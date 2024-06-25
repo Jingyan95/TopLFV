@@ -2,13 +2,21 @@
 This framework depends on ROOT libraries. The setup has only been texted on lxplus.
 
 ## I. Setup
+First time:
+```
+. /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
+git clone git@github.com:Jingyan95/TopLFV.git
+cd TopLFV/postproc/cmsstyle
+git submodule init
+git submodule update
+```
+Subsequent setup:
 ```
 . /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
 ```
 
 ## II. To compile & run
 ```
-git clone git@github.com:Jingyan95/TopLFV.git # First time only
 cd TopLFV
 make all
 ./RunAll
@@ -49,6 +57,12 @@ To suppress the log output, use
 pdflatex CutFlowTables.tex > /dev/null
 ```
 The log can still be checked in `CutFlowTables.log`. *NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
+
+## To update cmsstyle
+```
+cd postproc/cmsstyle/
+git pull origin master
+```
 
 ## To calculate jet to tau fake factors
 ```
