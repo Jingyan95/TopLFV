@@ -1,0 +1,3 @@
+[submodule "postproc/cmsstyle"]
+	path = postproc/cmsstyle
+	url = git@github.com:cms-cat/cmsstyle.git
