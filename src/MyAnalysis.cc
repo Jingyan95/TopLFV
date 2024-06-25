@@ -152,7 +152,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         for (int m = 0; m < (int) domains.size(); ++m) {
           for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
             name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << domains[m] << "_" << it->first << "_" << workerID_; // Adding working ID to avoid mem leak
-            if (it->first.Contains("taPtVsEta") && i == 0 && j != 1) {
+            if (it->first.Contains("taPtVsEta")) {
               h_test2D = new TH2F((name.str()).c_str(), "", 4, tauPtBin, 2, tauEtaBin);
             } else {
               h_test2D = new TH2F((name.str()).c_str(), "", it->second.at(1), it->second.at(2), it->second.at(3),

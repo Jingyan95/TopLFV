@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import uproot
 from math import sqrt
 from common import *
 
@@ -12,20 +11,21 @@ parser.add_argument("--y", dest="YEAR", default="RunII")
 parser.add_argument("--p", dest="HISTPATH", default="")
 ARGS = parser.parse_args()
 YEARS = []
-for iYear, year in enumerate(YEARS_RUN2):
+for year in YEARS_RUN2:
     if ARGS.YEAR==year or ARGS.YEAR=="RunII":
-        YEARS.append(YEARS_RUN2[iYear])
+        YEARS.append(year)
 
 
 # Read in histograms
 HistAddress = os.path.dirname(sys.path[0])+"/hists"
 if len(ARGS.HISTPATH)>0: HistAddress += "/"+ARGS.HISTPATH
+files = {} # Keeps from losing "connection" to histograms
 H1 = {}
 for year in YEARS:
     for sample in SAMPLES:
         fname = HistAddress+"/"+year+"_"+sample+".root"
         print("Opening "+fname)
-        file = uproot.open(fname)
+        files[year+"_"+sample] = ROOT.TFile.Open(fname)
         for region in REGIONS:
             for domain in DOMAINS:
                 hname = year+"_"+region+"_"+domain+"_subSR_"+sample
@@ -34,7 +34,7 @@ for year in YEARS:
                 for charge in CHARGES:
                     for channel in CHANNELS:
                         hin = charge+"_"+channel+"_"+region+"_"+domain+"_subSR"
-                        h = file[hin].to_pyroot().Clone()
+                        h = files[year+"_"+sample].Get(hin).Clone()
                         # Set negative event counts due to NLO low statistics to 0
                         for i in range(1, h.GetNbinsX()+1):
                             if h.GetBinContent(i)<0.0:
@@ -83,9 +83,7 @@ for year in YEARS:
                             hSubSR.SetBinError(17, h.GetBinError(17))
                             hSubSR.SetBinContent(18, h.GetBinContent(18))
                             hSubSR.SetBinError(18, h.GetBinError(18))
-                # Save histogram
-                H1[hname] = hSubSR
-        file.close()
+                H1[hname] = hSubSR # Save histogram
 
 
 # Start LaTeX document

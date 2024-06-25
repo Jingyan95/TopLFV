@@ -7,6 +7,9 @@ from array import array
 from common import *
 
 
+ROOT.gROOT.SetBatch(1)
+
+
 def plot1D(year, hists, labels, xlabel, ylabel, ylabelNorm, ylabelRatio, legHeader, log, saveName):
     CMS.SetLumi(getLumi(year))
     CMS.SetEnergy("13") # Run 2
@@ -29,7 +32,7 @@ def plot1D(year, hists, labels, xlabel, ylabel, ylabelNorm, ylabelRatio, legHead
     if legHeader: CMS.cmsHeader(leg, legHeader, textSize=0.04)
 
     for iHist, hist in enumerate(hists):
-        CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist], fstyle=0, lwidth=3)
+        CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
         label = labels[iHist]
         leg.AddEntry(hist, label, "L")
 
@@ -176,8 +179,27 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     gc.collect()
 
 
-# def plot2D():
-#     TODO
+def plot2D(hist, xlabel, ylabel, zlabel, logz, saveName):
+    xmin = hist.GetXaxis().GetBinLowEdge(1)
+    xmax = hist.GetXaxis().GetBinLowEdge(hist.GetNbinsX() + 1)
+    ymin = hist.GetYaxis().GetBinLowEdge(1)
+    ymax = hist.GetYaxis().GetBinLowEdge(hist.GetNbinsY() + 1)
+
+    canv = CMS.cmsCanvas(saveName, xmin, xmax, ymin, ymax, xlabel, ylabel,
+        square=CMS.kSquare, extraSpace=0.01, iPos=0, with_z_axis=True, scaleLumi=0.8)
+
+    hist.GetZaxis().SetTitle(zlabel)
+    hist.GetZaxis().SetTitleOffset(1.4)
+    hist.Draw("same colz text45 e")
+    hist.SetMarkerColor(ROOT.kRed)
+    ROOT.gStyle.SetPaintTextFormat("4.3f");
+    if logz: canv.SetLogz()
+
+    CMS.SetCMSPalette()
+    CMS.UpdatePalettePosition(hist, canv) # Adjust palette position
+
+    CMS.SaveCanvas(canv, saveName + ".png", close=False)
+    CMS.SaveCanvas(canv, saveName + ".pdf")
 
 
 def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, iDomain, saveDir):

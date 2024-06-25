@@ -3,8 +3,12 @@
 # ---------------------------------------------------- #
 
 
+import argparse
 import cmsstyle as CMS
 import ROOT
+
+
+test = False
 
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
@@ -14,6 +18,8 @@ SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "DY/ZZ", "t#bar{t}/WW",
     "CLFV top decay (#mu_{ll'tu}^{scalar} = 20)"]
 SAMPLES_NAME_SUMMARY = ["Data", "t#bar{t}+X", "VV(V)", "DY/ZZ", "t#bar{t}/WW",
     "CLFV top production", "CLFV top decay"]
+TABLE_LATEX = ["Data", "$t\\bar{t}X$", "VV", "DY",
+    "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"]
 CHARGES = ["OS", "SS"]
 CHANNELS = ["ee", "emu", "mumu"]
 CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
@@ -42,29 +48,26 @@ REGIONS_NAME = [
     ("OffZ", "(Close to SR CR)")
 ]
 REGIONS_LATEX = [
-  "no cuts",
-  "Z+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
-  "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
-  "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
-  "CR, $S_T<300$ GeV",
-  "Z+jets CR, On Z",
-  "$t\\bar{t}$ + jets CR, btag $>1.3$",
-  "SR(Alt, Loose), btag $<1.3$",
-  "SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
-  "Close to SR CR, Off Z"
+    "no cuts",
+    "Z+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
+    "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
+    "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
+    "CR, $S_T<300$ GeV",
+    "Z+jets CR, On Z",
+    "$t\\bar{t}$ + jets CR, btag $>1.3$",
+    "SR(Alt, Loose), btag $<1.3$",
+    "SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
+    "Close to SR CR, Off Z"
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
 DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
 # DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa", "geqMedLepgeqTightTaJetTaFF"]
 # DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau", "#geq Tight Tau"]
 DOMAINS_LATEX = [
-  "$\\geq$ Tight $\\tau$",
-  "$<$ Tight $\\tau$",
-  # "$\\geq$ Tight $\\tau$, jet$\\rightarrow\\tau$ FF"
+    "$\\geq$ Tight $\\tau$",
+    "$<$ Tight $\\tau$",
+    # "$\\geq$ Tight $\\tau$, jet$\\rightarrow\\tau$ FF"
 ]
-TABLE_LATEX = ["Data", "$t\\bar{t}X$", "VV", "DY",
-  "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"]
-
 VARS1D = [
     "llM", "llDr", "lep1Pt", "lep2Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2",
     "taPt", "taPtFFBin", "taPtFake", "taEta", "taEtaFFBin", "taEtaFake", "taVsJetWP", "taVsJetMVA",
@@ -94,16 +97,15 @@ VARS2DFF = ["taPtVsEta"]
 VARS2DFF_NAME = [
     ("#tau p_{T} [GeV]", "#tau #eta")
 ]
-FF = ["noCuts"]
-FF_LABELS = ["no cuts"]
+FF_LABELS = ["On Z"]
 X_CUTS = [ # Regions
-  ("llOnZ", "llOffZ")
+    ("llOnZ", "llOffZ")
 ]
 Y_CUTS = [ # Domains
-  ("geqMedLepgeqTightTa", "geqMedLeplTightTa")
+    ("geqMedLepgeqTightTa", "geqMedLeplTightTa")
 ]
 
-COLORS = [ROOT.kBlack, ROOT.kRed - 4, ROOT.kOrange - 3, ROOT.kGreen, ROOT.kYellow, ROOT.kViolet + 1, ROOT.kGray]
+COLORS = [ROOT.kBlack, CMS.p6.kBlue, CMS.p6.kYellow, CMS.p6.kRed, CMS.p6.kGrape, CMS.p6.kGray, CMS.p6.kViolet]
 SQUARE = CMS.kSquare
 PLOT_LABEL = "Work in Progress"
 
@@ -113,3 +115,31 @@ def getLumi(year):
     elif year=="2017": return "41.5"
     elif year=="2018": return "59.8"
     return "138"
+
+
+# ----------------------- Test set ----------------------- #
+if test:
+    YEARS_RUN2 = ["2016APV"]
+    CHARGES = ["OS"]
+    CHANNELS = ["emu"]
+    CHANNELS_NAME = ["ee#tau_{h}"]
+    REGIONS = [
+        "llOnZ",
+        "llOffZ"
+    ]
+    REGIONS_NAME = [
+        ("OnZ", "(Z+jets CR)"),
+        ("OffZ", "(Close to SR CR)")
+    ]
+    REGIONS_LATEX = [
+        "Z+jets CR, On Z",
+        "Close to SR CR, Off Z"
+    ]
+    DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
+    DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
+    DOMAINS_LATEX = [
+        "$\\geq$ Tight $\\tau$",
+        "$<$ Tight $\\tau$"
+    ]
+    VARS1D = ["taPtFFBin", "taEtaFFBin", "subSR"]
+    VARS1D_NAME = ["#tau p_{T} [GeV]", "#tau #eta", "SR subdivided"]

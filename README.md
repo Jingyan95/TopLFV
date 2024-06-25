@@ -3,7 +3,7 @@ This framework depends on ROOT libraries. The setup has only been texted on lxpl
 
 ## I. Setup
 ```
-. /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh
+. /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
 ```
 
 ## II. To compile & run
