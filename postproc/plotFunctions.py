@@ -1,6 +1,4 @@
 import numpy as np
-import cmsstyle as CMS
-import ROOT
 import gc
 from math import sqrt
 from array import array
