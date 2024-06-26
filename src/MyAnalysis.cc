@@ -117,7 +117,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
 
   // Creating histograms
-  Dim5_1 Hists1D(Dim5_1(charges.size(), Dim4_1(channels.size(), Dim3_1(regions.size(), Dim2_1(domains.size(), Dim1_1(vars1D.size()))))));
+  Dim5<TH1F*> Hists1D(Dim5<TH1F*>(charges.size(), Dim4<TH1F*>(channels.size(), Dim3<TH1F*>(regions.size(), Dim2<TH1F*>(domains.size(), Dim1<TH1F*>(vars1D.size()))))));
   TH1F *h_test1D;
   std::stringstream name;
   for (int i = 0; i < (int) charges.size(); ++i) {
@@ -144,7 +144,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
     }
   }
-  Dim5_2 Hists2D(Dim5_2(charges.size(), Dim4_2(channels.size(), Dim3_2(regions.size(), Dim2_2(domains.size(), Dim1_2(vars2D.size()))))));
+  Dim5<TH2F*> Hists2D(Dim5<TH2F*>(charges.size(), Dim4<TH2F*>(channels.size(), Dim3<TH2F*>(regions.size(), Dim2<TH2F*>(domains.size(), Dim1<TH2F*>(vars1D.size()))))));
   TH2F *h_test2D;
   for (int i = 0; i < (int) charges.size(); ++i) {
     for (int j = 0; j < (int) channels.size(); ++j) {
@@ -184,7 +184,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root");
-  // TFile *f_Ta_ID_jetFF = new TFile("data/TAU/" + year + "TauID_FF_3lepJetFake.root"); // Depends on charge, channel, region --> maybe remove dependency?
+  TFile *f_Ta_ID_jetFF = new TFile("data/TAU/" + year + "TauID_FF_ptVsEta_DeepTau2017v2p1VSjet.root"); // Depends on charge, channel, region --> maybe remove dependency?
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
   TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   const TH2F sf_El_RECO = *(TH2F*) f_El_RECO->Get("EGamma_SF2D");
@@ -194,7 +194,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH1F sf_Ta_ID_e = *(TH1F*) f_Ta_ID_e->Get("VVLoose");
   const TH1F sf_Ta_ID_mu = *(TH1F*) f_Ta_ID_mu->Get("Tight");
   const TF1 sf_Ta_ID_jet = *(TF1*) f_Ta_ID_jet->Get("Tight_cent");
-  // Dim3_1 ff_Ta_ID_jet(Dim3_1(charges.size(), Dim2_1(channels.size(), Dim1_1(regions.size()))));
+  // Dim3<TH2F*> ff_Ta_ID_jet(Dim3<TH2F*>(charges.size(), Dim2<TH2F*>(channels.size(), Dim1<TH2F*>(regions.size()))));
   // for (int i = 0; i < charges.size(); ++i) {
   //   for (int j = 0; j < (int) channels.size(); ++j) {
   //     for (int k = 0; k < (int) regions.size(); ++k) {
@@ -226,7 +226,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float lep1PtCut = 30;
   float eleEta;
   float tauPt;
-  float tauEta;
   float weight_Lumi;
   float weight_PU;
   float weight_L1ECALPreFiring;
@@ -352,8 +351,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (tauPt < 20 || abs(Tau_eta[l]) > 2.3) continue;
       if (abs(Tau_dxy[l]) > 0.05 || abs(Tau_dz[l]) > 0.1) continue;
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
-      // The Loosest possible DeepTau Working Point
-      if ((int) Tau_idDeepTau2017v2p1VSjet[l] < 1 || (int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8) continue;
+      // "Tight" tau is defined as having Tau_idDeepTau2017v2p1VSjet >= 5
+      // "Loose" tau is defined as having Tau_idDeepTau2017v2p1VSjet < 5
+      // See line 26 in src/event_candidate.cc
+      if ((int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8 || (int) Tau_idDeepTau2017v2p1VSjet[l] < 1) continue;
 
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
@@ -464,15 +465,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     }
 
     // Filling histograms
-    tauPt = Event->ta1()->pt_;
-    tauEta = Event->ta1()->eta_;
     int cIdx = Event->c();
     int chIdx = Event->ch();
     int dIdx = dInd(domains, Event->TightTau());
     for (int i = 0; i < reg.size(); ++i) {
       // weight_Ta_ID_jetFF = 1;
       // if (domains[dIdx].Contains("geqMedLepgeqTightTaJetTaFF")) {
-      //   weight_Ta_ID_jetFF = get_factor(&(*(ff_Ta_ID_jet[cIdx][chIdx][reg[i]])), tauPt, tauEta, "");
+      //   weight_Ta_ID_jetFF = get_factor(&(*(ff_Ta_ID_jet[cIdx][chIdx][reg[i]])), Event->ta1()->pt_, Event->ta1()->eta_, "");
       // }
       // float wgt_final = wgt[i] * weight_Ta_ID_jetFF;
       float wgt_final = wgt[i];
@@ -489,13 +488,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "muLeptonMVAv1")]->Fill(Event->mu1()->mva1_, wgt_final);
         Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "muLeptonMVAv2")]->Fill(Event->mu1()->mva2_, wgt_final);
       }
-      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPt")]->Fill(tauPt, wgt_final);
-      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEta")]->Fill(tauEta, wgt_final);
-      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFFBin")]->Fill(tauPt, wgt_final);
-      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFFBin")]->Fill(tauEta, wgt_final);
+      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPt")]->Fill(Event->ta1()->pt_, wgt_final);
+      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEta")]->Fill(Event->ta1()->eta_, wgt_final);
+      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFFBin")]->Fill(Event->ta1()->pt_, wgt_final);
+      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFFBin")]->Fill(Event->ta1()->eta_, wgt_final);
       if (Event->ta1()->truth_ == 1) {
-        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFake")]->Fill(tauPt, wgt_final);
-        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFake")]->Fill(tauEta, wgt_final);
+        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFake")]->Fill(Event->ta1()->pt_, wgt_final);
+        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFake")]->Fill(Event->ta1()->eta_, wgt_final);
       }
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taVsJetWP")]->Fill(Event->ta1()->mva1WP_, wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt_final);
@@ -521,9 +520,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "St")]->Fill(Event->St(), wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "btagSum")]->Fill(Event->btagSum(), wgt_final);
 
-      Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEta")]->Fill(tauPt, tauEta, wgt_final);
+      Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEta")]->Fill(Event->ta1()->pt_, Event->ta1()->eta_, wgt_final);
       if (Event->ta1()->truth_ == 1) {
-        Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEtaFake")]->Fill(tauPt, tauEta, wgt_final);
+        Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEtaFake")]->Fill(Event->ta1()->pt_, Event->ta1()->eta_, wgt_final);
       }
     }
 
