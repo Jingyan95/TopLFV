@@ -89,7 +89,7 @@ for year in YEARS:
 OutAddress = os.path.dirname(sys.path[0])+"/postproc/latex"
 fout = open(OutAddress+"/CutFlowTables.tex", "w")
 fout.write("\\documentclass{beamer}\n")
-fout.write("\\usepackage[orientation = landscape, size = custom, width = 16, height = 12, scale = 0.5]{beamerposter}\n")
+fout.write("\\usepackage[orientation = landscape, size = custom, width = 16, height = 12, scale = 0.5]{../latex-beamerposter/beamerposter}\n")
 fout.write("\\usepackage{multicol}\n")
 fout.write("\\usepackage{lmodern}\n")
 fout.write("\n")

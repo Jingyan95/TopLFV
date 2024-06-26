@@ -14,7 +14,7 @@ Subsequent setup:
 
 ## II. To compile & run
 ```
-cd TopLFV
+cd TopLFV/
 make all
 ./RunAll
 ```
@@ -55,10 +55,10 @@ pdflatex CutFlowTables.tex > /dev/null
 ```
 The log can still be checked in `CutFlowTables.log`. *The table of contents (TOC) will appear after the second compilation.* LaTeX collects the TOC information in the `.toc` file during the first compilation, and then the TOC is produced during the second compilation.
 
-## To update cmsstyle
+## To update external git repositories
 ```
-cd postproc/cmsstyle/
-git pull origin master
+cd TopLFV/
+git submodule update --remote
 ```
 
 ## To calculate jet to tau fake factors
@@ -154,12 +154,16 @@ python jetToTauFakeFactors.py
     <td>Python script for calculating jet to tau fake factors</td>
   </tr>
   <tr>
+    <td>postproc/cmsstyle/</td>
+    <td>External git repository with CMS style files</td>
+  </tr>
+  <tr>
     <td>postproc/latex/</td>
     <td>Directory where latex files live</td>
   </tr>
   <tr>
-    <td>postproc/latex/beamerposter.sty</td>
-    <td>Beamer style file for compiling LaTeX event yield tables</td>
+    <td>postproc/latex-beamerposter/</td>
+    <td>External git repository with beamer style files</td>
   </tr>
   <tr>
     <td>src</td>

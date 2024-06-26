@@ -1,3 +1,6 @@
 [submodule "postproc/cmsstyle"]
 	path = postproc/cmsstyle
 	url = git@github.com:cms-cat/cmsstyle.git
+[submodule "postproc/latex-beamerposter"]
+	path = postproc/latex-beamerposter
+	url = git@github.com:deselaers/latex-beamerposter.git
