@@ -67,7 +67,7 @@ for key, value in SAMPLES.items():
         SHNAME1 = key + '_' + str(idx) + '_$1.C'
         SHFILE = "#!/bin/bash\n" +\
         'FILE=' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_$1.root' + '\n' +\
-        'source /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh\n' +\
+        'source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh\n' +\
         'cd ' + loc + '\n' +\
         'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2 -I./include ' + rootlib11 + ' -ldl -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + value[3] + '/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + ' -lMinuit -lTreePlayer' + '\n' +\
         './' + SHNAME1.split('.')[0] + '\n' +\

@@ -4,7 +4,7 @@
 
 
 import argparse
-import cmsstyle as CMS
+import cmsstyle.src.cmsstyle as CMS
 import ROOT
 
 

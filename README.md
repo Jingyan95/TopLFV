@@ -5,14 +5,11 @@ This framework depends on ROOT libraries. The setup has only been texted on lxpl
 First time:
 ```
 . /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
-git clone git@github.com:Jingyan95/TopLFV.git
-cd TopLFV/postproc/cmsstyle
-git submodule init
-git submodule update
+git clone --recurse-submodules --remote-submodules git@github.com:Jingyan95/TopLFV.git
 ```
 Subsequent setup:
 ```
-. /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh
+./setup.sh
 ```
 
 ## II. To compile & run
@@ -25,27 +22,27 @@ make all
 ## III. To write & submit jobs
 ```
 cd bin/
-python3 makeJobs.py
-python3 submitJobs.py
+python makeJobs.py
+python submitJobs.py
 ```
 
 ## IV. To merge output ROOT files
 ```
 cd hists/
-python3 hadd.py
+python hadd.py
 ```
 Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
 
 ## V. To make plots
 ```
 cd postproc/
-python3 drawHists.py
+python drawHists.py
 ```
 
 ## VI. To get tables of event yields
 ```
 cd postproc/
-python3 cutFlow.py
+python cutFlow.py
 ```
 This script will produce tables of event yields in a LaTeX file. The LaTeX file can be compiled and viewed in pdf format with
 ```
@@ -56,7 +53,7 @@ To suppress the log output, use
 ```
 pdflatex CutFlowTables.tex > /dev/null
 ```
-The log can still be checked in `CutFlowTables.log`. *NOTE: for some reason the table of contents only shows up after compiling twice with pdflatex.*
+The log can still be checked in `CutFlowTables.log`. *The table of contents (TOC) will appear after the second compilation.* LaTeX collects the TOC information in the `.toc` file during the first compilation, and then the TOC is produced during the second compilation.
 
 ## To update cmsstyle
 ```
@@ -67,7 +64,7 @@ git pull origin master
 ## To calculate jet to tau fake factors
 ```
 cd postproc/
-python3 jetToTauFakeFactors.py
+python jetToTauFakeFactors.py
 ```
 
 ## File descriptions
