@@ -9,13 +9,15 @@ git clone --recurse-submodules --remote-submodules git@github.com:Jingyan95/TopL
 ```
 Subsequent setup:
 ```
-./setup.sh
+source setup.sh
 ```
 
 ## II. To compile & run
 ```
-cd TopLFV/
-make all
+cd TopLFV/build
+cmake ..
+make
+cd ..
 ./RunAll
 ```
 
