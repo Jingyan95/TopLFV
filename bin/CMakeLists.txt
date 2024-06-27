@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.0)
+find_package(ROOT REQUIRED COMPONENTS)
+include(${ROOT_USE_FILE})
+include_directories(${ROOT_INCLUDE_DIRS})
+add_definitions(${ROOT_CXX_FLAGS})
+add_library(libTopLFV SHARED IMPORTED)
+set_target_properties(libTopLFV PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libTopLFV.so)
+add_executable(${PROJECT_NAME} ${PROJECT_NAME}.C)
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} libTopLFV)
+

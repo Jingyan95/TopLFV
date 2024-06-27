@@ -66,27 +66,24 @@ for key, value in SAMPLES.items():
         SHNAME = key + '_' + str(idx) + '.sh'
         SHNAME1 = key + '_' + str(idx) + '_$1.C'
         SHFILE = "#!/bin/bash\n" +\
-        'FILE=' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_$1.root' + '\n' +\
         'source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh\n' +\
-        'cd ' + loc + '\n' +\
-        'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2 -I./include ' + rootlib11 + ' -ldl -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + value[3] + '/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + ' -lMinuit -lTreePlayer' + '\n' +\
-        './' + SHNAME1.split('.')[0] + '\n' +\
-        'if [ -f "$FILE" ]; then' + '\n' +\
-        '    rm -f ' + SHNAME1.split('.')[0] + '\n' +\
-        'fi\n'
+        'echo "project(' + SHNAME1.split('.')[0] + ')" | cat - CMakeLists.txt > temp && mv temp CMakeLists.txt\n' +\
+        'mkdir build\n' +\
+        'cd build\n' +\
+        'cmake ..\n' +\
+        'make\n' +\
+        'cd ..\n' +\
+        './' + SHNAME1.split('.')[0] + '\n'
         subprocess.call('rm -f Jobs/' + value[3] + '/' + key + '/*', shell=True)
         open('Jobs/' + value[3] + '/' + key + '/' + SHNAME, 'wt').write(SHFILE)
         print("-----------------------------------")
         print('Writing Jobs/' + value[3] + '/' + key + '/' + SHNAME)
         os.system('chmod +x ' + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
         print('chmod +x ' + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
-        # Delete log files
-        os.system('rm -rf ' + S + 'log')
         for subdir, dirs, files in os.walk(S):
             sequence = [files[i:i + nf] for i in range(0, len(files), nf)]
             for num, seq in enumerate(sequence):
                 text = ''
-                text += '    system("rm -f ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '*.root");\n'
                 text += '    ROOT::EnableThreadSafety();\n'
                 text += '    UInt_t nThread = ' + str(nThread) + ';\n'
                 text += '    std::stringstream Summary;\n'
@@ -99,7 +96,7 @@ for key, value in SAMPLES.items():
                 for filename in seq:
                     text += '        ch ->Add("' + S + filename + '");\n'
                 text += '        MyAnalysis t1(ch, "' + value[3] + '" , "' + value[1] + '" , "' + value[4] + '", nThread, workerID, false);\n'
-                text += '        auto workerSummary = t1.Loop(Form("' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '_%u.root",workerID), "' + value[1] + '" , "' + value[2] + '" , "' + value[3] + '" , "' + value[4] + '" , ' + value[5] + ' , '+ value[6] + ' , ' + value[7] + ', std::ref(progress), std::ref(counter));\n'
+                text += '        auto workerSummary = t1.Loop(Form("' + key + '_' + str(idx) + '_' + str(num) + '_%u.root",workerID), "' + value[1] + '" , "' + value[2] + '" , "' + value[3] + '" , "' + value[4] + '" , ' + value[5] + ' , '+ value[6] + ' , ' + value[7] + ', std::ref(progress), std::ref(counter));\n'
                 text += '        Summary<<workerSummary.str();\n'
                 text += '    };\n'
                 text += '    std::vector<std::thread> workers;\n'
@@ -108,8 +105,7 @@ for key, value in SAMPLES.items():
                 text += '    }\n'
                 text += '    for (auto&& worker : workers) worker.join();\n'
                 text += '    std::cout<<Summary.str();\n'
-                text += '    system("hadd ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '.root ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
-                text += '    system("rm -f ' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
+                text += '    system("hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root ' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
                 SHNAME1 = key + '_' + str(idx) + '_' + str(num) + '.C'
                 SHFILE1 = '#include "MyAnalysis.h"\n' +\
                 '#include "ROOT/TSeq.hxx"\n' +\

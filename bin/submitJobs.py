@@ -63,6 +63,11 @@ for key, value in SAMPLES.items():
             sequance = [files[i:i + nf] for i in range(0, len(files), nf)]
             submit = 'universe = vanilla\n' # Writing .sub file
             submit += 'executable = Jobs/' + value[3] + '/' + key + '/' + key + '_' + str(idx) + '.sh\n'
+            submit += 'should_transfer_files = YES\n'
+            submit += 'when_to_transfer_output = ON_EXIT\n'
+            submit += 'transfer_input_files = ../data,../include,CMakeLists.txt,Jobs/' + value[3] + '/' + key + '/' + key + '_' + str(idx) + '_$(Process).C,../build/libTopLFV.so\n'
+            submit += 'transfer_output_files = ' + key + '_' + str(idx) + '_$(Process).root\n'
+            submit += 'transfer_output_remaps = "' + key + '_' + str(idx) + '_$(Process).root = ../hists/' + value[3] + '/' + key + '_' + str(idx) + '_$(Process).root"\n'
             submit += 'arguments = $(Process)\n'
             submit += 'output = Jobs/' + value[3] + '/' + key + '/' + key + '_' + str(idx) + '_$(Process).out\n'
             submit += 'error = Jobs/' + value[3] + '/' + key + '/' + key + '_' + str(idx) + '_$(Process).err\n'
