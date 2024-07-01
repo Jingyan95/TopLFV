@@ -8,7 +8,7 @@ from common import *
 ROOT.gROOT.SetBatch(1)
 
 
-def plot1D(year, hists, labels, xlabel, ylabel, legHeader, log, saveName, lstyles=[]):
+def plot1D(year, hists, labels, xlabel, ylabel, legHeader, log, saveName, lstyles=[], lcolors=[]):
     CMS.SetLumi(getLumi(year))
     CMS.SetEnergy("13") # Run 2
     CMS.SetExtraText(PLOT_LABEL)
@@ -29,13 +29,31 @@ def plot1D(year, hists, labels, xlabel, ylabel, legHeader, log, saveName, lstyle
     leg = CMS.cmsLeg(0.55, 0.89 - 0.04 * 8, 0.89, 0.89, textSize=0.04)
     if legHeader: CMS.cmsHeader(leg, legHeader, textSize=0.04)
 
+    style1 = "hist"
+    style2 = "p e"
+    points_hists = []
     for iHist, hist in enumerate(hists):
-        if len(lstyles):
-            CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3, lstyle=lstyles[iHist])
+        if len(lstyles) and len(lcolors):
+            CMS.cmsDraw(hist, style1, mcolor=lcolors[iHist], fstyle=0, lwidth=3, lstyle=lstyles[iHist])
+            points = hist.Clone()
+            CMS.cmsDraw(points, style2, mcolor=lcolors[iHist], fstyle=0, lwidth=3, lstyle=lstyles[iHist])
+            points_hists.append(points)
+        elif len(lstyles):
+            CMS.cmsDraw(hist, style1, mcolor=COLORS[iHist+1], fstyle=0, lwidth=3, lstyle=lstyles[iHist])
+            points = hist.Clone()
+            CMS.cmsDraw(hist.Clone(), style2, mcolor=COLORS[iHist+1], fstyle=0, lwidth=3, lstyle=lstyles[iHist])
+            points_hists.append(points)
+        elif len(lcolors):
+            CMS.cmsDraw(hist, style1, mcolor=lcolors[iHist], fstyle=0, lwidth=3)
+            points = hist.Clone()
+            CMS.cmsDraw(hist.Clone(), style2, mcolor=lcolors[iHist], fstyle=0, lwidth=3)
+            points_hists.append(points)
         else:
-            CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
-        label = labels[iHist]
-        leg.AddEntry(hist, label, "L")
+            CMS.cmsDraw(hist, style1, mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
+            points = hist.Clone()
+            CMS.cmsDraw(hist.Clone(), style2, mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
+            points_hists.append(points)
+        leg.AddEntry(hist, labels[iHist], "PLE")
 
     CMS.GetcmsCanvasHist(canv).GetXaxis().SetTitleOffset(1.2)
     CMS.GetcmsCanvasHist(canv).GetXaxis().SetLabelSize(0.04)

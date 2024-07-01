@@ -113,6 +113,7 @@ for year in YEARS:
 
         for iVar, var in enumerate(VARS1DFF):
             if "Fake" in var: continue
+
             # Plot fake tau purity
             for charge in CHARGES:
                 for channel in CHANNELS:
@@ -194,13 +195,44 @@ for year in YEARS:
                     if charge=="OS":
                         lstyles.append(ROOT.kSolid)
                     elif charge=="SS":
-                        lstyles.append(9)
+                        lstyles.append(ROOT.kDashed)
             plot1D(year, hists, labels, VARS1DFF_NAME[iVar], "Fake factor",
                 "2l+#tau, "+X_CUT_LABELS[iCut][0], False, ARGS.FOLDER+"/"+year+"/"+x1+"/"+var+"_ff", lstyles)
 
+            avgFF = hists[0].Clone() # OS-ee
+            avgFF.Add(hists[2].Clone()) # OS-mumu
+            avgFF.Scale(1.0/2.0) # Averaged
+            for charge in CHARGES:
+                closure = []
+                closure_labels = []
+                closure_styles = []
+                closure_colors = []
+                incr = 1
+                if charge=="SS": incr += 3
+                for iCh, channel in enumerate(CHANNELS):
+                    hkey = charge+"_"+channel+"_"+regD+"_"+var
+                    predicted = H1[year+"_Data_"+hkey].Clone()
+                    predicted.Add(H1[year+"_TX_"+hkey].Clone(), -1.0)
+                    predicted.Add(H1[year+"_VV_"+hkey].Clone(), -1.0)
+                    predicted.Multiply(avgFF)
+                    hkey = charge+"_"+channel+"_"+regB+"_"+var
+                    actual = H1[year+"_Data_"+hkey].Clone()
+                    closure.append(predicted)
+                    closure_labels.append("OS-"+channel+" Pred.")
+                    closure_styles.append(ROOT.kDashed)
+                    closure_colors.append(COLORS[iCh+incr])
+                    closure.append(actual)
+                    closure_labels.append("OS-"+channel+" Actual")
+                    closure_styles.append(ROOT.kSolid)
+                    closure_colors.append(COLORS[iCh+incr])
+                plot1D(year, closure, closure_labels, VARS1DFF_NAME[iVar], "Events",
+                    "2l+#tau, "+X_CUT_LABELS[iCut][1], True, ARGS.FOLDER+"/"+year+"/"+x2+"/"+charge+"_"+var+"_closure",
+                    closure_styles, closure_colors)
+
         for iVar, var in enumerate(VARS2DFF):
             if "Fake" in var: continue
-            # Plot fake tau purity
+
+            # # Plot fake tau purity
             for charge in CHARGES:
                 for channel in CHANNELS:
                     for iSample, sample in enumerate(SAMPLES):
