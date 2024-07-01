@@ -6,7 +6,8 @@
 std::mutex MyAnalysis::mtx_;
 
 int main() {
-  system("rm -f test*.root");
+  int Sys = system("rm -f test*.root");
+  if (Sys<0) {std::cout<<"No files named test*.root"<<std::endl;}
   ROOT::EnableThreadSafety();
   UInt_t nThread = 6;
   std::stringstream Summary;
@@ -30,7 +31,9 @@ int main() {
   }
   for (auto&& worker : workers) worker.join();
   std::cout << Summary.str();
-  system("hadd test.root test_*.root");
-  system("rm -f test_*.root");
+  Sys = system("hadd test.root test_*.root");
+  if (Sys<0) {std::cout<<"Filed to hadd test.root"<<std::endl;}
+  Sys = system("rm -f test_*.root");
+  if (Sys<0) {std::cout<<"No files named test*.root"<<std::endl;}
   return 0;
 }

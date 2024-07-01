@@ -105,7 +105,8 @@ for key, value in SAMPLES.items():
                 text += '    }\n'
                 text += '    for (auto&& worker : workers) worker.join();\n'
                 text += '    std::cout<<Summary.str();\n'
-                text += '    system("hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root ' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
+                text += '    int Sys = system("hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root ' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
+                text += '    if (Sys<0) {std::cout<<"Filed to hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root"<<std::endl;}\n'
                 SHNAME1 = key + '_' + str(idx) + '_' + str(num) + '.C'
                 SHFILE1 = '#include "MyAnalysis.h"\n' +\
                 '#include "ROOT/TSeq.hxx"\n' +\
