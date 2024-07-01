@@ -8,7 +8,7 @@ from common import *
 ROOT.gROOT.SetBatch(1)
 
 
-def plot1D(year, hists, labels, xlabel, ylabel, ylabelNorm, ylabelRatio, legHeader, log, saveName):
+def plot1D(year, hists, labels, xlabel, ylabel, legHeader, log, saveName, lstyles=[]):
     CMS.SetLumi(getLumi(year))
     CMS.SetEnergy("13") # Run 2
     CMS.SetExtraText(PLOT_LABEL)
@@ -30,7 +30,10 @@ def plot1D(year, hists, labels, xlabel, ylabel, ylabelNorm, ylabelRatio, legHead
     if legHeader: CMS.cmsHeader(leg, legHeader, textSize=0.04)
 
     for iHist, hist in enumerate(hists):
-        CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
+        if len(lstyles):
+            CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3, lstyle=lstyles[iHist])
+        else:
+            CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
         label = labels[iHist]
         leg.AddEntry(hist, label, "L")
 
@@ -177,7 +180,7 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     gc.collect()
 
 
-def plot2D(hist, xlabel, ylabel, zlabel, logz, saveName):
+def plot2D(hist, xlabel, ylabel, zlabel, logz, saveName, zrange=[]):
     xmin = hist.GetXaxis().GetBinLowEdge(1)
     xmax = hist.GetXaxis().GetBinLowEdge(hist.GetNbinsX() + 1)
     ymin = hist.GetYaxis().GetBinLowEdge(1)
@@ -188,6 +191,9 @@ def plot2D(hist, xlabel, ylabel, zlabel, logz, saveName):
 
     hist.GetZaxis().SetTitle(zlabel)
     hist.GetZaxis().SetTitleOffset(1.4)
+    if len(zrange):
+        hist.SetMinimum(zrange[0])
+        hist.SetMaximum(zrange[1])
     hist.Draw("same colz text45 e")
     hist.SetMarkerColor(ROOT.kRed)
     ROOT.gStyle.SetPaintTextFormat("4.3f");

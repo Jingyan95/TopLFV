@@ -68,13 +68,24 @@ for year in YEARS:
 
 # Create save folders
 for year in YEARS:
-    for cut in X_CUTS:
-        if not os.path.exists(ARGS.FOLDER):
-            os.makedirs(ARGS.FOLDER)
-        if not os.path.exists(ARGS.FOLDER+"/"+year):
-            os.makedirs(ARGS.FOLDER+"/"+year)
-        if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+cut[0]):
-            os.makedirs(ARGS.FOLDER+"/"+year+"/"+cut[0])
+    for xcut in X_CUTS:
+        for region in xcut:
+            for ycut in Y_CUTS:
+                for domain in ycut:
+                    for charge in CHARGES:
+                        for channel in CHANNELS:
+                            if not os.path.exists(ARGS.FOLDER):
+                                os.makedirs(ARGS.FOLDER)
+                            if not os.path.exists(ARGS.FOLDER+"/"+year):
+                                os.makedirs(ARGS.FOLDER+"/"+year)
+                            if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region):
+                                os.makedirs(ARGS.FOLDER+"/"+year+"/"+region)
+                            if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain):
+                                os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain)
+                            if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge):
+                                os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge)
+                            if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel):
+                                os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+domain+"/"+charge+"/"+channel)
 
 # Open output ROOT files
 DataAddress = os.path.dirname(sys.path[0])+"/data/TAU"
@@ -90,73 +101,178 @@ for year in YEARS:
 # ABCD regions defined in slide 17 here:
 # https://indico.cern.ch/event/1298853/contributions/5519537/subcontributions/437004/attachments/2694688/4676531/2023.8.4%20—%20NEU%20CMS%20Meeting%20Top%20LFV.pdf
 for year in YEARS:
-    for iCut in range(len(FF_LABELS)):
+    for iCut in range(len(X_CUTS)):
         x1 = X_CUTS[iCut][0]
         x2 = X_CUTS[iCut][1] # Signal
         y1 = Y_CUTS[iCut][0] # Signal
         y2 = Y_CUTS[iCut][1]
+        regA = x1+"_"+y1
+        regC = x1+"_"+y2
+        regD = x2+"_"+y2
+        regB = x2+"_"+y1
 
         for iVar, var in enumerate(VARS1DFF):
+            if "Fake" in var: continue
+            # Plot fake tau purity
+            for charge in CHARGES:
+                for channel in CHANNELS:
+                    histsA = []
+                    histsC = []
+                    histsD = []
+                    histsB = []
+                    labels = []
+                    for iSample, sample in enumerate(SAMPLES):
+                        if sample=="Data" or sample=="LFVStScalarU" or sample=="LFVTtScalarU": continue
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regA+"_"+var
+                        purA = H1[hkey+"Fake"].Clone()
+                        denA = H1[hkey].Clone()
+                        purA.Divide(denA)
+                        histsA.append(purA)
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regC+"_"+var
+                        purC = H1[hkey+"Fake"].Clone()
+                        denC = H1[hkey].Clone()
+                        purC.Divide(denC)
+                        histsC.append(purC)
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regD+"_"+var
+                        purD = H1[hkey+"Fake"].Clone()
+                        denD = H1[hkey].Clone()
+                        purD.Divide(denD)
+                        histsD.append(purD)
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regB+"_"+var
+                        purB = H1[hkey+"Fake"].Clone()
+                        denB = H1[hkey].Clone()
+                        purB.Divide(denB)
+                        histsB.append(purB)
+
+                        labels.append(SAMPLES_NAME[iSample])
+                    plot1D(year, histsA, labels, VARS1DFF_NAME[iVar], "Fake tau purity",
+                        "2l+#tau, "+X_CUT_LABELS[iCut][0]+", "+Y_CUT_LABELS[iCut][0], False,
+                        ARGS.FOLDER+"/"+year+"/"+x1+"/"+y1+"/"+charge+"/"+channel+"/"+var+"_purity")
+                    plot1D(year, histsC, labels, VARS1DFF_NAME[iVar], "Fake tau purity",
+                        "2l+#tau, "+X_CUT_LABELS[iCut][0]+", "+Y_CUT_LABELS[iCut][1], False,
+                        ARGS.FOLDER+"/"+year+"/"+x1+"/"+y2+"/"+charge+"/"+channel+"/"+var+"_purity")
+                    plot1D(year, histsD, labels, VARS1DFF_NAME[iVar], "Fake tau purity",
+                        "2l+#tau, "+X_CUT_LABELS[iCut][1]+", "+Y_CUT_LABELS[iCut][1], False,
+                        ARGS.FOLDER+"/"+year+"/"+x2+"/"+y2+"/"+charge+"/"+channel+"/"+var+"_purity")
+                    plot1D(year, histsB, labels, VARS1DFF_NAME[iVar], "Fake tau purity",
+                        "2l+#tau, "+X_CUT_LABELS[iCut][1]+", "+Y_CUT_LABELS[iCut][0], False,
+                        ARGS.FOLDER+"/"+year+"/"+x2+"/"+y1+"/"+charge+"/"+channel+"/"+var+"_purity")
+
             hists = []
             labels = []
+            lstyles = []
             # fout[year+"_"+var].cd()
             for charge in CHARGES:
                 for channel in CHANNELS:
+                    hname = charge+"_"+channel+"_"+var+"_ff_"+x1
                     # Get data and subtract "real" taus
-                    regA = charge+"_"+channel+"_"+x1+"_"+y1+"_"+var
-                    ff = H1[year+"_Data_"+regA].Clone()
-                    ff.Add(H1[year+"_TX_"+regA].Clone(), -1.0)
-                    ff.Add(H1[year+"_VV_"+regA].Clone(), -1.0)
+                    hkey = charge+"_"+channel+"_"+regA+"_"+var
+                    ff = H1[year+"_Data_"+hkey].Clone()
+                    ff.Add(H1[year+"_TX_"+hkey].Clone(), -1.0)
+                    ff.Add(H1[year+"_VV_"+hkey].Clone(), -1.0)
                     for i in range(1, ff.GetNbinsX()+1):
                         if ff.GetBinContent(i)<0.0:
                             ff.SetBinContent(i, 0.0)
                             ff.SetBinError(i, 0.0)
-                    regC = charge+"_"+channel+"_"+x1+"_"+y2+"_"+var
-                    denom = H1[year+"_Data_"+regC].Clone()
-                    denom.Add(H1[year+"_TX_"+regC].Clone(), -1.0)
-                    denom.Add(H1[year+"_VV_"+regC].Clone(), -1.0)
+                    hkey = charge+"_"+channel+"_"+regC+"_"+var
+                    denom = H1[year+"_Data_"+hkey].Clone()
+                    denom.Add(H1[year+"_TX_"+hkey].Clone(), -1.0)
+                    denom.Add(H1[year+"_VV_"+hkey].Clone(), -1.0)
                     for i in range(1, denom.GetNbinsX()+1):
                         if denom.GetBinContent(i)<0.0:
                             denom.SetBinContent(i, 0.0)
                             denom.SetBinError(i, 0.0)
-                    hname = charge+"_"+channel+"_"+var+"_ff_"+x1
                     ff.Divide(denom) # Calculate fake factors
                     ff.SetName(hname)
                     # ff.Write() # Write to ROOT file
                     hists.append(ff) # Add histogram to plot
                     labels.append(charge+"-"+channel)
-            plot1D(year, hists, labels, VARS1DFF_NAME[iVar], "Fake Factor", "", "",
-                "2l+#tau, "+FF_LABELS[iCut], False, ARGS.FOLDER+"/"+year+"/"+x1+"/"+var)
+                    if charge=="OS":
+                        lstyles.append(ROOT.kSolid)
+                    elif charge=="SS":
+                        lstyles.append(9)
+            plot1D(year, hists, labels, VARS1DFF_NAME[iVar], "Fake factor",
+                "2l+#tau, "+X_CUT_LABELS[iCut][0], False, ARGS.FOLDER+"/"+year+"/"+x1+"/"+var+"_ff", lstyles)
 
         for iVar, var in enumerate(VARS2DFF):
+            if "Fake" in var: continue
+            # Plot fake tau purity
+            for charge in CHARGES:
+                for channel in CHANNELS:
+                    for iSample, sample in enumerate(SAMPLES):
+                        if sample=="Data" or sample=="LFVStScalarU" or sample=="LFVTtScalarU": continue
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regA+"_"+var
+                        purA = H2[hkey+"Fake"].Clone()
+                        denA = H2[hkey].Clone()
+                        purA.Divide(denA)
+                        if purA.GetEntries()>0:
+                            plot2D(purA, VARS2DFF_NAME[iVar][0], VARS2DFF_NAME[iVar][1], "Fake tau purity", False,
+                                ARGS.FOLDER+"/"+year+"/"+x1+"/"+y1+"/"+charge+"/"+channel+"/"+var+"_"+sample+"_purity",
+                                [0.0, 1.1])
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regC+"_"+var
+                        purC = H2[hkey+"Fake"].Clone()
+                        denC = H2[hkey].Clone()
+                        purC.Divide(denC)
+                        if purC.GetEntries()>0:
+                            plot2D(purC, VARS2DFF_NAME[iVar][0], VARS2DFF_NAME[iVar][1], "Fake tau purity", False,
+                                ARGS.FOLDER+"/"+year+"/"+x1+"/"+y2+"/"+charge+"/"+channel+"/"+var+"_"+sample+"_purity",
+                                [0.0, 1.1])
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regD+"_"+var
+                        purD = H2[hkey+"Fake"].Clone()
+                        denD = H2[hkey].Clone()
+                        purD.Divide(denD)
+                        if purD.GetEntries()>0:
+                            plot2D(purD, VARS2DFF_NAME[iVar][1], VARS2DFF_NAME[iVar][1], "Fake tau purity", False,
+                                ARGS.FOLDER+"/"+year+"/"+x2+"/"+y2+"/"+charge+"/"+channel+"/"+var+"_"+sample+"_purity",
+                                [0.0, 1.1])
+
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+regB+"_"+var
+                        purB = H2[hkey+"Fake"].Clone()
+                        denB = H2[hkey].Clone()
+                        purB.Divide(denB)
+                        if purB.GetEntries()>0:
+                            plot2D(purB, VARS2DFF_NAME[iVar][1], VARS2DFF_NAME[iVar][0], "Fake tau purity", False,
+                                ARGS.FOLDER+"/"+year+"/"+x2+"/"+y1+"/"+charge+"/"+channel+"/"+var+"_"+sample+"_purity",
+                                [0.0, 1.1])
+
             if year!="All": fout[year+"_"+var].cd()
             for charge in CHARGES:
                 for channel in CHANNELS:
                     hname = charge+"_"+channel+"_"+var+"_ff_"+x1
                     # Get data and subtract "real" taus
-                    regA = charge+"_"+channel+"_"+x1+"_"+y1+"_"+var
-                    ff = H2[year+"_Data_"+regA].Clone()
-                    ff.Add(H2[year+"_TX_"+regA].Clone(), -1.0)
-                    ff.Add(H2[year+"_VV_"+regA].Clone(), -1.0)
+                    hkey = charge+"_"+channel+"_"+regA+"_"+var
+                    ff = H2[year+"_Data_"+hkey].Clone()
+                    ff.Add(H2[year+"_TX_"+hkey].Clone(), -1.0)
+                    ff.Add(H2[year+"_VV_"+hkey].Clone(), -1.0)
                     ff.SetName(hname)
-                    if ff.GetEntries()==0:
-                        ff.Write()
+                    if ff.GetEntries()==0.0:
+                        if year!="All": ff.Write()
                         continue
                     for i in range(1, ff.GetNbinsX()+1):
                         for j in range(1, ff.GetNbinsY()+1):
                             if ff.GetBinContent(i, j)<0.0:
                                 ff.SetBinContent(i, j, 0.0)
                                 ff.SetBinError(i, j, 0.0)
-                    regC = charge+"_"+channel+"_"+x1+"_"+y2+"_"+var
-                    denom = H2[year+"_Data_"+regC].Clone()
-                    denom.Add(H2[year+"_TX_"+regC].Clone(), -1.0)
-                    denom.Add(H2[year+"_VV_"+regC].Clone(), -1.0)
+                    hkey = charge+"_"+channel+"_"+regC+"_"+var
+                    denom = H2[year+"_Data_"+hkey].Clone()
+                    denom.Add(H2[year+"_TX_"+hkey].Clone(), -1.0)
+                    denom.Add(H2[year+"_VV_"+hkey].Clone(), -1.0)
                     for i in range(1, denom.GetNbinsX()+1):
                         for j in range(1, denom.GetNbinsY()+1):
                             if denom.GetBinContent(i, j)<0.0:
                                 denom.SetBinContent(i, j, 0.0)
                                 denom.SetBinError(i, j, 0.0)
                     ff.Divide(denom) # Calculate fake factors
+                    if ff.GetEntries()==0.0:
+                        if year!="All": ff.Write()
+                        continue
                     if year!="All": ff.Write() # Write to ROOT file
-                    plot2D(ff, VARS2DFF_NAME[iVar][0], VARS2DFF_NAME[iVar][1], "Fake Factor", False,
-                        ARGS.FOLDER+"/"+year+"/"+x1+"/"+charge+"_"+channel+"_"+var)
+                    plot2D(ff, VARS2DFF_NAME[iVar][0], VARS2DFF_NAME[iVar][1], "Fake factor", False,
+                        ARGS.FOLDER+"/"+year+"/"+x1+"/"+charge+"_"+channel+"_"+var+"_ff")

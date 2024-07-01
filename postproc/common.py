@@ -1,6 +1,6 @@
-# ---------------------------------------------------- #
-# Everything here should match with src/MyAnalysis.cc  #
-# ---------------------------------------------------- #
+# ----------------------------------------------------------- #
+# Everything here should be some subset of src/MyAnalysis.cc  #
+# ----------------------------------------------------------- #
 
 
 import argparse
@@ -9,6 +9,8 @@ import ROOT
 
 
 test = False
+draw = False
+fake = True
 
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
@@ -24,40 +26,68 @@ CHARGES = ["OS", "SS"]
 CHANNELS = ["ee", "emu", "mumu"]
 CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
 REGIONS = [
+    # "Generic" regions
     "ll",
-    "llOnZMetg20Jetgeq1",
-    "llOffZMetg20B1",
-    "llOffZMetg20B2",
-    "llStl300",
-    "llOnZ",
-    "llbtagg1p3",
-    "llStg300OffZbtagl1p3",
-    "llStg300OffZbtagl1p3Tight",
-    "llOffZ"
+    "llMetg20Jetgeq1OffZB1", # SR
+    "llMetg20Jetgeq1OnZ", # Z+jets CR
+    "llMetg20Jetgeq1OffZB2", # ttbar+jets CR
+    # St(l/g)300 regions
+    "llStg300",
+    "llStl300", # fake
+    "llMetg20Jetgeq1Stg300",
+    "llMetg20Jetgeq1Stl300", # fake
+    "llMetg20Jetgeq1OffZB1Stg300",
+    "llMetg20Jetgeq1OffZB1Stl300", # fake
+    # DY (Z) regions
+    "llMetg20Jetgeq1OffZBneq1", # validation
+    "llMetg20Jetgeq1OnZBneq1", # validation, fake
+    "llMetg20Jetgeq1OffZ", # signal
+    "llMetg20Jetgeq1OnZ", # signal, fake (see above!!)
+    # ttbar regions
+    "llMetg20Jetgeq1B1Stl300", # validation
+    "llMetg20Jetgeq1B2Stl300", # validation, fake
+    "llMetg20Jetgeq1B1", # signal
+    "llMetg20Jetgeq1B2" # signal, fake
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
+    ("S_{T}>300GeV", "(Loose Alt. SR)"),
     ("S_{T}<300GeV", "(CR)"),
-    ("OnZ", "(Z+jets CR)"),
-    ("btag>1.3", "(t#bar{t}+jets CR)"),
-    ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))"),
-    ("S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))"),
-    ("OffZ", "(Close to SR CR)")
+    ("p_{T}^{miss}>20GeV, njet#geq1", "S_{T}>300GeV (Medium Alt. SR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "S_{T}<300GeV (CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1, OffZ", "nbjet=1, S_{T}>300GeV (Tight Alt. SR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1, OffZ", "nbjet=1, S_{T}<300GeV (CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet#neq1 (Z+jets VR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ, nbjet#neq1 (Z+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ (Z+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "nbjet=1, S_{T}<300GeV (t#bar{t}+jets VR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "nbjet=2, S_{T}<300GeV (t#bar{t}+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "nbjet=1 (t#bar{t}+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "nbjet=2 (t#bar{t}+jets CR)")
 ]
 REGIONS_LATEX = [
-    "no cuts",
-    "Z+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
-    "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
-    "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
-    "CR, $S_T<300$ GeV",
-    "Z+jets CR, On Z",
-    "$t\\bar{t}$ + jets CR, btag $>1.3$",
-    "SR(Alt, Loose), btag $<1.3$",
-    "SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
-    "Close to SR CR, Off Z"
+    "No cuts",
+    "SR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=1$",
+    "Z+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, On Z",
+    "$t\\bar{t}$+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=2$",
+    "Loose Alt. SR: $S_T>300$",
+    "CR: $S_T<300$",
+    "Medium Alt. SR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, $S_T>300$",
+    "CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, $S_T<300$",
+    "Tight Alt. SR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=1$, $S_T>300$",
+    "CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=1$, $S_T<300$",
+    "Z+jets VR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $\\neq 1",
+    "Z+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, On Z, nbjet $\\neq 1",
+    "Z+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z",
+    "Z+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, On Z",
+    "$t\\bar{t}$+jets VR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$, $S_T<300$",
+    "$t\\bar{t}$+jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2, $S_T<300$",
+    "$t\\bar{t}$+jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
+    "$t\\bar{t}$+jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2"
 ]
 DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
 DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
@@ -70,7 +100,7 @@ DOMAINS_LATEX = [
 ]
 VARS1D = [
     "llM", "llDr", "lep1Pt", "lep2Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2",
-    "taPt", "taPtFFBin", "taPtFake", "taEta", "taEtaFFBin", "taEtaFake", "taVsJetWP", "taVsJetMVA",
+    "taPt", "taPtFFBin", "taPtFFBinFake", "taEta", "taEtaFFBin", "taEtaFFBinFake", "taVsJetWP", "taVsJetMVA",
     "taVsElMVA", "taVsMuMVA", "taDxy", "taDz", "taDecayMode", "jet1Pt", "jetbtagDeepFlavB", "njet",
     "nbjet", "MET", "subSR", "LFVemuM", "LFVetaM", "LFVmutaM", "LFVemuDr", "LFVetaDr", "LFVmutaDr",
     "LFVePt", "LFVmuPt", "LFVtaPt", "balepPt", "topmass", "Ht", "St", "btagSum"]
@@ -91,18 +121,34 @@ VARS2D_NAME = [
 ]
 
 # For fake factor calculation
-VARS1DFF = ["taPtFFBin", "taEtaFFBin"]
-VARS1DFF_NAME = ["#tau p_{T} [GeV]", "#tau #eta"]
-VARS2DFF = ["taPtVsEta"]
+# VARS1DFF = ["taPtFFBin", "taEtaFFBin"]
+VARS1DFF = ["taPtFFBin", "taPtFFBinFake", "taEtaFFBin", "taEtaFFBinFake"]
+# VARS1DFF_NAME = ["#tau p_{T} [GeV]", "#tau #eta"]
+VARS1DFF_NAME = ["Tau p_{T} [GeV]", "Fake tau p_{T} [GeV]", "Tau #eta", "Fake tau #eta"]
+VARS2DFF = ["taPtVsEta", "taPtVsEtaFake"]
 VARS2DFF_NAME = [
-    ("#tau p_{T} [GeV]", "#tau #eta")
+    ("#tau p_{T} [GeV]", "#tau #eta"),
+    ("Fake #tau p_{T} [GeV]", "Fake #tau #eta")
 ]
-FF_LABELS = ["On Z"]
 X_CUTS = [ # Regions
-    ("llOnZ", "llOffZ")
+    ("llMetg20Jetgeq1OffZB1Stl300", "llMetg20Jetgeq1OffZB1Stg300"),
+    ("llMetg20Jetgeq1OnZBneq1", "llMetg20Jetgeq1OffZBneq1"),
+    ("llMetg20Jetgeq1B2Stl300", "llMetg20Jetgeq1B1Stl300")
 ]
 Y_CUTS = [ # Domains
+    ("geqMedLepgeqTightTa", "geqMedLeplTightTa"),
+    ("geqMedLepgeqTightTa", "geqMedLeplTightTa"),
     ("geqMedLepgeqTightTa", "geqMedLeplTightTa")
+]
+X_CUT_LABELS = [
+    ("S_{T}<300GeV", "S_{T}>300GeV"),
+    ("On Z", "Off Z"),
+    ("nbjet=2", "nbjet=1")
+]
+Y_CUT_LABELS = [
+    ("#geq Tight Tau", "< Tight Tau"),
+    ("#geq Tight Tau", "< Tight Tau"),
+    ("#geq Tight Tau", "< Tight Tau")
 ]
 
 COLORS = [ROOT.kBlack, CMS.p6.kBlue, CMS.p6.kYellow, CMS.p6.kRed, CMS.p6.kGrape, CMS.p6.kGray, CMS.p6.kViolet]
@@ -117,29 +163,64 @@ def getLumi(year):
     return "138"
 
 
-# ----------------------- Test set ----------------------- #
-if test:
-    YEARS_RUN2 = ["2016APV"]
-    CHARGES = ["OS"]
-    CHANNELS = ["emu"]
-    CHANNELS_NAME = ["ee#tau_{h}"]
+# ----------------------- Small sets ----------------------- #
+if draw:
+    # YEARS_RUN2 = ["2016APV"]
+    # CHARGES = ["OS"]
+    # CHANNELS = ["emu"]
+    # CHANNELS_NAME = ["ee#tau_{h}"]
     REGIONS = [
-        "llOnZ",
-        "llOffZ"
+        "ll",
+        "llMetg20Jetgeq1OffZB1", # SR
+        "llMetg20Jetgeq1OnZ", # Z+jets CR
+        "llMetg20Jetgeq1OffZB2" # ttbar+jets CR
     ]
     REGIONS_NAME = [
-        ("OnZ", "(Z+jets CR)"),
-        ("OffZ", "(Close to SR CR)")
+        ("No cuts", ""),
+        ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
+        ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"),
+        ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)")
     ]
     REGIONS_LATEX = [
-        "Z+jets CR, On Z",
-        "Close to SR CR, Off Z"
+        "No cuts",
+        "SR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=1$",
+        "Z+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, On Z",
+        "$t\\bar{t}$+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=2$"
     ]
-    DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
-    DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
-    DOMAINS_LATEX = [
-        "$\\geq$ Tight $\\tau$",
-        "$<$ Tight $\\tau$"
+    # DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
+    # DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
+    # DOMAINS_LATEX = [
+    #     "$\\geq$ Tight $\\tau$",
+    #     "$<$ Tight $\\tau$"
+    # ]
+    # VARS1D = ["taPtFFBin", "taEtaFFBin", "subSR"]
+    # VARS1D_NAME = ["#tau p_{T} [GeV]", "#tau #eta", "SR subdivided"]
+
+if fake:
+    REGIONS = [
+        # St(l/g)300 regions
+        "llMetg20Jetgeq1OffZB1Stg300",
+        "llMetg20Jetgeq1OffZB1Stl300", # fake
+        # DY (Z) regions
+        "llMetg20Jetgeq1OffZBneq1", # validation
+        "llMetg20Jetgeq1OnZBneq1", # validation, fake
+        # ttbar regions
+        "llMetg20Jetgeq1B1Stl300", # validation
+        "llMetg20Jetgeq1B2Stl300" # validation, fake
     ]
-    VARS1D = ["taPtFFBin", "taEtaFFBin", "subSR"]
-    VARS1D_NAME = ["#tau p_{T} [GeV]", "#tau #eta", "SR subdivided"]
+    REGIONS_NAME = [
+        ("p_{T}^{miss}>20GeV, njet#geq1, OffZ", "nbjet=1, S_{T}>300GeV (Tight Alt. SR)"),
+        ("p_{T}^{miss}>20GeV, njet#geq1, OffZ", "nbjet=1, S_{T}<300GeV (CR)"),
+        ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet#neq1 (Z+jets VR)"),
+        ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ, nbjet#neq1 (Z+jets CR)"),
+        ("p_{T}^{miss}>20GeV, njet#geq1", "nbjet=1, S_{T}<300GeV (t#bar{t}+jets VR)"),
+        ("p_{T}^{miss}>20GeV, njet#geq1", "nbjet=2, S_{T}<300GeV (t#bar{t}+jets CR)")
+    ]
+    REGIONS_LATEX = [
+        "Tight Alt. SR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=1$, $S_T>300$",
+        "CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $=1$, $S_T<300$",
+        "Z+jets VR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, Off Z, nbjet $\\neq 1",
+        "Z+jets CR: $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, On Z, nbjet $\\neq 1",
+        "$t\\bar{t}$+jets VR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$, $S_T<300$",
+        "$t\\bar{t}$+jets CR, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2, $S_T<300$"
+    ]

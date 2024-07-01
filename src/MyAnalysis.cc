@@ -51,18 +51,32 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> charges{"OS", "SS"}; // Same-Sign, Opposite-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
+    // "Generic" regions
     "ll",
-    "llOnZMetg20Jetgeq1",
-    "llOffZMetg20B1",
-    "llOffZMetg20B2",
-    "llStl300",
-    "llOnZ",
-    "llbtagg1p3",
-    "llStg300OffZbtagl1p3",
-    "llStg300OffZbtagl1p3Tight",
-    "llOffZ"
+    "llMetg20Jetgeq1OffZB1", // SR
+    "llMetg20Jetgeq1OnZ", // Z+jets CR
+    "llMetg20Jetgeq1OffZB2", // ttbar+jets CR
+    // St(l/g)300 regions
+    "llStg300",
+    "llStl300", // fake
+    "llMetg20Jetgeq1Stg300",
+    "llMetg20Jetgeq1Stl300", // fake
+    "llMetg20Jetgeq1OffZB1Stg300",
+    "llMetg20Jetgeq1OffZB1Stl300", // fake
+    // DY (Z) regions
+    "llMetg20Jetgeq1OffZBneq1", // validation
+    "llMetg20Jetgeq1OnZBneq1", // validation, fake
+    "llMetg20Jetgeq1OffZ", // signal
+    // "llMetg20Jetgeq1OnZ", // signal, fake (see above!!)
+    // ttbar regions
+    "llMetg20Jetgeq1B1Stl300", // validation
+    "llMetg20Jetgeq1B2Stl300", // validation, fake
+    "llMetg20Jetgeq1B1", // signal
+    "llMetg20Jetgeq1B2" // signal, fake
+
+    // Fake branches!
   };
-  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0, 0, 0};
+  std::vector<int> unBlind{0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1};
   std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa"};
   // std::vector<TString> domains{"geqMedLepgeqTightTa", "geqMedLeplTightTa", "geqMedLepgeqTightTaJetTaFF"};
   const std::map<TString, std::vector<float>> vars1D = {
@@ -76,10 +90,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"muLeptonMVAv2",    {7,   50,     0,    1}},
     {"taPt",             {8,   20,    20,  220}},
     {"taPtFFBin",        {9,   20,    20,  220}},
-    {"taPtFake",         {10,  20,    20,  220}},
+    {"taPtFFBinFake",    {10,  20,    20,  220}},
     {"taEta",            {11,  23,  -2.3,  2.3}},
     {"taEtaFFBin",       {12,  23,  -2.3,  2.3}},
-    {"taEtaFake",        {13,  23,  -2.3,  2.3}},
+    {"taEtaFFBinFake",   {13,  23,  -2.3,  2.3}},
     {"taVsJetWP",        {14,   8,     0,    8}},
     {"taVsJetMVA",       {15,  50,     0,    1}},
     {"taVsElMVA",        {16,  50,     0,    1}},
@@ -112,8 +126,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"taPtVsEta",          {0, 20, 20, 220, 23, -2.3, 2.3}},
     {"taPtVsEtaFake",      {1, 20, 20, 220, 23, -2.3, 2.3}}
   };
-  Double_t tauPtBin[5] = {20.0, 40.0, 60.0, 100.0, 220.0};
-  Double_t tauEtaBin[3] = {0.0, 1.4, 2.3};
+  Double_t tauPtBin[8] = {20.0, 40.0, 60.0, 80.0, 100.0, 120.0, 160.0, 220.0};
+  Double_t tauEtaBin[5] = {0.0, 1.0, 1.4, 1.6, 2.3};
   Double_t llMBin[19] = {0, 20, 39, 58.2, 63.2, 68.2, 73.2, 78.2, 83.2, 88.2, 93.2, 95.2, 98.2, 103.2, 108.2, 126, 144, 162, 180};
 
   // Creating histograms
@@ -129,9 +143,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             if (it->first.Contains("llM") && i == 0 && j != 1) {
               h_test1D = new TH1F((name.str()).c_str(), "", 18, llMBin);
             } else if (it->first.Contains("taPtFFBin")) {
-              h_test1D = new TH1F((name.str()).c_str(), "", 4, tauPtBin);
+              h_test1D = new TH1F((name.str()).c_str(), "", 7, tauPtBin);
             } else if (it->first.Contains("taEtaFFBin")) {
-              h_test1D = new TH1F((name.str()).c_str(), "", 2, tauEtaBin);
+              h_test1D = new TH1F((name.str()).c_str(), "", 4, tauEtaBin);
             } else {
               h_test1D = new TH1F((name.str()).c_str(), "", it->second.at(1), it->second.at(2), it->second.at(3));
             }
@@ -153,9 +167,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
             name << charges[i] << "_" << channels[j] << "_" << regions[k] << "_" << domains[m] << "_" << it->first << "_" << workerID_; // Adding working ID to avoid mem leak
             if (it->first.Contains("taPtVsEta")) {
-              h_test2D = new TH2F((name.str()).c_str(), "", 4, tauPtBin, 2, tauEtaBin);
+              h_test2D = new TH2F((name.str()).c_str(), "", 7, tauPtBin, 4, tauEtaBin);
             } else {
-              h_test2D = new TH2F((name.str()).c_str(), "", it->second.at(1), it->second.at(2), it->second.at(3),
+              h_test2D = new TH2F((name.str()).c_str(), "",
+                  it->second.at(1), it->second.at(2), it->second.at(3),
                   it->second.at(4), it->second.at(5), it->second.at(6));
             }
             h_test2D->StatOverflows(kTRUE);
@@ -184,7 +199,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_Ta_ID_e = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSe.root");
   TFile *f_Ta_ID_mu = new TFile("data/TAU/" + year + "TauID_SF_eta_DeepTau2017v2p1VSmu.root");
   TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root");
-  TFile *f_Ta_ID_jetFF = new TFile("data/TAU/" + year + "TauID_FF_ptVsEta_DeepTau2017v2p1VSjet.root"); // Depends on charge, channel, region --> maybe remove dependency?
+  // TODO: insert link to branch
+  // TFile *f_Ta_ID_jetFF = new TFile("data/TAU/" + year + "TauID_FF_ptVsEta_DeepTau2017v2p1VSjet.root"); // Depends on charge, channel, region --> maybe remove dependency?
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
   TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   const TH2F sf_El_RECO = *(TH2F*) f_El_RECO->Get("EGamma_SF2D");
@@ -353,7 +369,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
       // "Tight" tau is defined as having Tau_idDeepTau2017v2p1VSjet >= 5
       // "Loose" tau is defined as having Tau_idDeepTau2017v2p1VSjet < 5
-      // See line 26 in src/event_candidate.cc
+      // Implemented in line 26 in src/event_candidate.cc
       if ((int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8 || (int) Tau_idDeepTau2017v2p1VSjet[l] < 1) continue;
 
       // Overlap removal
@@ -413,53 +429,91 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // h_2D_wBtagSF->Fill(Event->njet() > 4 ? 4 : Event->njet(), Event->Ht() > 250 ? 249 : Event->Ht(), weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF())
 
     int rIdx = rInd(regions, "ll");
-    reg.push_back(rIdx); // No cuts
+    reg.push_back(rIdx);
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    if (Event->MET()->Pt() > 20 && Event->njet() > 0) {
-      if (Event->OnZ()) { // Z+jets CR
-        rIdx = rInd(regions, "llOnZMetg20Jetgeq1");
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      } else {
-        if (Event->nbjet() == 1) { // SR
-          rIdx = rInd(regions, "llOffZMetg20B1");
-          reg.push_back(rIdx);
-          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-        }
-        if (Event->nbjet() == 2) { // ttbar+jets CR
-          rIdx = rInd(regions, "llOffZMetg20B2");
-          reg.push_back(rIdx);
-          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-        }
-      }
-    }
-    if (Event->St() < 300) { // Generic signal-free region
-      rIdx = rInd(regions, "llStl300");
+
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && !Event->OnZ() && Event->nbjet() == 1) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OffZB1");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
-    if (Event->OnZ()) { // Z+jets CR
-      rIdx = rInd(regions, "llOnZ");
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->OnZ()) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OnZ");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
-    if (Event->btagSum() > 1.3) { // ttbar+jets CR
-      rIdx = rInd(regions, "llbtagg1p3");
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && !Event->OnZ() && Event->nbjet() == 2) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OffZB2");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
-    if (Event->St() > 300 && !Event->OnZ() && Event->btagSum() < 1.3) { // New SR
-      rIdx = rInd(regions, "llStg300OffZbtagl1p3");
+    if (Event->St() > 300) {
+      int rIdx = rInd(regions, "llStg300");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      if(Event->SRindex() % 2 == 0 ? Event->njet() > 0 : Event->St() > 500) { // New SR (Tight)
-        rIdx = rInd(regions, "llStg300OffZbtagl1p3Tight");
-        reg.push_back(rIdx);
-        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      }
     }
-    if (!Event->OnZ()) { // Close to SR CR
-      rIdx = rInd(regions, "llOffZ");
+    if (Event->St() < 300) {
+      int rIdx = rInd(regions, "llStl300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->St() > 300) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1Stg300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->St() < 300) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1Stl300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && !Event->OnZ() && Event->nbjet() == 1 && Event->St() > 300) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OffZB1Stg300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && !Event->OnZ() && Event->nbjet() == 1 && Event->St() < 300) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OffZB1Stl300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && !Event->OnZ() && Event->nbjet() != 1) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OffZBneq1");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->OnZ() && Event->nbjet() != 1) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OnZBneq1");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && !Event->OnZ()) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1OffZ");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    // if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->OnZ()) {
+    //   int rIdx = rInd(regions, "llMetg20Jetgeq1OnZ");
+    //   reg.push_back(rIdx);
+    //   wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    // }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->nbjet() == 1 && Event->St() < 300) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1B1Stl300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->nbjet() == 2 && Event->St() < 300) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1B2Stl300");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->nbjet() == 1) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1B1");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->MET()->Pt() > 20 && Event->njet() >= 1 && Event->nbjet() == 2) {
+      int rIdx = rInd(regions, "llMetg20Jetgeq1B2");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
@@ -491,10 +545,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPt")]->Fill(Event->ta1()->pt_, wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEta")]->Fill(Event->ta1()->eta_, wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFFBin")]->Fill(Event->ta1()->pt_, wgt_final);
-      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFFBin")]->Fill(Event->ta1()->eta_, wgt_final);
+      Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFFBin")]->Fill(abs(Event->ta1()->eta_), wgt_final);
       if (Event->ta1()->truth_ == 1) {
-        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFake")]->Fill(Event->ta1()->pt_, wgt_final);
-        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFake")]->Fill(Event->ta1()->eta_, wgt_final);
+        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taPtFFBinFake")]->Fill(Event->ta1()->pt_, wgt_final);
+        Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taEtaFFBinFake")]->Fill(abs(Event->ta1()->eta_), wgt_final);
       }
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taVsJetWP")]->Fill(Event->ta1()->mva1WP_, wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "taVsJetMVA")]->Fill(Event->ta1()->mva1_, wgt_final);
@@ -520,9 +574,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "St")]->Fill(Event->St(), wgt_final);
       Hists1D[cIdx][chIdx][reg[i]][dIdx][vInd(vars1D, "btagSum")]->Fill(Event->btagSum(), wgt_final);
 
-      Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEta")]->Fill(Event->ta1()->pt_, Event->ta1()->eta_, wgt_final);
+      Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEta")]->Fill(Event->ta1()->pt_, abs(Event->ta1()->eta_), wgt_final);
       if (Event->ta1()->truth_ == 1) {
-        Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEtaFake")]->Fill(Event->ta1()->pt_, Event->ta1()->eta_, wgt_final);
+        Hists2D[cIdx][chIdx][reg[i]][dIdx][vInd(vars2D, "taPtVsEtaFake")]->Fill(Event->ta1()->pt_, abs(Event->ta1()->eta_), wgt_final);
       }
     }
 

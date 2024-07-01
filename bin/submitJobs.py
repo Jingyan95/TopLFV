@@ -38,7 +38,7 @@ if mc_2018:
 if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
-jobruntime = 14400 # 4 hrs
+jobruntime = 21600 # 6 hrs
 
 # Set up an argument parser
 parser = argparse.ArgumentParser()
@@ -87,4 +87,4 @@ for key, value in SAMPLES.items():
             subprocess.call(qsub, shell=True)
 
 end = time.time()
-print('Runtime was %.2f seconds.' % (end - start))
+print('Runtime was %.2f minutes.' % ((end - start)/60.0))
