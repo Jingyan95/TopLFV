@@ -29,7 +29,7 @@ submit += '+MaxRuntime = ' + str(jobruntime) + '\n'
 submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.8 * jobruntime)) + '\n'
 submit += 'periodic_hold_reason = "Job is getting close to be terminated due to run time"\n'
 submit += 'on_exit_hold = (ExitBySignal == True) || (ExitCode != 0)\n'
-submit += 'periodic_release =  (NumJobStarts < 3) && ((CurrentTime - EnteredCurrentStatus) > 300)\n'
+submit += 'periodic_release =  (NumJobStarts < 3) && ((CurrentTime - EnteredCurrentStatus) > 120)\n'
 submit += 'queue year,proc,file,nCPUs from TopLFV.txt\n'
 
 open('TopLFV.sub', 'wt').write(submit)

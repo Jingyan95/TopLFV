@@ -64,6 +64,7 @@ for key, value in SAMPLES.items():
     for idx, S in enumerate(value[0]):
         SHNAME1 = key + '_' + str(idx) + '_$1.C'
         subprocess.call('rm -f Jobs/' + value[3] + '/' + key + '/*', shell=True)
+        subprocess.call('rm -f ../hists/' + value[3] + '/' + key + '*.root', shell=True)
         for subdir, dirs, files in os.walk(S):
             sequence = [files[i:i + nf] for i in range(0, len(files), nf)]
             for num, seq in enumerate(sequence):
