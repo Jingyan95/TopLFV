@@ -24,7 +24,7 @@ submit += 'output = Jobs/$(year)/$(proc)/$(file).out\n'
 submit += 'error = Jobs/$(year)/$(proc)/$(file).err\n'
 submit += 'log = Jobs/$(year)/$(proc)/$(file).log\n'
 #submit += 'batch_name = $(proc)\n' #looks like can give only one batch name
-submit += 'request_cpus = $(nCPUS)\n'
+submit += 'request_cpus = $(nCPUs)\n'
 submit += '+MaxRuntime = ' + str(jobruntime) + '\n' 
 submit += 'periodic_hold = (JobStatus == 2) && (time() - EnteredCurrentStatus) > ' + str(int(0.8 * jobruntime)) + '\n'
 submit += 'periodic_hold_reason = "Job is getting close to be terminated due to run time"\n'
