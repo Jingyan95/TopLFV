@@ -9,8 +9,9 @@ jobruntime = 5400 # 1.5 hr
 
 try:
     file = open('TopLFV.txt')
-except Exception as e:
+except IOError:
     print('TopLFV.txt not found! Please run makeJobs.py first!')
+    sys.exit()
 
 submit = 'universe = vanilla\n' # Writing .sub file
 submit += 'executable = TopLFV.sh\n'
