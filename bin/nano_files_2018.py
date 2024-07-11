@@ -30,6 +30,9 @@ mc2018_samples["2018_DYM10to50"] = [["/eos/cms/store/user/etsai/LFV_Dilepton/201
 mc2018_samples["2018_DYM50"] = [["/eos/cms/store/user/etsai/LFV_Dilepton/2018/2018_DY50_UL/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_2018LFVSignalAndData_v2_2018_DY50_UL/231104_231242/0000/"], "mc", "DYM50", "2018", "", "6077.22", "59.83", "131572454", 19]
 mc2018_samples["2018_TTToSemiLeptonic"] = [["/eos/cms/store/user/etsai/LFV_Dilepton/2018/2018_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_2018LFVSignalAndData_v2_2018_TTToSemiLeptonic_UL/231104_231655/0000/"], "mc", "TTToSemiLeptonic", "2018", "", "365.34", "59.83", "472557630", 8]
 mc2018_samples["2018_ZZTo2L2Nu"] = [["/eos/cms/store/user/etsai/LFV_Dilepton/2018/2018_ZZTo2L2Nu_UL/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/crab_2018LFVSignalAndData_v2_2018_ZZTo2L2Nu_UL/231104_231602/0000/"], "mc", "ZZTo2L2Nu", "2018", "", "0.564", "59.83", "97491908", 22]
+mc2018_samples["2018_WJets_0J"] = [["/eos/cms/store/user/jingyan/LFV_Wjets/2018_WJets_0J_UL/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_Wjets_2018_WJets_0J_UL/240710_205324/0000/"], "mc", "WJets_0J", "2018", "", "49397", "59.83", "138080546", 10]
+mc2018_samples["2018_WJets_1J"] = [["/eos/cms/store/user/jingyan/LFV_Wjets/2018_WJets_1J_UL/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_Wjets_2018_WJets_1J_UL/240710_205415/0000/"], "mc", "WJets_1J", "2018", "", "8087", "59.83", "89044378", 10]
+mc2018_samples["2018_WJets_2J"] = [["/eos/cms/store/user/jingyan/LFV_Wjets/2018_WJets_2J_UL/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_Wjets_2018_WJets_2J_UL/240710_205505/0000/"], "mc", "WJets_2J", "2018", "", "3176", "59.83", "29631923", 10]
 
 # Data
 data2018_samples["2018_A_MuonEG"] = [["/eos/cms/store/user/etsai/LFV_Dilepton/2018/2018_A_MuonEG/MuonEG/crab_2018LFVSignalAndData_v1_2018_A_MuonEG/231103_211754/0000/"], "data", "MuonEG", "2018", "A", "1", "1", "1", 11]

@@ -30,6 +30,7 @@ mc2016_samples["2016_DYM10to50"] = [["/eos/user/e/etsai/public/LFV_Dilepton/2016
 mc2016_samples["2016_DYM50"] = [["/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_DY50_UL/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_2016LFVSignalAndData_v5_2016_DY50_UL/231103_180636/0000/"], "mc", "DYM50", "2016", "", "6077.22", "16.81", "48335328", 11]
 mc2016_samples["2016_TTToSemiLeptonic"] = [["/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_TTToSemiLeptonic_UL/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/crab_2016LFVSignalAndData_v5_2016_TTToSemiLeptonic_UL/231103_181232/0000/"], "mc", "TTToSemiLeptonic", "2016", "", "365.34", "16.81", "143553998", 6]
 mc2016_samples["2016_ZZTo2L2Nu"] = [["/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_ZZTo2L2Nu_UL/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/crab_2016LFVSignalAndData_v3_2016_ZZTo2L2Nu_UL/231102_125502/0000/"], "mc", "ZZTo2L2Nu", "2016", "", "0.564", "16.81", "15894442", 15]
+mc2016_samples["2016_WJets"] = [["/eos/cms/store/user/jingyan/LFV_WJets/2016_WJets_UL/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/crab_WJets_2016_WJets_UL/240710_234739/0000/"], "mc", "WJets", "2016", "", "61526.7", "16.81", "80958227", 10]
 
 # Data
 data2016_samples["2016_F_MuonEG"] = [["/eos/user/e/etsai/public/LFV_Dilepton/2016/2016_F_MuonEG/MuonEG/crab_2016LFVSignalAndData_2016_F_MuonEG/231101_094952/0000/"], "data", "MuonEG", "2016", "F", "1", "1", "1", 3]
