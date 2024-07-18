@@ -24,13 +24,15 @@ public:
   int charge_;
   int mva1WP_; // Currently only used for Tau vs Jet WP
   float mva1_;
-  float mva2_;
-  float mva3_;
+  float jetpt_;
+  float jetbtag_;
   int index_;
   int flavor_;
   int truth_;
   int decaymode_;
   TLorentzVector p4_;
+  float recoil_;
+  void setRecoil(float);
 
 private:
 

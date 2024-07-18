@@ -12,8 +12,8 @@ test = False
 
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
-SAMPLES = ["Data", "TX", "VV", "DY", "TT", "LFVStScalarU", "LFVTtScalarU"]
-SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "DY/ZZ", "t#bar{t}/WW",
+SAMPLES = ["Data", "TX", "VV", "Others", "FakeL", "FakeLTau", "FakeTau", "LFVStScalarU", "LFVTtScalarU"]
+SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "Fake #tau",
     "CLFV top production (#mu_{ll'tu}^{scalar} = 0.5)",
     "CLFV top decay (#mu_{ll'tu}^{scalar} = 20)"]
 SAMPLES_NAME_SUMMARY = ["Data", "t#bar{t}+X", "VV(V)", "DY/ZZ", "t#bar{t}/WW",
@@ -31,9 +31,7 @@ REGIONS = [
     "llStl300",
     "llOnZ",
     "llbtagg1p3",
-    "llStg300OffZbtagl1p3",
-    "llStg300OffZbtagl1p3Tight",
-    "llOffZ"
+    "llStg300OffZbtagl1p3"
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
@@ -43,9 +41,7 @@ REGIONS_NAME = [
     ("S_{T}<300GeV", "(CR)"),
     ("OnZ", "(Z+jets CR)"),
     ("btag>1.3", "(t#bar{t}+jets CR)"),
-    ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))"),
-    ("S_{T}>300GeV, OffZ", "btag<1.3, njet#geq1 or S_{T}>500GeV (SR(Alt, Tight))"),
-    ("OffZ", "(Close to SR CR)")
+    ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))")
 ]
 REGIONS_LATEX = [
     "no cuts",
@@ -55,36 +51,22 @@ REGIONS_LATEX = [
     "CR, $S_T<300$ GeV",
     "Z+jets CR, On Z",
     "$t\\bar{t}$ + jets CR, btag $>1.3$",
-    "SR(Alt, Loose), btag $<1.3$",
-    "SR(Alt, Tight), btag $<1.3$, njet $\\geq 1$ or $S_T>500$ GeV",
-    "Close to SR CR, Off Z"
+    "SR(Alt, Loose), btag $<1.3$"
 ]
-DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
-DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
-# DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa", "geqMedLepgeqTightTaJetTaFF"]
-# DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau", "#geq Tight Tau"]
-DOMAINS_LATEX = [
-    "$\\geq$ Tight $\\tau$",
-    "$<$ Tight $\\tau$",
-    # "$\\geq$ Tight $\\tau$, jet$\\rightarrow\\tau$ FF"
-]
-VARS1D = [
-    "llM", "llDr", "lep1Pt", "lep2Pt", "elLeptonMVAv1", "elLeptonMVAv2", "muLeptonMVAv1", "muLeptonMVAv2",
-    "taPt", "taPtFFBin", "taPtFake", "taEta", "taEtaFFBin", "taEtaFake", "taVsJetWP", "taVsJetMVA",
-    "taVsElMVA", "taVsMuMVA", "taDxy", "taDz", "taDecayMode", "jet1Pt", "jetbtagDeepFlavB", "njet",
-    "nbjet", "MET", "subSR", "LFVemuM", "LFVetaM", "LFVmutaM", "LFVemuDr", "LFVetaDr", "LFVmutaDr",
-    "LFVePt", "LFVmuPt", "LFVtaPt", "balepPt", "topmass", "Ht", "St", "btagSum"]
-VARS1D_NAME = [
-    "m(l#bar{l}) [GeV]", "#DeltaR(l#bar{l})", "Leading lepton p_{T} [GeV]", "Sub-leading lepton p_{T} [GeV]",
-    "Electron Top Lepton MVA (v1)", "Electron Top Lepton MVA (v2)", "Muon Top Lepton MVA (v1)",
-    "Muon Top Lepton MVA (v2)", "#tau p_{T} [GeV]", "#tau p_{T} [GeV]", "Fake #tau p_{T} [GeV]", "#tau #eta",
-    "#tau #eta", "Fake #tau #eta", "#tau vs Jet WP", "#tau vs Jet MVA", "#tau vs Electron MVA",
-    "#tau vs Muon MVA", "#tau d_{xy} [cm]", "#tau d_{z} [cm]", "#tau Decay Mode", "Leading jet p_{T} [GeV]",
-    "btag", "njet", "nbjet (Loose WP)", "MET [GeV]", "SR subdivided", "m(e#bar{#mu}) [GeV]",
-    "m(e#bar{#tau}) [GeV]", "m(#mu#bar{#tau}) [GeV]", "#DeltaR(e,#bar{#mu}) [GeV]", "#DeltaR(e,#bar{#tau}) [GeV]",
-    "#DeltaR(#mu,#bar{#tau}) [GeV]", "LFV electron p_{T} [GeV]", "LFV muon p_{T} [GeV]", "LFV tau p_{T} [GeV]",
-    "Bachelor lepton p_{T} [GeV]", "m(top) [GeV]", "H_{T} [GeV]", "S_{T} [GeV]", "Sum of btagging scores"]
-VARS2D = ["taPtVsEta", "taPtVsEtaFake"]
+
+VARS1D = ["lep1Pt", "lep2Pt", "tauPt", "lep1Eta", "lep2Eta", "tauEta", "Ht", "njet", "nbjet", "St", "tauRT"]
+VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
+               "Sub-leading lepton p_{T} [GeV]", 
+               "tau lepton p_{T} [GeV]", 
+               "Leading lepton |#eta|", 
+               "Sub-leading lepton |#eta|", 
+               "tau lepton |#eta|",
+               "H_{T} [GeV]",
+               "njet",
+               "nbjet",
+               "S_{T} [GeV]",
+               "tau R_{T}"]
+VARS2D = ["0J", "1J", "2J"]
 VARS2D_NAME = [
     ("#tau p_{T} [GeV]", "#tau #eta"),
     ("Fake #tau p_{T} [GeV]", "Fake #tau #eta")
@@ -105,7 +87,7 @@ Y_CUTS = [ # Domains
     ("geqMedLepgeqTightTa", "geqMedLeplTightTa")
 ]
 
-COLORS = [ROOT.kBlack, CMS.p6.kBlue, CMS.p6.kYellow, CMS.p6.kRed, CMS.p6.kGrape, CMS.p6.kGray, CMS.p6.kViolet]
+COLORS = [ROOT.kBlack, CMS.p8.kBlue, CMS.p8.kOrange, CMS.p8.kRed, CMS.p8.kPink, CMS.p8.kGreen, CMS.p8.kCyan, CMS.p8.kGray, CMS.p8.kAzure]
 SQUARE = CMS.kSquare
 PLOT_LABEL = "Work in Progress"
 

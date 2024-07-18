@@ -1,7 +1,7 @@
 #include "lepton_candidate.h"
 
 lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, float dxy_in, float dz_in, int charge_in,
-                                   int mva1WP_in, float mva1_in, float mva2_in, float mva3_in, int index_in,
+                                   int mva1WP_in, float mva1_in, float jetpt_in, float jetbtag_in, int index_in,
                                    int flavor_in, int truth_in, int decaymode_in) {
 
   pt_ = pt_in;
@@ -12,8 +12,8 @@ lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, floa
   charge_ = charge_in;
   mva1WP_ = mva1WP_in;
   mva1_ = mva1_in;
-  mva2_ = mva2_in;
-  mva3_ = mva3_in;
+  jetpt_ = jetpt_in;
+  jetbtag_ = jetbtag_in;
   index_ = index_in;
   flavor_ = flavor_in;
   decaymode_ = decaymode_in;
@@ -48,6 +48,10 @@ lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, floa
       truth_ = 2;
     }
   }
+}
+
+void lepton_candidate::setRecoil(float recoil){
+  recoil_ = recoil;
 }
 
 lepton_candidate::~lepton_candidate() {}

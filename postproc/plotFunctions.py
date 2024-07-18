@@ -111,8 +111,8 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     true_y_min = 1e10
     for hist in hists:
         true_y_min = min(true_y_min, hist.GetMinimum(0.0))
-    y_min = true_y_min/2.0
-    y_max = 2000*max(y_max, MCHists[-1].GetMaximum())
+    y_min = 0.5
+    y_max = 5000*max(y_max, MCHists[-1].GetMaximum(),y_min)
 
     dicanv = CMS.cmsDiCanvas(var,
         x_min, x_max, y_min, y_max, 0.2, 1.8,
@@ -127,23 +127,25 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     CMS.cmsDraw(hists[0], "P EX0", fcolor=COLORS[0], lwidth=2)
     for iHist, loopHist in enumerate(SigHists):
         CMS.cmsDraw(loopHist, "hist", lcolor=COLORS[1+len(MCHists)+iHist], fcolor=0, lwidth=3, lstyle=iHist+1)
+    ROOT.gPad.RedrawAxis()
 
     # Draw legend
     if SQUARE:
-        legLeft = CMS.cmsLeg(0.59, 0.71, 0.74, 0.89, textSize=0.04)
-        legRight = CMS.cmsLeg(0.74, 0.71, 0.89, 0.89, textSize=0.04)
+        legData = CMS.cmsLeg(0.4, 0.83, 0.55, 0.89, textSize=0.04)
+        legLeft = CMS.cmsLeg(0.55, 0.71, 0.7, 0.89, textSize=0.04)
+        legRight = CMS.cmsLeg(0.7, 0.71, 0.85, 0.89, textSize=0.04)
         legBottom = CMS.cmsLeg(0.37, 0.59, 0.89, 0.71, textSize=0.04)
     else:
-        legLeft = CMS.cmsLeg(0.66, 0.7, 0.78, 0.88, textSize=0.05)
-        legRight = CMS.cmsLeg(0.78, 0.7, 0.9, 0.88, textSize=0.05)
+        legData = CMS.cmsLeg(0.5, 0.82, 0.62, 0.88, textSize=0.04)
+        legLeft = CMS.cmsLeg(0.62, 0.7, 0.74, 0.88, textSize=0.05)
+        legRight = CMS.cmsLeg(0.74, 0.7, 0.86, 0.88, textSize=0.05)
         legBottom = CMS.cmsLeg(0.43, 0.58, 0.9, 0.7, textSize=0.05)
-    legLeft.AddEntry(hists[0], SAMPLES_NAME[0], "P EX0")
-    for iHist, loopHist in enumerate(reversed(MCHists)):
-        if iHist < len(MCHists)/2:
+    legData.AddEntry(hists[0], SAMPLES_NAME[0], "P EX0")
+    for iHist, loopHist in enumerate(MCHists):
+        if iHist < (len(MCHists)/2):
             legLeft.AddEntry(loopHist, SAMPLES_NAME[1+iHist], "f")
         else:
             legRight.AddEntry(loopHist, SAMPLES_NAME[1+iHist], "f")
-    legRight.AddEntry(MCErrorHist, "Stat. only", "f")
     for iHist, loopHist in enumerate(SigHists):
         legBottom.AddEntry(loopHist, SAMPLES_NAME[1+len(MCHists)+iHist], "l")
 
@@ -162,6 +164,8 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
 
     # Draw MC relative error and ratio plot + reference lines
     dicanv.cd(2)
+    legRatio = CMS.cmsLeg(0.2, 0.75, 0.35, 0.87, textSize=0.06)
+    legRatio.AddEntry(MCErrorHist, "Stat. only", "f")
     CMS.cmsDraw(MCRelError, "E2", fstyle=3004, fcolor=COLORS[0])
     CMS.cmsDraw(ratioHist, "P EX0", fcolor=COLORS[0], lwidth=2)
     upLine = ROOT.TLine(x_min, 1.5, x_max, 1.5)
@@ -177,7 +181,9 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     gc.collect()
 
 
-def plot2D(hist, xlabel, ylabel, zlabel, logz, saveName):
+def plot2D(hist, year, xlabel, ylabel, zlabel, logz, saveName):
+    CMS.SetLumi(getLumi(year))
+
     xmin = hist.GetXaxis().GetBinLowEdge(1)
     xmax = hist.GetXaxis().GetBinLowEdge(hist.GetNbinsX() + 1)
     ymin = hist.GetYaxis().GetBinLowEdge(1)

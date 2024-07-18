@@ -36,11 +36,15 @@ public:
   float St() { return St_; }
   float Topmass() { return Topmass_; }
   float llM() { return llM_; }
+  float llPt() { return llPt_; }
   float llDr() { return llDr_; }
   float LFVllM() { return LFVllM_; }
   float LFVllDr() { return LFVllDr_; }
   bool OnZ() { return OnZ_; }
-  bool TightTau() { return TightTa_; }
+  int TightLep1() { return TightLep1_; }
+  int TightLep2() { return TightLep2_; }
+  int TightTau() { return TightTa_; }
+  int typeIndex() { return typeIndex_; }
   TLorentzVector* MET() { return MET_; }
 
   static bool ComparePtJet(jet_candidate *a, jet_candidate *b) { return a->pt_ > b->pt_; }
@@ -107,6 +111,7 @@ private:
   std::vector<lepton_candidate*>* Leptons_;
   std::vector<jet_candidate*>* Jets_;
   TLorentzVector* MET_;
+  TLorentzVector* nonlep_;
   lepton_candidate* LFVe_;
   lepton_candidate* LFVmu_;
   lepton_candidate* LFVta_;
@@ -124,11 +129,15 @@ private:
   float St_;
   float Topmass_; // SM top mass
   float llM_; // Mass of the two leptons (e or mu)
+  float llPt_;
   float llDr_;
   float LFVllM_; // Mass of the LFV lepton pair
   float LFVllDr_;
   bool OnZ_; // Events close to Z peak (incl. Same-Sign ee due to charge flip)
-  bool TightTa_; // Events with tau passing Tight tau vs. jets WP
+  int TightLep1_;
+  int TightLep2_;
+  int TightTa_; // Events with tau passing Tight tau vs. jets WP
+  int typeIndex_; // Type index for matrix method
 
   float mT_ = 172.5;
   float mZ_ = 91.2;

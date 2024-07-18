@@ -91,6 +91,7 @@ public :
   UChar_t         Tau_idDeepTau2017v2p1VSe[16];
   UChar_t         Tau_idDeepTau2017v2p1VSmu[16];
   UChar_t         Tau_idDeepTau2017v2p1VSjet[16];
+  Int_t           Tau_jetIdx[16];
 
   UInt_t          nJet;
   Float_t         Jet_pt_nom[16];
@@ -209,6 +210,7 @@ public :
   TBranch         *b_Tau_idDeepTau2017v2p1VSe;
   TBranch         *b_Tau_idDeepTau2017v2p1VSmu;
   TBranch         *b_Tau_idDeepTau2017v2p1VSjet;
+  TBranch         *b_Tau_jetIdx;
 
   TBranch         *b_nJet;
   TBranch         *b_Jet_pt_nom;
@@ -279,6 +281,20 @@ public :
   template<class T> using Dim3 = std::vector<Dim2<T>>;
   template<class T> using Dim4 = std::vector<Dim3<T>>;
   template<class T> using Dim5 = std::vector<Dim4<T>>;
+
+  const std::map<TString,TString> procname = {
+       {"WZ",     "VV"},
+       {"ZZ",     "VV"},
+       {"WWW",    "VV"},
+       {"WWZ",    "VV"},
+       {"WZZ",    "VV"},
+       {"ZZZ",    "VV"},
+       {"TTW",    "TX"},
+       {"TTH",    "TX"},
+       {"TTW",    "TX"},
+       {"LFVStScalarU", "LFVStScalarU"},
+       {"LFVTtScalarU", "LFVTtScalarU"}
+  };
 
   // Utility functions
   int rInd(std::vector<TString> R, TString name);
@@ -410,6 +426,7 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", &Tau_idDeepTau2017v2p1VSe, &b_Tau_idDeepTau2017v2p1VSe);
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", &Tau_idDeepTau2017v2p1VSmu, &b_Tau_idDeepTau2017v2p1VSmu);
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
+  fChain->SetBranchAddress("Tau_jetIdx", &Tau_jetIdx, &b_Tau_jetIdx);
 
   fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
   fChain->SetBranchAddress("Jet_pt_nom", &Jet_pt_nom, &b_Jet_pt_nom);
@@ -487,6 +504,7 @@ int MyAnalysis::dInd(std::vector<TString> D, bool tightTau) {
 }
 
 int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {
+  assert(V.count(name));
   return V.find(name)->second.at(0);
 }
 
