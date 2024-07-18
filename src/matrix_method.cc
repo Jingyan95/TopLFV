@@ -85,6 +85,7 @@ matrix_method::matrix_method(float r1, float r2 , float r3, float f1, float f2, 
   V(6)=0;
   V(7)=0;
   V(type)=1;
+  
   auto R = M.Invert() * V;
   Weights.push_back(R[0]*r1*r2*r3); //fully prompt 
   Weights.push_back(R[2]*r1*f2*r3+R[4]*f1*r2*r3+R[6]*f1*f2*r3); //fake e/mu

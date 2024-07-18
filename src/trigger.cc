@@ -86,7 +86,7 @@ Bool_t trigger::triggerLogic(TString dataset) {
     }
     if (year_ == "2017") {
       if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_ || DoubleEle33_CaloIdL_MW_ || Ele35_WPTight_Gsf_) triggerPassEE_ = true;
-      if (Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele35_WPTight_Gsf_ || IsoMu27_) triggerPassEMu_ = true;
+      if (Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || Ele35_WPTight_Gsf_ || IsoMu27_) triggerPassEMu_ = true;
       if (Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_ || IsoMu27_) triggerPassMuMu_ = true;
     }
     if (year_ == "2018") {
@@ -136,15 +136,15 @@ Bool_t trigger::triggerLogic(TString dataset) {
     }
     if (year_ == "2017"){
       if (dataset_ == "MuonEG"){
-        if (Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_) triggerPassEMu_ = true;
+        if (Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_) triggerPassEMu_ = true;
       }
       if (dataset_ == "SingleElectron") {
         if (!(Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_ || DoubleEle33_CaloIdL_MW_ ) && Ele35_WPTight_Gsf_) triggerPassEE_ = true;
-        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_) && Ele35_WPTight_Gsf_) triggerPassEMu_ = true;
+        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_) && Ele35_WPTight_Gsf_) triggerPassEMu_ = true;
       }
       if (dataset_ == "SingleMuon") {
         if (!(Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_) && IsoMu27_) triggerPassMuMu_ = true;
-        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_ || Ele35_WPTight_Gsf_) && IsoMu27_) triggerPassEMu_ = true;
+        if (!(Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_ || Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_ || Ele35_WPTight_Gsf_) && IsoMu27_) triggerPassEMu_ = true;
       }
       if (dataset_ == "DoubleEG") {
         if (Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_ || DoubleEle33_CaloIdL_MW_) triggerPassEE_ = true;

@@ -114,10 +114,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   TFile *f_Ta_ID_jet = new TFile("data/TAU/" + year + "TauID_SF_pt_DeepTau2017v2p1VSjet.root");
   TFile *f_Ta_ID_jetFF = new TFile("data/TAU/" + year + "TauID_FF_ptVsEta_DeepTau2017v2p1VSjet.root"); // Depends on charge, channel, region --> maybe remove dependency?
   TFile *f_Ta_ES_jet = new TFile("data/TAU/" + year + "TauES_dm_DeepTau2017v2p1VSjet.root"); // Tau energy scale
-  TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
   TFile *f_Ta_MM = new TFile("data/MatrixMethod/" + year + "FakeTauMatrixMethod.root"); // tau lepton
   TFile *f_Ta_MM_SF = new TFile("data/MatrixMethod/" + year + "FakeTauSF.root "); // tau lepton
   TFile *f_L_MM = new TFile("data/MatrixMethod/" + year + "FakeLMatrixMethod.root"); // light lepton
+  TFile *f_TRG = new TFile("data/TRG/" + year + "TriggerSF.root");
+  TFile *f_Btag_corr = new TFile("data/BTV/" + year + "BtagCorr.root");
+
   const TH2F sf_El_RECO = *(TH2F*) f_El_RECO->Get("EGamma_SF2D");
   const TH2F sf_El_ID = *(TH2F*) f_El_ID->Get("EGamma_SF2D");
   const TH2F sf_Mu_RECO = *(TH2F*) f_Mu_RECO->Get("NUM_TrackerMuons_DEN_genTracks");
@@ -137,7 +139,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt");
   const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsPt");
   const TH1F sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
+  const auto sf_TRG_ee = *(TH2F*)f_TRG->Get("ee");
+  const auto sf_TRG_emu = *(TH2F*)f_TRG->Get("emu");
+  const auto sf_TRG_mue = *(TH2F*)f_TRG->Get("mue");
+  const auto sf_TRG_mumu = *(TH2F*)f_TRG->Get("mumu");
   const TH2F sf_Btag_corr = *(TH2F*) f_Btag_corr->Get("2DBtagShapeCorrection");
+
   f_El_RECO->Close();
   f_El_ID->Close();
   f_Mu_RECO->Close();
@@ -146,8 +153,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   f_Ta_ID_mu->Close();
   f_Ta_ID_jet->Close();
   f_Ta_ES_jet->Close();
-  f_Btag_corr->Close();
   f_Ta_MM->Close();
+  f_Ta_MM_SF->Close();
+  f_L_MM->Close();
+  f_TRG->Close();
+  f_Btag_corr->Close();
 
   std::vector<lepton_candidate*>* Leptons;
   std::vector<jet_candidate*>* Jets;
@@ -170,7 +180,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Ta_ID_e;
   float weight_Ta_ID_mu;
   float weight_Ta_ID_jet;
-  // float weight_Ta_ID_jetFF;
+  float weight_TRG = 1;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
   float r1, r2, r3, f1, f2, f3;
@@ -341,17 +351,26 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       weight_PU = wPU.getPUweight(year, int(Pileup_nTrueInt), "nominal");
       weight_L1ECALPreFiring = L1PreFiringWeight_ECAL_Nom;
       weight_L1MuonPreFiring = L1PreFiringWeight_Muon_Nom;
-      weight_Btag_corr = get_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
+      if (Event->ch()==0){
+        weight_TRG = get_factor(&sf_TRG_ee, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else if (Event->ch()==2){
+        weight_TRG = get_factor(&sf_TRG_mumu, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else if (Event->lep1()->flavor_==1){
+        weight_TRG = get_factor(&sf_TRG_emu, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }else{
+        weight_TRG = get_factor(&sf_TRG_mue, Event->lep1()->pt_, Event->lep2()->pt_, "");
+      }
+        weight_Btag_corr = get_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
     }
 
-    weight_Event = Event->typeIndex()==0?weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * Event->btagSF() * weight_Btag_corr:0;
+    weight_Event = Event->typeIndex()==0?weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG * Event->btagSF() * weight_Btag_corr:0;
 
     int dIdx = 0;
-    if ((Event->lep1()->truth_>0||Event->lep2()->truth_>0) && Event->ta1()->truth_==0){
+    if ((Event->lep1()->truth_>0 || Event->lep2()->truth_>0) && Event->ta1()->truth_==0){
         dIdx = 1;
         weight_Event = 0;// turn off MC fake estimate
     }
-    if ((Event->lep1()->truth_>0||Event->lep2()->truth_>0) && Event->ta1()->truth_>0){
+    if ((Event->lep1()->truth_>0 || Event->lep2()->truth_>0) && Event->ta1()->truth_>0){
         dIdx = 2;
         weight_Event = 0;// turn off MC fake estimate
     }
@@ -359,7 +378,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         dIdx = 3;
         weight_Event = 0;// turn off MC fake estimate
     }
-    if (data == "data"||dataset.Contains("LFV")){
+    if (data == "data" || dataset.Contains("LFV")){
         dIdx = 0;
     }
     int rIdx = rInd(regions, "ll");
@@ -422,30 +441,30 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "tauRT")]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, wgt_final);
     }
     if (Event->lep1()->flavor_==0){
-       r1 = get_factor(&rEff_e,Event->lep1()->pt_,abs(Event->lep1()->eta_),""); 
-       f1 = get_factor(&fEff_e,Event->lep1()->jetpt_,abs(Event->lep1()->eta_),""); 
+       r1 = get_factor(&rEff_e,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+       f1 = get_factor(&fEff_e,Event->lep1()->jetpt_, abs(Event->lep1()->eta_), ""); 
     }else{
-       r1 = get_factor(&rEff_mu,Event->lep1()->pt_,abs(Event->lep1()->eta_),""); 
-       f1 = get_factor(&fEff_mu,Event->lep1()->jetpt_,abs(Event->lep1()->eta_),""); 
+       r1 = get_factor(&rEff_mu,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+       f1 = get_factor(&fEff_mu,Event->lep1()->jetpt_, abs(Event->lep1()->eta_), ""); 
     }
     if (Event->lep2()->flavor_==0){
-       r2 = get_factor(&rEff_e,Event->lep2()->pt_,abs(Event->lep2()->eta_),""); 
-       f2 = get_factor(&fEff_e,Event->lep2()->jetpt_,abs(Event->lep2()->eta_),""); 
+       r2 = get_factor(&rEff_e,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+       f2 = get_factor(&fEff_e,Event->lep2()->jetpt_, abs(Event->lep2()->eta_), ""); 
     }else{
-       r2 = get_factor(&rEff_mu,Event->lep2()->pt_,abs(Event->lep2()->eta_),""); 
-       f2 = get_factor(&fEff_mu,Event->lep2()->jetpt_,abs(Event->lep2()->eta_),""); 
+       r2 = get_factor(&rEff_mu,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+       f2 = get_factor(&fEff_mu,Event->lep2()->jetpt_, abs(Event->lep2()->eta_), ""); 
     }
     if (Event->ta1()->decaymode_<10){
-       r3 = get_factor(&rEff_1Prong,Event->ta1()->pt_,abs(Event->ta1()->eta_),""); 
-       f3 = get_factor(&fEff_1Prong,Event->ta1()->jetpt_,Event->ta1()->recoil_/Event->ta1()->pt_,""); 
+       r3 = get_factor(&rEff_1Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+       f3 = get_factor(&fEff_1Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
     }else{
-       r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_,abs(Event->ta1()->eta_),""); 
-       f3 = get_factor(&fEff_3Prong,Event->ta1()->jetpt_,Event->ta1()->recoil_/Event->ta1()->pt_,""); 
+       r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+       f3 = get_factor(&fEff_3Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
     }
-    if (Event->njet()==0) f3*=get_factor(&fEff_SF_0J,Event->ta1()->pt_,Event->llPt(),"");
-    if (Event->njet()==1) f3*=get_factor(&fEff_SF_1J,Event->ta1()->pt_,Event->llPt(),"");
-    if (Event->njet()>=2) f3*=get_factor(&fEff_SF_2J,Event->ta1()->pt_,Event->llPt(),"");
-    MM = new matrix_method(r1,r2,r3,f1,f2,f3,Event->typeIndex());
+    if (Event->njet()==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
+    if (Event->njet()==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
+    if (Event->njet()>=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
+    MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
     weight_MM = MM->getWeights();
     if (data == "mc") std::fill(weight_MM.begin(), weight_MM.end(), 0);
     for (int i = 0; i < reg.size(); ++i) {
