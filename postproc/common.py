@@ -66,19 +66,10 @@ VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
                "nbjet",
                "S_{T} [GeV]",
                "tau R_{T}"]
-VARS2D = ["0J", "1J", "2J"]
-VARS2D_NAME = [
-    ("#tau p_{T} [GeV]", "#tau #eta"),
-    ("Fake #tau p_{T} [GeV]", "Fake #tau #eta")
-]
 
 # For fake factor calculation
 VARS1DFF = ["taPtFFBin", "taEtaFFBin"]
 VARS1DFF_NAME = ["#tau p_{T} [GeV]", "#tau #eta"]
-VARS2DFF = ["taPtVsEta"]
-VARS2DFF_NAME = [
-    ("#tau p_{T} [GeV]", "#tau #eta")
-]
 FF_LABELS = ["On Z"]
 X_CUTS = [ # Regions
     ("llOnZ", "llOffZ")
