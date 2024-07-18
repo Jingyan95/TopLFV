@@ -104,6 +104,7 @@ for key, value in SAMPLES.items():
                 '}\n'
                 open('Jobs/' + value[3] + '/' + key + '/' + SHNAME1, 'wt').write(SHFILE1)
                 filelist += value[3] + ', ' + key + ', ' + key + '_' + str(idx) + '_' + str(num) + ', ' + str(nThread) + '\n'
+            break
     if ARGS.VERBOSE:
         print(key + ' jobs are made')
 

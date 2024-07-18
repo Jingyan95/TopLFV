@@ -91,6 +91,7 @@ public :
   UChar_t         Tau_idDeepTau2017v2p1VSe[16];
   UChar_t         Tau_idDeepTau2017v2p1VSmu[16];
   UChar_t         Tau_idDeepTau2017v2p1VSjet[16];
+  Int_t           Tau_jetIdx[16];
 
   UInt_t          nJet;
   Float_t         Jet_pt_nom[16];
@@ -101,6 +102,12 @@ public :
   Int_t           Jet_jetId[16];
   Float_t         Jet_btagDeepFlavB[16];
   Float_t         Jet_btagSF_deepjet_shape[16];
+
+  UInt_t          nTrigObj;
+  Float_t         TrigObj_phi[64];
+  Float_t         TrigObj_eta[64];
+  Int_t           TrigObj_id[64];
+  Int_t           TrigObj_filterBits[64];
 
   Float_t         MET_T1_pt;
   Float_t         MET_T1Smear_pt;
@@ -209,6 +216,7 @@ public :
   TBranch         *b_Tau_idDeepTau2017v2p1VSe;
   TBranch         *b_Tau_idDeepTau2017v2p1VSmu;
   TBranch         *b_Tau_idDeepTau2017v2p1VSjet;
+  TBranch         *b_Tau_jetIdx;
 
   TBranch         *b_nJet;
   TBranch         *b_Jet_pt_nom;
@@ -219,6 +227,12 @@ public :
   TBranch         *b_Jet_jetId;
   TBranch         *b_Jet_btagDeepFlavB;
   TBranch         *b_Jet_btagSF_deepjet_shape;
+
+  TBranch         *b_nTrigObj;
+  TBranch         *b_TrigObj_phi;
+  TBranch         *b_TrigObj_eta;
+  TBranch         *b_TrigObj_id;
+  TBranch         *b_TrigObj_filterBits;
 
   TBranch         *b_MET_T1_pt;
   TBranch         *b_MET_T1Smear_pt;
@@ -233,23 +247,6 @@ public :
   TBranch         *b_Flag_eeBadScFilter;
   TBranch         *b_Flag_ecalBadCalibFilter; 
   TBranch         *b_Flag_BadPFMuonDzFilter;
-
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL; // 2016APV
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL; // 2016APV, 2017, 2018
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017, 2018
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016
-
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL; // 2017, 2018
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016APV, 2016
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_MW; // 2016APV, 2016, 2017, 2018
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL; // 2016APV, 2016
-
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL; // 2016APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL; // 2016APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ; // 2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ; // 2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8; // 2017
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8; // 2018
 
   TBranch         *b_HLT_Ele27_WPTight_Gsf; // 2016APV, 2016
   TBranch         *b_HLT_Ele32_WPTight_Gsf; // 2018
@@ -279,6 +276,15 @@ public :
   template<class T> using Dim3 = std::vector<Dim2<T>>;
   template<class T> using Dim4 = std::vector<Dim3<T>>;
   template<class T> using Dim5 = std::vector<Dim4<T>>;
+
+  const std::map<TString,TString> procname = {
+       {"DYM10to50",           "DY"},
+       {"DYM50",               "DY"},
+       {"TTToSemiLeptonic",    "tt"},
+       {"TTTo2L2Nu",           "tt"},
+       {"LFVStScalarU", "LFVStScalarU"},
+       {"LFVTtScalarU", "LFVTtScalarU"}
+  };
 
   // Utility functions
   int rInd(std::vector<TString> R, TString name);
@@ -410,6 +416,7 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", &Tau_idDeepTau2017v2p1VSe, &b_Tau_idDeepTau2017v2p1VSe);
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", &Tau_idDeepTau2017v2p1VSmu, &b_Tau_idDeepTau2017v2p1VSmu);
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
+  fChain->SetBranchAddress("Tau_jetIdx", &Tau_jetIdx, &b_Tau_jetIdx);
 
   fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
   fChain->SetBranchAddress("Jet_pt_nom", &Jet_pt_nom, &b_Jet_pt_nom);
@@ -420,6 +427,12 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Jet_jetId", &Jet_jetId, &b_Jet_jetId);
   fChain->SetBranchAddress("Jet_btagDeepFlavB", &Jet_btagDeepFlavB, &b_Jet_btagDeepFlavB);
   if (data_ == "mc") fChain->SetBranchAddress("Jet_btagSF_deepjet_shape", &Jet_btagSF_deepjet_shape, &b_Jet_btagSF_deepjet_shape);
+
+  fChain->SetBranchAddress("nTrigObj", &nTrigObj, &b_nTrigObj);
+  fChain->SetBranchAddress("TrigObj_phi", &TrigObj_phi, &b_TrigObj_phi);
+  fChain->SetBranchAddress("TrigObj_eta", &TrigObj_eta, &b_TrigObj_eta);
+  fChain->SetBranchAddress("TrigObj_id", &TrigObj_id, &b_TrigObj_id);
+  fChain->SetBranchAddress("TrigObj_filterBits", &TrigObj_filterBits, &b_TrigObj_filterBits);
 
   fChain->SetBranchAddress("MET_T1_pt", &MET_T1_pt, &b_MET_T1_pt);
   if (data_ == "mc") fChain->SetBranchAddress("MET_T1Smear_pt", &MET_T1Smear_pt, &b_MET_T1Smear_pt);
@@ -434,23 +447,6 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Flag_eeBadScFilter", &Flag_eeBadScFilter, &b_Flag_eeBadScFilter);
   if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("Flag_ecalBadCalibFilter", &Flag_ecalBadCalibFilter, &b_Flag_ecalBadCalibFilter);
   fChain->SetBranchAddress("Flag_BadPFMuonDzFilter", &Flag_BadPFMuonDzFilter, &b_Flag_BadPFMuonDzFilter);
-
-  if (year_ == "2016APV") fChain->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL, &b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL);
-  if (year_ != "2016") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL);
-  if (year_ != "2016APV") fChain->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ);
-  if (year_ == "2016") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-
-  if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL, &b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
-  if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
-  fChain->SetBranchAddress("HLT_DoubleEle33_CaloIdL_MW", &HLT_DoubleEle33_CaloIdL_MW, &b_HLT_DoubleEle33_CaloIdL_MW);
-  if ((year_ == "2016APV" || year_ == "2016") && run_!="H") fChain->SetBranchAddress("HLT_DoubleEle33_CaloIdL_GsfTrkIdVL", &HLT_DoubleEle33_CaloIdL_GsfTrkIdVL, &b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL);
-
-  if (year_ == "2016APV") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL);
-  if (year_ == "2016APV") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, &b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL);
-  if (year_ == "2016") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ);
-  if (year_ == "2016") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ", &HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ, &b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ);
-  if (year_ == "2017") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8);
-  if (year_ == "2018") fChain->SetBranchAddress("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8", &HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, &b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8);
 
   if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_Ele27_WPTight_Gsf", &HLT_Ele27_WPTight_Gsf, &b_HLT_Ele27_WPTight_Gsf);
   if (year_ == "2018") fChain->SetBranchAddress("HLT_Ele32_WPTight_Gsf", &HLT_Ele32_WPTight_Gsf, &b_HLT_Ele32_WPTight_Gsf);
@@ -468,11 +464,7 @@ void MyAnalysis::Init(TTree *tree) {
 }
 
 void MyAnalysis::InitTrigger() {
-  myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,
-    HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,
-    HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_DoubleEle33_CaloIdL_MW, HLT_DoubleEle33_CaloIdL_GsfTrkIdVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,
-    HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,
-    HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, HLT_Ele27_WPTight_Gsf, HLT_Ele32_WPTight_Gsf,
+  myTrig->Init(HLT_Ele27_WPTight_Gsf, HLT_Ele32_WPTight_Gsf,
     HLT_Ele35_WPTight_Gsf, HLT_IsoMu24, HLT_IsoTkMu24, HLT_IsoMu27);
 }
 
@@ -487,6 +479,7 @@ int MyAnalysis::dInd(std::vector<TString> D, bool tightTau) {
 }
 
 int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {
+  assert(V.count(name));
   return V.find(name)->second.at(0);
 }
 
