@@ -6,9 +6,10 @@ import string
 
 data2016APV_samples = {}
 mc2016APV_samples = {}
-#data2016APV_samples ['DYM10to50'] = ['address', 'data/mc','dataset','year', 'run', 'cross section','lumi','Neventsraw']
+# mc2016APV_samples["2016APV_LFVStVecU"] = ["address", "data/mc", "dataset", "year", "run", "cross section", "lumi", "Neventsraw", "# of files per job"]
 
-## vector interaction
+# cut = "((Sum$(Electron_pt>18 && abs(Electron_eta)<2.5 && Electron_sip3d<15) + Sum$(Muon_pt>18 && abs(Muon_eta)<2.4 && Muon_sip3d<15 && Muon_mediumId))>=2)"
+# cut += " && ((Sum$(Tau_pt>18 && abs(Tau_eta)<2.3 && Tau_idDeepTau2017v2p1VSe>=1 && Tau_idDeepTau2017v2p1VSmu>=1 && Tau_idDeepTau2017v2p1VSjet>=1 && Tau_decayMode!=5 && Tau_decayMode!=6))>=1)"
 
 # Scalar interaction
 mc2016APV_samples["2016APV_LFVStScalarU"] = [["/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016APV/2016APV_LFVStScalarU_UL/CRAB_UserFiles/crab_Sep11_2_Signal_2016APV_LFVStScalarU_UL/230911_225953/0000/"], "mc", "LFVStScalarU", "2016APV", "", "0.097", "19.50", "209000", 209]

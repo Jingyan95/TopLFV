@@ -12,10 +12,11 @@
 #include "lepton_candidate.h"
 
 using namespace std;
-//using namespace math;
+
 class event_candidate {
 
 public:
+
   event_candidate(std::vector<lepton_candidate*>* Leptons,
                   std::vector<jet_candidate*>* Jets,
                   float MET_pt,
@@ -39,6 +40,7 @@ public:
   float LFVllM() { return LFVllM_; }
   float LFVllDr() { return LFVllDr_; }
   bool OnZ() { return OnZ_; }
+  bool TightTau() { return TightTa_; }
   TLorentzVector* MET() { return MET_; }
 
   static bool ComparePtJet(jet_candidate *a, jet_candidate *b) { return a->pt_ > b->pt_; }
@@ -57,8 +59,8 @@ public:
 
   static Double_t deltaPhi(Double_t phi1, Double_t phi2) {
     Double_t dPhi = phi1 - phi2;
-    if (dPhi > TMath::Pi()) dPhi -= 2.*TMath::Pi();
-    if (dPhi < -TMath::Pi()) dPhi += 2.*TMath::Pi();
+    if (dPhi > TMath::Pi()) dPhi -= 2.0 * TMath::Pi();
+    if (dPhi < -TMath::Pi()) dPhi += 2.0 * TMath::Pi();
     return dPhi;
   }
 
@@ -66,7 +68,7 @@ public:
     Double_t dEta, dPhi ;
     dEta = eta1 - eta2;
     dPhi = deltaPhi(phi1, phi2);
-    return sqrt(dEta*dEta+dPhi*dPhi);
+    return sqrt(dEta * dEta + dPhi * dPhi);
   }
 
   TLorentzVector solveNeutrinoPz(lepton_candidate *a, TLorentzVector *MET) {
@@ -77,25 +79,25 @@ public:
     float ply = l.Py();
     float plz = l.Pz();
     float El = l.E();
-    float x = mW_*mW_-El*El+plx*plx+ply*ply+plz*plz+2*plx*MET->Px()+2*ply*MET->Py();
-    float A = 4*(El*El-plz*plz);
-    float B = -4*x*plz;
-    float C = 4*El*El*MET->Pt()*MET->Pt()-x*x;
-    float delta = B*B-4*A*C; //quadratic formula
-    if(delta < 0){
-      pz = -B/(2*A); //take the real part of the complex solution
+    float x = mW_ * mW_ - El * El + plx * plx + ply * ply + plz * plz + 2 * plx * MET->Px() + 2 * ply * MET->Py();
+    float A = 4 * (El * El - plz * plz);
+    float B = -4 * x * plz;
+    float C = 4 * El * El * MET->Pt() * MET->Pt() - x * x;
+    float delta = B * B - 4 * A * C; // Quadratic formula
+    if (delta < 0) {
+      pz = -B / (2 * A); // Take the real part of the complex solution
     }
-    else{
-      float sol1 = (-B-sqrt(delta))/(2*A);
-      float sol2 = (-B+sqrt(delta))/(2*A);
-      if(abs(sol1-plz) < abs(sol2-plz)){
-        pz = sol1; //pick the one closest to lepton pz
+    else {
+      float sol1 = (-B - sqrt(delta)) / (2 * A);
+      float sol2 = (-B + sqrt(delta)) / (2 * A);
+      if (abs(sol1 - plz) < abs(sol2 - plz)) {
+        pz = sol1; // Pick the one closest to lepton pz
       }
-      else{
+      else {
         pz = sol2;
       }
     }
-    n.SetPxPyPzE(MET->Px(), MET->Py(), pz, sqrt(MET->Pt()*MET->Pt()+pz*pz));
+    n.SetPxPyPzE(MET->Px(), MET->Py(), pz, sqrt(MET->Pt() * MET->Pt() + pz * pz));
     return n;
   }
 
@@ -108,8 +110,8 @@ private:
   lepton_candidate* LFVe_;
   lepton_candidate* LFVmu_;
   lepton_candidate* LFVta_;
-  lepton_candidate* Balep_; // SM lepton, a.k.a. bachelor lepton 
-  jet_candidate* bjet_; // jet with the highest b-tagging score
+  lepton_candidate* Balep_; // SM lepton, a.k.a. bachelor lepton
+  jet_candidate* bjet_; // Jet with the highest b-tagging score
   int c_; // Charges: 0->Opposite-Sign, 1->Same-Sign
   int ch_; // Channel: 0->ee+tau, 1->emu+ta, 2->mumu+ta
   int lfvch_; // LFV channel: 0->LFV-emu, 1->LFV-eta, 2->LFV-muta
@@ -126,11 +128,12 @@ private:
   float LFVllM_; // Mass of the LFV lepton pair
   float LFVllDr_;
   bool OnZ_; // Events close to Z peak (incl. Same-Sign ee due to charge flip)
+  bool TightTa_; // Events with tau passing Tight tau vs. jets WP
 
   float mT_ = 172.5;
   float mZ_ = 91.2;
   float mW_ = 80.2;
-  float lfvmCut_ = 150; // mass cut to separate top production and decay signals
+  float lfvmCut_ = 150; // Mass cut to separate top production and decay signals
 };
 
 #endif
