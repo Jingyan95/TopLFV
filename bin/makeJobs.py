@@ -2,6 +2,7 @@ import sys
 import os
 import subprocess
 import argparse
+import time
 
 import nano_files_2016APV
 import nano_files_2016
@@ -9,15 +10,17 @@ import nano_files_2017
 import nano_files_2018
 
 
+start = time.time()
+
 SAMPLES = {}
-mc_2016APV = False
-data_2016APV = False
+mc_2016APV = True
+data_2016APV = True
 mc_2016 = True
 data_2016 = True
-mc_2017 = False
-data_2017 = False
-mc_2018 = False
-data_2018 = False
+mc_2017 = True
+data_2017 = True
+mc_2018 = True
+data_2018 = True
 if mc_2016APV:
     SAMPLES.update(nano_files_2016APV.mc2016APV_samples)
 if data_2016APV:
@@ -36,11 +39,11 @@ if data_2018:
     SAMPLES.update(nano_files_2018.data2018_samples)
 
 
-# set up an argument parser
+# Set up an argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--v', dest='VERBOSE', default=True)
 parser.add_argument('--n', dest='NAMETAG', default='201')
-parser.add_argument('--t', dest='NTHREAD', default=6) # number of threads
+parser.add_argument('--t', dest='NTHREAD', default=6) # Number of threads
 ARGS = parser.parse_args()
 
 
@@ -60,26 +63,26 @@ for key, value in SAMPLES.items():
         os.makedirs('Jobs/' + value[3] + '/' + key)
     nThread = ARGS.NTHREAD
     if ('LFV' in key) or ('DYM10' in key) or ('WWW' in key) or ('WWZ' in key) or ('WZZ' in key) or ('ZZZ' in key):
-        nThread = 1 # samples with low stats
+        nThread = 1 # Samples with low stats
     for idx, S in enumerate(value[0]):
         SHNAME = key + '_' + str(idx) + '.sh'
         SHNAME1 = key + '_' + str(idx) + '_$1.C'
         SHFILE = "#!/bin/bash\n" +\
         'FILE=' + dire_h + value[3] + '/' + key + '_' + str(idx) + '_$1.root' + '\n' +\
-        'source /cvmfs/sft.cern.ch/lcg/views/LCG_104c/x86_64-el9-gcc13-opt/setup.sh\n' +\
+        'source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh\n' +\
         'cd ' + loc + '\n' +\
         'g++ -fPIC -fno-var-tracking -Wno-deprecated -D_GNU_SOURCE -O2 -I./include ' + rootlib11 + ' -ldl -o ' + SHNAME1.split('.')[0] + ' bin/Jobs/' + value[3] + '/' + key + '/' + SHNAME1 + ' lib/main.so ' + rootlib22 + ' -lMinuit -lTreePlayer' + '\n' +\
         './' + SHNAME1.split('.')[0] + '\n' +\
         'if [ -f "$FILE" ]; then' + '\n' +\
         '    rm -f ' + SHNAME1.split('.')[0] + '\n' +\
-        'fi'
+        'fi\n'
         subprocess.call('rm -f Jobs/' + value[3] + '/' + key + '/*', shell=True)
         open('Jobs/' + value[3] + '/' + key + '/' + SHNAME, 'wt').write(SHFILE)
         print("-----------------------------------")
         print('Writing Jobs/' + value[3] + '/' + key + '/' + SHNAME)
         os.system('chmod +x ' + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
         print('chmod +x ' + 'Jobs/' + value[3] + '/' + key + '/' + SHNAME)
-        # delete log files
+        # Delete log files
         os.system('rm -rf ' + S + 'log')
         for subdir, dirs, files in os.walk(S):
             sequence = [files[i:i + nf] for i in range(0, len(files), nf)]
@@ -118,7 +121,10 @@ for key, value in SAMPLES.items():
                 'int main(){\n' +\
                 text +\
                 '    return 0;\n' +\
-                '}'
+                '}\n'
                 open('Jobs/' + value[3] + '/' + key + '/' + SHNAME1, 'wt').write(SHFILE1)
     if ARGS.VERBOSE:
         print(key + ' jobs are made')
+
+end = time.time()
+print('Runtime was %.2f seconds.' % (end - start))
