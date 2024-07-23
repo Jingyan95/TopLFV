@@ -397,7 +397,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (data == "data" || dataset.Contains("LFV")){
         dIdx = 0;
     }
-    if (dIdx > 0) weight_Event = 0;
+    if (dIdx > 0) weight_Event = 0;// Setting event weights to 0 if there is at lease one fake lepton, or charge-flip (based on MC truth)
     int rIdx = rInd(regions, "ll");
     reg.push_back(rIdx); // No cuts
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -462,35 +462,37 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), wgt_final);
       Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), wgt_final);
     }
-    if (Event->lep1()->flavor_==1){
+    // Scale factor correction to tau fake efficeincy 
+    if (Event->lep1()->flavor_ == 1){
        r1 = get_factor(&rEff_e,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
        f1 = get_factor(&fEff_e,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
     }else{
        r1 = get_factor(&rEff_mu,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
        f1 = get_factor(&fEff_mu,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
     }
-    if (Event->lep2()->flavor_==1){
+    if (Event->lep2()->flavor_ == 1){
        r2 = get_factor(&rEff_e,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
        f2 = get_factor(&fEff_e,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
     }else{
        r2 = get_factor(&rEff_mu,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
        f2 = get_factor(&fEff_mu,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
     }
-    if (Event->ta1()->decaymode_<10){
+    if (Event->ta1()->decaymode_ < 10){
        r3 = get_factor(&rEff_1Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
        f3 = get_factor(&fEff_1Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
     }else{
        r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
        f3 = get_factor(&fEff_3Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
     }
-    if (Event->ch()!=1&&Event->njet()==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
-    if (Event->ch()!=1&&Event->njet()==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
-    if (Event->ch()!=1&&Event->njet()>=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
+    if (Event->ch() != 1 && Event->njet() ==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
+    if (Event->ch() != 1 && Event->njet() ==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
+    if (Event->ch() != 1 && Event->njet() >=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
+    // 3D-matrix method
     MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
     weight_MM = MM->getWeights();
     if (data == "mc") std::fill(weight_MM.begin(), weight_MM.end(), 0);
     for (int i = 0; i < reg.size(); ++i) {
-        for (int j = 1; j < domains.size()-1; ++j){
+        for (int j = 1; j < domains.size() - 1; ++j){
             Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep1Pt")]->Fill(Event->lep1()->pt_, weight_MM[j]);
             Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep2Pt")]->Fill(Event->lep2()->pt_, weight_MM[j]);
             Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "tauPt")]->Fill(Event->ta1()->pt_, weight_MM[j]);
@@ -508,10 +510,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), weight_MM[j]);
             Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), weight_MM[j]);
         }
-    }
-    if (data == "data" && Event->c()==0){
+    } 
+    // Charge-flip estimate
+    if (data == "data" && Event->c() == 0){
        for (int i = 0; i < reg.size(); ++i) {
-            if (Event->typeIndex()==0){
+            if (Event->typeIndex() == 0){
               Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep1Pt")]->Fill(Event->lep1()->pt_, weight_El_MisId);
               Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep2Pt")]->Fill(Event->lep2()->pt_, weight_El_MisId);
               Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "tauPt")]->Fill(Event->ta1()->pt_, weight_El_MisId);
@@ -529,7 +532,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
               Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), weight_El_MisId);
               Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), weight_El_MisId);
             }
-            for (int j = 1; j < domains.size()-1; ++j){
+            // Overlap removal
+            for (int j = 1; j < domains.size() - 1; ++j){
               Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep1Pt")]->Fill(Event->lep1()->pt_, -1 * weight_El_MisId * weight_MM[j]);
               Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep2Pt")]->Fill(Event->lep2()->pt_, -1 * weight_El_MisId * weight_MM[j]);
               Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "tauPt")]->Fill(Event->ta1()->pt_, -1 * weight_El_MisId * weight_MM[j]);
