@@ -131,17 +131,20 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
 
     # Draw legend
     if SQUARE:
-        legData = CMS.cmsLeg(0.4, 0.83, 0.55, 0.89, textSize=0.04)
+        legData = CMS.cmsLeg(0.4, 0.77, 0.55, 0.89, textSize=0.04)
         legLeft = CMS.cmsLeg(0.55, 0.71, 0.7, 0.89, textSize=0.04)
         legRight = CMS.cmsLeg(0.7, 0.71, 0.85, 0.89, textSize=0.04)
         legBottom = CMS.cmsLeg(0.37, 0.59, 0.89, 0.71, textSize=0.04)
     else:
-        legData = CMS.cmsLeg(0.5, 0.82, 0.62, 0.88, textSize=0.04)
+        legData = CMS.cmsLeg(0.5, 0.76, 0.62, 0.88, textSize=0.04)
         legLeft = CMS.cmsLeg(0.62, 0.7, 0.74, 0.88, textSize=0.05)
         legRight = CMS.cmsLeg(0.74, 0.7, 0.86, 0.88, textSize=0.05)
         legBottom = CMS.cmsLeg(0.43, 0.58, 0.9, 0.7, textSize=0.05)
     legData.AddEntry(hists[0], SAMPLES_NAME[0], "P EX0")
+    legData.AddEntry(MCHists[0], SAMPLES_NAME[1], "f")
     for iHist, loopHist in enumerate(MCHists):
+        if iHist <1: 
+           continue
         if iHist < (len(MCHists)/2):
             legLeft.AddEntry(loopHist, SAMPLES_NAME[1+iHist], "f")
         else:

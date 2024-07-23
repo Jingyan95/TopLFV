@@ -33,6 +33,7 @@ public:
   TLorentzVector p4_;
   float recoil_;
   void setRecoil(float);
+  void setTruth(int);
 
 private:
 

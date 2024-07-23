@@ -54,4 +54,8 @@ void lepton_candidate::setRecoil(float recoil){
   recoil_ = recoil;
 }
 
+void lepton_candidate::setTruth(int truth){
+  truth_ = truth;
+}
+
 lepton_candidate::~lepton_candidate() {}

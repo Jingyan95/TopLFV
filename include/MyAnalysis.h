@@ -28,6 +28,7 @@ public :
 
   // Branch information: https://swertz.web.cern.ch/swertz/TMG/TopNano/TopNanoV9/doc_topNanoV9-1-1_MC18UL.html#CaloMET
   // Declaration of leaf types
+
   UInt_t          nElectron;
   Int_t           Electron_charge[16];
   Float_t         Electron_deltaEtaSC[16];
@@ -48,6 +49,7 @@ public :
   UChar_t         Electron_lostHits[16];
   Int_t           Electron_jetIdx[16];
   UChar_t         Electron_genPartFlav[16];
+  Int_t           Electron_genPartIdx[16];
   Float_t         Electron_topLeptonMVA_v1[16];
   Float_t         Electron_topLeptonMVA_v2[16];
   Bool_t          Electron_convVeto[16];
@@ -143,6 +145,7 @@ public :
 
   Float_t         Generator_weight; // MC generator weight
   Float_t         Pileup_nTrueInt;
+  Int_t           GenPart_pdgId[64];
   Float_t         L1PreFiringWeight_ECAL_Nom;
   Float_t         L1PreFiringWeight_Muon_Nom;
 
@@ -167,6 +170,7 @@ public :
   TBranch         *b_Electron_lostHits;
   TBranch         *b_Electron_jetIdx;
   TBranch         *b_Electron_genPartFlav;
+  TBranch         *b_Electron_genPartIdx;
   TBranch         *b_Electron_topLeptonMVA_v1;
   TBranch         *b_Electron_topLeptonMVA_v2;
   TBranch         *b_Electron_convVeto;
@@ -262,6 +266,7 @@ public :
 
   TBranch         *b_Generator_weight;
   TBranch         *b_Pileup_nTrueInt;
+  TBranch         *b_GenPart_pdgId;
   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
   TBranch         *b_L1PreFiringWeight_Muon_Nom;
 
@@ -383,6 +388,7 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Electron_lostHits", &Electron_lostHits, &b_Electron_lostHits);
   fChain->SetBranchAddress("Electron_jetIdx", &Electron_jetIdx, &b_Electron_jetIdx);
   if (data_ == "mc") fChain->SetBranchAddress("Electron_genPartFlav", &Electron_genPartFlav, &b_Electron_genPartFlav);
+  if (data_ == "mc") fChain->SetBranchAddress("Electron_genPartIdx", &Electron_genPartIdx, &b_Electron_genPartIdx);
   fChain->SetBranchAddress("Electron_topLeptonMVA_v1", &Electron_topLeptonMVA_v1, &b_Electron_topLeptonMVA_v1);
   fChain->SetBranchAddress("Electron_topLeptonMVA_v2", &Electron_topLeptonMVA_v2, &b_Electron_topLeptonMVA_v2);
   fChain->SetBranchAddress("Electron_convVeto", &Electron_convVeto, &b_Electron_convVeto);
@@ -478,6 +484,7 @@ void MyAnalysis::Init(TTree *tree) {
 
   if (data_ == "mc") fChain->SetBranchAddress("Generator_weight", &Generator_weight, &b_Generator_weight);
   if (data_ == "mc") fChain->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt, &b_Pileup_nTrueInt);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId, &b_GenPart_pdgId);
   fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
   fChain->SetBranchAddress("L1PreFiringWeight_Muon_Nom", &L1PreFiringWeight_Muon_Nom, &b_L1PreFiringWeight_Muon_Nom);
 
