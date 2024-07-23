@@ -462,7 +462,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), wgt_final);
       Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), wgt_final);
     }
-    // Scale factor correction to tau fake efficeincy 
+    // Reading real and fake efficiencies 
     if (Event->lep1()->flavor_ == 1){
        r1 = get_factor(&rEff_e,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
        f1 = get_factor(&fEff_e,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
@@ -484,6 +484,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
        r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
        f3 = get_factor(&fEff_3Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
     }
+    // Scale factor corrections to tau fake efficiency 
     if (Event->ch() != 1 && Event->njet() ==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
     if (Event->ch() != 1 && Event->njet() ==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
     if (Event->ch() != 1 && Event->njet() >=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
