@@ -499,7 +499,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       weight_MM = MM->getWeights();
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 1; j < domains.size() - 1; ++j){
-          for (int k = 1; k < var.size(); ++k){
+          for (int k = 0; k < var.size(); ++k){
             Hists1D[j][cIdx][chIdx][reg[i]][k]->Fill(var[k], weight_MM[j]);
           }
         }
@@ -514,7 +514,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           }
           // Overlap removal
           for (int j = 1; j < domains.size() - 1; ++j){
-            for (int k = 1; k < var.size(); ++k){
+            for (int k = 0; k < var.size(); ++k){
               Hists1D[j][1][chIdx][reg[i]][k]->Fill(var[k], -1 * weight_El_MisId * weight_MM[j]);
             }
           }
