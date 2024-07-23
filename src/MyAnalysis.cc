@@ -173,6 +173,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   matrix_method* MM;
   std::vector<int> reg;
   std::vector<float> wgt;
+  std::vector<float> var;
+  var.resize(vars1D.size()); // container of output variables (1D)
   bool metFilterPass;
   float lep1PtCut = 30;
   float eleEta;
@@ -194,7 +196,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Event;
   float r1, r2, r3, f1, f2, f3;
   std::vector<float> weight_MM; // matrix method weight for fake tau
-  weight_MM.reserve(4);
+  weight_MM.resize(4);
   int nAccept = 0;
   PU wPU;
 
@@ -379,25 +381,24 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       weight_Btag_corr = get_factor(&sf_Btag_corr, Event->njet(), Event->Ht(), "");
     }
 
-    weight_Event = Event->typeIndex()==0?weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG * Event->btagSF() * weight_Btag_corr:0;
+    weight_Event = weight_Lumi * weight_PU * weight_L1ECALPreFiring * weight_L1MuonPreFiring * weight_El_RECO * weight_El_ID * weight_Mu_RECO * weight_Mu_ID * weight_Ta_ID_jet * weight_Ta_ID_e * weight_Ta_ID_mu * weight_TRG * Event->btagSF() * weight_Btag_corr;
 
     int dIdx = 0;
     if ((Event->lep1()->truth_>0 || Event->lep2()->truth_>0) && Event->ta1()->truth_==0){
-        dIdx = 1;
+        dIdx = 1;// fake e/mu
     }
     if ((Event->lep1()->truth_>0 || Event->lep2()->truth_>0) && Event->ta1()->truth_>0){
-        dIdx = 2;
+        dIdx = 2;// fake e/mu + fake tau
     }
     if (Event->lep1()->truth_==0 && Event->lep2()->truth_==0 && Event->ta1()->truth_>0){
-        dIdx = 3;
+        dIdx = 3;// fake tau
     }
-    if (Event->c()==1&&(Event->lep1()->truth_<0||Event->lep2()->truth_<0)){
-        dIdx = 4;
+    if (Event->c()==1 && Event->ch() < 2 && (Event->lep1()->truth_<0||Event->lep2()->truth_<0)){
+        dIdx = 4;// charge misID
     }
     if (data == "data" || dataset.Contains("LFV")){
-        dIdx = 0;
+        dIdx = 0;// no MC truth done for data and signal MC
     }
-    if (dIdx > 0) weight_Event = 0;// Setting event weights to 0 if there is at lease one fake lepton, or charge-flip (based on MC truth)
     int rIdx = rInd(regions, "ll");
     reg.push_back(rIdx); // No cuts
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
@@ -442,124 +443,89 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   
     int cIdx = Event->c();
     int chIdx = Event->ch();
-    // Filling histograms
-    for (int i = 0; i < reg.size(); ++i) {
-      float wgt_final = wgt[i];
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "lep1Pt")]->Fill(Event->lep1()->pt_, wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "lep2Pt")]->Fill(Event->lep2()->pt_, wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "tauPt")]->Fill(Event->ta1()->pt_, wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "lep1Eta")]->Fill(abs(Event->lep1()->eta_), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "lep2Eta")]->Fill(abs(Event->lep2()->eta_), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "tauEta")]->Fill(abs(Event->ta1()->eta_), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "Ht")]->Fill(Event->Ht(), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "njet")]->Fill(Event->njet(), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "nbjet")]->Fill(Event->nbjet(), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "St")]->Fill(Event->St(), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "lep1Rt")]->Fill(Event->lep1()->recoil_/Event->lep1()->pt_, wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "lep2Rt")]->Fill(Event->lep2()->recoil_/Event->lep2()->pt_, wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "tauRt")]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "llM")]->Fill(Event->llM(), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), wgt_final);
-      Hists1D[dIdx][cIdx][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), wgt_final);
+    var[vInd(vars1D, "lep1Pt")] = Event->lep1()->pt_;
+    var[vInd(vars1D, "lep2Pt")] = Event->lep2()->pt_;
+    var[vInd(vars1D, "tauPt")] = Event->ta1()->pt_;
+    var[vInd(vars1D, "lep1Eta")] = Event->lep1()->eta_;
+    var[vInd(vars1D, "lep2Eta")] = Event->lep2()->eta_;
+    var[vInd(vars1D, "tauEta")] = Event->ta1()->eta_;
+    var[vInd(vars1D, "Ht")] = Event->Ht();
+    var[vInd(vars1D, "njet")] = Event->njet();
+    var[vInd(vars1D, "nbjet")] = Event->nbjet();
+    var[vInd(vars1D, "St")] = Event->St();
+    var[vInd(vars1D, "lep1Rt")] = Event->lep1()->recoil_/Event->lep1()->pt_;
+    var[vInd(vars1D, "lep2Rt")] = Event->lep2()->recoil_/Event->lep2()->pt_;
+    var[vInd(vars1D, "tauRt")] = Event->ta1()->recoil_/Event->ta1()->pt_;
+    var[vInd(vars1D, "llM")] = Event->llM();
+    var[vInd(vars1D, "llDr")] = Event->llDr();
+    var[vInd(vars1D, "llPt")] = Event->llPt();
+    // Filling histograms (only data events with three tight leptons and fully prompt MC events)
+    if (Event->typeIndex() == 0 && dIdx == 0){
+      for (int i = 0; i < reg.size(); ++i) {
+        for (int j = 0; j < var.size(); ++j){
+            Hists1D[0][cIdx][chIdx][reg[i]][j]->Fill(var[j], wgt[i]);
+        }
+      }
     }
-    // Reading real and fake efficiencies 
-    if (Event->lep1()->flavor_ == 1){
-       r1 = get_factor(&rEff_e,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-       f1 = get_factor(&fEff_e,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
-    }else{
-       r1 = get_factor(&rEff_mu,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-       f1 = get_factor(&fEff_mu,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
-    }
-    if (Event->lep2()->flavor_ == 1){
-       r2 = get_factor(&rEff_e,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-       f2 = get_factor(&fEff_e,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
-    }else{
-       r2 = get_factor(&rEff_mu,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-       f2 = get_factor(&fEff_mu,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
-    }
-    if (Event->ta1()->decaymode_ < 10){
-       r3 = get_factor(&rEff_1Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-       f3 = get_factor(&fEff_1Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
-    }else{
-       r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-       f3 = get_factor(&fEff_3Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
-    }
-    // Scale factor corrections to tau fake efficiency 
-    if (Event->ch() != 1 && Event->njet() ==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
-    if (Event->ch() != 1 && Event->njet() ==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
-    if (Event->ch() != 1 && Event->njet() >=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
-    // 3D-matrix method
-    MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
-    weight_MM = MM->getWeights();
-    if (data == "mc") std::fill(weight_MM.begin(), weight_MM.end(), 0);
-    for (int i = 0; i < reg.size(); ++i) {
+    if (data == "data"){ // Only data events used in fake and charge-flip estimate
+      // Reading real and fake efficiencies 
+      if (Event->lep1()->flavor_ == 1){
+        r1 = get_factor(&rEff_e,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+        f1 = get_factor(&fEff_e,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
+      }else{
+        r1 = get_factor(&rEff_mu,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+        f1 = get_factor(&fEff_mu,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
+      }
+      if (Event->lep2()->flavor_ == 1){
+        r2 = get_factor(&rEff_e,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+        f2 = get_factor(&fEff_e,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
+      }else{
+        r2 = get_factor(&rEff_mu,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+        f2 = get_factor(&fEff_mu,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
+      }
+      if (Event->ta1()->decaymode_ < 10){
+        r3 = get_factor(&rEff_1Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+        f3 = get_factor(&fEff_1Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
+      }else{
+        r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+        f3 = get_factor(&fEff_3Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
+      }
+      // Scale factor corrections to tau fake efficiency 
+      if (Event->ch() != 1 && Event->njet() ==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
+      if (Event->ch() != 1 && Event->njet() ==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
+      if (Event->ch() != 1 && Event->njet() >=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
+      // 3D-matrix method
+      MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
+      weight_MM = MM->getWeights();
+      for (int i = 0; i < reg.size(); ++i) {
         for (int j = 1; j < domains.size() - 1; ++j){
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep1Pt")]->Fill(Event->lep1()->pt_, weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep2Pt")]->Fill(Event->lep2()->pt_, weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "tauPt")]->Fill(Event->ta1()->pt_, weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep1Eta")]->Fill(abs(Event->lep1()->eta_), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep2Eta")]->Fill(abs(Event->lep2()->eta_), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "tauEta")]->Fill(abs(Event->ta1()->eta_), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "Ht")]->Fill(Event->Ht(), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "njet")]->Fill(Event->njet(), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "nbjet")]->Fill(Event->nbjet(), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "St")]->Fill(Event->St(), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep1Rt")]->Fill(Event->lep1()->recoil_/Event->lep1()->pt_, weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "lep2Rt")]->Fill(Event->lep2()->recoil_/Event->lep2()->pt_, weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "tauRt")]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "llM")]->Fill(Event->llM(), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), weight_MM[j]);
-            Hists1D[j][cIdx][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), weight_MM[j]);
+          for (int k = 1; k < var.size(); ++k){
+            Hists1D[j][cIdx][chIdx][reg[i]][k]->Fill(var[k], weight_MM[j]);
+          }
         }
-    } 
-    // Charge-flip estimate
-    if (data == "data" && Event->c() == 0){
-       for (int i = 0; i < reg.size(); ++i) {
-            if (Event->typeIndex() == 0){
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep1Pt")]->Fill(Event->lep1()->pt_, weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep2Pt")]->Fill(Event->lep2()->pt_, weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "tauPt")]->Fill(Event->ta1()->pt_, weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep1Eta")]->Fill(abs(Event->lep1()->eta_), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep2Eta")]->Fill(abs(Event->lep2()->eta_), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "tauEta")]->Fill(abs(Event->ta1()->eta_), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "Ht")]->Fill(Event->Ht(), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "njet")]->Fill(Event->njet(), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "nbjet")]->Fill(Event->nbjet(), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "St")]->Fill(Event->St(), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep1Rt")]->Fill(Event->lep1()->recoil_/Event->lep1()->pt_, weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "lep2Rt")]->Fill(Event->lep2()->recoil_/Event->lep2()->pt_, weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "tauRt")]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "llM")]->Fill(Event->llM(), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), weight_El_MisId);
-              Hists1D[4][1][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), weight_El_MisId);
+      } 
+      // Charge-flip estimate (only transfering events from OS-ee, OS-emu)
+      if (Event->c() == 0 && Event->ch() < 2){
+        for (int i = 0; i < reg.size(); ++i) {
+          if (Event->typeIndex() == 0){
+            for (int j = 0; j < var.size(); ++j){
+              Hists1D[4][1][chIdx][reg[i]][j]->Fill(var[j], weight_El_MisId);
             }
-            // Overlap removal
-            for (int j = 1; j < domains.size() - 1; ++j){
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep1Pt")]->Fill(Event->lep1()->pt_, -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep2Pt")]->Fill(Event->lep2()->pt_, -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "tauPt")]->Fill(Event->ta1()->pt_, -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep1Eta")]->Fill(abs(Event->lep1()->eta_), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep2Eta")]->Fill(abs(Event->lep2()->eta_), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "tauEta")]->Fill(abs(Event->ta1()->eta_), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "Ht")]->Fill(Event->Ht(), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "njet")]->Fill(Event->njet(), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "nbjet")]->Fill(Event->nbjet(), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "St")]->Fill(Event->St(), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep1Rt")]->Fill(Event->lep1()->recoil_/Event->lep1()->pt_, -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "lep2Rt")]->Fill(Event->lep2()->recoil_/Event->lep2()->pt_, -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "tauRt")]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "llM")]->Fill(Event->llM(), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "llDr")]->Fill(Event->llDr(), -1 * weight_El_MisId * weight_MM[j]);
-              Hists1D[j][1][chIdx][reg[i]][vInd(vars1D, "llPt")]->Fill(Event->llPt(), -1 * weight_El_MisId * weight_MM[j]);
+          }
+          // Overlap removal
+          for (int j = 1; j < domains.size() - 1; ++j){
+            for (int k = 1; k < var.size(); ++k){
+              Hists1D[j][1][chIdx][reg[i]][k]->Fill(var[k], -1 * weight_El_MisId * weight_MM[j]);
             }
+          }
         }
+      }
     }
 
     deleteContainter(Leptons);
     deleteContainter(Jets);
     delete Event;
-    delete MM;
-
+    if (data == "data") delete MM;
     nAccept++;
   } // End of event loop
 
@@ -583,6 +549,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
   file_out.Close();
   Hists1D.clear();
+  var.clear();
   weight_MM.clear();
 
   // Writing summary

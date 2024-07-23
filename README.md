@@ -63,12 +63,6 @@ cd TopLFV/
 git submodule update --remote
 ```
 
-## To calculate jet to tau fake factors
-```
-cd postproc/
-python jetToTauFakeFactors.py
-```
-
 ## File descriptions
 <table border="0">
   <tr>
@@ -152,10 +146,6 @@ python jetToTauFakeFactors.py
     <td>Python script for creating event yield tables in LaTeX format</td>
   </tr>
   <tr>
-    <td>postproc/jetToTauFakeFactors.py</td>
-    <td>Python script for calculating jet to tau fake factors</td>
-  </tr>
-  <tr>
     <td>postproc/cmsstyle/</td>
     <td>External git repository with CMS style files</td>
   </tr>
@@ -190,6 +180,10 @@ python jetToTauFakeFactors.py
   <tr>
     <td>src/trigger.cc</td>
     <td>HLT trigger logic</td>
+  </tr>
+  <tr>
+    <td>src/matrix_method.cc</td>
+    <td>3D matrix method implementation</td>
   </tr>
   <tr>
     <td>src/main.cc</td>
