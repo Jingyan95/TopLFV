@@ -59,11 +59,11 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
   px3_ += (*Leptons_)[1]->pt_ * cos((*Leptons_)[1]->phi_);
   py3_ += (*Leptons_)[1]->pt_ * sin((*Leptons_)[1]->phi_);
 
-  nonlep_ = new TLorentzVector(px1_,py1_,0,sqrt(px1_*px1_+py1_*py1_));
+  nonlep_ = new TLorentzVector(px1_, py1_, 0, sqrt(px1_ * px1_ + py1_ * py1_));
   (*Leptons_)[0]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[0]->phi_)));
-  nonlep_ = new TLorentzVector(px2_,py2_,0,sqrt(px2_*px2_+py2_*py2_));
+  nonlep_ = new TLorentzVector(px2_, py2_, 0, sqrt(px2_ * px2_ + py2_ * py2_));
   (*Leptons_)[1]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[1]->phi_)));
-  nonlep_ = new TLorentzVector(px3_,py3_,0,sqrt(px3_*px3_+py3_*py3_));
+  nonlep_ = new TLorentzVector(px3_, py3_, 0, sqrt(px3_ * px3_ + py3_ * py3_));
   (*Leptons_)[2]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[2]->phi_)));
 
   if (c_ == 0) { // Looking at Opposite-Sign first

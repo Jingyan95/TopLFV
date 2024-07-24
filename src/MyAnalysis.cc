@@ -317,9 +317,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Tau_decayMode[l] == 5 || Tau_decayMode[l] == 6) continue;
       // "Tight" tau is defined as having Tau_idDeepTau2017v2p1VSjet >= 5
       // "Loose" tau is defined as having Tau_idDeepTau2017v2p1VSjet < 5
-      // See line 26 in src/event_candidate.cc
       if ((int) Tau_idDeepTau2017v2p1VSe[l] < 2 || (int) Tau_idDeepTau2017v2p1VSmu[l] < 8 || (int) Tau_idDeepTau2017v2p1VSjet[l] < 1) continue;
-
+      
       // Overlap removal
       if (event_candidate::deltaR((*Leptons)[0]->eta_, (*Leptons)[0]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4
           || event_candidate::deltaR((*Leptons)[1]->eta_, (*Leptons)[1]->phi_, Tau_eta[l], Tau_phi[l]) < 0.4) continue;
