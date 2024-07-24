@@ -72,19 +72,19 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"lep1Pt",           {0,   10,    30,  100}},
     {"lep2Pt",           {1,   10,    20,  100}},
     {"tauPt",            {2,   10,    20,  100}},
-    {"lep1Eta",          {3,   3,     0,   2.4}},
-    {"lep2Eta",          {4,   3,     0,   2.4}},
-    {"tauEta",           {5,   3,     0,   2.3}},
+    {"lep1Eta",          {3,   10,    0,   2.4}},
+    {"lep2Eta",          {4,   10,    0,   2.4}},
+    {"tauEta",           {5,   10,    0,   2.3}},
     {"Ht",               {6,   10,    0,   200}},
     {"njet",             {7,   4,     0,   4}},
     {"nbjet",            {8,   3,     0,   3}},
-    {"St",               {9,   10,    70,  300}},
-    {"lep1Rt",           {10,  12,    -1,  5}},
-    {"lep2Rt",           {11,  12,    -1,  5}},
-    {"tauRt",            {12,  12,    -1,  5}},
-    {"llM",              {13,  15,    0,   180}},
-    {"llDr",             {14,  15,    0,   4.5}},
-    {"llPt",             {15,  15,    0,   150}}
+    {"St",               {9,   10,    70,  500}},
+    {"lep1Rt",           {10,  10,    -1,  5}},
+    {"lep2Rt",           {11,  10,    -1,  5}},
+    {"tauRt",            {12,  10,    -1,  5}},
+    {"llM",              {13,  20,    0,   180}},
+    {"llDr",             {14,  10,    0,   4.5}},
+    {"llPt",             {15,  10,    0,   150}}
   };
   
   // Creating histograms
@@ -339,7 +339,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       deleteContainter(Leptons);
       continue;
     }
-
+    // Jet selection
     Jets = new std::vector<jet_candidate*>();
     for (UInt_t l = 0; l < nJet; l++) {
       if (l >= 16) break; // Restrict the loop size
@@ -360,7 +360,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       delete jet_temp;
     }
 
-    // Reconstruction of heavy particles
+    // Heavy particle reconstruction and event categorization
     Event = new event_candidate(Leptons, Jets, data == "mc" ? MET_T1Smear_pt : MET_T1_pt, MET_phi, verbose_);
 
     // MC weights
@@ -459,7 +459,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     var[vInd(vars1D, "llM")] = Event->llM();
     var[vInd(vars1D, "llDr")] = Event->llDr();
     var[vInd(vars1D, "llPt")] = Event->llPt();
-    // Filling histograms (only data events with three tight leptons and fully prompt MC events)
+    // Filling histograms (only include data events with three tight leptons and fully prompt MC events)
     if (Event->typeIndex() == 0 && dIdx == 0){
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 0; j < var.size(); ++j){
@@ -467,7 +467,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         }
       }
     }
-    if (data == "data"){ // Only data events used in fake and charge-flip estimate
+    if (data == "data"){ // Only include data events in fake and charge-flip estimate
       // Reading real and fake efficiencies 
       if (Event->lep1()->flavor_ == 1){
         r1 = get_factor(&rEff_e,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 

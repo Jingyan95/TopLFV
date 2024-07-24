@@ -24,16 +24,16 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       llPt_(((*Leptons_)[0]->p4_ + (*Leptons_)[1]->p4_).Pt()),
                                       llDr_(deltaR((*Leptons_)[0]->eta_, (*Leptons_)[0]->phi_, (*Leptons_)[1]->eta_, (*Leptons_)[1]->phi_)),
                                       OnZ_(false),
-                                      TightLep1_((*Leptons_)[0]->mva1_ < 0.64 ? 0 : 1),
-                                      TightLep2_((*Leptons_)[1]->mva1_ < 0.64 ? 0 : 1),
-                                      TightTa_((*Leptons_)[2]->mva1WP_ < 5 ? 0 : 1),
+                                      TightLep1_(this->lep1()->mva1_ < 0.64 ? 0 : 1),
+                                      TightLep2_(this->lep2()->mva1_ < 0.64 ? 0 : 1),
+                                      TightTa_(this->ta1()->mva1WP_ < 5 ? 0 : 1),
                                       typeIndex_(7 - (TightLep1_<<2) - (TightLep2_<<1) - TightTa_) {                             
   if (c_ == 0 && ch_ != 1 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true;
   if (c_ == 1 && ch_ == 0 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true; // Same-Sign ee
   sort(Jets->begin(), Jets->end(), CompareBtagJet);
   if (Jets->size()) bjet_ = (*Jets_)[0];
   sort(Jets->begin(), Jets->end(), ComparePtJet);
-  float px_ =  MET_pt * cos(MET_phi);
+  float px_ = MET_pt * cos(MET_phi);
   float py_ = MET_pt * sin(MET_phi);
   for (int l = 0; l < (int) Jets->size(); l++) {
     btagSF_ *= (*Jets)[l]->btSF_;
@@ -60,11 +60,11 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
   py3_ += (*Leptons_)[1]->pt_ * sin((*Leptons_)[1]->phi_);
 
   nonlep_ = new TLorentzVector(px1_,py1_,0,sqrt(px1_*px1_+py1_*py1_));
-  (*Leptons_)[0]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(),(*Leptons_)[0]->phi_)));
+  (*Leptons_)[0]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[0]->phi_)));
   nonlep_ = new TLorentzVector(px2_,py2_,0,sqrt(px2_*px2_+py2_*py2_));
-  (*Leptons_)[1]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(),(*Leptons_)[1]->phi_)));
+  (*Leptons_)[1]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[1]->phi_)));
   nonlep_ = new TLorentzVector(px3_,py3_,0,sqrt(px3_*px3_+py3_*py3_));
-  (*Leptons_)[2]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(),(*Leptons_)[2]->phi_)));
+  (*Leptons_)[2]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[2]->phi_)));
 
   if (c_ == 0) { // Looking at Opposite-Sign first
     if (ch_ == 0) { // ee
