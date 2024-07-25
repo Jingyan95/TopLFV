@@ -136,8 +136,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TF1 sf_Ta_ID_jet = *(TF1*) f_Ta_ID_jet->Get("Tight_cent");
   const TH2F rEff_1Prong = *(TH2F*) f_Ta_MM->Get("RealEff_AbsEtaVsPt_1Prong");
   const TH2F rEff_3Prong = *(TH2F*) f_Ta_MM->Get("RealEff_AbsEtaVsPt_3Prong");
-  const TH2F fEff_1Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_RtVsPt_1Prong");
-  const TH2F fEff_3Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_RtVsPt_3Prong");
+  const TH2F fEff_1Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_llPtVsPt_1Prong");
+  const TH2F fEff_3Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_llPtVsPt_3Prong");
   const TH2F fEff_SF_0J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_AbsEtaVsPt_0J");
   const TH2F fEff_SF_1J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_AbsEtaVsPt_1J");
   const TH2F fEff_SF_2J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_AbsEtaVsPt_2J");
@@ -445,9 +445,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     var[vInd(vars1D, "lep1Pt")] = Event->lep1()->pt_;
     var[vInd(vars1D, "lep2Pt")] = Event->lep2()->pt_;
     var[vInd(vars1D, "tauPt")] = Event->ta1()->pt_;
-    var[vInd(vars1D, "lep1Eta")] = Event->lep1()->eta_;
-    var[vInd(vars1D, "lep2Eta")] = Event->lep2()->eta_;
-    var[vInd(vars1D, "tauEta")] = Event->ta1()->eta_;
+    var[vInd(vars1D, "lep1Eta")] = abs(Event->lep1()->eta_);
+    var[vInd(vars1D, "lep2Eta")] = abs(Event->lep2()->eta_);
+    var[vInd(vars1D, "tauEta")] = abs(Event->ta1()->eta_);
     var[vInd(vars1D, "Ht")] = Event->Ht();
     var[vInd(vars1D, "njet")] = Event->njet();
     var[vInd(vars1D, "nbjet")] = Event->nbjet();
@@ -484,15 +484,15 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3 = get_factor(&fEff_1Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
+        f3 = get_factor(&fEff_1Prong,Event->ta1()->pt_, Event->llPt(), ""); 
       }else{
         r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3 = get_factor(&fEff_3Prong,Event->ta1()->jetpt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
+        f3 = get_factor(&fEff_3Prong,Event->ta1()->pt_, Event->llPt(), ""); 
       }
       // Scale factor corrections to tau fake efficiency 
-      if (Event->ch() != 1 && Event->njet() ==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
-      if (Event->ch() != 1 && Event->njet() ==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
-      if (Event->ch() != 1 && Event->njet() >=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
+      // if (Event->ch() != 1 && Event->njet() ==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
+      // if (Event->ch() != 1 && Event->njet() ==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
+      // if (Event->ch() != 1 && Event->njet() >=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
       // 3D-matrix method
       MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
       weight_MM = MM->getWeights();
