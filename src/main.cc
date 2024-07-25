@@ -6,7 +6,8 @@
 std::mutex MyAnalysis::mtx_;
 
 int main() {
-  system("rm -f test*.root");
+  int Sys = system("rm -f test*.root");
+  if (Sys<0) {std::cout<<"No files named test*.root"<<std::endl;}
   ROOT::EnableThreadSafety();
   UInt_t nThread = 6;
   std::stringstream Summary;
@@ -15,11 +16,11 @@ int main() {
   std::atomic<ULong64_t> progress(0);
   std::atomic<ULong64_t> counter(0);
   auto workItem = [&](UInt_t workerID) {
-    TChain* ch = new TChain("Events");  
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_5.root");
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_6.root");
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_7.root");
-    ch->Add("/eos/cms/store/user/jingyan/LFV_Trilep_Inclusive_May1_BtagSF/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_10.root");
+    TChain* ch = new TChain("Events");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_5.root");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_6.root");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_7.root");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_TTW_UL/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/crab_Trilep_Inclusive_May1_BtagSF_2016_TTW_UL/230501_150430/0000/tree_10.root");
     MyAnalysis t1(ch, "2016", "mc", "", nThread, workerID, false);
     auto workerSummary = t1.Loop(Form("test_%u.root", workerID), "mc", "TTW", "2016", "", 0.235, 16.81, 3322643, std::ref(progress), std::ref(counter));
     Summary << workerSummary.str();
@@ -30,7 +31,9 @@ int main() {
   }
   for (auto&& worker : workers) worker.join();
   std::cout << Summary.str();
-  system("hadd test.root test_*.root");
-  system("rm -f test_*.root");
+  Sys = system("hadd test.root test_*.root");
+  if (Sys<0) {std::cout<<"Filed to hadd test.root"<<std::endl;}
+  Sys = system("rm -f test_*.root");
+  if (Sys<0) {std::cout<<"No files named test*.root"<<std::endl;}
   return 0;
 }

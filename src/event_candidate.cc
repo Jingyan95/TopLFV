@@ -8,9 +8,9 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                     : verbose_(verbose),
                                       Leptons_(Leptons),
                                       Jets_(Jets),
-                                      MET_(new TLorentzVector(MET_pt*cos(MET_phi),MET_pt*sin(MET_phi),0,MET_pt)),
-                                      c_(abs((*Leptons_)[0]->charge_+(*Leptons_)[1]->charge_)/2),
-                                      ch_((*Leptons_)[0]->flavor_+(*Leptons_)[1]->flavor_-2),
+                                      MET_(new TLorentzVector(MET_pt * cos(MET_phi), MET_pt * sin(MET_phi), 0, MET_pt)),
+                                      c_(abs((*Leptons_)[0]->charge_ + (*Leptons_)[1]->charge_) / 2),
+                                      ch_((*Leptons_)[0]->flavor_ + (*Leptons_)[1]->flavor_ - 2),
                                       lfvch_(-1),
                                       SRindex_(-1),
                                       njet_(Jets->size()),
@@ -20,21 +20,51 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       Ht_(0),
                                       St_(0),
                                       Topmass_(0),
-                                      llM_(((*Leptons_)[0]->p4_+(*Leptons_)[1]->p4_).M()),
-                                      llDr_(deltaR((*Leptons_)[0]->eta_,(*Leptons_)[0]->phi_,(*Leptons_)[1]->eta_,(*Leptons_)[1]->phi_)),
-                                      OnZ_(false) {
-  if (c_==0 && ch_!=1 && llM_-mZ_>-33 && llM_-mZ_<17) OnZ_ = true;
-  if (c_==1 && ch_==0 && llM_-mZ_>-33 && llM_-mZ_<17) OnZ_ = true; // Same-Sign ee
+                                      llM_(((*Leptons_)[0]->p4_ + (*Leptons_)[1]->p4_).M()),
+                                      llPt_(((*Leptons_)[0]->p4_ + (*Leptons_)[1]->p4_).Pt()),
+                                      llDr_(deltaR((*Leptons_)[0]->eta_, (*Leptons_)[0]->phi_, (*Leptons_)[1]->eta_, (*Leptons_)[1]->phi_)),
+                                      OnZ_(false),
+                                      TightLep1_(this->lep1()->mva1_ < 0.64 ? 0 : 1),
+                                      TightLep2_(this->lep2()->mva1_ < 0.64 ? 0 : 1),
+                                      TightTa_(this->ta1()->mva1WP_ < 5 ? 0 : 1),
+                                      typeIndex_(7 - (TightLep1_<<2) - (TightLep2_<<1) - TightTa_) {                             
+  if (c_ == 0 && ch_ != 1 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true;
+  if (c_ == 1 && ch_ == 0 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true; // Same-Sign ee
   sort(Jets->begin(), Jets->end(), CompareBtagJet);
   if (Jets->size()) bjet_ = (*Jets_)[0];
   sort(Jets->begin(), Jets->end(), ComparePtJet);
-  for (int l=0; l<(int)Jets->size(); l++) {
+  float px_ = MET_pt * cos(MET_phi);
+  float py_ = MET_pt * sin(MET_phi);
+  for (int l = 0; l < (int) Jets->size(); l++) {
     btagSF_ *= (*Jets)[l]->btSF_;
     btagSum_ += (*Jets)[l]->bt_;
-    Ht_+=(*Jets)[l]->pt_;
-    if((*Jets)[l]->btag_) nbjet_++;
+    Ht_ += (*Jets)[l]->pt_;
+    if ((*Jets)[l]->btag_) nbjet_++;
+    px_ += (*Jets)[l]->pt_ * cos((*Jets)[l]->phi_);
+    py_ += (*Jets)[l]->pt_ * sin((*Jets)[l]->phi_);
   }
   St_ = Ht_ + (*Leptons_)[0]->pt_ + (*Leptons_)[1]->pt_ + (*Leptons_)[2]->pt_ + MET_->Pt();
+  float px1_ = px_+ (*Leptons_)[1]->pt_ * cos((*Leptons_)[1]->phi_);
+  float py1_ = py_+ (*Leptons_)[1]->pt_ * sin((*Leptons_)[1]->phi_);
+  px1_ += (*Leptons_)[2]->pt_ * cos((*Leptons_)[2]->phi_);
+  py1_ += (*Leptons_)[2]->pt_ * sin((*Leptons_)[2]->phi_);
+
+  float px2_ = px_+ (*Leptons_)[0]->pt_ * cos((*Leptons_)[0]->phi_);
+  float py2_ = py_+ (*Leptons_)[0]->pt_ * sin((*Leptons_)[0]->phi_);
+  px2_ += (*Leptons_)[2]->pt_ * cos((*Leptons_)[2]->phi_);
+  py2_ += (*Leptons_)[2]->pt_ * sin((*Leptons_)[2]->phi_);
+
+  float px3_ = px_+ (*Leptons_)[0]->pt_ * cos((*Leptons_)[0]->phi_);
+  float py3_ = py_+ (*Leptons_)[0]->pt_ * sin((*Leptons_)[0]->phi_);
+  px3_ += (*Leptons_)[1]->pt_ * cos((*Leptons_)[1]->phi_);
+  py3_ += (*Leptons_)[1]->pt_ * sin((*Leptons_)[1]->phi_);
+
+  nonlep_ = new TLorentzVector(px1_, py1_, 0, sqrt(px1_ * px1_ + py1_ * py1_));
+  (*Leptons_)[0]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[0]->phi_)));
+  nonlep_ = new TLorentzVector(px2_, py2_, 0, sqrt(px2_ * px2_ + py2_ * py2_));
+  (*Leptons_)[1]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[1]->phi_)));
+  nonlep_ = new TLorentzVector(px3_, py3_, 0, sqrt(px3_ * px3_ + py3_ * py3_));
+  (*Leptons_)[2]->setRecoil(-1 * nonlep_->Pt() * cos(deltaPhi(nonlep_->Phi(), (*Leptons_)[2]->phi_)));
 
   if (c_ == 0) { // Looking at Opposite-Sign first
     if (ch_ == 0) { // ee
@@ -53,7 +83,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[0], MET_) + (*Leptons_)[0]->p4_ + bjet_->p4_).M();
       }
     }
-    if (ch_==1){ // emu
+    if (ch_ == 1){ // emu
       float topmass0 = 0;
       float topmass1 = 0;
       float obs0 = (*Leptons_)[2]->pt_; // Assuming lepton with lower pT is the SM lepton when top quark can not be reconstructed
@@ -72,14 +102,16 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         LFVe_ = (*Leptons_)[0];
         LFVmu_ = (*Leptons_)[1];
         SRindex_ = ((*Leptons_)[0]->p4_ + (*Leptons_)[1]->p4_).M() < lfvmCut_ ? 2 : 3;
-      } else if (ba) {
+      }
+      else if (ba) {
         Topmass_ = topmass1;
         lfvch_ = 1;
         Balep_ = (*Leptons_)[1];
         LFVe_ = (*Leptons_)[0];
         LFVta_ = (*Leptons_)[2];
         SRindex_ = ((*Leptons_)[0]->p4_ + (*Leptons_)[2]->p4_).M() < lfvmCut_ ? 4 : 5;
-      } else {
+      }
+      else {
         Topmass_ = topmass1;
         lfvch_ = 2;
         Balep_ = (*Leptons_)[0];
@@ -88,7 +120,7 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         SRindex_ = ((*Leptons_)[1]->p4_ + (*Leptons_)[2]->p4_).M() < lfvmCut_ ? 6 : 7;
       }
     }
-    if (ch_==2) { // mumu
+    if (ch_ == 2) { // mumu
       lfvch_ = 2;
       LFVta_ = (*Leptons_)[2];
       if ((*Leptons_)[0]->charge_ + (*Leptons_)[2]->charge_ == 0) {
@@ -104,7 +136,8 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         if (Jets->size()) Topmass_ = (solveNeutrinoPz((*Leptons_)[0], MET_) + (*Leptons_)[0]->p4_ + bjet_->p4_).M();
       }
     }
-  } else { // Same-Sign
+  }
+  else { // Same-Sign
     LFVta_ = (*Leptons_)[2];
     float topmass0 = 0;
     float topmass1 = 0;
@@ -123,7 +156,8 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         Balep_ = (*Leptons_)[0];
         LFVe_ = (*Leptons_)[1];
         SRindex_ = ((*Leptons_)[1]->p4_ + (*Leptons_)[2]->p4_).M() < lfvmCut_ ? 10 : 11;
-      }else{
+      }
+      else {
         Topmass_ = topmass1;
         Balep_ = (*Leptons_)[1];
         LFVe_ = (*Leptons_)[0];
@@ -137,7 +171,8 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         Balep_ = (*Leptons_)[0];
         LFVmu_ = (*Leptons_)[1];
         SRindex_ = ((*Leptons_)[1]->p4_ + (*Leptons_)[2]->p4_).M() < lfvmCut_ ? 14 : 15;
-      } else {
+      }
+      else {
         lfvch_ = 1;
         Topmass_ = topmass1;
         Balep_ = (*Leptons_)[1];
@@ -152,7 +187,8 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
         Balep_ = (*Leptons_)[0];
         LFVmu_ = (*Leptons_)[1];
         SRindex_ = ((*Leptons_)[1]->p4_ + (*Leptons_)[2]->p4_).M() < lfvmCut_ ? 16 : 17;
-      } else {
+      }
+      else {
         Topmass_ = topmass1;
         Balep_ = (*Leptons_)[1];
         LFVmu_ = (*Leptons_)[0];
@@ -174,4 +210,4 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
   }
 }
 
-event_candidate::~event_candidate() { delete MET_; }
+event_candidate::~event_candidate() { delete MET_; delete nonlep_;}

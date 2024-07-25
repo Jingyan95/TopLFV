@@ -1,19 +1,21 @@
 #ifndef MY_jet_candidate
 #define MY_jet_candidate
 
-#include<cmath>
-#include<string>
-#include<iostream>
-#include<vector>
-#include<complex>
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <complex>
 #include <TLorentzVector.h>
 #include <TString.h>
 
 using namespace std;
-//using namespace math;
+// using namespace math;
+
 class jet_candidate {
 
 public:
+
   jet_candidate(float, float, float, float, float, float, TString, int);
   ~jet_candidate();
   float pt_;
@@ -24,12 +26,11 @@ public:
   float btSF_;
   float bt_; // b-tagging score
   int isb(float, TString);
-  int isbajet; // jet coming from standard top 
+  int isbajet; // Jet coming from standard top
   void setbajet() {
     isbajet = 1;
   }
   TLorentzVector p4_;
-
 
 private:
 

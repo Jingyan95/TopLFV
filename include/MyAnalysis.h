@@ -14,8 +14,8 @@
 using namespace std;
 class MyAnalysis {
 public :
-  TTree          *fChain; //!pointer to the analyzed TTree or TChain
-  Int_t          fCurrent; //!current Tree number in a TChain
+  TTree          *fChain; // !pointer to the analyzed TTree or TChain
+  Int_t          fCurrent; // !current Tree number in a TChain
   TString        year_;
   TString        data_;
   TString        run_;
@@ -28,6 +28,7 @@ public :
 
   // Branch information: https://swertz.web.cern.ch/swertz/TMG/TopNano/TopNanoV9/doc_topNanoV9-1-1_MC18UL.html#CaloMET
   // Declaration of leaf types
+
   UInt_t          nElectron;
   Int_t           Electron_charge[16];
   Float_t         Electron_deltaEtaSC[16];
@@ -48,6 +49,7 @@ public :
   UChar_t         Electron_lostHits[16];
   Int_t           Electron_jetIdx[16];
   UChar_t         Electron_genPartFlav[16];
+  Int_t           Electron_genPartIdx[16];
   Float_t         Electron_topLeptonMVA_v1[16];
   Float_t         Electron_topLeptonMVA_v2[16];
   Bool_t          Electron_convVeto[16];
@@ -91,6 +93,7 @@ public :
   UChar_t         Tau_idDeepTau2017v2p1VSe[16];
   UChar_t         Tau_idDeepTau2017v2p1VSmu[16];
   UChar_t         Tau_idDeepTau2017v2p1VSjet[16];
+  Int_t           Tau_jetIdx[16];
 
   UInt_t          nJet;
   Float_t         Jet_pt_nom[16];
@@ -116,36 +119,37 @@ public :
   Bool_t          Flag_ecalBadCalibFilter; 
   Bool_t          Flag_BadPFMuonDzFilter;
 
-  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL;//2016 APV
-  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL;//2016 APV, 2017, 2018
-  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;//2016, 2017, 2018
-  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016
+  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL; // 2016APV
+  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL; // 2016APV, 2017, 2018
+  Bool_t          HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017, 2018
+  Bool_t          HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016
 
-  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;//2017, 2018
-  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016 APV, 2016
-  Bool_t          HLT_DoubleEle33_CaloIdL_MW;//2016APV, 2016, 2017, 2018
-  Bool_t          HLT_DoubleEle33_CaloIdL_GsfTrkIdVL;//2016APV, 2016 
+  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL; // 2017, 2018
+  Bool_t          HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016APV, 2016
+  Bool_t          HLT_DoubleEle33_CaloIdL_MW; // 2016APV, 2016, 2017, 2018
+  Bool_t          HLT_DoubleEle33_CaloIdL_GsfTrkIdVL; // 2016APV, 2016
 
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;//2016 APV
-  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL;//2016 APV
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ;//2016
-  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ;//2016
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8;//2017
-  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;//2018
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL; // 2016APV
+  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL; // 2016APV
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ; // 2016
+  Bool_t          HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ; // 2016
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8; // 2017
+  Bool_t          HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8; // 2018
 
-  Bool_t          HLT_Ele27_WPTight_Gsf;//2016 APV, 2016
-  Bool_t          HLT_Ele32_WPTight_Gsf;//2018
-  Bool_t          HLT_Ele35_WPTight_Gsf;//2017
-  Bool_t          HLT_IsoMu24;//2016 APV, 2016, 2018
-  Bool_t          HLT_IsoTkMu24;//2016 APV, 2016
-  Bool_t          HLT_IsoMu27;//2017
+  Bool_t          HLT_Ele27_WPTight_Gsf; // 2016APV, 2016
+  Bool_t          HLT_Ele32_WPTight_Gsf; // 2018
+  Bool_t          HLT_Ele35_WPTight_Gsf; // 2017
+  Bool_t          HLT_IsoMu24; // 2016APV, 2016, 2018
+  Bool_t          HLT_IsoTkMu24; // 2016APV, 2016
+  Bool_t          HLT_IsoMu27; // 2017
 
-  Float_t         Generator_weight;//MC generator weight
+  Float_t         Generator_weight; // MC generator weight
   Float_t         Pileup_nTrueInt;
+  Int_t           GenPart_pdgId[64];
   Float_t         L1PreFiringWeight_ECAL_Nom;
   Float_t         L1PreFiringWeight_Muon_Nom;
 
-  // List of branches  
+  // List of branches
   TBranch         *b_nElectron;
   TBranch         *b_Electron_charge;
   TBranch         *b_Electron_deltaEtaSC;
@@ -166,6 +170,7 @@ public :
   TBranch         *b_Electron_lostHits;
   TBranch         *b_Electron_jetIdx;
   TBranch         *b_Electron_genPartFlav;
+  TBranch         *b_Electron_genPartIdx;
   TBranch         *b_Electron_topLeptonMVA_v1;
   TBranch         *b_Electron_topLeptonMVA_v2;
   TBranch         *b_Electron_convVeto;
@@ -209,6 +214,7 @@ public :
   TBranch         *b_Tau_idDeepTau2017v2p1VSe;
   TBranch         *b_Tau_idDeepTau2017v2p1VSmu;
   TBranch         *b_Tau_idDeepTau2017v2p1VSjet;
+  TBranch         *b_Tau_jetIdx;
 
   TBranch         *b_nJet;
   TBranch         *b_Jet_pt_nom;
@@ -234,71 +240,91 @@ public :
   TBranch         *b_Flag_ecalBadCalibFilter; 
   TBranch         *b_Flag_BadPFMuonDzFilter;
 
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL;//2016 APV
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL;//2016 APV, 2017, 2018
-  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ;//2016, 2017, 2018
-  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016
+  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL; // 2016APV
+  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL; // 2016APV, 2018
+  TBranch         *b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017, 2018
+  TBranch         *b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016, 2017
 
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL;//2017, 2018
-  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ;//2016 APV, 2016
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_MW;//2016APV, 2016, 2017, 2018
-  TBranch         *b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL;//2016APV, 2016 
+  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL; // 2017, 2018
+  TBranch         *b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ; // 2016APV, 2016
+  TBranch         *b_HLT_DoubleEle33_CaloIdL_MW; // 2016APV, 2016, 2017, 2018
+  TBranch         *b_HLT_DoubleEle33_CaloIdL_GsfTrkIdVL; // 2016APV, 2016
 
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL;//2016 APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL;//2016 APV
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ;//2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ;//2016
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8;//2017
-  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8;//2018
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL; // 2016APV
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL; // 2016APV
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ; // 2016
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ; // 2016
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8; // 2017
+  TBranch         *b_HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8; // 2018
 
-  TBranch         *b_HLT_Ele27_WPTight_Gsf;//2016 APV, 2016
-  TBranch         *b_HLT_Ele32_WPTight_Gsf;//2018
-  TBranch         *b_HLT_Ele35_WPTight_Gsf;//2017
-  TBranch         *b_HLT_IsoMu24;//2016 APV, 2016, 2018
-  TBranch         *b_HLT_IsoTkMu24;//2016 APV, 2016
-  TBranch         *b_HLT_IsoMu27;//2017
+  TBranch         *b_HLT_Ele27_WPTight_Gsf; // 2016APV, 2016
+  TBranch         *b_HLT_Ele32_WPTight_Gsf; // 2018
+  TBranch         *b_HLT_Ele35_WPTight_Gsf; // 2017
+  TBranch         *b_HLT_IsoMu24; // 2016APV, 2016, 2018
+  TBranch         *b_HLT_IsoTkMu24; // 2016APV, 2016
+  TBranch         *b_HLT_IsoMu27; // 2017
 
   TBranch         *b_Generator_weight;
   TBranch         *b_Pileup_nTrueInt;
+  TBranch         *b_GenPart_pdgId;
   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
   TBranch         *b_L1PreFiringWeight_Muon_Nom;
 
-  MyAnalysis(TTree *tree=0, TString year="", TString data="", TString run="", int nThread=8, int workerID=0, bool verbose_=false);
+  MyAnalysis(TTree *tree = 0, TString year = "", TString data = "", TString run = "", int nThread = 8, int workerID = 0, bool verbose_ = false);
   virtual ~MyAnalysis();
   virtual Int_t    Cut(Long64_t entry);
   virtual void     GetEntry(Long64_t entry);
   virtual Long64_t LoadTree(Long64_t entry);
   virtual void     Init(TTree *tree);
   virtual void     InitTrigger();
-  virtual std::stringstream Loop(TString, TString, TString, TString, TString, Float_t,Float_t,Float_t,std::atomic<ULong64_t>&,std::atomic<ULong64_t>&);
+  virtual std::stringstream Loop(TString, TString, TString, TString, TString, Float_t, Float_t, Float_t, std::atomic<ULong64_t>&, std::atomic<ULong64_t>&);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
 
-  typedef std::vector<TH1F*> Dim1;
-  typedef std::vector<Dim1> Dim2;
-  typedef std::vector<Dim2> Dim3;
-  typedef std::vector<Dim3> Dim4;
-  //Utility functions
+  template<class T> using Dim1 = std::vector<T>;
+  template<class T> using Dim2 = std::vector<Dim1<T>>;
+  template<class T> using Dim3 = std::vector<Dim2<T>>;
+  template<class T> using Dim4 = std::vector<Dim3<T>>;
+  template<class T> using Dim5 = std::vector<Dim4<T>>;
+
+  const std::map<TString,TString> procname = {
+       {"WZ",     "VV"},
+       {"ZZ",     "VV"},
+       {"WWW",    "VV"},
+       {"WWZ",    "VV"},
+       {"WZZ",    "VV"},
+       {"ZZZ",    "VV"},
+       {"TTW",    "TX"},
+       {"TTH",    "TX"},
+       {"TTW",    "TX"},
+       {"LFVStScalarU", "LFVStScalarU"},
+       {"LFVTtScalarU", "LFVTtScalarU"}
+  };
+
+  // Utility functions
+  int rInd(std::vector<TString> R, TString name);
+  int dInd(std::vector<TString> D, bool tightTau);
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
-  float scale_factor(const TH2F* h, float X, float Y, TString uncert);
+  float get_factor(const TH2F* h, float X, float Y, TString uncert);
+  int char_to_int(UChar_t wp);
 
 private:
-  static std::mutex mtx_;//Standard mutex to achieve synchronization
+  static std::mutex mtx_; // Standard mutex to achieve synchronization
 };
 
 #endif
 
 #ifdef MyAnalysis_cxx
-MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool verbose) : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_,data_)), nThread_(nThread), workerID_(workerID), verbose_(verbose) {
-  // if parameter tree is not specified (or zero), connect the file
-  // used to generate this class and read the Tree.
+MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool verbose)
+    : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_, data_)), nThread_(nThread), workerID_(workerID), verbose_(verbose) {
+  // If parameter tree is not specified (or zero), connect the file used to generate this class and read the Tree.
   if (tree == 0) {
-    TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");
+    TFile *f = (TFile*) gROOT->GetListOfFiles()->FindObject("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");
     if (!f || !f->IsOpen()) {
       f = new TFile("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");
     }
-    f->GetObject("Events",tree);
+    f->GetObject("Events", tree);
   }
   Init(tree);
 }
@@ -326,17 +352,17 @@ Long64_t MyAnalysis::LoadTree(Long64_t entry) {
 }
 
 void MyAnalysis::Init(TTree *tree) {
-  // The Init() function is called when the selector needs to initialize
-  // a new tree or chain. Typically here the branch addresses and branch
-  // poInt_ters of the tree will be set.
-  // It is normally not necessary to make changes to the generated
-  // code, but the routine can be extended by the user if needed.
-  // Init() will be called many times when running on PROOF
-  // (once per file to be processed).
+  // The Init() function is called when the selector needs to initialize a new
+  // tree or chain. Typically here the branch addresses and branch pointers of
+  // the tree will be set.
+  // It is normally not necessary to make changes to the generated code, but
+  // the routine can be extended by the user if needed.
+  // Init() will be called many times when running on PROOF (once per file to
+  // be processed).
 
-  // Set object poInt_ter
+  // Set object pointer
 
-  // Set branch addresses and branch poInt_ters
+  // Set branch addresses and branch pointers
   if (!tree) return;
   fChain = tree;
   fCurrent = -1;
@@ -362,6 +388,7 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Electron_lostHits", &Electron_lostHits, &b_Electron_lostHits);
   fChain->SetBranchAddress("Electron_jetIdx", &Electron_jetIdx, &b_Electron_jetIdx);
   if (data_ == "mc") fChain->SetBranchAddress("Electron_genPartFlav", &Electron_genPartFlav, &b_Electron_genPartFlav);
+  if (data_ == "mc") fChain->SetBranchAddress("Electron_genPartIdx", &Electron_genPartIdx, &b_Electron_genPartIdx);
   fChain->SetBranchAddress("Electron_topLeptonMVA_v1", &Electron_topLeptonMVA_v1, &b_Electron_topLeptonMVA_v1);
   fChain->SetBranchAddress("Electron_topLeptonMVA_v2", &Electron_topLeptonMVA_v2, &b_Electron_topLeptonMVA_v2);
   fChain->SetBranchAddress("Electron_convVeto", &Electron_convVeto, &b_Electron_convVeto);
@@ -405,6 +432,7 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSe", &Tau_idDeepTau2017v2p1VSe, &b_Tau_idDeepTau2017v2p1VSe);
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSmu", &Tau_idDeepTau2017v2p1VSmu, &b_Tau_idDeepTau2017v2p1VSmu);
   fChain->SetBranchAddress("Tau_idDeepTau2017v2p1VSjet", &Tau_idDeepTau2017v2p1VSjet, &b_Tau_idDeepTau2017v2p1VSjet);
+  fChain->SetBranchAddress("Tau_jetIdx", &Tau_jetIdx, &b_Tau_jetIdx);
 
   fChain->SetBranchAddress("nJet", &nJet, &b_nJet);
   fChain->SetBranchAddress("Jet_pt_nom", &Jet_pt_nom, &b_Jet_pt_nom);
@@ -431,9 +459,9 @@ void MyAnalysis::Init(TTree *tree) {
   fChain->SetBranchAddress("Flag_BadPFMuonDzFilter", &Flag_BadPFMuonDzFilter, &b_Flag_BadPFMuonDzFilter);
 
   if (year_ == "2016APV") fChain->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL, &b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL);
-  if (year_ != "2016") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL);
+  if (year_ == "2016APV" || year_ == "2018") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL);
   if (year_ != "2016APV") fChain->SetBranchAddress("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ);
-  if (year_ == "2016") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
+  if (year_ == "2016" || year_ == "2017") fChain->SetBranchAddress("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
 
   if (year_ == "2017" || year_ == "2018") fChain->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL, &b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL);
   if (year_ == "2016APV" || year_ == "2016") fChain->SetBranchAddress("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ", &HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, &b_HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ);
@@ -456,6 +484,7 @@ void MyAnalysis::Init(TTree *tree) {
 
   if (data_ == "mc") fChain->SetBranchAddress("Generator_weight", &Generator_weight, &b_Generator_weight);
   if (data_ == "mc") fChain->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt, &b_Pileup_nTrueInt);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId, &b_GenPart_pdgId);
   fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
   fChain->SetBranchAddress("L1PreFiringWeight_Muon_Nom", &L1PreFiringWeight_Muon_Nom, &b_L1PreFiringWeight_Muon_Nom);
 
@@ -463,13 +492,26 @@ void MyAnalysis::Init(TTree *tree) {
 }
 
 void MyAnalysis::InitTrigger() {
-  myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ,HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,
-    HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ,HLT_DoubleEle33_CaloIdL_MW,HLT_DoubleEle33_CaloIdL_GsfTrkIdVL,
-    HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8,HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8,
-    HLT_Ele27_WPTight_Gsf,HLT_Ele32_WPTight_Gsf,HLT_Ele35_WPTight_Gsf,HLT_IsoMu24,HLT_IsoTkMu24,HLT_IsoMu27);
+  myTrig->Init(HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL,
+    HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL,
+    HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ, HLT_DoubleEle33_CaloIdL_MW, HLT_DoubleEle33_CaloIdL_GsfTrkIdVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL,
+    HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ, HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ,
+    HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8, HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8, HLT_Ele27_WPTight_Gsf, HLT_Ele32_WPTight_Gsf,
+    HLT_Ele35_WPTight_Gsf, HLT_IsoMu24, HLT_IsoTkMu24, HLT_IsoMu27);
+}
+
+int MyAnalysis::rInd(std::vector<TString> R, TString name) {
+  auto iter = std::find(R.begin(), R.end(), name);
+  return iter - R.begin();
+}
+
+int MyAnalysis::dInd(std::vector<TString> D, bool tightTau) {
+  if (tightTau) return 0;
+  else return 1;
 }
 
 int MyAnalysis::vInd(std::map<TString, std::vector<float>> V, TString name) {
+  assert(V.count(name));
   return V.find(name)->second.at(0);
 }
 
@@ -489,24 +531,34 @@ void deleteContainter(std::vector<T>* v) {
   delete v;
 }
 
-float MyAnalysis::scale_factor(const TH2F* h, float X, float Y, TString uncert) {
+float MyAnalysis::get_factor(const TH2F* h, float X, float Y, TString uncert) {
   int NbinsX = h->GetXaxis()->GetNbins();
   int NbinsY = h->GetYaxis()->GetNbins();
   float x_min = h->GetXaxis()->GetBinLowEdge(1);
-  float x_max = h->GetXaxis()->GetBinLowEdge(NbinsX)+h->GetXaxis()->GetBinWidth(NbinsX);
+  float x_max = h->GetXaxis()->GetBinLowEdge(NbinsX) + h->GetXaxis()->GetBinWidth(NbinsX);
   float y_min = h->GetYaxis()->GetBinLowEdge(1);
-  float y_max = h->GetYaxis()->GetBinLowEdge(NbinsY)+h->GetYaxis()->GetBinWidth(NbinsY);
+  float y_max = h->GetYaxis()->GetBinLowEdge(NbinsY) + h->GetYaxis()->GetBinWidth(NbinsY);
   const TAxis *Xaxis = h->GetXaxis();
   const TAxis *Yaxis = h->GetYaxis();
   Int_t binx = 1;
   Int_t biny = 1;
   if (x_min < X && X < x_max) binx = Xaxis->FindBin(X);
-  else binx = (X <= x_min) ? 1 : NbinsX ;
+  else binx = (X <= x_min) ? 1 : NbinsX;
   if (y_min < Y && Y < y_max) biny = Yaxis->FindBin(Y);
-  else biny = (Y <= y_min) ? 1 : NbinsY ;
-  if (uncert == "up") return (h->GetBinContent(binx, biny)+h->GetBinError(binx, biny));
-  else if (uncert == "down") return (h->GetBinContent(binx, biny)-h->GetBinError(binx, biny));
+  else biny = (Y <= y_min) ? 1 : NbinsY;
+  if (uncert == "up") return (h->GetBinContent(binx, biny) + h->GetBinError(binx, biny));
+  else if (uncert == "down") return (h->GetBinContent(binx, biny) - h->GetBinError(binx, biny));
   else return h->GetBinContent(binx, biny);
+}
+
+int MyAnalysis::char_to_int(UChar_t wp) {
+  int intWP = (static_cast<int>(wp) + 1) / 2;
+  int power = 0;
+  while (intWP > 1) {
+    intWP /= 2;
+    power++;
+  }
+  return power;
 }
 
 Bool_t MyAnalysis::Notify() {
@@ -520,14 +572,14 @@ Bool_t MyAnalysis::Notify() {
 
 void MyAnalysis::Show(Long64_t entry) {
   // Print contents of entry.
-  // If entry is not specified, prInt_t current entry
+  // If entry is not specified, print current entry
   if (!fChain) return;
   fChain->Show(entry);
 }
 
 Int_t MyAnalysis::Cut(Long64_t entry) {
   // This function may be called from Loop.
-  // returns  1 if entry is accepted.
+  // returns 1 if entry is accepted.
   // returns -1 otherwise.
   return 1;
 }
