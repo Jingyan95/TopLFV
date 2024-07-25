@@ -138,9 +138,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F rEff_3Prong = *(TH2F*) f_Ta_MM->Get("RealEff_AbsEtaVsPt_3Prong");
   const TH2F fEff_1Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_llPtVsPt_1Prong");
   const TH2F fEff_3Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_llPtVsPt_3Prong");
-  const TH2F fEff_SF_0J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_AbsEtaVsPt_0J");
-  const TH2F fEff_SF_1J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_AbsEtaVsPt_1J");
-  const TH2F fEff_SF_2J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_AbsEtaVsPt_2J");
+  const TH2F fEff_SF_DY_0J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_0J");
+  const TH2F fEff_SF_DY_1J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_1J");
+  const TH2F fEff_SF_DY_2J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_2J");
+  const TH1F fEff_SF_tt_nbjet = *(TH1F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_nbjet");
   const TH2F rEff_e = *(TH2F*) f_L_MM->Get("e_RealEff_AbsEtaVsPt");
   const TH2F rEff_mu = *(TH2F*) f_L_MM->Get("mu_RealEff_AbsEtaVsPt");
   const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt");
@@ -489,10 +490,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
         f3 = get_factor(&fEff_3Prong,Event->ta1()->pt_, Event->llPt(), ""); 
       }
-      // Scale factor corrections to tau fake efficiency 
-      // if (Event->ch() != 1 && Event->njet() ==0) f3*=get_factor(&fEff_SF_0J, Event->ta1()->pt_, Event->llPt(), "");
-      // if (Event->ch() != 1 && Event->njet() ==1) f3*=get_factor(&fEff_SF_1J, Event->ta1()->pt_, Event->llPt(), "");
-      // if (Event->ch() != 1 && Event->njet() >=2) f3*=get_factor(&fEff_SF_2J, Event->ta1()->pt_, Event->llPt(), "");
+      // Scale factor corrections to tau fake efficiency -> to find a better way to combine tt and DY SFs
+      if (Event->ch() != 1 && Event->njet() ==0) f3 *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      if (Event->ch() != 1 && Event->njet() ==1) f3 *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      if (Event->ch() != 1 && Event->njet() >=2) f3 *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      if (Event->ch() == 1) f3 *= get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), "");
       // 3D-matrix method
       MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
       weight_MM = MM->getWeights();
