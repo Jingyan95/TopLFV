@@ -71,9 +71,5 @@ if (name == "All") or (name == "2018"):
     os.system("rm -f 2018_Hists1D.root")
     os.system(hadd_2018)
 
-if (name == "All"):
-    os.system("rm -f All_Hists1D.root")
-    os.system("hadd All_Hists1D.root *_Hists1D.root")
-
 end = time.time()
 print('Runtime was %.2f minutes.' % ((end - start)/60.0))

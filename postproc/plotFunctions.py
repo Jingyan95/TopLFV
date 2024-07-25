@@ -30,9 +30,9 @@ def plot1D(year, hists, labels, xlabel, ylabel, ylabelNorm, ylabelRatio, legHead
     if legHeader: CMS.cmsHeader(leg, legHeader, textSize=0.04)
 
     for iHist, hist in enumerate(hists):
-        CMS.cmsDraw(hist, "hist", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
+        CMS.cmsDraw(hist, "E", mcolor=COLORS[iHist+1], fstyle=0, lwidth=3)
         label = labels[iHist]
-        leg.AddEntry(hist, label, "L")
+        leg.AddEntry(hist, label, "E")
 
     CMS.GetcmsCanvasHist(canv).GetXaxis().SetTitleOffset(1.2)
     CMS.GetcmsCanvasHist(canv).GetXaxis().SetLabelSize(0.04)

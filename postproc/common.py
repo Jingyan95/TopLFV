@@ -11,7 +11,7 @@ import ROOT
 test = False
 
 
-YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
+YEARS_RUN2 = ["2016APV", "2016", "2017", "2018"]
 SAMPLES = ["Data", "TX", "VV", "Others", "FakeL", "FakeLTau", "FakeTau", "ChargeMisId", "LFVStScalarU", "LFVTtScalarU"]
 SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "Fake #tau", "Charge Mis. Id.",
     "CLFV top production (#mu_{ll'tu}^{scalar} = 0.5)",
@@ -54,27 +54,19 @@ REGIONS_LATEX = [
     "SR(Alt, Loose), btag $<1.3$"
 ]
 
-VARS1D = ["lep1Pt", "lep2Pt", "tauPt", "lep1Eta", "lep2Eta", "tauEta", "Ht", "njet", "nbjet", "St", "tauRt", "lep1Rt", "lep2Rt", "llM", "llDr", "llPt"]
-VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
-               "Sub-leading lepton p_{T} [GeV]", 
-               "tau lepton p_{T} [GeV]", 
-               "Leading lepton |#eta|", 
-               "Sub-leading lepton |#eta|", 
-               "tau lepton |#eta|",
-               "H_{T} [GeV]",
-               "njet",
-               "nbjet",
-               "S_{T} [GeV]",
-               "tau R_{T}",
-               "Leading lepton R_{T}",
-               "Sub-leading lepton R_{T}",
-               "m(ll) [GeV]",
-               "#DeltaR(l,l)",
-               "p_{T}(ll)"]
+VARS1D = ["nbjet"]
+VARS1D_NAME = ["nbjet"]
 
 # For fake factor calculation
 VARS1DFF = ["taPtFFBin", "taEtaFFBin"]
 VARS1DFF_NAME = ["#tau p_{T} [GeV]", "#tau #eta"]
+
+VARS2D = ["0J", "1J", "2J"]
+VARS2D_NAME = [
+    ("#tau p_{T} [GeV]", "#tau #eta"),
+    ("Fake #tau p_{T} [GeV]", "Fake #tau #eta")
+]
+
 FF_LABELS = ["On Z"]
 X_CUTS = [ # Regions
     ("llOnZ", "llOffZ")

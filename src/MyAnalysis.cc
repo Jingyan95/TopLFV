@@ -69,27 +69,28 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   };
   std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0};
   const std::map<TString, std::vector<float>> vars1D = {
-    {"lep1Pt",           {0,   10,    30,  100}},
-    {"lep2Pt",           {1,   10,    20,  100}},
-    {"tauPt",            {2,   10,    20,  100}},
-    {"lep1Eta",          {3,   10,    0,   2.4}},
-    {"lep2Eta",          {4,   10,    0,   2.4}},
-    {"tauEta",           {5,   10,    0,   2.3}},
-    {"Ht",               {6,   10,    0,   200}},
-    {"njet",             {7,   4,     0,   4}},
-    {"nbjet",            {8,   3,     0,   3}},
-    {"St",               {9,   10,    70,  500}},
-    {"lep1Rt",           {10,  10,    -1,  5}},
-    {"lep2Rt",           {11,  10,    -1,  5}},
-    {"tauRt",            {12,  10,    -1,  5}},
-    {"llM",              {13,  20,    0,   180}},
-    {"llDr",             {14,  10,    0,   4.5}},
-    {"llPt",             {15,  10,    0,   150}}
+    {"nbjet",            {0,   3,     0,   3}}
   };
+
+  const std::map<TString, std::vector<float>> vars2D = {
+    {"0J",           {0}},
+    {"1J",           {1}},
+    {"2J",           {2}},
+  };
+
+  Double_t tauEtaBin1[7] = {0, 0.3, 0.6, 0.9, 1.2, 1.7, 2.3};
+  Double_t tauRtBin1[7] = {-1, 0.15, 0.65, 1, 1.35, 1.85, 5};
+
+  Double_t tauEtaBin2[4] = {0, 0.6, 1.2, 2.3};
+  Double_t tauRtBin2[4] = {-1, 0.65, 1.35, 5};
   
   // Creating histograms
   Dim5<TH1F*> Hists1D(Dim5<TH1F*>(domains.size(), Dim4<TH1F*>(charges.size(), Dim3<TH1F*>(channels.size(), Dim2<TH1F*>(regions.size(), Dim1<TH1F*>(vars1D.size()))))));
+  Dim5<TH2F*> Hists2D(Dim5<TH2F*>(domains.size(), Dim4<TH2F*>(charges.size(), Dim3<TH2F*>(channels.size(), Dim2<TH2F*>(regions.size(), Dim1<TH2F*>(vars2D.size()))))));
+
   TH1F *h_test1D;
+  TH2F *h_test2D;
+
   std::stringstream name;
   for (int i = 0; i < (int) domains.size(); ++i) {
     for (int j = 0; j < (int) charges.size(); ++j) {
@@ -101,6 +102,18 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             h_test1D->StatOverflows(kTRUE);
             h_test1D->Sumw2(kTRUE);
             Hists1D[i][j][k][l][it->second.at(0)] = h_test1D;
+            name.str("");
+          }
+          for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
+            name << domains[i] << "_" << charges[j] << "_" << channels[k] << "_" << regions[l] << "_" << it->first << "_" << workerID_; // Adding working ID to avoid mem leak
+            if (it->first.Contains("2J")){
+                 h_test2D = new TH2F((name.str()).c_str(), "", 3, tauRtBin2, 3, tauEtaBin2);
+            }else{
+                 h_test2D = new TH2F((name.str()).c_str(), "", 6, tauRtBin1, 6, tauEtaBin1);
+            }
+            h_test2D->StatOverflows(kTRUE);
+            h_test2D->Sumw2(kTRUE);
+            Hists2D[i][j][k][l][it->second.at(0)] = h_test2D;
             name.str("");
           }
         }
@@ -442,28 +455,17 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   
     int cIdx = Event->c();
     int chIdx = Event->ch();
-    var[vInd(vars1D, "lep1Pt")] = Event->lep1()->pt_;
-    var[vInd(vars1D, "lep2Pt")] = Event->lep2()->pt_;
-    var[vInd(vars1D, "tauPt")] = Event->ta1()->pt_;
-    var[vInd(vars1D, "lep1Eta")] = abs(Event->lep1()->eta_);
-    var[vInd(vars1D, "lep2Eta")] = abs(Event->lep2()->eta_);
-    var[vInd(vars1D, "tauEta")] = abs(Event->ta1()->eta_);
-    var[vInd(vars1D, "Ht")] = Event->Ht();
-    var[vInd(vars1D, "njet")] = Event->njet();
     var[vInd(vars1D, "nbjet")] = Event->nbjet();
-    var[vInd(vars1D, "St")] = Event->St();
-    var[vInd(vars1D, "lep1Rt")] = Event->lep1()->recoil_/Event->lep1()->pt_;
-    var[vInd(vars1D, "lep2Rt")] = Event->lep2()->recoil_/Event->lep2()->pt_;
-    var[vInd(vars1D, "tauRt")] = Event->ta1()->recoil_/Event->ta1()->pt_;
-    var[vInd(vars1D, "llM")] = Event->llM();
-    var[vInd(vars1D, "llDr")] = Event->llDr();
-    var[vInd(vars1D, "llPt")] = Event->llPt();
+
     // Filling histograms (only include data events with three tight leptons and fully prompt MC events)
     if (Event->typeIndex() == 0 && dIdx == 0){
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 0; j < var.size(); ++j){
             Hists1D[0][cIdx][chIdx][reg[i]][j]->Fill(var[j], wgt[i]);
         }
+        if (Event->njet()==0) Hists2D[0][cIdx][chIdx][reg[i]][0]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), wgt[i]);
+        if (Event->njet()==1) Hists2D[0][cIdx][chIdx][reg[i]][1]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), wgt[i]);
+        if (Event->njet()>=2) Hists2D[0][cIdx][chIdx][reg[i]][2]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), wgt[i]);
       }
     }
     if (data == "data"){ // Only include data events in fake and charge-flip estimate
@@ -501,6 +503,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           for (int k = 0; k < var.size(); ++k){
             Hists1D[j][cIdx][chIdx][reg[i]][k]->Fill(var[k], weight_MM[j]);
           }
+          if (Event->njet()==0) Hists2D[j][cIdx][chIdx][reg[i]][0]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), weight_MM[j]);
+          if (Event->njet()==1) Hists2D[j][cIdx][chIdx][reg[i]][1]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), weight_MM[j]);
+          if (Event->njet()>=2) Hists2D[j][cIdx][chIdx][reg[i]][2]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), weight_MM[j]);
         }
       } 
       // Charge-flip estimate (only transfering events from OS-ee, OS-emu)
@@ -516,6 +521,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             for (int k = 0; k < var.size(); ++k){
               Hists1D[j][1][chIdx][reg[i]][k]->Fill(var[k], -1 * weight_El_MisId * weight_MM[j]);
             }
+            if (Event->njet()==0) Hists2D[j][1][chIdx][reg[i]][0]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), -1 * weight_El_MisId * weight_MM[j]);
+            if (Event->njet()==1) Hists2D[j][1][chIdx][reg[i]][1]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), -1 * weight_El_MisId * weight_MM[j]);
+            if (Event->njet()>=2) Hists2D[j][1][chIdx][reg[i]][2]->Fill(Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), -1 * weight_El_MisId * weight_MM[j]);
           }
         }
       }
@@ -541,6 +549,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
             delete Hists1D[i][j][k][l][it->second.at(0)];
             name.str("");
           }
+          for (auto it = vars2D.cbegin(); it != vars2D.cend(); ++it) {
+            name << domains[i] << "_" << charges[j] << "_" << channels[k] << "_" << regions[l] << "_" << it->first;
+            Hists2D[i][j][k][l][it->second.at(0)]->SetName((name.str()).c_str());
+            Hists2D[i][j][k][l][it->second.at(0)]->Write("", TObject::kOverwrite);
+            delete Hists2D[i][j][k][l][it->second.at(0)];
+            name.str("");
+          }
         }
       }
     }
@@ -548,6 +563,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
   file_out.Close();
   Hists1D.clear();
+  Hists2D.clear();
   var.clear();
   weight_MM.clear();
 
