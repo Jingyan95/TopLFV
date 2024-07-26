@@ -61,23 +61,7 @@ for year in YEARS:
                 if not os.path.exists(ARGS.FOLDER+"/"+year+"/"+region+"/"+charge+"/"+channel):
                     os.makedirs(ARGS.FOLDER+"/"+year+"/"+region+"/"+charge+"/"+channel)
 
-
-for year in YEARS:
-    for charge in CHARGES:
-        for iChannel, channel in enumerate(CHANNELS):
-            for iRegion, region in enumerate(REGIONS):
-                # Make 1D variable plots
-                for iVar, var in enumerate(VARS1D):
-                    hists = []
-                    for iSample, sample in enumerate(SAMPLES):
-                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+var
-                        hists.append(H1[hkey])
-                    if var == "subSR": continue
-                    # plot1DStack(hists, year, charge, iChannel, iRegion, VARS1D_NAME[iVar], var,
-                    #     charge+", "+CHANNELS_NAME[iChannel],
-                    #     ARGS.FOLDER+"/"+year+"/"+region+"/"+charge+"/"+channel)
-
-# Make summary plots
+# Make summary plots first
 for year in YEARS:
     for iRegion, region in enumerate(REGIONS):
         H = []
@@ -90,7 +74,7 @@ for year in YEARS:
                 for channel in CHANNELS:
                     hkey = year + "_" + sample + "_" + charge + "_" + channel + "_" + region + "_subSR"
                     subSR.Add(H1[hkey].Clone(), 1.0)
-            subSR.SetFillColor(COLORS[len(SAMPLES)-iSample-2])
+            subSR.SetFillColor(COLORS[len(SAMPLES)-iSample-2]) # stay consistent with plot1DStack 
             if "LFV" in sample:
                 subSR.SetLineColor(COLORS[iSample])
                 HSignal.append(subSR)
@@ -98,6 +82,23 @@ for year in YEARS:
                 subSR.SetLineColor(COLORS[0])
                 H.append(subSR)
         plotSummary(H, HSignal, SAMPLES_NAME, year, iRegion, region, ARGS.FOLDER + "/" + year)
+
+for year in YEARS:
+    for charge in CHARGES:
+        for iChannel, channel in enumerate(CHANNELS):
+            for iRegion, region in enumerate(REGIONS):
+                # Make 1D variable plots
+                for iVar, var in enumerate(VARS1D):
+                    hists = []
+                    for iSample, sample in enumerate(SAMPLES):
+                        hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+var
+                        hists.append(H1[hkey])
+                    if var == "subSR": continue
+                    plot1DStack(hists, year, charge, iChannel, iRegion, VARS1D_NAME[iVar], var,
+                        charge+", "+CHANNELS_NAME[iChannel],
+                        ARGS.FOLDER+"/"+year+"/"+region+"/"+charge+"/"+channel)
+
+
 
 
   

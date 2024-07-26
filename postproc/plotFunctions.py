@@ -111,7 +111,7 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     true_y_min = 1e10
     for hist in hists:
         true_y_min = min(true_y_min, hist.GetMinimum(0.0))
-    y_min = 0.5
+    y_min = 0.6
     y_max = 5000*max(y_max, MCHists[-1].GetMaximum(),y_min)
 
     dicanv = CMS.cmsDiCanvas(var,
@@ -211,6 +211,7 @@ def plot2D(hist, year, xlabel, ylabel, zlabel, logz, saveName):
 
 def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
     ROOT.gStyle.SetErrorX(0) # No horizontal error bar
+    ROOT.gStyle.SetEndErrorSize(0)
     hs = ROOT.THStack("hs", "")
     for num in range(1, len(hists)):
         hs.Add(hists[num])
@@ -254,23 +255,22 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
             Sig.Draw("")
             sig.append(Sig)
 
-
-    legend0 = ROOT.TLegend(0.38, 0.74333, 0.45, 0.87)
+    legend0 = ROOT.TLegend(0.42, 0.74333, 0.49, 0.87)
     legend0.SetBorderSize(0)
     legend0.SetFillStyle(0)
     legend0.SetTextFont(42)
     legend0.SetTextSize(0.05)
-    legend1 = ROOT.TLegend(0.45, 0.68, 0.52, 0.87)
+    legend1 = ROOT.TLegend(0.49, 0.68, 0.56, 0.87)
     legend1.SetBorderSize(0)
     legend1.SetFillStyle(0)
     legend1.SetTextFont(42)
     legend1.SetTextSize(0.05)
-    legend2 = ROOT.TLegend(0.52, 0.68, 0.59, 0.87)
+    legend2 = ROOT.TLegend(0.56, 0.68, 0.63, 0.87)
     legend2.SetBorderSize(0)
     legend2.SetFillStyle(0)
     legend2.SetTextFont(42)
     legend2.SetTextSize(0.05)
-    legend3 = ROOT.TLegend(0.62, 0.75, 0.84, 0.87)
+    legend3 = ROOT.TLegend(0.66, 0.75, 0.88, 0.87)
     legend3.SetBorderSize(0)
     legend3.SetFillStyle(0)
     legend3.SetTextFont(42)
@@ -311,7 +311,7 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
     x_min = hists[0].GetXaxis().GetBinLowEdge(1)
     x_max = hists[0].GetXaxis().GetBinLowEdge(hists[0].GetXaxis().GetNbins())+hists[0].GetXaxis().GetBinWidth(hists[0].GetXaxis().GetNbins())
 
-    frame = pad1.DrawFrame(x_min, 0.2, x_max, 6000*y_max)
+    frame = pad1.DrawFrame(x_min, 0.6, x_max, 6000*y_max)
     frame.SetTitle("")
     frame.GetYaxis().SetTitle('Events')
     frame.GetXaxis().SetLabelSize(0)
@@ -320,7 +320,7 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
     frame.GetYaxis().SetLabelOffset(0.0006)
     frame.GetYaxis().SetLabelSize(0.05)
     pad1.Update()
-
+   
     dummy.Draw("P")
     hs.Draw("histSAME")
     for H in range(len(SignalHists)):
@@ -416,7 +416,7 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
         errorRatio = ROOT.TGraphAsymmErrors()
     error.SetFillColor(13)
     error.SetLineColor(13)
-    error.SetFillStyle(3004)
+    error.SetFillStyle(3154)
     error.SetLineWidth(4)
     error.Draw("2")
 
@@ -460,7 +460,6 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
             legend1.AddEntry(hists[num], Fnames[num], "F")
         else: legend2.AddEntry(hists[num], Fnames[num], "F")
     error.SetLineWidth(1)
-    # legend2.AddEntry(error, "Stat. only", "F")
     for H in range(len(SignalHists)):
         if H==0:
             legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H], "L")
@@ -524,9 +523,18 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
     dummy_ratio.Draw("AXISSAMEX+")
     errorRatio.SetFillColor(13)
     errorRatio.SetLineColor(13)
-    errorRatio.SetFillStyle(3004)
+    errorRatio.SetFillStyle(3154)
     errorRatio.SetLineWidth(4)
     errorRatio.Draw("2")
+    errorRatio.SetLineWidth(1)
+    legend5 = ROOT.TLegend(0.1, 0.735, 0.17, 0.875)
+    legend5.SetBorderSize(0)
+    legend5.SetFillStyle(0)
+    legend5.SetTextColor(1)
+    legend5.SetTextFont(42)
+    legend5.SetTextSize(0.11)
+    legend5.AddEntry(errorRatio, "Stat. Only", "F")
+    legend5.Draw("same")
     canvas.Print(saveDir+"/Summary_"+region+".png")
     canvas.Print(saveDir+"/Summary_"+region+".pdf")
     del canvas
