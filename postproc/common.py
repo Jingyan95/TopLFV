@@ -13,11 +13,9 @@ test = False
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
 SAMPLES = ["Data", "TX", "VV", "Others", "FakeL", "FakeLTau", "FakeTau", "ChargeMisId", "LFVStScalarU", "LFVTtScalarU"]
-SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "Fake #tau", "Charge Mis. Id.",
+SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "Fake #tau", "Charge mis-ID",
     "CLFV top production (#mu_{ll'tu}^{scalar} = 0.5)",
     "CLFV top decay (#mu_{ll'tu}^{scalar} = 20)"]
-SAMPLES_NAME_SUMMARY = ["Data", "t#bar{t}+X", "VV(V)", "DY/ZZ", "t#bar{t}/WW",
-    "CLFV top production", "CLFV top decay"]
 TABLE_LATEX = ["Data", "$t\\bar{t}X$", "VV", "DY",
     "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"]
 CHARGES = ["OS", "SS"]
@@ -54,7 +52,7 @@ REGIONS_LATEX = [
     "SR(Alt, Loose), btag $<1.3$"
 ]
 
-VARS1D = ["lep1Pt", "lep2Pt", "tauPt", "lep1Eta", "lep2Eta", "tauEta", "Ht", "njet", "nbjet", "St", "tauRt", "lep1Rt", "lep2Rt", "llM", "llDr", "llPt"]
+VARS1D = ["lep1Pt", "lep2Pt", "tauPt", "lep1Eta", "lep2Eta", "tauEta", "Ht", "njet", "nbjet", "St", "tauRt", "lep1Rt", "lep2Rt", "llM", "llDr", "llPt", "subSR"]
 VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
                "Sub-leading lepton p_{T} [GeV]", 
                "tau lepton p_{T} [GeV]", 
@@ -70,7 +68,8 @@ VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
                "Sub-leading lepton R_{T}",
                "m(ll) [GeV]",
                "#DeltaR(l,l)",
-               "p_{T}(ll)"]
+               "p_{T}(ll)",
+               "Bin index"]
 
 # For fake factor calculation
 VARS1DFF = ["taPtFFBin", "taEtaFFBin"]

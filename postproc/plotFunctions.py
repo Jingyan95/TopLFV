@@ -209,7 +209,7 @@ def plot2D(hist, year, xlabel, ylabel, zlabel, logz, saveName):
     CMS.SaveCanvas(canv, saveName + ".pdf")
 
 
-def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, iDomain, saveDir):
+def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
     ROOT.gStyle.SetErrorX(0) # No horizontal error bar
     hs = ROOT.THStack("hs", "")
     for num in range(1, len(hists)):
@@ -254,17 +254,23 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
             Sig.Draw("")
             sig.append(Sig)
 
-    legend = ROOT.TLegend(0.56, 0.68, 0.63, 0.87)
-    legend.SetBorderSize(0)
-    legend.SetFillStyle(0)
-    legend.SetTextFont(42)
-    legend.SetTextSize(0.05)
-    legend2 = ROOT.TLegend(0.63, 0.68, 0.7, 0.87)
+
+    legend0 = ROOT.TLegend(0.38, 0.74333, 0.45, 0.87)
+    legend0.SetBorderSize(0)
+    legend0.SetFillStyle(0)
+    legend0.SetTextFont(42)
+    legend0.SetTextSize(0.05)
+    legend1 = ROOT.TLegend(0.45, 0.68, 0.52, 0.87)
+    legend1.SetBorderSize(0)
+    legend1.SetFillStyle(0)
+    legend1.SetTextFont(42)
+    legend1.SetTextSize(0.05)
+    legend2 = ROOT.TLegend(0.52, 0.68, 0.59, 0.87)
     legend2.SetBorderSize(0)
     legend2.SetFillStyle(0)
     legend2.SetTextFont(42)
     legend2.SetTextSize(0.05)
-    legend3 = ROOT.TLegend(0.7, 0.75, 0.85, 0.87)
+    legend3 = ROOT.TLegend(0.62, 0.75, 0.84, 0.87)
     legend3.SetBorderSize(0)
     legend3.SetFillStyle(0)
     legend3.SetTextFont(42)
@@ -292,9 +298,9 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
 
     for H in range(len(SignalHists)):
         if H > 0:
-            SignalHists[H].Scale(100)
+            SignalHists[H].Scale(20)
         else:
-            SignalHists[H].Scale(1)
+            SignalHists[H].Scale(0.5)
 
     y_max = hists[0].GetMaximum()
     if y_max < hs.GetStack().Last().GetMaximum():
@@ -430,7 +436,7 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     Label_lumi.SetTextFont(42)
     Label_lumi.SetTextSize(0.063)
     Label_lumi.Draw("same")
-    Label_channel = ROOT.TLatex(0.1, 0.81, "2l+#tau_{h}, "+DOMAINS_NAME[iDomain])
+    Label_channel = ROOT.TLatex(0.1, 0.81, "2l+#tau_{h}")
     Label_channel.SetNDC()
     Label_channel.SetTextFont(42)
     Label_channel.SetTextSize(0.058)
@@ -446,20 +452,22 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     Label_region2.SetTextSize(0.058)
     Label_region2.Draw("same")
 
-    legend.AddEntry(dummy, Fnames[0], "ep")
+    legend0.AddEntry(dummy, Fnames[0], "ep")
     for num in range(1, len(hists)):
-        if num<(len(hists)-2):
-            legend.AddEntry(hists[num], Fnames[num], "F")
-        else:
-            legend2.AddEntry(hists[num], Fnames[num], "F")
+        if num<2:
+            legend0.AddEntry(hists[num], Fnames[num], "F")
+        elif num<5:
+            legend1.AddEntry(hists[num], Fnames[num], "F")
+        else: legend2.AddEntry(hists[num], Fnames[num], "F")
     error.SetLineWidth(1)
-    legend2.AddEntry(error, "Stat. only", "F")
+    # legend2.AddEntry(error, "Stat. only", "F")
     for H in range(len(SignalHists)):
         if H==0:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 1)", "L")
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H], "L")
         else:
-            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H]+" (#mu_{#scale[0.8]{ll`tu}}^{#scale[0.8]{scalar}} = 100)", "L")
-    legend.Draw("same")
+            legend3.AddEntry(SignalHists[H], Fnames[len(hists)+H], "L")
+    legend0.Draw("same")
+    legend1.Draw("same")
     legend2.Draw("same")
     legend3.Draw("same")
 
@@ -519,7 +527,7 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, iDomain, save
     errorRatio.SetFillStyle(3004)
     errorRatio.SetLineWidth(4)
     errorRatio.Draw("2")
-    canvas.Print(saveDir+"/subSR.png")
-    canvas.Print(saveDir+"/subSR.pdf")
+    canvas.Print(saveDir+"/Summary_"+region+".png")
+    canvas.Print(saveDir+"/Summary_"+region+".pdf")
     del canvas
     gc.collect()

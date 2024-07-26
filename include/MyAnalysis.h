@@ -307,6 +307,7 @@ public :
   int vInd(std::map<TString, std::vector<float>> V, TString name);
   int getSign(const double& x);
   float get_factor(const TH2F* h, float X, float Y, TString uncert);
+  float get_factor(const TH1F* h, float X, TString uncert);
   int char_to_int(UChar_t wp);
 
 private:

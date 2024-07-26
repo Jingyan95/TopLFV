@@ -72,44 +72,32 @@ for year in YEARS:
                     for iSample, sample in enumerate(SAMPLES):
                         hkey = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+var
                         hists.append(H1[hkey])
-                    plot1DStack(hists, year, charge, iChannel, iRegion, VARS1D_NAME[iVar], var,
-                        charge+", "+CHANNELS_NAME[iChannel],
-                        ARGS.FOLDER+"/"+year+"/"+region+"/"+charge+"/"+channel)
+                    if var == "subSR": continue
+                    # plot1DStack(hists, year, charge, iChannel, iRegion, VARS1D_NAME[iVar], var,
+                    #     charge+", "+CHANNELS_NAME[iChannel],
+                    #     ARGS.FOLDER+"/"+year+"/"+region+"/"+charge+"/"+channel)
 
-# Labels = ["TX", "VV", "DY", "TT", "Overall"]  
-# vars = ["lep1Pt", "lep2Pt", "lep3Pt", "lep1Eta", "lep2Eta", "lep3Eta"]  
-# varsName = ["Fake leading lepton p_{T} [GeV]",
-#             "Fake sub-leading lepton p_{T} [GeV]",
-#             "Fake tau lepton p_{T} [GeV]",
-#             "Fake leading lepton |#eta|",
-#             "Fake sub-leading lepton |#eta|",
-#             "Fake tau |#eta|"]                   
+# Make summary plots
+for year in YEARS:
+    for iRegion, region in enumerate(REGIONS):
+        H = []
+        HSignal = []
+        for iSample, sample in enumerate(SAMPLES):
+            hkey = year + "_Data_OS_ee_" + region + "_subSR"
+            subSR = H1[hkey].Clone()
+            subSR.Reset("ICE")
+            for charge in CHARGES:
+                for channel in CHANNELS:
+                    hkey = year + "_" + sample + "_" + charge + "_" + channel + "_" + region + "_subSR"
+                    subSR.Add(H1[hkey].Clone(), 1.0)
+            subSR.SetFillColor(COLORS[len(SAMPLES)-iSample-2])
+            if "LFV" in sample:
+                subSR.SetLineColor(COLORS[iSample])
+                HSignal.append(subSR)
+            else:
+                subSR.SetLineColor(COLORS[0])
+                H.append(subSR)
+        plotSummary(H, HSignal, SAMPLES_NAME, year, iRegion, region, ARGS.FOLDER + "/" + year)
 
-# for year in YEARS:
-#     for charge in CHARGES:
-#         for iChannel, channel in enumerate(CHANNELS):
-#             for iRegion, region in enumerate(REGIONS):
-#                 for iVar, var in enumerate(vars):
-#                     hists = []
-#                     histN = []
-#                     histD = []
-#                     for iSample, sample in enumerate(SAMPLES):
-#                         if ('Data' in sample) or ('LFV' in sample):
-#                             continue
-#                         hkey1 = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_"+var
-#                         hkey2 = year+"_"+sample+"_"+charge+"_"+channel+"_"+region+"_F"+var
-#                         h = H1[hkey2].Clone()
-#                         h.Divide(H1[hkey1])
-#                         hists.append(h)
-#                         if (len(histN)<1):
-#                             histN.append(H1[hkey2])
-#                             histD.append(H1[hkey1])
-#                         else:
-#                             histN[0]+=H1[hkey2]
-#                             histD[0]+=H1[hkey1]
-#                     h = histN[0].Clone()
-#                     h.Divide(histD[0])
-#                     hists.append(h)
-#                     plot1D(year, hists, Labels, varsName[iVar], "Fake rate", Labels, Labels,charge+", "+CHANNELS_NAME[iChannel],False,ARGS.FOLDER+"/"+year+"/"+region+"/"+charge+"/"+channel+"/"+var)
 
   

@@ -84,7 +84,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"tauRt",            {12,  10,    -1,  5}},
     {"llM",              {13,  20,    0,   180}},
     {"llDr",             {14,  10,    0,   4.5}},
-    {"llPt",             {15,  10,    0,   150}}
+    {"llPt",             {15,  10,    0,   150}},
+    {"subSR",            {16,  18,    0,   18}}
   };
   
   // Creating histograms
@@ -268,7 +269,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         weight_El_RECO = weight_El_RECO * get_factor(&sf_El_RECO, eleEta, Electron_pt[l], "");
         weight_El_ID = weight_El_ID * get_factor(&sf_El_ID, eleEta, Electron_pt[l], "");
       }else{
-        weight_El_MisId = weight_El_MisId + get_factor(&sf_El_MisId, Electron_pt[l], abs(Electron_eta[l]), "");
+        weight_El_MisId += get_factor(&sf_El_MisId, Electron_pt[l], abs(Electron_eta[l]), "");
       }
 
       Leptons->push_back(new lepton_candidate(Electron_pt[l], Electron_eta[l], Electron_phi[l], Electron_dxy[l], Electron_dz[l],
@@ -459,6 +460,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     var[vInd(vars1D, "llM")] = Event->llM();
     var[vInd(vars1D, "llDr")] = Event->llDr();
     var[vInd(vars1D, "llPt")] = Event->llPt();
+    var[vInd(vars1D, "subSR")] = Event->SRindex();
     // Filling histograms (only include data events with three tight leptons and fully prompt MC events)
     if (Event->typeIndex() == 0 && dIdx == 0){
       for (int i = 0; i < reg.size(); ++i) {
@@ -491,10 +493,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         f3 = get_factor(&fEff_3Prong,Event->ta1()->pt_, Event->llPt(), ""); 
       }
       // Scale factor corrections to tau fake efficiency -> to find a better way to combine tt and DY SFs
-      if (Event->ch() != 1 && Event->njet() ==0) f3 *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      if (Event->ch() != 1 && Event->njet() ==1) f3 *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      if (Event->ch() != 1 && Event->njet() >=2) f3 *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      if (Event->ch() == 1) f3 *= get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), "");
+      if (Event->ch() == 1 || (Event->MET()->Pt() > 20 && !Event->OnZ() && Event->nbjet() ==2) || Event->btagSum() > 1.3) f3 *= get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), "");
+      else if (Event->njet() ==0) f3 *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else if (Event->njet() ==1) f3 *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else f3 *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
       // 3D-matrix method
       MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
       weight_MM = MM->getWeights();
@@ -505,8 +507,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           }
         }
       } 
-      // Charge-flip estimate (only transfering events from OS-ee, OS-emu)
-      if (Event->c() == 0 && Event->ch() < 2){
+      // Charge-flip estimate (only transfering events from OS-ee)
+      if (Event->c() == 0 && Event->ch() == 0){
+        var[vInd(vars1D, "subSR")] = Event->SRindex() + 10;
         for (int i = 0; i < reg.size(); ++i) {
           if (Event->typeIndex() == 0){
             for (int j = 0; j < var.size(); ++j){

@@ -58,4 +58,8 @@ void lepton_candidate::setTruth(int truth){
   truth_ = truth;
 }
 
+void lepton_candidate::flipCharge(){
+  charge_ = -1 * charge_;
+}
+
 lepton_candidate::~lepton_candidate() {}

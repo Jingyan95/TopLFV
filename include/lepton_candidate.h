@@ -34,6 +34,7 @@ public:
   float recoil_;
   void setRecoil(float);
   void setTruth(int);
+  void flipCharge(); // used for charge-flip
 
 private:
 
