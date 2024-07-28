@@ -12,10 +12,9 @@ test = False
 
 
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
-SAMPLES = ["Data", "TX", "VV", "Others", "FakeL", "FakeLTau", "FakeTau", "ChargeMisId", "LFVStScalarU", "LFVTtScalarU"]
-SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "Fake #tau", "Charge mis-ID",
-    "CLFV top production (#mu_{ll'tu}^{scalar} = 0.5)",
-    "CLFV top decay (#mu_{ll'tu}^{scalar} = 20)"]
+SAMPLES = ["Data", "TX", "VV", "Others", "FakeL", "FakeLTau", "DYFakeTau", "ttFakeTau", "ChargeMisId", "LFVStScalarU", "LFVTtScalarU"]
+SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "DY + fake #tau", "t#bar{t} + fake #tau",
+                "ChargeMisID", "CLFV top production (#mu_{ll'tu}^{scalar} = 0.5)", "CLFV top decay (#mu_{ll'tu}^{scalar} = 20)"]
 TABLE_LATEX = ["Data", "$t\\bar{t}X$", "VV", "DY",
     "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"]
 CHARGES = ["OS", "SS"]
@@ -82,7 +81,7 @@ Y_CUTS = [ # Domains
     ("geqMedLepgeqTightTa", "geqMedLeplTightTa")
 ]
 
-COLORS = [ROOT.kBlack, CMS.p8.kBlue, CMS.p8.kOrange, CMS.p8.kRed, CMS.p8.kPink, ROOT.kBlack, CMS.p8.kGreen, CMS.p8.kCyan, CMS.p8.kGray, CMS.p8.kAzure]
+COLORS = [ROOT.kBlack, CMS.p10.kBlue, CMS.p10.kYellow, CMS.p10.kRed, CMS.p10.kGray, CMS.p10.kViolet, CMS.p10.kBrown, CMS.p10.kOrange, CMS.p10.kGreen, CMS.p10.kAsh, CMS.p10.kCyan]
 SQUARE = CMS.kSquare
 PLOT_LABEL = "Work in Progress"
 

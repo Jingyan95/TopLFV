@@ -5,6 +5,7 @@
 #include "lepton_candidate.h"
 #include "jet_candidate.h"
 #include "event_candidate.h"
+#include "fastforest.h"
 #include "matrix_method.h"
 
 void updateProgress(std::atomic<ULong64_t>& progress, float percent, int nThread, int workerID, int nDigit) {
@@ -47,7 +48,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
   auto begin = std::chrono::high_resolution_clock::now();
 
-  std::vector<TString> domains{"Prompt", "FakeL", "FakeLTau", "FakeTau", "ChargeMisId"}; // Fully prompt, fake e/muon, fake e/muon + fake tau, fake tau.
+  std::vector<TString> domains{"Prompt", "FakeL", "FakeLTau", "DYFakeTau", "ttFakeTau", "ChargeMisId"}; // Fully prompt, fake e/muon, fake e/muon + fake tau, fake tau.
   if (data == "data"){
     domains[0] = "Data";
   }else if (procname.count(dataset)){
@@ -109,7 +110,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     }
   }
 
-  std::string string_year(year.Data());
   TFile *f_El_RECO = new TFile("data/EGM/RECO/" + year + "egammaEffi_ptAbove20.txt_EGM2D.root");
   TFile *f_El_ID = new TFile("data/EGM/TOPMVASF/v1/MediumCharge/" + year + "egammaEffi.txt_EGM2D.root");
   TFile *f_Mu_RECO = new TFile("data/MUO/RECO/" + year + "Efficiency_muon_generalTracks_trackerMuon.root");
@@ -169,6 +169,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   f_TRG->Close();
   f_Btag_corr->Close();
 
+  std::string string_year(year.Data());
+  std::vector<std::string> BDTfeatures{"MVA_llDr", "MVA_MET", "MVA_btagSum", "MVA_tauPt", 
+                                       "MVA_Ht", "MVA_Topmass", "MVA_llM"};
+  const auto fastForest = fastforest::load_txt("data/MatrixMethod/" + string_year + "_ttVsDY.txt", BDTfeatures);
+
   std::vector<lepton_candidate*>* Leptons;
   std::vector<jet_candidate*>* Jets;
   event_candidate* Event;
@@ -196,9 +201,12 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_TRG;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
-  float r1, r2, r3, f1, f2, f3;
+  float r1, r2, r3, f1, f2, f3, f3_DY, f3_tt;
+  float BDTscore;
   std::vector<float> weight_MM; // matrix method weight for fake tau
   weight_MM.resize(4);
+  std::vector<float> weight_domain; // weights for different domains: 0 = fake e/mu, 1 = fake e/mu + fake tau, 2 = DY + fake tau, 3 = tt + fake tau
+  weight_domain.resize(4);
   int nAccept = 0;
   PU wPU;
 
@@ -472,38 +480,53 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (data == "data"){ // Only include data events in fake and charge-flip estimate
       // Reading real and fake efficiencies 
       if (Event->lep1()->flavor_ == 1){
-        r1 = get_factor(&rEff_e,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_e,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
+        r1 = get_factor(&rEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+        f1 = get_factor(&fEff_e, Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
       }else{
-        r1 = get_factor(&rEff_mu,Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_mu,Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
+        r1 = get_factor(&rEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+        f1 = get_factor(&fEff_mu, Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
       }
       if (Event->lep2()->flavor_ == 1){
-        r2 = get_factor(&rEff_e,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_e,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
+        r2 = get_factor(&rEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+        f2 = get_factor(&fEff_e, Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
       }else{
-        r2 = get_factor(&rEff_mu,Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_mu,Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
+        r2 = get_factor(&rEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+        f2 = get_factor(&fEff_mu, Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
       }
       if (Event->ta1()->decaymode_ < 10){
-        r3 = get_factor(&rEff_1Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3 = get_factor(&fEff_1Prong,Event->ta1()->pt_, Event->llPt(), ""); 
+        r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+        f3 = get_factor(&fEff_1Prong, Event->ta1()->pt_, Event->llPt(), ""); 
       }else{
-        r3 = get_factor(&rEff_3Prong,Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3 = get_factor(&fEff_3Prong,Event->ta1()->pt_, Event->llPt(), ""); 
+        r3 = get_factor(&rEff_3Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+        f3 = get_factor(&fEff_3Prong, Event->ta1()->pt_, Event->llPt(), ""); 
       }
-      // Scale factor corrections to tau fake efficiency -> to find a better way to combine tt and DY SFs
-      if (Event->ch() == 1 || (Event->MET()->Pt() > 20 && !Event->OnZ() && Event->nbjet() ==2) || Event->btagSum() > 1.3) f3 *= get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), "");
-      else if (Event->njet() ==0) f3 *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      else if (Event->njet() ==1) f3 *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      else f3 *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      // 3D-matrix method
-      MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
-      weight_MM = MM->getWeights();
+      std::vector<float> BDTinput{(float)Event->llDr(), (float)Event->MET()->Pt(), (float)Event->btagSum(), (float)Event->ta1()->pt_, 
+                                  (float)Event->Ht(), (float)Event->Topmass(), (float)Event->llM()};
+      f3_tt = f3 * get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), "");
+      if (Event->njet() == 0) f3_DY = f3 * get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else if (Event->njet() == 1) f3_DY = f3 * get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else f3_DY = f3 * get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      BDTscore = 1. / (1. + std::exp(-fastForest(BDTinput.data())));
+      //3D matrix method
+      if (BDTscore > 0.5){
+        MM = new matrix_method(r1, r2, r3, f1, f2, f3_DY, Event->typeIndex());
+        weight_MM = MM->getWeights();
+        weight_domain[0] = weight_MM[1];
+        weight_domain[1] = weight_MM[2];
+        weight_domain[2] = weight_MM[3];
+        weight_domain[3] = 0;
+      }else{
+        MM = new matrix_method(r1, r2, r3, f1, f2, f3_tt, Event->typeIndex());
+        weight_MM = MM->getWeights();
+        weight_domain[0] = weight_MM[1];
+        weight_domain[1] = weight_MM[2];
+        weight_domain[2] = 0;
+        weight_domain[3] = weight_MM[3];
+      }
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 1; j < domains.size() - 1; ++j){
           for (int k = 0; k < var.size(); ++k){
-            Hists1D[j][cIdx][chIdx][reg[i]][k]->Fill(var[k], weight_MM[j]);
+            Hists1D[j][cIdx][chIdx][reg[i]][k]->Fill(var[k], weight_domain[j-1]);
           }
         }
       } 
@@ -513,13 +536,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         for (int i = 0; i < reg.size(); ++i) {
           if (Event->typeIndex() == 0){
             for (int j = 0; j < var.size(); ++j){
-              Hists1D[4][1][chIdx][reg[i]][j]->Fill(var[j], weight_El_MisId);
+              Hists1D[5][1][chIdx][reg[i]][j]->Fill(var[j], weight_El_MisId);
             }
           }
           // Overlap removal
           for (int j = 1; j < domains.size() - 1; ++j){
             for (int k = 0; k < var.size(); ++k){
-              Hists1D[j][1][chIdx][reg[i]][k]->Fill(var[k], -1 * weight_El_MisId * weight_MM[j]);
+              Hists1D[j][1][chIdx][reg[i]][k]->Fill(var[k], -1 * weight_El_MisId * weight_domain[j-1]);
             }
           }
         }
@@ -555,6 +578,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   Hists1D.clear();
   var.clear();
   weight_MM.clear();
+  weight_domain.clear();
 
   // Writing summary
   auto end = std::chrono::high_resolution_clock::now();

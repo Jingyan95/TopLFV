@@ -131,20 +131,17 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
 
     # Draw legend
     if SQUARE:
-        legData = CMS.cmsLeg(0.4, 0.77, 0.55, 0.89, textSize=0.04)
-        legLeft = CMS.cmsLeg(0.55, 0.71, 0.7, 0.89, textSize=0.04)
-        legRight = CMS.cmsLeg(0.7, 0.71, 0.85, 0.89, textSize=0.04)
-        legBottom = CMS.cmsLeg(0.37, 0.59, 0.89, 0.71, textSize=0.04)
+        legData = CMS.cmsLeg(0.41, 0.83, 0.56, 0.89, textSize=0.04)
+        legLeft = CMS.cmsLeg(0.56, 0.65, 0.71, 0.89, textSize=0.04)
+        legRight = CMS.cmsLeg(0.71, 0.65, 0.86, 0.89, textSize=0.04)
+        legBottom = CMS.cmsLeg(0.37, 0.53, 0.89, 0.65, textSize=0.04)
     else:
-        legData = CMS.cmsLeg(0.5, 0.76, 0.62, 0.88, textSize=0.04)
-        legLeft = CMS.cmsLeg(0.62, 0.7, 0.74, 0.88, textSize=0.05)
-        legRight = CMS.cmsLeg(0.74, 0.7, 0.86, 0.88, textSize=0.05)
-        legBottom = CMS.cmsLeg(0.43, 0.58, 0.9, 0.7, textSize=0.05)
+        legData = CMS.cmsLeg(0.45, 0.64, 0.60, 0.88, textSize=0.04)
+        legLeft = CMS.cmsLeg(0.60, 0.64, 0.75, 0.88, textSize=0.05)
+        legRight = CMS.cmsLeg(0.75, 0.64, 0.87, 0.88, textSize=0.05)
+        legBottom = CMS.cmsLeg(0.43, 0.52, 0.9, 0.64, textSize=0.05)
     legData.AddEntry(hists[0], SAMPLES_NAME[0], "P EX0")
-    legData.AddEntry(MCHists[0], SAMPLES_NAME[1], "f")
     for iHist, loopHist in enumerate(MCHists):
-        if iHist <1: 
-           continue
         if iHist < (len(MCHists)/2):
             legLeft.AddEntry(loopHist, SAMPLES_NAME[1+iHist], "f")
         else:
@@ -255,22 +252,22 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
             Sig.Draw("")
             sig.append(Sig)
 
-    legend0 = ROOT.TLegend(0.42, 0.74333, 0.49, 0.87)
+    legend0 = ROOT.TLegend(0.38, 0.68, 0.45, 0.87)
     legend0.SetBorderSize(0)
     legend0.SetFillStyle(0)
     legend0.SetTextFont(42)
     legend0.SetTextSize(0.05)
-    legend1 = ROOT.TLegend(0.49, 0.68, 0.56, 0.87)
+    legend1 = ROOT.TLegend(0.48, 0.68, 0.55, 0.87)
     legend1.SetBorderSize(0)
     legend1.SetFillStyle(0)
     legend1.SetTextFont(42)
     legend1.SetTextSize(0.05)
-    legend2 = ROOT.TLegend(0.56, 0.68, 0.63, 0.87)
+    legend2 = ROOT.TLegend(0.58, 0.68, 0.65, 0.87)
     legend2.SetBorderSize(0)
     legend2.SetFillStyle(0)
     legend2.SetTextFont(42)
     legend2.SetTextSize(0.05)
-    legend3 = ROOT.TLegend(0.66, 0.75, 0.88, 0.87)
+    legend3 = ROOT.TLegend(0.68, 0.75, 0.90, 0.87)
     legend3.SetBorderSize(0)
     legend3.SetFillStyle(0)
     legend3.SetTextFont(42)
@@ -454,9 +451,9 @@ def plotSummary(hists, SignalHists, Fnames, year, iRegion, region, saveDir):
 
     legend0.AddEntry(dummy, Fnames[0], "ep")
     for num in range(1, len(hists)):
-        if num<2:
+        if num<3:
             legend0.AddEntry(hists[num], Fnames[num], "F")
-        elif num<5:
+        elif num<6:
             legend1.AddEntry(hists[num], Fnames[num], "F")
         else: legend2.AddEntry(hists[num], Fnames[num], "F")
     error.SetLineWidth(1)
