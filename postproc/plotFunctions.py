@@ -160,7 +160,9 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
         legLabelBottom = CMS.cmsLeg(0.15, 0.7, 0.5, 0.76, textSize=0.05)
     CMS.cmsHeader(legLabelTop, topLabel, textSize=0.04)
     CMS.cmsHeader(legLabelMiddle, REGIONS_NAME[iRegion][0], textSize=0.04)
-    CMS.cmsHeader(legLabelBottom, REGIONS_NAME[iRegion][1], textSize=0.04)
+    regName = REGIONS_NAME[iRegion][1]
+    if ('OnZ' in REGIONS_NAME[iRegion][1] and 'SS' in charge): regName = 'ChargMisID CR'
+    CMS.cmsHeader(legLabelBottom, regName, textSize=0.04)
 
     # Draw MC relative error and ratio plot + reference lines
     dicanv.cd(2)

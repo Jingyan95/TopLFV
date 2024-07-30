@@ -508,20 +508,20 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       else f3_DY = f3 * get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
       BDTscore = 1. / (1. + std::exp(-fastForest(BDTinput.data())));
       //3D matrix method
-      if (BDTscore > 0.5){
-        MM = new matrix_method(r1, r2, r3, f1, f2, f3_DY, Event->typeIndex());
-        weight_MM = MM->getWeights();
-        weight_domain[0] = weight_MM[1];
-        weight_domain[1] = weight_MM[2];
-        weight_domain[2] = weight_MM[3];
-        weight_domain[3] = 0;
-      }else{
+      if (BDTscore < 0.5 || Event->ch() == 1){
         MM = new matrix_method(r1, r2, r3, f1, f2, f3_tt, Event->typeIndex());
         weight_MM = MM->getWeights();
         weight_domain[0] = weight_MM[1];
         weight_domain[1] = weight_MM[2];
         weight_domain[2] = 0;
         weight_domain[3] = weight_MM[3];
+      }else{
+        MM = new matrix_method(r1, r2, r3, f1, f2, f3_DY, Event->typeIndex());
+        weight_MM = MM->getWeights();
+        weight_domain[0] = weight_MM[1];
+        weight_domain[1] = weight_MM[2];
+        weight_domain[2] = weight_MM[3];
+        weight_domain[3] = 0;
       }
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 1; j < domains.size() - 1; ++j){

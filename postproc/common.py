@@ -32,21 +32,21 @@ REGIONS = [
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (Z+jets CR)"),
+    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (DY+jets CR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
     ("S_{T}<300GeV", "(CR)"),
-    ("OnZ", "(Z+jets CR)"),
+    ("OnZ", "(DY+jets CR)"),
     ("btag>1.3", "(t#bar{t}+jets CR)"),
     ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))")
 ]
 REGIONS_LATEX = [
     "no cuts",
-    "Z+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
+    "DY+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
     "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
     "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
     "CR, $S_T<300$ GeV",
-    "Z+jets CR, On Z",
+    "DY+jets CR, On Z",
     "$t\\bar{t}$ + jets CR, btag $>1.3$",
     "SR(Alt, Loose), btag $<1.3$"
 ]
@@ -104,11 +104,11 @@ if test:
         "llOffZ"
     ]
     REGIONS_NAME = [
-        ("OnZ", "(Z+jets CR)"),
+        ("OnZ", "(DY+jets CR)"),
         ("OffZ", "(Close to SR CR)")
     ]
     REGIONS_LATEX = [
-        "Z+jets CR, On Z",
+        "DY+jets CR, On Z",
         "Close to SR CR, Off Z"
     ]
     DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
