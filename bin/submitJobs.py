@@ -5,7 +5,7 @@ import time
 
 start = time.time()
 
-jobruntime = 1800 # 0.5 hr
+jobruntime = 2700 # 45min
 
 try:
     file = open('TopLFV.txt')
