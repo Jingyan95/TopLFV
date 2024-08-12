@@ -508,7 +508,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       else f3_DY = f3 * get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
       BDTscore = 1. / (1. + std::exp(-fastForest(BDTinput.data())));
       //3D matrix method
-      if (BDTscore < 0.5 || Event->ch() == 1){
+      if (BDTscore < 0.05 || Event->ch() == 1){
         MM = new matrix_method(r1, r2, r3, f1, f2, f3_tt, Event->typeIndex());
         weight_MM = MM->getWeights();
         weight_domain[0] = weight_MM[1];

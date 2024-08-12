@@ -15,8 +15,8 @@ YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
 SAMPLES = ["Data", "TX", "VV", "Others", "FakeL", "FakeLTau", "DYFakeTau", "ttFakeTau", "ChargeMisId", "LFVStScalarU", "LFVTtScalarU"]
 SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "DY + fake #tau", "t#bar{t} + fake #tau",
                 "ChargeMisID", "CLFV top production (#mu_{ll'tu}^{scalar} = 0.5)", "CLFV top decay (#mu_{ll'tu}^{scalar} = 20)"]
-TABLE_LATEX = ["Data", "$t\\bar{t}X$", "VV", "DY",
-    "$t\\bar{t}$", "St Scalar U", "Tt Scalar U", "Background", "Signal"]
+TABLE_LATEX = ["Data", "$t\\bar{t}$+X", "VV(V)", "Others", "Fake e/$\\mu$", "Fake e/$\\mu$ + $\\tau_h$", "DY + fake $\\tau_h$", "$t\\bar{t}$ + fake $\\tau_h$",
+                "ChargeMisID", "St Scalar U", "Tt Scalar U", "Background", "Signal"]
 CHARGES = ["OS", "SS"]
 CHANNELS = ["ee", "emu", "mumu"]
 CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
