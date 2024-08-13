@@ -22,33 +22,30 @@ CHANNELS = ["ee", "emu", "mumu"]
 CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
 REGIONS = [
     "ll",
-    "llOnZMetg20Jetgeq1",
+    "llOnZB0",
+    "llSideBand",
     "llOffZMetg20B1",
     "llOffZMetg20B2",
     "llStl300",
-    "llOnZ",
-    "llbtagg1p3",
-    "llStg300OffZbtagl1p3"
+    "llStg300OffZ"
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("p_{T}^{miss}>20GeV, njet#geq1", "OnZ (DY+jets CR)"),
+    ("OnZ, nbjet=0", "DY+jets CR"),
+    ("Side Band", "Z Side Band"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
-    ("S_{T}<300GeV", "(CR)"),
-    ("OnZ", "(DY+jets CR)"),
-    ("btag>1.3", "(t#bar{t}+jets CR)"),
-    ("S_{T}>300GeV, OffZ", "btag<1.3 (SR(Alt, Loose))")
+    ("S_{T}<300GeV", "Generic CR"),
+    ("S_{T}>300GeV, OffZ", " SR (New)")
 ]
 REGIONS_LATEX = [
     "no cuts",
-    "DY+jets CR, On Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$",
+    "DY+jets CR, On Z, nbjet = 0",
+    "Z Side Band",
     "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
     "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
-    "CR, $S_T<300$ GeV",
-    "DY+jets CR, On Z",
-    "$t\\bar{t}$ + jets CR, btag $>1.3$",
-    "SR(Alt, Loose), btag $<1.3$"
+    "Generic CR, $S_T<300$ GeV",
+    "SR (New), Off Z, $S_{T}>300$ GeV"
 ]
 
 VARS1D = ["lep1Pt", "lep2Pt", "tauPt", "lep1Eta", "lep2Eta", "tauEta", "Ht", "njet", "nbjet", "St", "tauRt", "lep1Rt", "lep2Rt", "llM", "llDr", "llPt", "subSR"]

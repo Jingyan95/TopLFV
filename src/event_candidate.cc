@@ -24,12 +24,17 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
                                       llPt_(((*Leptons_)[0]->p4_ + (*Leptons_)[1]->p4_).Pt()),
                                       llDr_(deltaR((*Leptons_)[0]->eta_, (*Leptons_)[0]->phi_, (*Leptons_)[1]->eta_, (*Leptons_)[1]->phi_)),
                                       OnZ_(false),
+                                      SideBand_(false),
+                                      OffZ_(false),
                                       TightLep1_(this->lep1()->mva1_ < 0.64 ? 0 : 1),
                                       TightLep2_(this->lep2()->mva1_ < 0.64 ? 0 : 1),
                                       TightTa_(this->ta1()->mva1WP_ < 5 ? 0 : 1),
                                       typeIndex_(7 - (TightLep1_<<2) - (TightLep2_<<1) - TightTa_) {                             
-  if (c_ == 0 && ch_ != 1 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true;
-  if (c_ == 1 && ch_ == 0 && llM_ - mZ_ > -33 && llM_ - mZ_ < 17) OnZ_ = true; // Same-Sign ee
+  if (c_ == 0 && ch_ != 1 && abs(llM_ - mZ_) < 15) OnZ_ = true;
+  if (c_ == 1 && ch_ == 0 && abs(llM_ - mZ_) < 15) OnZ_ = true; // Same-Sign ee
+  if (c_ == 0 && ch_ != 1 && abs(llM_ - mZ_) > 15 && abs(llM_ - mZ_) < 40) SideBand_ = true;
+  if (!OnZ_ && !SideBand_) OffZ_ = true;
+
   sort(Jets->begin(), Jets->end(), CompareBtagJet);
   if (Jets->size()) bjet_ = (*Jets_)[0];
   sort(Jets->begin(), Jets->end(), ComparePtJet);

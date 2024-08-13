@@ -41,6 +41,8 @@ public:
   float LFVllM() { return LFVllM_; }
   float LFVllDr() { return LFVllDr_; }
   bool OnZ() { return OnZ_; }
+  bool SideBand() { return SideBand_; }
+  bool OffZ() { return OffZ_; }
   int TightLep1() { return TightLep1_; }
   int TightLep2() { return TightLep2_; }
   int TightTau() { return TightTa_; }
@@ -134,6 +136,8 @@ private:
   float LFVllM_; // Mass of the LFV lepton pair
   float LFVllDr_;
   bool OnZ_; // Events close to Z peak (incl. Same-Sign ee due to charge flip)
+  bool SideBand_;
+  bool OffZ_;
   int TightLep1_;
   int TightLep2_;
   int TightTa_; // Events with tau passing Tight tau vs. jets WP

@@ -60,15 +60,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
     "ll",
-    "llOnZMetg20Jetgeq1",
+    "llOnZB0",
+    "llSideBand",
     "llOffZMetg20B1",
     "llOffZMetg20B2",
     "llStl300",
-    "llOnZ",
-    "llbtagg1p3",
-    "llStg300OffZbtagl1p3"
+    "llStg300OffZ"
   };
-  std::vector<int> unBlind{0, 1, 0, 1, 1, 1, 1, 0};
+  std::vector<int> unBlind{0, 1, 1, 0, 1, 1, 0};
   const std::map<TString, std::vector<float>> vars1D = {
     {"lep1Pt",           {0,   10,    30,  100}},
     {"lep2Pt",           {1,   10,    20,  100}},
@@ -83,7 +82,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"lep1Rt",           {10,  10,    -1,  5}},
     {"lep2Rt",           {11,  10,    -1,  5}},
     {"tauRt",            {12,  10,    -1,  5}},
-    {"llM",              {13,  20,    0,   180}},
+    {"llM",              {13,  30,    0,   180}},
     {"llDr",             {14,  10,    0,   4.5}},
     {"llPt",             {15,  10,    0,   150}},
     {"subSR",            {16,  18,    0,   18}}
@@ -184,6 +183,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   var.resize(vars1D.size()); // container of output variables (1D)
   bool metFilterPass;
   float lep1PtCut = 30;
+  float llMCut = 20; // avoid low mass resonance
   float eleEta;
   float tauPt;
   float weight_Lumi;
@@ -310,6 +310,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     // Applying flavor-dependent trigger requirement
     if (Leptons->size() != 2 || ((*Leptons)[0]->pt_ < lep1PtCut && (*Leptons)[1]->pt_ < lep1PtCut) ||
         abs((*Leptons)[0]->charge_ + (*Leptons)[1]->charge_) > 2 ||
+        ((*Leptons)[0]->p4_ + (*Leptons)[1]->p4_).M() < llMCut ||
         !myTrig->triggerPass((*Leptons)[0]->flavor_ + (*Leptons)[1]->flavor_ - 2)) {
       deleteContainter(Leptons);
       continue;
@@ -411,22 +412,26 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     int rIdx = rInd(regions, "ll");
     reg.push_back(rIdx); // No cuts
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    if (Event->MET()->Pt() > 20 && Event->njet() > 0) {
-      if (Event->OnZ()) { // Z+jets CR
-        rIdx = rInd(regions, "llOnZMetg20Jetgeq1");
+    if (Event->OnZ() && Event->nbjet() == 0) { // Z+jets CR
+      rIdx = rInd(regions, "llOnZB0");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->SideBand()) { // Z peak sideband
+      rIdx = rInd(regions, "llSideBand");
+      reg.push_back(rIdx);
+      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
+    }
+    if (Event->OffZ() && Event->MET()->Pt() > 20) {
+      if (Event->nbjet() == 1) { // SR
+        rIdx = rInd(regions, "llOffZMetg20B1");
         reg.push_back(rIdx);
         wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-      } else {
-        if (Event->nbjet() == 1) { // SR
-          rIdx = rInd(regions, "llOffZMetg20B1");
-          reg.push_back(rIdx);
-          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-        }
-        if (Event->nbjet() == 2) { // ttbar+jets CR
-          rIdx = rInd(regions, "llOffZMetg20B2");
-          reg.push_back(rIdx);
-          wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-        }
+      }
+      if (Event->nbjet() == 2) { // ttbar+jets CR
+        rIdx = rInd(regions, "llOffZMetg20B2");
+        reg.push_back(rIdx);
+        wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
       }
     }
     if (Event->St() < 300) { // Generic signal-free region
@@ -434,18 +439,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
-    if (Event->OnZ()) { // Z+jets CR
-      rIdx = rInd(regions, "llOnZ");
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    }
-    if (Event->btagSum() > 1.3) { // ttbar+jets CR
-      rIdx = rInd(regions, "llbtagg1p3");
-      reg.push_back(rIdx);
-      wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    }
-    if (Event->St() > 300 && !Event->OnZ() && Event->btagSum() < 1.3) { // New SR
-      rIdx = rInd(regions, "llStg300OffZbtagl1p3");
+    if (Event->St() > 300 && Event->OffZ()) { // New SR
+      rIdx = rInd(regions, "llStg300OffZ");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
