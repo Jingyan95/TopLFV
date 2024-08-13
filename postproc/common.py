@@ -31,7 +31,7 @@ REGIONS = [
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("OnZ, nbjet=0", "DY+jets CR"),
+    ("OnZ", "DY+jets CR"),
     ("Side Band", "Z Side Band"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
@@ -40,7 +40,7 @@ REGIONS_NAME = [
 ]
 REGIONS_LATEX = [
     "no cuts",
-    "DY+jets CR, On Z, nbjet = 0",
+    "DY+jets CR, On Z",
     "Z Side Band",
     "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
     "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",

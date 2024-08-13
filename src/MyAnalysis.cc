@@ -60,7 +60,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
     "ll",
-    "llOnZB0",
+    "llOnZ",
     "llSideBand",
     "llOffZMetg20B1",
     "llOffZMetg20B2",
@@ -412,8 +412,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     int rIdx = rInd(regions, "ll");
     reg.push_back(rIdx); // No cuts
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    if (Event->OnZ() && Event->nbjet() == 0) { // Z+jets CR
-      rIdx = rInd(regions, "llOnZB0");
+    if (Event->OnZ()) { // Z+jets CR
+      rIdx = rInd(regions, "llOnZ");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
