@@ -136,12 +136,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TF1 sf_Ta_ID_jet = *(TF1*) f_Ta_ID_jet->Get("Tight_cent");
   const TH2F rEff_1Prong = *(TH2F*) f_Ta_MM->Get("RealEff_AbsEtaVsPt_1Prong");
   const TH2F rEff_3Prong = *(TH2F*) f_Ta_MM->Get("RealEff_AbsEtaVsPt_3Prong");
-  const TH2F fEff_1Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_llPtVsPt_1Prong");
-  const TH2F fEff_3Prong = *(TH2F*) f_Ta_MM->Get("FakeEff_llPtVsPt_3Prong");
+  const TH2F fEff_1Prong_DY = *(TH2F*) f_Ta_MM->Get("FakeEff_DY_llPtVsPt_1Prong");
+  const TH2F fEff_3Prong_DY = *(TH2F*) f_Ta_MM->Get("FakeEff_DY_llPtVsPt_3Prong");
+  const TH2F fEff_1Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_AbsEtaVsPt_1Prong");
+  const TH2F fEff_3Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_AbsEtaVsPt_3Prong");
   const TH2F fEff_SF_DY_0J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_0J");
   const TH2F fEff_SF_DY_1J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_1J");
   const TH2F fEff_SF_DY_2J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_2J");
-  const TH1F fEff_SF_tt_nbjet = *(TH1F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_nbjet");
+  const TH2F fEff_SF_tt = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_chVsnbjet");
   const TH2F rEff_e = *(TH2F*) f_L_MM->Get("e_RealEff_AbsEtaVsPt");
   const TH2F rEff_mu = *(TH2F*) f_L_MM->Get("mu_RealEff_AbsEtaVsPt");
   const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt");
@@ -201,7 +203,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_TRG;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
-  float r1, r2, r3, f1, f2, f3, f3_DY, f3_tt;
+  float r1, r2, r3, f1, f2, f3_DY, f3_tt;
   float BDTscore;
   std::vector<float> weight_MM; // matrix method weight for fake tau
   weight_MM.resize(4);
@@ -490,17 +492,19 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3 = get_factor(&fEff_1Prong, Event->ta1()->pt_, Event->llPt(), ""); 
+        f3_DY = get_factor(&fEff_1Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
+        f3_tt = get_factor(&fEff_1Prong_tt, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
       }else{
         r3 = get_factor(&rEff_3Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3 = get_factor(&fEff_3Prong, Event->ta1()->pt_, Event->llPt(), ""); 
+        f3_DY = get_factor(&fEff_3Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
+        f3_tt = get_factor(&fEff_3Prong_tt, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
       }
       std::vector<float> BDTinput{(float)Event->llDr(), (float)Event->MET()->Pt(), (float)Event->btagSum(), (float)Event->ta1()->pt_, 
                                   (float)Event->Ht(), (float)Event->Topmass(), (float)Event->llM()};
-      f3_tt = f3 * get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), "");
-      if (Event->njet() == 0) f3_DY = f3 * get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      else if (Event->njet() == 1) f3_DY = f3 * get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      else f3_DY = f3 * get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      f3_tt *= get_factor(&fEff_SF_tt, Event->nbjet(), Event->ch(), "");
+      if (Event->njet() == 0) f3_DY *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else if (Event->njet() == 1) f3_DY *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else f3_DY *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
       BDTscore = 1. / (1. + std::exp(-fastForest(BDTinput.data())));
       //3D matrix method
       if (BDTscore < 0.05 || Event->ch() == 1){
