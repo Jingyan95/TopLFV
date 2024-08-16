@@ -146,8 +146,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F fEff_SF_tt = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_chVsnbjet");
   const TH2F rEff_e = *(TH2F*) f_L_MM->Get("e_RealEff_AbsEtaVsPt");
   const TH2F rEff_mu = *(TH2F*) f_L_MM->Get("mu_RealEff_AbsEtaVsPt");
-  const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt");
-  const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsPt");
+  const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_njetVsJetPt");
+  const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_njetVsJetPt");
   const TH1F sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
   const auto sf_TRG_ee = *(TH2F*)f_TRG->Get("ee");
   const auto sf_TRG_emu = *(TH2F*)f_TRG->Get("emu");
@@ -478,17 +478,17 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       // Reading real and fake efficiencies 
       if (Event->lep1()->flavor_ == 1){
         r1 = get_factor(&rEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_e, Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
+        f1 = get_factor(&fEff_e, Event->lep1()->jetpt_, Event->njet(), ""); 
       }else{
         r1 = get_factor(&rEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_mu, Event->lep1()->jetpt_, Event->lep1()->recoil_/Event->lep1()->pt_, ""); 
+        f1 = get_factor(&fEff_mu, Event->lep1()->jetpt_, Event->njet(), ""); 
       }
       if (Event->lep2()->flavor_ == 1){
         r2 = get_factor(&rEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_e, Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
+        f2 = get_factor(&fEff_e, Event->lep2()->jetpt_, Event->njet(), ""); 
       }else{
         r2 = get_factor(&rEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_mu, Event->lep2()->jetpt_, Event->lep2()->recoil_/Event->lep2()->pt_, ""); 
+        f2 = get_factor(&fEff_mu, Event->lep2()->jetpt_, Event->njet(), ""); 
       }
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 

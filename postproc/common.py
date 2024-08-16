@@ -36,7 +36,7 @@ REGIONS_NAME = [
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
     ("S_{T}<300GeV", "Generic CR"),
-    ("S_{T}>300GeV, OffZ", " SR (New)")
+    ("S_{T}>300GeV, OffZ", "SR (New)")
 ]
 REGIONS_LATEX = [
     "no cuts",
