@@ -52,6 +52,9 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     CMS.SetEnergy("13") # Run 2
     CMS.SetExtraText(PLOT_LABEL)
 
+    dology = True
+    if 'SS' in charge: dology = False
+
     # Make MC and signal histograms
     MCHists = []
     SigHists = []
@@ -111,14 +114,19 @@ def plot1DStack(hists, year, charge, iChannel, iRegion, varName, var, topLabel, 
     true_y_min = 1e10
     for hist in hists:
         true_y_min = min(true_y_min, hist.GetMinimum(0.0))
-    y_min = 0.6
-    y_max = 5000*max(y_max, MCHists[-1].GetMaximum(),y_min)
+    y_min = 0
+    if dology:
+        y_min = 0.6
+    y_max = 1.6*max(y_max, MCHists[-1].GetMaximum(),y_min)  
+    if dology:
+        y_max = 5000*max(y_max, MCHists[-1].GetMaximum(),y_min)
 
     dicanv = CMS.cmsDiCanvas(var,
         x_min, x_max, y_min, y_max, 0.2, 1.8,
         varName, "Events", "Data/Pred.",
         square=SQUARE, extraSpace=0.1, iPos=0)
-    dicanv.cd(1).SetLogy(True)
+ 
+    dicanv.cd(1).SetLogy(dology)
 
     # Draw histograms
     for iHist, loopHist in enumerate(reversed(MCHists)):

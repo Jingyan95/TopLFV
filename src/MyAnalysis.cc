@@ -146,8 +146,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F fEff_SF_tt = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_chVsnbjet");
   const TH2F rEff_e = *(TH2F*) f_L_MM->Get("e_RealEff_AbsEtaVsPt");
   const TH2F rEff_mu = *(TH2F*) f_L_MM->Get("mu_RealEff_AbsEtaVsPt");
-  const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_njetVsJetPt");
-  const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_njetVsJetPt");
+  const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt");
+  const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsPt");
   const TH1F sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
   const auto sf_TRG_ee = *(TH2F*)f_TRG->Get("ee");
   const auto sf_TRG_emu = *(TH2F*)f_TRG->Get("emu");
@@ -278,8 +278,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (data == "mc") {
         weight_El_RECO = weight_El_RECO * get_factor(&sf_El_RECO, eleEta, Electron_pt[l], "");
         weight_El_ID = weight_El_ID * get_factor(&sf_El_ID, eleEta, Electron_pt[l], "");
-      }else{
-        weight_El_MisId += get_factor(&sf_El_MisId, Electron_pt[l], abs(Electron_eta[l]), "");
       }
 
       Leptons->push_back(new lepton_candidate(Electron_pt[l], Electron_eta[l], Electron_phi[l], Electron_dxy[l], Electron_dz[l],
@@ -478,17 +476,17 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       // Reading real and fake efficiencies 
       if (Event->lep1()->flavor_ == 1){
         r1 = get_factor(&rEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_e, Event->lep1()->jetpt_, Event->njet(), ""); 
+        f1 = get_factor(&fEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
       }else{
         r1 = get_factor(&rEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_mu, Event->lep1()->jetpt_, Event->njet(), ""); 
+        f1 = get_factor(&fEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
       }
       if (Event->lep2()->flavor_ == 1){
         r2 = get_factor(&rEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_e, Event->lep2()->jetpt_, Event->njet(), ""); 
+        f2 = get_factor(&fEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
       }else{
         r2 = get_factor(&rEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_mu, Event->lep2()->jetpt_, Event->njet(), ""); 
+        f2 = get_factor(&fEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
       }
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
@@ -529,21 +527,50 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
           }
         }
       } 
-      // Charge-flip estimate (only transfering events from OS-ee)
-      if (Event->c() == 0 && Event->ch() == 0){
-        var[vInd(vars1D, "subSR")] = Event->SRindex() + 10;
-        for (int i = 0; i < reg.size(); ++i) {
-          if (Event->typeIndex() == 0){
-            for (int j = 0; j < var.size(); ++j){
-              Hists1D[5][1][chIdx][reg[i]][j]->Fill(var[j], weight_El_MisId);
-            }
+      // Charge-flip estimate (only transfering events from OS-ee or OS-emu)
+      if (Event->c() == 0 && Event->ch() < 2){
+        bool doChargeFlip = true;
+        if (Event->ch() == 0) { //OS-ee, one and only one of the electron can flip due to sum of charges requirement  
+          if ((*Leptons)[0]->charge_ + (*Leptons)[2]->charge_ != 0) {
+              (*Leptons)[0]->flipCharge();
+              weight_El_MisId = get_factor(&sf_El_MisId, (*Leptons)[0]->pt_, abs((*Leptons)[0]->eta_), "");
+          }else{
+              (*Leptons)[1]->flipCharge();
+              weight_El_MisId = get_factor(&sf_El_MisId, (*Leptons)[1]->pt_, abs((*Leptons)[1]->eta_), "");
           }
-          // Overlap removal
-          for (int j = 1; j < domains.size() - 1; ++j){
-            for (int k = 0; k < var.size(); ++k){
-              Hists1D[j][1][chIdx][reg[i]][k]->Fill(var[k], -1 * weight_El_MisId * weight_domain[j-1]);
-            }
+        }else{ //OS-emu, one or zero electron can flip
+          if ((*Leptons)[0]->flavor_==1){
+             if ((*Leptons)[0]->charge_ + (*Leptons)[2]->charge_ != 0){
+                (*Leptons)[0]->flipCharge();
+                weight_El_MisId = get_factor(&sf_El_MisId, (*Leptons)[0]->pt_, abs((*Leptons)[0]->eta_), "");
+             }else{
+                doChargeFlip = false;
+             }
+          }else{
+             if ((*Leptons)[1]->charge_ + (*Leptons)[2]->charge_ != 0){
+                (*Leptons)[1]->flipCharge();
+                weight_El_MisId = get_factor(&sf_El_MisId, (*Leptons)[1]->pt_, abs((*Leptons)[1]->eta_), "");
+             }else{
+                doChargeFlip = false;
+             }
           }
+        }
+        if (doChargeFlip){
+            Event = new event_candidate(Leptons, Jets, data == "mc" ? MET_T1Smear_pt : MET_T1_pt, MET_phi, verbose_);
+            var[vInd(vars1D, "subSR")] = Event->SRindex();
+            for (int i = 0; i < reg.size(); ++i) {
+              if (Event->typeIndex() == 0){
+                for (int j = 0; j < var.size(); ++j){
+                  Hists1D[5][1][chIdx][reg[i]][j]->Fill(var[j], weight_El_MisId);
+                }
+              }
+              // Overlap removal
+              for (int j = 1; j < domains.size() - 1; ++j){
+                for (int k = 0; k < var.size(); ++k){
+                  Hists1D[j][1][chIdx][reg[i]][k]->Fill(var[k], -1 * weight_El_MisId * weight_domain[j-1]);
+                }
+              }
+            }
         }
       }
     }

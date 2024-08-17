@@ -90,8 +90,10 @@ for key, value in SAMPLES.items():
                 text += '    }\n'
                 text += '    for (auto&& worker : workers) worker.join();\n'
                 text += '    std::cout<<Summary.str();\n'
-                text += '    int Sys = system("hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root ' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
-                text += '    if (Sys<0) {std::cout<<"Filed to hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root"<<std::endl;}\n'
+                text += '    if (counter>0){//Rerun jobs if they fail to open root files\n'
+                text += '       int Sys = system("hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root ' + key + '_' + str(idx) + '_' + str(num) + '_*.root");\n'
+                text += '       if (Sys<0) {std::cout<<"Filed to hadd ' + key + '_' + str(idx) + '_' + str(num) + '.root"<<std::endl;}\n'
+                text += '    }\n'
                 SHNAME1 = key + '_' + str(idx) + '_' + str(num) + '.C'
                 SHFILE1 = '#include "MyAnalysis.h"\n' +\
                 '#include "ROOT/TSeq.hxx"\n' +\

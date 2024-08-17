@@ -17,10 +17,10 @@ int main() {
   std::atomic<ULong64_t> counter(0);
   auto workItem = [&](UInt_t workerID) {
     TChain* ch = new TChain("Events");
-    ch ->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_1.root");
-    ch ->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_10.root");
-    ch ->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_11.root");
-    ch ->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_12.root");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_1.root");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_10.root");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_11.root");
+    ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_12.root");
     MyAnalysis t1(ch, "2016" , "data" , "H", nThread, workerID, false);
     auto workerSummary = t1.Loop(Form("test_%u.root",workerID), "data" , "SingleElectron" , "2016" , "H" , 1 , 1 , 1, std::ref(progress), std::ref(counter));
     Summary << workerSummary.str();
@@ -31,9 +31,11 @@ int main() {
   }
   for (auto&& worker : workers) worker.join();
   std::cout << Summary.str();
-  Sys = system("hadd test.root test_*.root");
-  if (Sys<0) {std::cout<<"Filed to hadd test.root"<<std::endl;}
-  Sys = system("rm -f test_*.root");
-  if (Sys<0) {std::cout<<"No files named test*.root"<<std::endl;}
+  if (counter>0){//Rerun jobs if they fail to open root files 
+    Sys = system("hadd test.root test_*.root");
+    if (Sys<0) {std::cout<<"Filed to hadd test.root"<<std::endl;}
+    Sys = system("rm -f test_*.root");
+    if (Sys<0) {std::cout<<"No files named test*.root"<<std::endl;}
+  }
   return 0;
 }
