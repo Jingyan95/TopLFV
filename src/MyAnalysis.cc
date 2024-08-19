@@ -498,11 +498,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
         f3_DY = get_factor(&fEff_1Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
-        f3_tt = get_factor(&fEff_1Prong_tt, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+        f3_tt = get_factor(&fEff_1Prong_tt, Event->ta1()->pt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
       }else{
         r3 = get_factor(&rEff_3Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
         f3_DY = get_factor(&fEff_3Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
-        f3_tt = get_factor(&fEff_3Prong_tt, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
+        f3_tt = get_factor(&fEff_3Prong_tt, Event->ta1()->pt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
       }
       std::vector<float> BDTinput{(float)Event->llDr(), (float)Event->MET()->Pt(), (float)Event->btagSum(), (float)Event->ta1()->pt_, 
                                   (float)Event->Ht(), (float)Event->Topmass(), (float)Event->llM()};
