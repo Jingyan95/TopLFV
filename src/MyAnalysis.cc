@@ -139,8 +139,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F rEff_3Prong = *(TH2F*) f_Ta_MM->Get("RealEff_AbsEtaVsPt_3Prong");
   const TH2F fEff_1Prong_DY = *(TH2F*) f_Ta_MM->Get("FakeEff_DY_llPtVsPt_1Prong");
   const TH2F fEff_3Prong_DY = *(TH2F*) f_Ta_MM->Get("FakeEff_DY_llPtVsPt_3Prong");
-  const TH2F fEff_1Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_AbsEtaVsPt_1Prong");
-  const TH2F fEff_3Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_AbsEtaVsPt_3Prong");
+  const TH2F fEff_1Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_RtVsPt_1Prong");
+  const TH2F fEff_3Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_RtVsPt_3Prong");
   const TH2F fEff_SF_DY_0J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_0J");
   const TH2F fEff_SF_DY_1J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_1J");
   const TH2F fEff_SF_DY_2J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_2J");
