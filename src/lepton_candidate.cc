@@ -20,7 +20,7 @@ lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, floa
 
   if (flavor_ == 1) {
     p4_.SetPtEtaPhiM(pt_, eta_, phi_, 0.000511);
-    if (truth_in == 1 || truth_in == 15) {
+    if (truth_in == 1 || truth_in == 15 || truth_in == 22) {
       truth_ = 0;
     } else if (truth_in == 4 || truth_in == 5) {
       truth_ = 1;
@@ -30,7 +30,7 @@ lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, floa
   }
   if (flavor_ == 2) {
     p4_.SetPtEtaPhiM(pt_, eta_, phi_, 0.10566);
-    if (truth_in == 1 || truth_in == 15) {
+    if (truth_in == 1 || truth_in == 15 || truth_in == 22) {
       truth_ = 0;
     } else if (truth_in == 4 || truth_in == 5) {
       truth_ = 1;
@@ -40,13 +40,11 @@ lepton_candidate::lepton_candidate(float pt_in, float eta_in, float phi_in, floa
   }
   if (flavor_ == 3) {
     p4_.SetPtEtaPhiM(pt_, eta_, phi_, 1.777);
-    if (truth_in == 5) {
+    if (truth_in >= 1 && truth_in <=5 ) {
       truth_ = 0;
-    } else if (truth_in == 0) {
-      truth_ = 1;
     } else {
-      truth_ = 2;
-    }
+      truth_ = 1;
+    } 
   }
 }
 

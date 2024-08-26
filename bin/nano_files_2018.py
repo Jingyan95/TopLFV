@@ -34,6 +34,11 @@ mc2018_samples["2018_TTToSemiLeptonic"] = [["/eos/user/j/jingyan/TopLFV/LFV_Tril
 mc2018_samples["2018_WWTo2L2Nu"] = [["/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive/2018/2018_WWTo2L2Nu_UL/WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/crab_Aug17_2018_WWTo2L2Nu_UL/230817_235549/0000/"], "mc", "WWTo2L2Nu", "2018", "", "12.178", "59.83", "9956710", 19]
 mc2018_samples["2018_ZZTo2L2Nu"] = [["/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive/2018/2018_ZZTo2L2Nu_UL/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/crab_Aug17_2018_ZZTo2L2Nu_UL/230817_235116/0000/"], "mc", "ZZTo2L2Nu", "2018", "", "0.564", "59.83", "97491908", 11]
 
+mc2018_samples["2018_DYGamma"] = [["/eos/cms/store/user/jingyan/LFV_Trilep_PhotonConv/2018_DYGamma/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_Trilep_PhotonConv_2018_DYGamma/240826_012031/0000/"], "mc", "DYGamma", "2018",  "", "55.48", "59.83", "18750664", 19]
+mc2018_samples["2018_TTGammaDiL"] = [["/eos/cms/store/user/jingyan/LFV_Trilep_PhotonConv/2018_TTGammaDiL/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/crab_Trilep_PhotonConv_2018_TTGammaDiL/240826_012135/0000/"], "mc", "TTGammaDiL", "2018",  "", "2.22", "59.83", "14694000", 15]
+mc2018_samples["2018_TTGammaSingleL"] = [["/eos/cms/store/user/jingyan/LFV_Trilep_PhotonConv/2018_TTGammaSingleL/TTGamma_SingleLept_TuneCP5_13TeV-madgraph-pythia8/crab_Trilep_PhotonConv_2018_TTGammaSingleL/240826_012239/0000/"], "mc", "TTGammaSingleL", "2018",  "", "7.509", "59.83", "27731999", 31]
+mc2018_samples["2018_TTGammaHad"] = [["/eos/cms/store/user/jingyan/LFV_Trilep_PhotonConv/2018_TTGammaHad/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/crab_Trilep_PhotonConv_2018_TTGammaHad/240826_011927/0000/"], "mc", "TTGammaHad", "2018",  "", "6.162", "59.83", "14763000",  26]
+
 # Data
 data2018_samples["2018_A_MuonEG"] = [["/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive/2018/2018_A_MuonEG/MuonEG/crab_Aug17_2018Data_2018_A_MuonEG/230818_010753/0000/"], "data", "MuonEG", "2018", "A", "1", "1", "1", 11]
 data2018_samples["2018_B_MuonEG"] = [["/eos/user/j/jingyan/TopLFV/LFV_Trilep_Inclusive/2018/2018_B_MuonEG/MuonEG/crab_Aug17_2018Data_2018_B_MuonEG/230818_012008/0000/"], "data", "MuonEG", "2018", "B", "1", "1", "1", 6]

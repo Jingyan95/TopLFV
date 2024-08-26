@@ -37,6 +37,7 @@ if data_2018:
     dataset.update(nano_files_2018.data2018_samples)
 
 for key, value in dataset.items():
+    if 'Gamma' not in key: continue
     print('-----------------------')
     print(key)
     nEventsraw = 0

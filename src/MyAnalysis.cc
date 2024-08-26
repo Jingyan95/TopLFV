@@ -144,11 +144,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F fEff_SF_DY_0J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_0J");
   const TH2F fEff_SF_DY_1J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_1J");
   const TH2F fEff_SF_DY_2J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_2J");
-  const TH2F fEff_SF_tt = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_chVsnbjet");
+  const TH2F fEff_SF_tt = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_ch"); // nbjet not used
   const TH2F rEff_e = *(TH2F*) f_L_MM->Get("e_RealEff_AbsEtaVsPt");
   const TH2F rEff_mu = *(TH2F*) f_L_MM->Get("mu_RealEff_AbsEtaVsPt");
   const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt");
-  const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsRt");
+  const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsPt");
   const TH2F fEff_SF_e = *(TH2F*) f_L_MM_SF->Get("e_FakeEff_SF_RtVsnbjet");
   const TH2F fEff_SF_mu = *(TH2F*) f_L_MM_SF->Get("mu_FakeEff_SF_chVsnjet");
   const TH1F sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
@@ -187,6 +187,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<float> var;
   var.resize(vars1D.size()); // container of output variables (1D)
   bool metFilterPass;
+  bool photonPass;
   float lep1PtCut = 30;
   float llMCut = 20; // avoid low mass resonance
   float eleEta;
@@ -233,6 +234,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     }
     InitTrigger();
     metFilterPass = false;
+    photonPass = false;
     reg.clear();
     wgt.clear();
     weight_Lumi = 1;
@@ -251,6 +253,40 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     weight_TRG = 1;
     weight_Btag_corr = 1;
     weight_Event = 1;
+
+    // Photon conversion overlap removal
+    if (data == "mc" && (dataset.Contains("DYM") || dataset.Contains("TTTo") || dataset.Contains("Gamma"))){
+      Leptons = new std::vector<lepton_candidate*>();
+      Jets = new std::vector<jet_candidate*>();
+      for (UInt_t l = 0; l < nLHEPart; l++) {
+          if (LHEPart_pdgId[l] == 22 && LHEPart_pt[l] > 10){
+             Leptons->push_back(new lepton_candidate(LHEPart_pt[l], LHEPart_eta[l], LHEPart_phi[l], 0, 0, 0, 0, 0, 0, 0, l, 1, 1, -1));
+          }else if (abs(LHEPart_pdgId[l])<=6 || LHEPart_pdgId[l]==21){
+             Jets->push_back(new jet_candidate(LHEPart_pt[l], LHEPart_eta[l], LHEPart_phi[l], 0, 0, 1, year, 0));
+          }
+      }
+      bool isPromptPhoton = false;
+      for (int i = 0; i < Leptons->size(); i++){
+          for (int j = 0; j < Jets->size(); j++){
+              if (event_candidate::deltaR((*Leptons)[i]->eta_, (*Leptons)[i]->phi_, (*Jets)[j]->eta_, (*Jets)[j]->phi_) < 0.05){
+                 (*Leptons)[i]->setTruth(-1);
+                 break;
+              }
+          }
+          if ((*Leptons)[i]->truth_ != -1) {
+            isPromptPhoton = true;
+            break;
+          }
+      }
+      if (dataset.Contains("Gamma")){
+        if (isPromptPhoton) photonPass = true;
+        else photonPass = false;
+      }else{
+        if (isPromptPhoton) photonPass = false;
+        else photonPass = true;
+      }
+    }else{photonPass = true;}
+    
   
     // MET filters
     if (year == "2017" || year == "2018") {
@@ -263,7 +299,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         && Flag_HBHENoiseIsoFilter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter
         && Flag_eeBadScFilter && Flag_BadPFMuonDzFilter)
       metFilterPass = true;
-    if (!metFilterPass || !myTrig->triggerLogic(dataset)) continue; // Applying general trigger requirement
+    if (!photonPass || !metFilterPass || !myTrig->triggerLogic(dataset)) continue; // Applying general trigger requirement
 
     // Lepton selection
     Leptons = new std::vector<lepton_candidate*>();
@@ -287,7 +323,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         Electron_charge[l], 0, Electron_topLeptonMVA_v1[l], Electron_jetIdx[l]>=0?Jet_pt_nom[Electron_jetIdx[l]]:Electron_pt[l], 0, l, 1,
         data == "mc" ? (int) Electron_genPartFlav[l] : 1, -1));
       //set truth_ to -1 if electron charge is misidentified in MC
-      if ((*Leptons)[Leptons->size()-1]->truth_==0&&Electron_charge[l]*GenPart_pdgId[Electron_genPartIdx[l]]!=-11) (*Leptons)[Leptons->size()-1]->setTruth(-1);
+      if ((*Leptons)[Leptons->size()-1]->truth_ == 0 && Electron_charge[l]*GenPart_pdgId[Electron_genPartIdx[l]] == 11) (*Leptons)[Leptons->size()-1]->setTruth(-1);
     }
 
     for (UInt_t l = 0; l < nMuon; l++) {
@@ -404,10 +440,10 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         dIdx = 2;// fake e/mu + fake tau
     }
     if (Event->lep1()->truth_==0 && Event->lep2()->truth_==0 && Event->ta1()->truth_>0){
-        dIdx = 3;// fake tau
+        dIdx = 3;// or = = 4 if tt fake tau 
     }
     if (Event->c()==1 && Event->ch() < 2 && (Event->lep1()->truth_<0||Event->lep2()->truth_<0)){
-        dIdx = 4;// charge misID
+        dIdx = 5;// charge misID
     }
     if (data == "data" || dataset.Contains("LFV")){
         dIdx = 0;// no MC truth done for data and signal MC
@@ -480,20 +516,20 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       if (Event->lep1()->flavor_ == 1){
         r1 = get_factor(&rEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
         f1 = get_factor(&fEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), "");
-        f1 *= get_factor(&fEff_SF_e, Event->lep1()->recoil_/Event->lep1()->pt_, Event->nbjet(), "");
+        // f1 *= get_factor(&fEff_SF_e, Event->lep1()->recoil_/Event->lep1()->pt_, Event->nbjet(), "");
       }else{
         r1 = get_factor(&rEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_mu, Event->lep1()->recoil_/Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 *= get_factor(&fEff_SF_mu, Event->njet(), Event->ch()-1, "");
+        f1 = get_factor(&fEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+        // f1 *= get_factor(&fEff_SF_mu, Event->njet(), Event->ch()-1, "");
       }
       if (Event->lep2()->flavor_ == 1){
         r2 = get_factor(&rEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
         f2 = get_factor(&fEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 *= get_factor(&fEff_SF_e, Event->lep2()->recoil_/Event->lep2()->pt_, Event->nbjet(), "");
+        // f2 *= get_factor(&fEff_SF_e, Event->lep2()->recoil_/Event->lep2()->pt_, Event->nbjet(), "");
       }else{
         r2 = get_factor(&rEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_mu, Event->lep2()->recoil_/Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 *= get_factor(&fEff_SF_mu, Event->njet(), Event->ch()-1, "");
+        f2 = get_factor(&fEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+        // f2 *= get_factor(&fEff_SF_mu, Event->njet(), Event->ch()-1, "");
       }
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 

@@ -149,6 +149,12 @@ public :
   Float_t         L1PreFiringWeight_ECAL_Nom;
   Float_t         L1PreFiringWeight_Muon_Nom;
 
+  UInt_t          nLHEPart;
+  Int_t           LHEPart_pdgId[16];
+  Float_t         LHEPart_pt[16];
+  Float_t         LHEPart_phi[16];
+  Float_t         LHEPart_eta[16];
+
   // List of branches
   TBranch         *b_nElectron;
   TBranch         *b_Electron_charge;
@@ -269,6 +275,12 @@ public :
   TBranch         *b_GenPart_pdgId;
   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
   TBranch         *b_L1PreFiringWeight_Muon_Nom;
+
+  TBranch         *b_nLHEPart;
+  TBranch         *b_LHEPart_pdgId;
+  TBranch         *b_LHEPart_pt;
+  TBranch         *b_LHEPart_phi;
+  TBranch         *b_LHEPart_eta;
 
   MyAnalysis(TTree *tree = 0, TString year = "", TString data = "", TString run = "", int nThread = 8, int workerID = 0, bool verbose_ = false);
   virtual ~MyAnalysis();
@@ -488,6 +500,12 @@ void MyAnalysis::Init(TTree *tree) {
   if (data_ == "mc") fChain->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId, &b_GenPart_pdgId);
   fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
   fChain->SetBranchAddress("L1PreFiringWeight_Muon_Nom", &L1PreFiringWeight_Muon_Nom, &b_L1PreFiringWeight_Muon_Nom);
+
+  if (data_ == "mc") fChain->SetBranchAddress("nLHEPart", &nLHEPart, &b_nLHEPart);
+  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_pdgId", &LHEPart_pdgId, &b_LHEPart_pdgId);
+  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_pt", &LHEPart_pt, &b_LHEPart_pt);
+  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_eta", &LHEPart_eta, &b_LHEPart_eta);
+  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_phi", &LHEPart_phi, &b_LHEPart_phi);
 
   Notify();
 }
