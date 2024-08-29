@@ -41,14 +41,13 @@ if data_2018:
 # Set up an argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--v', dest='VERBOSE', default=True)
+parser.add_argument('--m', dest='MConly', default=False)
 parser.add_argument('--n', dest='NAMETAG', default='201')
 parser.add_argument('--t', dest='NTHREAD', default=6) # Number of threads
 ARGS = parser.parse_args()
 
-rootlib1 = subprocess.check_output("root-config --cflags", shell=True)
-rootlib11 = "".join([str(s, encoding='utf-8') for s in rootlib1.strip().splitlines(True) if s.strip()])
-rootlib2 = subprocess.check_output("root-config --libs", shell=True)
-rootlib22 = "".join([str(s, encoding='utf-8') for s in rootlib2.strip().splitlines(True) if s.strip()])
+MConly_ = 'false'
+if ARGS.MConly: MConly_ = 'true'
 
 filelist = ''
 
@@ -80,7 +79,7 @@ for key, value in SAMPLES.items():
                 text += '        TChain* ch = new TChain("Events") ;\n'
                 for filename in seq:
                     text += '        ch ->Add("' + S + filename + '");\n'
-                text += '        MyAnalysis t1(ch, "' + value[3] + '" , "' + value[1] + '" , "' + value[4] + '", nThread, workerID, false);\n'
+                text += '        MyAnalysis t1(ch, "' + value[3] + '" , "' + value[1] + '" , "' + value[4] + '", nThread, workerID, ' + MConly_ + ', false);\n'
                 text += '        auto workerSummary = t1.Loop(Form("' + key + '_' + str(idx) + '_' + str(num) + '_%u.root",workerID), "' + value[1] + '" , "' + value[2] + '" , "' + value[3] + '" , "' + value[4] + '" , ' + value[5] + ' , '+ value[6] + ' , ' + value[7] + ', std::ref(progress), std::ref(counter));\n'
                 text += '        Summary<<workerSummary.str();\n'
                 text += '    };\n'

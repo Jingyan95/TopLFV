@@ -440,7 +440,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         dIdx = 2;// fake e/mu + fake tau
     }
     if (Event->lep1()->truth_==0 && Event->lep2()->truth_==0 && Event->ta1()->truth_>0){
-        dIdx = 3;// or = = 4 if tt fake tau 
+        if (dataset.Contains("DY")) dIdx = 3; // DY + fake tau
+        else dIdx = 4; // tt + fake tau
     }
     if (Event->c()==1 && Event->ch() < 2 && (Event->lep1()->truth_<0||Event->lep2()->truth_<0)){
         dIdx = 5;// charge misID
@@ -504,14 +505,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     var[vInd(vars1D, "llPt")] = Event->llPt();
     var[vInd(vars1D, "subSR")] = Event->SRindex();
     // Filling histograms (only include data events with three tight leptons and fully prompt MC events)
-    if (Event->typeIndex() == 0 && dIdx == 0){
+    if (Event->typeIndex() == 0 && (MConly_ || dIdx == 0)){
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 0; j < var.size(); ++j){
-            Hists1D[0][cIdx][chIdx][reg[i]][j]->Fill(var[j], wgt[i]);
+            Hists1D[dIdx][cIdx][chIdx][reg[i]][j]->Fill(var[j], wgt[i]);
         }
       }
     }
-    if (data == "data"){ // Only include data events in fake and charge-flip estimate
+    if (data == "data" && !MConly_){ // Only include data events in fake and charge-flip estimate
       // Reading real and fake efficiencies 
       if (Event->lep1()->flavor_ == 1){
         r1 = get_factor(&rEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
@@ -617,11 +618,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         }
       }
     }
-
+    
     deleteContainter(Leptons);
     deleteContainter(Jets);
     delete Event;
-    if (data == "data") delete MM;
+    if (data == "data" && !MConly_) delete MM;
     nAccept++;
   } // End of event loop
 

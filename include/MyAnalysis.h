@@ -19,6 +19,7 @@ public :
   TString        year_;
   TString        data_;
   TString        run_;
+  bool           MConly_; // MC only fake estimate
   bool           verbose_;
   trigger        *myTrig;
   int            nThread_;
@@ -282,7 +283,7 @@ public :
   TBranch         *b_LHEPart_phi;
   TBranch         *b_LHEPart_eta;
 
-  MyAnalysis(TTree *tree = 0, TString year = "", TString data = "", TString run = "", int nThread = 8, int workerID = 0, bool verbose_ = false);
+  MyAnalysis(TTree *tree = 0, TString year = "", TString data = "", TString run = "", int nThread = 8, int workerID = 0, bool MConly_ = false, bool verbose_ = false);
   virtual ~MyAnalysis();
   virtual Int_t    Cut(Long64_t entry);
   virtual void     GetEntry(Long64_t entry);
@@ -329,8 +330,8 @@ private:
 #endif
 
 #ifdef MyAnalysis_cxx
-MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool verbose)
-    : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_, data_)), nThread_(nThread), workerID_(workerID), verbose_(verbose) {
+MyAnalysis::MyAnalysis(TTree *tree, TString year, TString data, TString run, int nThread, int workerID, bool MConly, bool verbose)
+    : fChain(0), year_(year), data_(data), run_(run), myTrig(new trigger(year_, data_)), nThread_(nThread), workerID_(workerID), MConly_(MConly), verbose_(verbose) {
   // If parameter tree is not specified (or zero), connect the file used to generate this class and read the Tree.
   if (tree == 0) {
     TFile *f = (TFile*) gROOT->GetListOfFiles()->FindObject("/afs/cern.ch/work/j/jingyan/public/SMEFTfr_LFV_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM/ST_clequ1_lltu/0000.root");

@@ -21,7 +21,7 @@ int main() {
     ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_10.root");
     ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_11.root");
     ch->Add("/eos/user/s/skinnari/TopLFV/LFV_Trilep_Inclusive/2016/2016_H_SingleElectron/SingleElectron/crab_Trilep_Inclusive_Apr29_JEC_2016_H_SingleElectron/230429_193225/0000/tree_12.root");
-    MyAnalysis t1(ch, "2016" , "data" , "H", nThread, workerID, false);
+    MyAnalysis t1(ch, "2016" , "data" , "H", nThread, workerID, false, false);
     auto workerSummary = t1.Loop(Form("test_%u.root",workerID), "data" , "SingleElectron" , "2016" , "H" , 1 , 1 , 1, std::ref(progress), std::ref(counter));
     Summary << workerSummary.str();
   };
