@@ -56,7 +56,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   }else{   
     domains[0] = "Others";
   }
-  std::vector<TString> charges{"OS", "SS"}; // Same-Sign, Opposite-Sign
+  std::vector<TString> charges{"OS", "SS"}; // Opposite-Sign, Same-Sign
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
     "ll",
@@ -258,17 +258,25 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (data == "mc" && (dataset.Contains("DYM") || dataset.Contains("TTTo") || dataset.Contains("Gamma"))){
       Leptons = new std::vector<lepton_candidate*>();
       Jets = new std::vector<jet_candidate*>();
-      for (UInt_t l = 0; l < nLHEPart; l++) {
-          if (LHEPart_pdgId[l] == 22 && LHEPart_pt[l] > 10){
-             Leptons->push_back(new lepton_candidate(LHEPart_pt[l], LHEPart_eta[l], LHEPart_phi[l], 0, 0, 0, 0, 0, 0, 0, l, 1, 1, -1));
-          }else if (abs(LHEPart_pdgId[l])<=6 || LHEPart_pdgId[l]==21){
-             Jets->push_back(new jet_candidate(LHEPart_pt[l], LHEPart_eta[l], LHEPart_phi[l], 0, 0, 1, year, 0));
+      float ptCut = dataset.Contains("DY")?15:10;
+      float etaCut = dataset.Contains("DY")?2.6:5;
+      float dRCut = dataset.Contains("DY")?0.05:0.1;
+      for (UInt_t l = 0; l < nGenPart; l++) {
+          if (l >= 64) break;
+          if (GenPart_pdgId[l] == 22 && GenPart_pt[l] > ptCut && abs(GenPart_eta[l]) < etaCut){
+             if (GenPart_genPartIdxMother[l] < 0 || abs(GenPart_pdgId[GenPart_genPartIdxMother[l]]) == 6 || GenPart_pdgId[GenPart_genPartIdxMother[l]] == 23 || abs(GenPart_pdgId[GenPart_genPartIdxMother[l]]) == 24){
+                Leptons->push_back(new lepton_candidate(GenPart_pt[l], GenPart_eta[l], GenPart_phi[l], 0, 0, 0, 0, 0, 0, 0, l, 1, 1, -1));
+             }else if (abs(GenPart_pdgId[GenPart_genPartIdxMother[l]]) == 11 || abs(GenPart_pdgId[GenPart_genPartIdxMother[l]]) == 13 || abs(GenPart_pdgId[GenPart_genPartIdxMother[l]]) == 15){
+                if (GenPart_genPartIdxMother[l] == 0 || abs(GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[l]]]) == 23 || abs(GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[l]]]) == 24) Leptons->push_back(new lepton_candidate(GenPart_pt[l], GenPart_eta[l], GenPart_phi[l], 0, 0, 0, 0, 0, 0, 0, l, 1, 1, -1));
+             }
           }
+          if (GenPart_status[l] != 1 || GenPart_pt[l] < 5 || GenPart_pdgId[l] == 22 || GenPart_pdgId[GenPart_genPartIdxMother[l]] == 22 || abs(GenPart_pdgId[l]) == 12 || abs(GenPart_pdgId[l]) == 14 || abs(GenPart_pdgId[l]) == 16 || abs(GenPart_pdgId[l]) == 18) continue;
+          Jets->push_back(new jet_candidate(GenPart_pt[l], GenPart_eta[l], GenPart_phi[l], 0, 0, 1, year, 0));
       }
       bool isPromptPhoton = false;
       for (int i = 0; i < Leptons->size(); i++){
           for (int j = 0; j < Jets->size(); j++){
-              if (event_candidate::deltaR((*Leptons)[i]->eta_, (*Leptons)[i]->phi_, (*Jets)[j]->eta_, (*Jets)[j]->phi_) < 0.05){
+              if (event_candidate::deltaR((*Leptons)[i]->eta_, (*Leptons)[i]->phi_, (*Jets)[j]->eta_, (*Jets)[j]->phi_) < dRCut){
                  (*Leptons)[i]->setTruth(-1);
                  break;
               }
@@ -287,7 +295,6 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
     }else{photonPass = true;}
     
-  
     // MET filters
     if (year == "2017" || year == "2018") {
       if (Flag_goodVertices && Flag_globalSuperTightHalo2016Filter && Flag_HBHENoiseFilter

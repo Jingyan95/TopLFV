@@ -146,15 +146,16 @@ public :
 
   Float_t         Generator_weight; // MC generator weight
   Float_t         Pileup_nTrueInt;
-  Int_t           GenPart_pdgId[64];
   Float_t         L1PreFiringWeight_ECAL_Nom;
   Float_t         L1PreFiringWeight_Muon_Nom;
 
-  UInt_t          nLHEPart;
-  Int_t           LHEPart_pdgId[16];
-  Float_t         LHEPart_pt[16];
-  Float_t         LHEPart_phi[16];
-  Float_t         LHEPart_eta[16];
+  UInt_t          nGenPart;
+  Int_t           GenPart_genPartIdxMother[64];
+  Int_t           GenPart_pdgId[64];
+  Int_t           GenPart_status[64];
+  Float_t         GenPart_pt[64];
+  Float_t         GenPart_phi[64];
+  Float_t         GenPart_eta[64];
 
   // List of branches
   TBranch         *b_nElectron;
@@ -273,15 +274,16 @@ public :
 
   TBranch         *b_Generator_weight;
   TBranch         *b_Pileup_nTrueInt;
-  TBranch         *b_GenPart_pdgId;
   TBranch         *b_L1PreFiringWeight_ECAL_Nom;
   TBranch         *b_L1PreFiringWeight_Muon_Nom;
 
-  TBranch         *b_nLHEPart;
-  TBranch         *b_LHEPart_pdgId;
-  TBranch         *b_LHEPart_pt;
-  TBranch         *b_LHEPart_phi;
-  TBranch         *b_LHEPart_eta;
+  TBranch         *b_nGenPart;
+  TBranch         *b_GenPart_genPartIdxMother;
+  TBranch         *b_GenPart_pdgId;
+  TBranch         *b_GenPart_status;
+  TBranch         *b_GenPart_pt;
+  TBranch         *b_GenPart_phi;
+  TBranch         *b_GenPart_eta;
 
   MyAnalysis(TTree *tree = 0, TString year = "", TString data = "", TString run = "", int nThread = 8, int workerID = 0, bool MConly_ = false, bool verbose_ = false);
   virtual ~MyAnalysis();
@@ -498,15 +500,16 @@ void MyAnalysis::Init(TTree *tree) {
 
   if (data_ == "mc") fChain->SetBranchAddress("Generator_weight", &Generator_weight, &b_Generator_weight);
   if (data_ == "mc") fChain->SetBranchAddress("Pileup_nTrueInt", &Pileup_nTrueInt, &b_Pileup_nTrueInt);
-  if (data_ == "mc") fChain->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId, &b_GenPart_pdgId);
   fChain->SetBranchAddress("L1PreFiringWeight_ECAL_Nom", &L1PreFiringWeight_ECAL_Nom, &b_L1PreFiringWeight_ECAL_Nom);
   fChain->SetBranchAddress("L1PreFiringWeight_Muon_Nom", &L1PreFiringWeight_Muon_Nom, &b_L1PreFiringWeight_Muon_Nom);
 
-  if (data_ == "mc") fChain->SetBranchAddress("nLHEPart", &nLHEPart, &b_nLHEPart);
-  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_pdgId", &LHEPart_pdgId, &b_LHEPart_pdgId);
-  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_pt", &LHEPart_pt, &b_LHEPart_pt);
-  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_eta", &LHEPart_eta, &b_LHEPart_eta);
-  if (data_ == "mc") fChain->SetBranchAddress("LHEPart_phi", &LHEPart_phi, &b_LHEPart_phi);
+  if (data_ == "mc") fChain->SetBranchAddress("nGenPart", &nGenPart, &b_nGenPart);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_genPartIdxMother", &GenPart_genPartIdxMother, &b_GenPart_genPartIdxMother);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_pdgId", &GenPart_pdgId, &b_GenPart_pdgId);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_status", &GenPart_status, &b_GenPart_status);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_pt", &GenPart_pt, &b_GenPart_pt);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_eta", &GenPart_eta, &b_GenPart_eta);
+  if (data_ == "mc") fChain->SetBranchAddress("GenPart_phi", &GenPart_phi, &b_GenPart_phi);
 
   Notify();
 }
