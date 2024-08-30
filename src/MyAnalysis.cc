@@ -48,7 +48,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
 
   auto begin = std::chrono::high_resolution_clock::now();
 
-  std::vector<TString> domains{"Prompt", "FakeL", "FakeLTau", "DYFakeTau", "ttFakeTau", "ChargeMisId"}; // Fully prompt, fake e/muon, fake e/muon + fake tau, fake tau.
+  std::vector<TString> domains{"Prompt", "FakeL", "FakeLTau", "DYFakeTau", "ttFakeTau", "ChargeMisId"}; // Fully prompt, fake e/muon, fake e/muon + fake tau, DY + fake tau, tt + fake tau, chart mis-ID.
   if (data == "data"){
     domains[0] = "Data";
   }else if (procname.count(dataset)){
@@ -504,7 +504,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     var[vInd(vars1D, "llDr")] = Event->llDr();
     var[vInd(vars1D, "llPt")] = Event->llPt();
     var[vInd(vars1D, "subSR")] = Event->SRindex();
-    // Filling histograms (only include data events with three tight leptons and fully prompt MC events)
+    // Filling histograms (only include data/MC events with three tight leptons
+    // data-driven fake estimate -> only MC-matched fully prompt MC events 
+    // MConly fake estimate -> MC events are used regardless of MC truth
     if (Event->typeIndex() == 0 && (MConly_ || dIdx == 0)){
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 0; j < var.size(); ++j){
