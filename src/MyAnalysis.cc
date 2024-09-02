@@ -147,10 +147,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F fEff_SF_tt = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_ch"); // nbjet not used
   const TH2F rEff_e = *(TH2F*) f_L_MM->Get("e_RealEff_AbsEtaVsPt");
   const TH2F rEff_mu = *(TH2F*) f_L_MM->Get("mu_RealEff_AbsEtaVsPt");
-  const TH2F fEff_e = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt");
-  const TH2F fEff_mu = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsPt");
-  const TH2F fEff_SF_e = *(TH2F*) f_L_MM_SF->Get("e_FakeEff_SF_chVsnjet");
-  const TH2F fEff_SF_mu = *(TH2F*) f_L_MM_SF->Get("mu_FakeEff_SF_chVsnjet");
+  const TH2F fEff_e_B0 = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt_B0");
+  const TH2F fEff_mu_B0 = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsPt_B0");
+  const TH2F fEff_e_Bgeq1 = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt_Bgeq1");
+  const TH2F fEff_mu_Bgeq1 = *(TH2F*) f_L_MM->Get("mu_FakeEff_AbsEtaVsPt_Bgeq1");
+  const TH2F fEff_SF_e_B0 = *(TH2F*) f_L_MM_SF->Get("e_FakeEff_SF_chVsnjet_B0");
+  const TH2F fEff_SF_mu_B0 = *(TH2F*) f_L_MM_SF->Get("mu_FakeEff_SF_chVsnjet_B0");
+  const TH2F fEff_SF_e_Bgeq1 = *(TH2F*) f_L_MM_SF->Get("e_FakeEff_SF_chVsnbjet_Bgeq1");
+  const TH2F fEff_SF_mu_Bgeq1 = *(TH2F*) f_L_MM_SF->Get("mu_FakeEff_SF_chVsnbjet_Bgeq1");
   const TH1F sf_Ta_ES_jet = *(TH1F*) f_Ta_ES_jet->Get("tes");
   const auto sf_TRG_ee = *(TH2F*)f_TRG->Get("ee");
   const auto sf_TRG_emu = *(TH2F*)f_TRG->Get("emu");
@@ -511,9 +515,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     var[vInd(vars1D, "llDr")] = Event->llDr();
     var[vInd(vars1D, "llPt")] = Event->llPt();
     var[vInd(vars1D, "subSR")] = Event->SRindex();
-    // Filling histograms (only include data/MC events with three tight leptons
-    // data-driven fake estimate -> only MC-matched fully prompt MC events 
-    // MConly fake estimate -> MC events are used regardless of MC truth
+    // Filling histograms (only include data/MC events with three tight leptons)
+    // MConly_ = false -> only MC-matched fully prompt MC events 
+    // MConly_ = true -> MC events are used regardless of MC truth
     if (Event->typeIndex() == 0 && (MConly_ || dIdx == 0)){
       for (int i = 0; i < reg.size(); ++i) {
         for (int j = 0; j < var.size(); ++j){
@@ -525,21 +529,41 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       // Reading real and fake efficiencies 
       if (Event->lep1()->flavor_ == 1){
         r1 = get_factor(&rEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_e, Event->lep1()->pt_, abs(Event->lep1()->eta_), "");
-        f1 *= get_factor(&fEff_SF_e, Event->njet(), Event->ch(), "");
+        if (Event->nbjet() == 0){
+          f1 = get_factor(&fEff_e_B0, Event->lep1()->pt_, abs(Event->lep1()->eta_), "");
+          f1 *= get_factor(&fEff_SF_e_B0, Event->njet(), Event->ch(), "");
+        }else{
+          f1 = get_factor(&fEff_e_Bgeq1, Event->lep1()->pt_, abs(Event->lep1()->eta_), "");
+          f1 *= get_factor(&fEff_SF_e_Bgeq1, Event->nbjet(), Event->ch(), "");
+        }
       }else{
         r1 = get_factor(&rEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 = get_factor(&fEff_mu, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
-        f1 *= get_factor(&fEff_SF_mu, Event->njet(), Event->ch()-1, "");
+        if (Event->nbjet() == 0){
+          f1 = get_factor(&fEff_mu_B0, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+          f1 *= get_factor(&fEff_SF_mu_B0, Event->njet(), Event->ch()-1, "");
+        }else{
+          f1 = get_factor(&fEff_mu_Bgeq1, Event->lep1()->pt_, abs(Event->lep1()->eta_), ""); 
+          f1 *= get_factor(&fEff_SF_mu_Bgeq1, Event->nbjet(), Event->ch()-1, "");
+        }
       }
       if (Event->lep2()->flavor_ == 1){
         r2 = get_factor(&rEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_e, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 *= get_factor(&fEff_SF_e, Event->njet(), Event->ch(), "");
+        if (Event->nbjet() == 0){
+          f2 = get_factor(&fEff_e_B0, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+          f2 *= get_factor(&fEff_SF_e_B0, Event->njet(), Event->ch(), "");
+        }else{
+          f2 = get_factor(&fEff_e_Bgeq1, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+          f2 *= get_factor(&fEff_SF_e_Bgeq1, Event->nbjet(), Event->ch(), "");
+        }
       }else{
         r2 = get_factor(&rEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 = get_factor(&fEff_mu, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
-        f2 *= get_factor(&fEff_SF_mu, Event->njet(), Event->ch()-1, "");
+        if (Event->nbjet() == 0){
+          f2 = get_factor(&fEff_mu_B0, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+          f2 *= get_factor(&fEff_SF_mu_B0, Event->njet(), Event->ch()-1, "");
+        }else{
+          f2 = get_factor(&fEff_mu_Bgeq1, Event->lep2()->pt_, abs(Event->lep2()->eta_), ""); 
+          f2 *= get_factor(&fEff_SF_mu_Bgeq1, Event->nbjet(), Event->ch()-1, "");
+        }
       }
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
