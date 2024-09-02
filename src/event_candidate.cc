@@ -156,8 +156,8 @@ event_candidate::event_candidate(std::vector<lepton_candidate*>* Leptons,
       obs0 = abs(topmass0 - mT_);
       obs1 = abs(topmass1 - mT_);
     }
-    if (ch_ != 1 && (*Leptons_)[0]->mva1_ > 0.64 && (*Leptons_)[1]->mva1_ < 0.64) obs1 = -1;
-    if (ch_ != 1 && (*Leptons_)[0]->mva1_ < 0.64 && (*Leptons_)[1]->mva1_ > 0.64) obs0 = -1;
+    if ((*Leptons_)[0]->mva1_ > 0.64 && (*Leptons_)[1]->mva1_ < 0.64) obs1 = -1;
+    if ((*Leptons_)[0]->mva1_ < 0.64 && (*Leptons_)[1]->mva1_ > 0.64) obs0 = -1;
     if (ch_ == 0) { // ee
       lfvch_ = 1;
       if (obs0 < obs1) {
