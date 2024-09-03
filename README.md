@@ -193,10 +193,6 @@ git submodule update --remote
     <td>src/PU_reWeighting.cc</td>
     <td>Reweight MC pile up distribution</td>
   </tr>
-  <tr>
-    <td>src/common_details.cc, src/fastforest_functions.cc, src/fastforest.cc</td>
-    <td>Standalone C++ interface of XGBoost</td>
-  </tr>
 </table>
 
 ## CMSSW warning

@@ -4,3 +4,6 @@
 [submodule "postproc/latex-beamerposter"]
 	path = postproc/latex-beamerposter
 	url = git@github.com:deselaers/latex-beamerposter.git
+[submodule "XGBoost-FastForest"]
+	path = XGBoost-FastForest
+	url = git@github.com:guitargeek/XGBoost-FastForest.git
