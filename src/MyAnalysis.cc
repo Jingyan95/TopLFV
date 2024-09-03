@@ -174,6 +174,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   f_Ta_MM->Close();
   f_Ta_MM_SF->Close();
   f_L_MM->Close();
+  f_L_MM_SF->Close();
   f_TRG->Close();
   f_Btag_corr->Close();
 
