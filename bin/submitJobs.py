@@ -17,7 +17,7 @@ submit = 'universe = vanilla\n' # Writing .sub file
 submit += 'executable = TopLFV.sh\n'
 submit += 'should_transfer_files = YES\n'
 submit += 'when_to_transfer_output = ON_EXIT\n'
-submit += 'transfer_input_files = ../data,../include,CMakeLists.txt,Jobs/$(year)/$(proc)/$(file).C,../build/libTopLFV.so\n'
+submit += 'transfer_input_files = ../data,../include,../onnxruntime,CMakeLists.txt,Jobs/$(year)/$(proc)/$(file).C,../build/libTopLFV.so\n'
 submit += 'transfer_output_files = $(file).root\n'
 submit += 'transfer_output_remaps = "$(file).root = ../hists/$(year)/$(file).root"\n'
 submit += 'arguments = $(file)\n'

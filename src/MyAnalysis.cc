@@ -5,8 +5,8 @@
 #include "lepton_candidate.h"
 #include "jet_candidate.h"
 #include "event_candidate.h"
-#include "fastforest.h"
 #include "matrix_method.h"
+#include "onnxruntime_cxx_api.h"
 
 void updateProgress(std::atomic<ULong64_t>& progress, float percent, int nThread, int workerID, int nDigit) {
 
@@ -17,6 +17,7 @@ void updateProgress(std::atomic<ULong64_t>& progress, float percent, int nThread
       progress = ((1 << i) | progress);
     }
   }
+
 }
 
 void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& current, long max, int nDigit) {
@@ -33,8 +34,8 @@ void displayProgress(std::atomic<ULong64_t>& progress, std::atomic<ULong64_t>& c
   cerr << ']';
   cerr << " " << Form("%6d/%6d (%4.1f%%)", (int) current, (int) max, 100.0 * current / max);
   cerr.flush();
-}
 
+}
 
 std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset, TString year, TString run,
                                    float xs, float lumi, float Nevent, std::atomic<ULong64_t>& progress,
@@ -179,9 +180,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   f_Btag_corr->Close();
 
   std::string string_year(year.Data());
-  std::vector<std::string> BDTfeatures{"MVA_llDr", "MVA_MET", "MVA_btagSum", "MVA_tauPt", 
-                                       "MVA_Ht", "MVA_Topmass", "MVA_llM"};
-  const auto fastForest = fastforest::load_txt("data/MatrixMethod/" + string_year + "_ttVsDY.txt", BDTfeatures);
+  Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "XGBoostInference");
+  Ort::SessionOptions session_options;
+  session_options.SetIntraOpNumThreads(1);
+  session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_BASIC);
+  const std::string model_path_str = "data/MatrixMethod/" + string_year + "_ttVsDY.onnx";
+  const char* model_path = model_path_str.c_str();
+  Ort::Session session(env, model_path, session_options);
 
   std::vector<lepton_candidate*>* Leptons;
   std::vector<jet_candidate*>* Jets;
@@ -226,6 +231,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   Long64_t ntrmin = workerID_ * ntrperworker;
   Long64_t ntrmax = (workerID_ + 1) * ntrperworker; // Each worker looks at a subrange of the TChain
   Long64_t ntotal = 0;
+
   for (Long64_t jentry = ntrmin; jentry < ntrmax; jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
@@ -575,13 +581,21 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         f3_DY = get_factor(&fEff_3Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
         f3_tt = get_factor(&fEff_3Prong_tt, Event->ta1()->pt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
       }
-      std::vector<float> BDTinput{(float)Event->llDr(), (float)Event->MET()->Pt(), (float)Event->btagSum(), (float)Event->ta1()->pt_, 
+      std::vector<float> input_vec{(float)Event->llDr(), (float)Event->MET()->Pt(), (float)Event->btagSum(), (float)Event->ta1()->pt_, 
                                   (float)Event->Ht(), (float)Event->Topmass(), (float)Event->llM()};
+      std::vector<int64_t> input_shape = {1, 7}; // use int64_t instead of int
+      auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
+      auto default_allocator = std::make_unique<Ort::AllocatorWithDefaultOptions>();
+      auto input_tensor = Ort::Value::CreateTensor<float>(memory_info, input_vec.data(), 7, input_shape.data(), input_shape.size());
+      const char* input_names[] = {"float_input"};
+      const char* output_names[] = {"probabilities", "label"};
+      auto output_tensors = session.Run(Ort::RunOptions{nullptr}, input_names, &input_tensor, 1, output_names, 2);
+      float* probabilities = output_tensors[0].GetTensorMutableData<float>();
+      BDTscore = probabilities[1];
       f3_tt *= get_factor(&fEff_SF_tt, Event->nbjet(), Event->ch(), "");
       if (Event->njet() == 0) f3_DY *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
       else if (Event->njet() == 1) f3_DY *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
       else f3_DY *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      BDTscore = 1. / (1. + std::exp(-fastForest(BDTinput.data())));
       //3D matrix method
       if (BDTscore < 0.05 || Event->ch() == 1){
         MM = new matrix_method(r1, r2, r3, f1, f2, f3_tt, Event->typeIndex());

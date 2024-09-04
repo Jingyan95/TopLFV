@@ -9,7 +9,7 @@ int main() {
   int Sys = system("rm -f test*.root");
   if (Sys<0) {std::cout<<"No files named test*.root"<<std::endl;}
   ROOT::EnableThreadSafety();
-  UInt_t nThread = 6;
+  UInt_t nThread = 2;
   std::stringstream Summary;
   Summary << "\nNumber of threads requested " << nThread << ".\n";
   auto workerIDs = ROOT::TSeqI(nThread);

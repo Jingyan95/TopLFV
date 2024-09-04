@@ -111,7 +111,6 @@ for key, value in SAMPLES.items():
 
 SHFILE = "#!/bin/bash\n" +\
         'source /cvmfs/sft.cern.ch/lcg/views/LCG_106/x86_64-el9-gcc13-opt/setup.sh\n' +\
-        'git clone https://github.com/guitargeek/XGBoost-FastForest.git\n' +\
         'echo "project($1)" | cat - CMakeLists.txt > temp && mv temp CMakeLists.txt\n' +\
         'mkdir build\n' +\
         'cd build\n' +\

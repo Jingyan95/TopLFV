@@ -7,7 +7,7 @@ add_library(libTopLFV SHARED IMPORTED)
 set_target_properties(libTopLFV PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libTopLFV.so)
 add_executable(${PROJECT_NAME} ${PROJECT_NAME}.C)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/XGBoost-FastForest/include)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/onnxruntime/include)
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} libTopLFV)
 

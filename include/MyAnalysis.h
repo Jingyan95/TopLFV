@@ -19,11 +19,11 @@ public :
   TString        year_;
   TString        data_;
   TString        run_;
+  int            nThread_;
+  int            workerID_;
   bool           MConly_; // MC only fake estimate
   bool           verbose_;
   trigger        *myTrig;
-  int            nThread_;
-  int            workerID_;
 
   // Fixed size dimensions of array or collections stored in the TTree if any.
 
