@@ -22,8 +22,8 @@ CHANNELS = ["ee", "emu", "mumu"]
 CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
 REGIONS = [
     "ll",
-    "llOnZ",
-    "llSideBand",
+    "llOnZB0",
+    "llSideBandBgeq1",
     "llOffZMetg20B1",
     "llOffZMetg20B2",
     "llStl300",
@@ -31,8 +31,8 @@ REGIONS = [
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("OnZ", "DY+jets CR"),
-    ("Side Band", "Z Side Band"),
+    ("OnZ, nbjet=0", "DY+jets CR"),
+    ("Side Band, nbjet#geq1", "Z Side Band"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
     ("S_{T}<300GeV", "Generic CR"),
@@ -40,8 +40,8 @@ REGIONS_NAME = [
 ]
 REGIONS_LATEX = [
     "no cuts",
-    "DY+jets CR, On Z",
-    "Z Side Band",
+    "DY+jets CR, nbjet $=0$, On Z",
+    "Z Side Band, nbjet $\\geq 1$",
     "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
     "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
     "Generic CR, $S_T<300$ GeV",

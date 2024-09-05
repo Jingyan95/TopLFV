@@ -61,8 +61,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   std::vector<TString> channels{"ee", "emu", "mumu"};
   std::vector<TString> regions{
     "ll",
-    "llOnZ",
-    "llSideBand",
+    "llOnZB0",
+    "llSideBandBgeq1",
     "llOffZMetg20B1",
     "llOffZMetg20B2",
     "llStl300",
@@ -469,13 +469,13 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     int rIdx = rInd(regions, "ll");
     reg.push_back(rIdx); // No cuts
     wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
-    if (Event->OnZ()) { // Z+jets CR
-      rIdx = rInd(regions, "llOnZ");
+    if (Event->OnZ() && Event->nbjet() == 0) { // Z+jets CR
+      rIdx = rInd(regions, "llOnZB0");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
-    if (Event->SideBand()) { // Z peak sideband
-      rIdx = rInd(regions, "llSideBand");
+    if (Event->SideBand() && Event->nbjet() >= 1) { // Z peak sideband 
+      rIdx = rInd(regions, "llSideBandBgeq1");
       reg.push_back(rIdx);
       wgt.push_back(data == "mc" ? weight_Event : weight_Event * unBlind[rIdx]);
     }
