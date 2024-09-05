@@ -185,8 +185,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   session_options.SetIntraOpNumThreads(1);
   session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_BASIC);
   const std::string model_path_str = "data/MatrixMethod/" + string_year + "_ttVsDY.onnx";
-  const char* model_path = model_path_str.c_str();
-  Ort::Session session(env, model_path, session_options);
+  Ort::Session session(env, model_path_str.c_str(), session_options);
 
   std::vector<lepton_candidate*>* Leptons;
   std::vector<jet_candidate*>* Jets;
@@ -582,10 +581,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
         f3_tt = get_factor(&fEff_3Prong_tt, Event->ta1()->pt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
       }
       std::vector<float> input_vec{(float)Event->llDr(), (float)Event->MET()->Pt(), (float)Event->btagSum(), (float)Event->ta1()->pt_, 
-                                  (float)Event->Ht(), (float)Event->Topmass(), (float)Event->llM()};
+                                   (float)Event->Ht(), (float)Event->Topmass(), (float)Event->llM()};
       std::vector<int64_t> input_shape = {1, 7}; // use int64_t instead of int
       auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
-      auto default_allocator = std::make_unique<Ort::AllocatorWithDefaultOptions>();
       auto input_tensor = Ort::Value::CreateTensor<float>(memory_info, input_vec.data(), 7, input_shape.data(), input_shape.size());
       const char* input_names[] = {"float_input"};
       const char* output_names[] = {"probabilities", "label"};
