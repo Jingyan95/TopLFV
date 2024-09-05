@@ -8,9 +8,6 @@ import cmsstyle.src.cmsstyle as CMS
 import ROOT
 
 
-test = False
-
-
 YEARS_RUN2 = ["2016APV", "2016", "2017", "2018", "All"]
 SAMPLES = ["Data", "TX", "VV", "Others", "FakeL", "FakeLTau", "DYFakeTau", "ttFakeTau", "ChargeMisId", "LFVStScalarU", "LFVTtScalarU"]
 SAMPLES_NAME = ["Data", "t#bar{t}+X", "VV(V)", "Others", "Fake e/#mu", "Fake e/#mu + #tau", "DY + fake #tau", "t#bar{t} + fake #tau",
@@ -31,7 +28,7 @@ REGIONS = [
 ]
 REGIONS_NAME = [
     ("No cuts", ""),
-    ("OnZ, nbjet=0", "DY+jets CR"),
+    ("OnZ", "Z+jets CR"),
     ("Side Band, nbjet#geq1", "Z Side Band"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=1 (SR)"),
     ("p_{T}^{miss}>20GeV, njet#geq1", "OffZ, nbjet=2 (t#bar{t}+jets CR)"),
@@ -40,7 +37,7 @@ REGIONS_NAME = [
 ]
 REGIONS_LATEX = [
     "no cuts",
-    "DY+jets CR, nbjet $=0$, On Z",
+    "Z+jets CR, On Z",
     "Z Side Band, nbjet $\\geq 1$",
     "SR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=1$",
     "$t\\bar{t}$ + jets CR, Off Z, $p_T^\\text{miss}>20$ GeV, njet $\\geq 1$, nbjet $=2$",
@@ -68,17 +65,6 @@ VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
                "p_{T}^{miss} [GeV]",
                "Bin index"]
 
-# For fake factor calculation
-VARS1DFF = ["taPtFFBin", "taEtaFFBin"]
-VARS1DFF_NAME = ["#tau p_{T} [GeV]", "#tau #eta"]
-FF_LABELS = ["On Z"]
-X_CUTS = [ # Regions
-    ("llOnZ", "llOffZ")
-]
-Y_CUTS = [ # Domains
-    ("geqMedLepgeqTightTa", "geqMedLeplTightTa")
-]
-
 COLORS = [ROOT.kBlack, CMS.p10.kBlue, CMS.p10.kYellow, CMS.p10.kRed, CMS.p10.kGray, CMS.p10.kViolet, CMS.p10.kBrown, CMS.p10.kOrange, CMS.p10.kGreen, CMS.p10.kAsh, CMS.p10.kCyan]
 SQUARE = CMS.kSquare
 PLOT_LABEL = "Work in Progress"
@@ -90,30 +76,3 @@ def getLumi(year):
     elif year=="2018": return "59.8"
     return "138"
 
-
-# ----------------------- Test set ----------------------- #
-if test:
-    YEARS_RUN2 = ["2016APV"]
-    CHARGES = ["OS"]
-    CHANNELS = ["emu"]
-    CHANNELS_NAME = ["ee#tau_{h}"]
-    REGIONS = [
-        "llOnZ",
-        "llOffZ"
-    ]
-    REGIONS_NAME = [
-        ("OnZ", "(DY+jets CR)"),
-        ("OffZ", "(Close to SR CR)")
-    ]
-    REGIONS_LATEX = [
-        "DY+jets CR, On Z",
-        "Close to SR CR, Off Z"
-    ]
-    DOMAINS = ["geqMedLepgeqTightTa", "geqMedLeplTightTa"]
-    DOMAINS_NAME = ["#geq Tight Tau", "< Tight Tau"]
-    DOMAINS_LATEX = [
-        "$\\geq$ Tight $\\tau$",
-        "$<$ Tight $\\tau$"
-    ]
-    VARS1D = ["taPtFFBin", "taEtaFFBin", "subSR"]
-    VARS1D_NAME = ["#tau p_{T} [GeV]", "#tau #eta", "SR subdivided"]
