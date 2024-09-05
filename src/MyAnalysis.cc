@@ -86,7 +86,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     {"llM",              {13,  30,    0,   180}},
     {"llDr",             {14,  10,    0,   4.5}},
     {"llPt",             {15,  10,    0,   150}},
-    {"subSR",            {16,  18,    0,   18}}
+    {"MET",              {16,  10,    0,   200}},
+    {"subSR",            {17,  18,    0,   18}}
   };
   
   // Creating histograms
@@ -520,6 +521,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     var[vInd(vars1D, "llM")] = Event->llM();
     var[vInd(vars1D, "llDr")] = Event->llDr();
     var[vInd(vars1D, "llPt")] = Event->llPt();
+    var[vInd(vars1D, "MET")] = Event->MET()->Pt();
     var[vInd(vars1D, "subSR")] = Event->SRindex();
     // Filling histograms (only include data/MC events with three tight leptons)
     // MConly_ = false -> only MC-matched fully prompt MC events 

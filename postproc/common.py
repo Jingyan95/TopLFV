@@ -48,7 +48,7 @@ REGIONS_LATEX = [
     "SR (New), Off Z, $S_{T}>300$ GeV"
 ]
 
-VARS1D = ["lep1Pt", "lep2Pt", "tauPt", "lep1Eta", "lep2Eta", "tauEta", "Ht", "njet", "nbjet", "St", "tauRt", "lep1Rt", "lep2Rt", "llM", "llDr", "llPt", "subSR"]
+VARS1D = ["lep1Pt", "lep2Pt", "tauPt", "lep1Eta", "lep2Eta", "tauEta", "Ht", "njet", "nbjet", "St", "tauRt", "lep1Rt", "lep2Rt", "llM", "llDr", "llPt", "MET", "subSR"]
 VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
                "Sub-leading lepton p_{T} [GeV]", 
                "tau lepton p_{T} [GeV]", 
@@ -64,7 +64,8 @@ VARS1D_NAME = ["Leading lepton p_{T} [GeV]",
                "Sub-leading lepton R_{T}",
                "m(ll) [GeV]",
                "#DeltaR(l,l)",
-               "p_{T}(ll)",
+               "p_{T}(ll) [GeV]",
+               "p_{T}^{miss} [GeV]",
                "Bin index"]
 
 # For fake factor calculation
