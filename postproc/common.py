@@ -19,7 +19,7 @@ CHANNELS = ["ee", "emu", "mumu"]
 CHANNELS_NAME = ["ee#tau_{h}", "e#mu#tau_{h}", "#mu#mu#tau_{h}"]
 REGIONS = [
     "ll",
-    "llOnZB0",
+    "llOnZ",
     "llSideBandBgeq1",
     "llOffZMetg20B1",
     "llOffZMetg20B2",
