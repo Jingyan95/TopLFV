@@ -141,12 +141,11 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   const TH2F rEff_3Prong = *(TH2F*) f_Ta_MM->Get("RealEff_AbsEtaVsPt_3Prong");
   const TH2F fEff_1Prong_DY = *(TH2F*) f_Ta_MM->Get("FakeEff_DY_llPtVsPt_1Prong");
   const TH2F fEff_3Prong_DY = *(TH2F*) f_Ta_MM->Get("FakeEff_DY_llPtVsPt_3Prong");
-  const TH2F fEff_1Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_RtVsPt_1Prong");
-  const TH2F fEff_3Prong_tt = *(TH2F*) f_Ta_MM->Get("FakeEff_tt_RtVsPt_3Prong");
   const TH2F fEff_SF_DY_0J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_0J");
   const TH2F fEff_SF_DY_1J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_1J");
   const TH2F fEff_SF_DY_2J = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_DY_AbsEtaVsRt_2J");
-  const TH2F fEff_SF_tt = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_ch"); // nbjet not used
+  const TH2F fEff_SF_tt_BDT = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_chVsBDT"); 
+  const TH2F fEff_SF_tt_nbjet = *(TH2F*) f_Ta_MM_SF->Get("FakeEff_SF_tt_chVsnbjet"); 
   const TH2F rEff_e = *(TH2F*) f_L_MM->Get("e_RealEff_AbsEtaVsPt");
   const TH2F rEff_mu = *(TH2F*) f_L_MM->Get("mu_RealEff_AbsEtaVsPt");
   const TH2F fEff_e_B0 = *(TH2F*) f_L_MM->Get("e_FakeEff_AbsEtaVsPt_B0");
@@ -217,7 +216,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_TRG;
   float weight_Btag_corr; // Correction for btag shape to preserve normalization
   float weight_Event;
-  float r1, r2, r3, f1, f2, f3_DY, f3_tt;
+  float r1, r2, r3, f1, f2, f3;
   float BDTscore;
   std::vector<float> weight_MM; // matrix method weight for fake tau
   weight_MM.resize(4);
@@ -575,13 +574,14 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
       if (Event->ta1()->decaymode_ < 10){
         r3 = get_factor(&rEff_1Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3_DY = get_factor(&fEff_1Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
-        f3_tt = get_factor(&fEff_1Prong_tt, Event->ta1()->pt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
+        f3 = get_factor(&fEff_1Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
       }else{
         r3 = get_factor(&rEff_3Prong, Event->ta1()->pt_, abs(Event->ta1()->eta_), ""); 
-        f3_DY = get_factor(&fEff_3Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
-        f3_tt = get_factor(&fEff_3Prong_tt, Event->ta1()->pt_, Event->ta1()->recoil_/Event->ta1()->pt_, ""); 
+        f3 = get_factor(&fEff_3Prong_DY, Event->ta1()->pt_, Event->llPt(), ""); 
       }
+      if (Event->njet() == 0) f3 *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else if (Event->njet() == 1) f3 *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      else f3 *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
       std::vector<float> input_vec{(float)Event->llDr(), (float)Event->MET()->Pt(), (float)Event->btagSum(), (float)Event->ta1()->pt_, 
                                    (float)Event->Ht(), (float)Event->Topmass(), (float)Event->llM()};
       std::vector<int64_t> input_shape = {1, 7}; // use int64_t instead of int
@@ -592,23 +592,17 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       auto output_tensors = session.Run(Ort::RunOptions{nullptr}, input_names, &input_tensor, 1, output_names, 2);
       float* probabilities = output_tensors[0].GetTensorMutableData<float>();
       BDTscore = probabilities[1];
-      f3_tt *= get_factor(&fEff_SF_tt, Event->nbjet(), Event->ch(), "");
-      if (Event->njet() == 0) f3_DY *= get_factor(&fEff_SF_DY_0J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      else if (Event->njet() == 1) f3_DY *= get_factor(&fEff_SF_DY_1J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
-      else f3_DY *= get_factor(&fEff_SF_DY_2J, Event->ta1()->recoil_/Event->ta1()->pt_, abs(Event->ta1()->eta_), "");
+      f3 *= get_factor(&fEff_SF_tt_BDT, BDTscore, Event->ch(), "");
+      f3 *= get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), Event->ch(), "");
       //3D matrix method
-      if (BDTscore < 0.05 || Event->ch() == 1){
-        MM = new matrix_method(r1, r2, r3, f1, f2, f3_tt, Event->typeIndex());
-        weight_MM = MM->getWeights();
-        weight_domain[0] = weight_MM[1];
-        weight_domain[1] = weight_MM[2];
+      MM = new matrix_method(r1, r2, r3, f1, f2, f3, Event->typeIndex());
+      weight_MM = MM->getWeights();
+      weight_domain[0] = weight_MM[1];
+      weight_domain[1] = weight_MM[2];
+      if (BDTscore < 0.05){
         weight_domain[2] = 0;
         weight_domain[3] = weight_MM[3];
       }else{
-        MM = new matrix_method(r1, r2, r3, f1, f2, f3_DY, Event->typeIndex());
-        weight_MM = MM->getWeights();
-        weight_domain[0] = weight_MM[1];
-        weight_domain[1] = weight_MM[2];
         weight_domain[2] = weight_MM[3];
         weight_domain[3] = 0;
       }
