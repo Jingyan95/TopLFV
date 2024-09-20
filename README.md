@@ -27,13 +27,18 @@ cd bin/
 python makeJobs.py
 python submitJobs.py
 ```
+If you wish to run a MC-only background estimate, please do
+```
+python makeJobs.py --m=True
+python submitJobs.py
+```
 
 ## IV. To merge output ROOT files
 ```
 cd hists/
 python hadd.py
 ```
-Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems.
+Make sure all the necessary output files are there under TopLFV/hists/\<year\>/. Otherwise, this function might run into problems. 
 
 ## V. To make plots
 ```
