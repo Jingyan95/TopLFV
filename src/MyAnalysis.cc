@@ -218,6 +218,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
   float weight_Event;
   float r1, r2, r3, f1, f2, f3;
   float BDTscore;
+  float BDTcut;
   std::vector<float> weight_MM; // matrix method weight for fake tau
   weight_MM.resize(4);
   std::vector<float> weight_domain; // weights for different domains: 0 = fake e/mu, 1 = fake e/mu + fake tau, 2 = DY + fake tau, 3 = tt + fake tau
@@ -268,9 +269,9 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
     if (data == "mc" && (dataset.Contains("DYM") || dataset.Contains("TTTo") || dataset.Contains("Gamma"))){
       Leptons = new std::vector<lepton_candidate*>();
       Jets = new std::vector<jet_candidate*>();
-      float ptCut = dataset.Contains("DY")?15:10;
-      float etaCut = dataset.Contains("DY")?2.6:5;
-      float dRCut = dataset.Contains("DY")?0.05:0.1;
+      float ptCut = dataset.Contains("DY") ? 15 : 10;
+      float etaCut = dataset.Contains("DY") ? 2.6 : 5;
+      float dRCut = dataset.Contains("DY") ? 0.05 : 0.1;
       for (UInt_t l = 0; l < nGenPart; l++) {
           if (l >= 64) break;
           if (GenPart_pdgId[l] == 22 && GenPart_pt[l] > ptCut && abs(GenPart_eta[l]) < etaCut){
@@ -337,7 +338,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
 
       Leptons->push_back(new lepton_candidate(Electron_pt[l], Electron_eta[l], Electron_phi[l], Electron_dxy[l], Electron_dz[l],
-        Electron_charge[l], 0, Electron_topLeptonMVA_v1[l], Electron_jetIdx[l]>=0?Jet_pt_nom[Electron_jetIdx[l]]:Electron_pt[l], 0, l, 1,
+        Electron_charge[l], 0, Electron_topLeptonMVA_v1[l], Electron_jetIdx[l]>=0 ? Jet_pt_nom[Electron_jetIdx[l]] : Electron_pt[l], 0, l, 1,
         data == "mc" ? (int) Electron_genPartFlav[l] : 1, -1));
       //set truth_ to -1 if electron charge is misidentified in MC
       if ((*Leptons)[Leptons->size()-1]->truth_ == 0 && Electron_charge[l]*GenPart_pdgId[Electron_genPartIdx[l]] == 11) (*Leptons)[Leptons->size()-1]->setTruth(-1);
@@ -359,7 +360,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
 
       Leptons->push_back(new lepton_candidate(Muon_pt[l], Muon_eta[l], Muon_phi[l], Muon_dxy[l], Muon_dz[l],
-        Muon_charge[l], 0, Muon_topLeptonMVA_v1[l], Muon_jetIdx[l]>=0?Jet_pt_nom[Muon_jetIdx[l]]:Muon_pt[l], 0, l, 2,
+        Muon_charge[l], 0, Muon_topLeptonMVA_v1[l], Muon_jetIdx[l]>=0 ? Jet_pt_nom[Muon_jetIdx[l]] : Muon_pt[l], 0, l, 2,
         data == "mc" ? (int) Muon_genPartFlav[l] : 1, -1));
     }
 
@@ -397,8 +398,8 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       }
 
       Leptons->push_back(new lepton_candidate(tauPt, Tau_eta[l], Tau_phi[l], Tau_dxy[l], Tau_dz[l], Tau_charge[l],
-        char_to_int(Tau_idDeepTau2017v2p1VSjet[l]), Tau_rawDeepTau2017v2p1VSjet[l], Tau_jetIdx[l]>=0?Jet_pt_nom[Tau_jetIdx[l]]:tauPt,
-        Tau_jetIdx[l]>=0?Jet_btagDeepFlavB[Tau_jetIdx[l]]:0, l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5, Tau_decayMode[l]));
+        char_to_int(Tau_idDeepTau2017v2p1VSjet[l]), Tau_rawDeepTau2017v2p1VSjet[l], Tau_jetIdx[l]>=0 ? Jet_pt_nom[Tau_jetIdx[l]] : tauPt,
+        Tau_jetIdx[l]>=0 ? Jet_btagDeepFlavB[Tau_jetIdx[l]] : 0, l, 3, data == "mc" ? (int) Tau_genPartFlav[l] : 5, Tau_decayMode[l]));
     }
 
     if (Leptons->size() != 3 || abs((*Leptons)[0]->charge_ + (*Leptons)[1]->charge_ + (*Leptons)[2]->charge_) > 1) {
@@ -592,6 +593,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       auto output_tensors = session.Run(Ort::RunOptions{nullptr}, input_names, &input_tensor, 1, output_names, 2);
       float* probabilities = output_tensors[0].GetTensorMutableData<float>();
       BDTscore = probabilities[1];
+      BDTcut = Event->ch() == 1 ? 0.5 : 0.05;
       f3 *= get_factor(&fEff_SF_tt_BDT, BDTscore, Event->ch(), "");
       f3 *= get_factor(&fEff_SF_tt_nbjet, Event->nbjet(), Event->ch(), "");
       //3D matrix method
@@ -599,7 +601,7 @@ std::stringstream MyAnalysis::Loop(TString fname, TString data, TString dataset,
       weight_MM = MM->getWeights();
       weight_domain[0] = weight_MM[1];
       weight_domain[1] = weight_MM[2];
-      if (BDTscore < 0.05){
+      if (BDTscore < BDTcut){
         weight_domain[2] = 0;
         weight_domain[3] = weight_MM[3];
       }else{
